@@ -1,7 +1,6 @@
 #
-# (C) Copyright 2002
-# Sysgo Real-Time Solutions, GmbH <www.elinos.com>
-# Marius Groeger <mgroeger@sysgo.de>
+# (C) Copyright 2001
+# Josh Huber <huber@mclx.com>, Mission Critical Linux, Inc.
 #
 # See file CREDITS for list of people who contributed to this
 # project.
@@ -22,5 +21,4 @@
 # MA 02111-1307 USA
 #
 
-#PLATFORM_RELFLAGS += -fno-strict-aliasing  -fno-common -ffixed-P5 
 PLATFORM_RELFLAGS += -ffixed-P5

@@ -1,24 +1,44 @@
-/*****************************************************************************************************************/
-/* cpu/bf535/start.s:  A startup file for the Blackfin u-boot
+/*
+ * (C) Copyright 2002
+ * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
+ * (C) Copyright 2002
+ * Sysgo Real-Time Solutions, GmbH <www.elinos.com>
+ * Marius Groeger <mgroeger@sysgo.de>
+ *
+ * See file CREDITS for list of people who contributed to this
+ * project.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307 USA
+ *
+ * cpu/bf535/start.s:  A startup file for the Blackfin u-boot *
  * Copyright (c) 2003  Metrowerks/Motorola
  * Copyright (C) 1998  D. Jeff Dionne <jeff@ryeham.ee.ryerson.ca>,
  *                     Kenneth Albanowski <kjahds@kjahds.com>,
  *                     The Silver Hammer Group, Ltd.
- *
  * (c) 1995, Dionne & Associates
  * (c) 1995, DKG Display Tech.
-
-**********************************************************************************************************
-
-                        PROJECT                 :       BFIN
-                        VERISON                 :       2.0
-                        FILE                    :       start.S
-                        MODIFIED DATE           :       29 jun 2004
-                        AUTHOR                  :       BFin Project-ADI
-                        LOCATION                :       LG Soft India,Bangalore
-
-***********************************************************************************************************/
+ *
+ *	PROJECT				:	BFIN
+ *	VERSION				:	2.0
+ *	FILE				:	start.S
+ *	MODIFIED DATE			:	29 jun 2004
+ *	AUTHOR				:	BFin Project-ADI
+ *	LOCATION			:	LG Soft India,Bangalore
+ */
 
 #define ASSEMBLY
 
@@ -41,7 +61,6 @@
 .global flashdataend;
 
 .text
-	
 _initialize:
 	nop;
 	r0 = 0x30;
@@ -53,15 +72,15 @@ _initialize:
 	l1 = r7;
 	l2 = r7;
 	l3 = r7;
-	p0.h = 0xffe0;
-	p0.l = 0x2000;
+	p0.h = (EVT_EMULATION_ADDR >> 16);
+	p0.l = (EVT_EMULATION_ADDR & 0xFFFF);
 	p0 += 8;
 	p1 = 13;
 	r1 = 0;
-	LSETUP(4,4) lc0 = p1 ;
+	LSETUP(4,4) lc0 = p1;
 	[ p0 ++ ] = r1;
-	sp.l = 0x2000 ;
-	sp.h = 0xff90 ;
+	sp.l = (TEMP_STACK & 0xFFFF);
+	sp.h = (TEMP_STACK >> 16);
 	usp = sp;
 	fp = sp;
 	call delay;
@@ -69,21 +88,22 @@ _initialize:
 	r0 = 0x32;
 	syscfg = r0;
 	ssync;
-	p0.L = 0x4 ;
-	p0.H = 0xffe0 ;
-	r0 = [ p0 ] ;
-	BITCLR ( r0 , 0xc ) ;
-	BITSET ( r0 , 0xd ) ;
-	[ p0 ] = r0 ;
-	CSYNC ;
+	p0.L = 0x4;
+	p0.H = 0xffe0;
+	r0 = [ p0 ];
+	BITCLR ( r0 , 0xc );
+	BITSET ( r0 , 0xd );
+	[ p0 ] = r0;
+	CSYNC;
+
 #ifdef CONFIG_STAMP
-	r0 = 0x16 ( Z ) ;
-	r1 = 0x0 ( Z ) ;
-	r2 = 0x300 ( Z ) ;
-	CALL _pll_set_system_vco ;
-	r0 = 0x0 ( Z ) ;
-	r1 = 0x5 ( Z ) ;
-	CALL _pll_set_system_clocks ;
+	r0 = 0x16 ( Z );
+	r1 = 0x0 ( Z );
+	r2 = 0x300 ( Z );
+	CALL _pll_set_system_vco;
+	r0 = 0x0 ( Z );
+	r1 = 0x5 ( Z );
+	CALL _pll_set_system_clocks;
 #endif
 
 initend:
@@ -96,7 +116,6 @@ start:
 _stext:
 
 #ifdef CONFIG_STAMP
-
 	cli r2;
         p0.h = (PLL_CTL >> 16);
         p0.l = (PLL_CTL & 0xFFFF);
@@ -112,75 +131,103 @@ _stext:
 	w[p0] = r0;
 	ssync;
 
-        p1.l = DELAY;				// delay for transition
-        p1.h = 0x0;
-        lsetup ( del_start,del_end ) lc0 = p1;
+	p1.l = DELAY;	/* delay for transition */
+	p1.h = 0x0;
+	lsetup ( del_start,del_end ) lc0 = p1;
 del_start:
-        nop;
+	nop;
 del_end:
-
 #endif
+	
+	/* Early UART Initialization if required */
+	p0.h = (UART_GCTL_ADDR>>16);
+	p0.l = (UART_GCTL_ADDR & 0xFFFF);
+	r0 = UART_GCTL_UCEN;
+	w[p0] = r0;
+	ssync;
 
-/* SDRAM initialization */
+	p0.h = (UART_LCR_ADDR >> 16);
+	p0.l = (UART_LCR_ADDR & 0xFFFF);
+	r0 = UART_LCR_DLAB;	
+	w[p0] = r0;
+	ssync;
 
-        p0.l = (EBIU_SDGCTL & 0xFFFF);
-        p0.h = (EBIU_SDGCTL >> 16);		/* SDRAM Memory Global Control Register */
-        r0.l = (SDGCTL & 0xffff);
-        r0.h = (SDGCTL >> 16);
-        [p0] = r0;
-        ssync;
+	p0.h = (UART_DLL_ADDR >> 16);
+	p0.l = (UART_DLL_ADDR & 0xFFFF);
+#ifdef CONFIG_STAMP
+	r0 = 0x8F;
+#elif CONFIG_EZKIT533
+	r0 = 0x3A;
+#endif
+	w[p0] = r0;
+	ssync;
+
+	p0.h = (UART_DLH_ADDR >> 16);
+	p0.l = (UART_DLH_ADDR & 0xFFFF);
+	r0 = 0x00;
+	w[p0] = r0;
+	ssync;
+
+	p0.h = (UART_LCR_ADDR >> 16);
+	p0.l = (UART_LCR_ADDR & 0xFFFF);
+	r0 = UART_LCR_WLS8;	
+	w[p0] = r0;
+	ssync;
+
+	/* SDRAM initialization */
+	p0.l = (EBIU_SDGCTL & 0xFFFF);
+	p0.h = (EBIU_SDGCTL >> 16);	/* SDRAM Memory Global Control Register */
+	r0.h = (SDGCTL >> 16);
+	r0.l = (SDGCTL & 0xFFFF);
+	[p0] = r0;
+	ssync;
 	
 	p0.l = (EBIU_SDBCTL & 0xFFFF);
-        p0.h = (EBIU_SDBCTL >> 16);		/* SDRAM Memory Bank Control Register */
-        r0 = SDBCTL(Z);
-        w[p0] = r0;
-        ssync;	
+	p0.h = (EBIU_SDBCTL >> 16);	/* SDRAM Memory Bank Control Register */
+	r0 = SDBCTL(Z);
+	[p0] = r0;
+	ssync;	
 
 	p0.l = (EBIU_SDRRC & 0xFFFF);
-	p0.h = (EBIU_SDRRC >> 16);		/* SDRAM Refresh Rate Control Register */
+	p0.h = (EBIU_SDRRC >> 16);	/* SDRAM Refresh Rate Control Register */
 	r0 = SDRRCVAL(Z);
 	w[p0] = r0;
 	ssync;
 	                                                                               
-	 /* It seems that the value of SP reg is unpredicable after reset.
-       	    We'd better set SP before using "reti" and "[--sp] = reti" */       	 
+	/*
+	 * It seems that the value of SP reg is unpredicable after reset.
+	 * We'd better set SP before using "reti" and "[--sp] = reti" 
+	 */
       
-       	sp.h = (STACKBASE >> 16);
-       	sp.l = (STACKBASE & 0xFFFF);	
-
+	sp.h = (STACKBASE >> 16);
+	sp.l = (STACKBASE & 0xFFFF);
 
 	/*
-	 This next section keeps the processor in supervisor mode
-         during kernel boot.  Switches to user mode at end of boot.
-	 See page 3-9 of Hardware Reference manual for documentation.
+	 * This next section keeps the processor in supervisor mode
+	 * during kernel boot.  Switches to user mode at end of boot.
+	 * See page 3-9 of Hardware Reference manual for documentation.
 	*/
 
-	/********** TO keep ourselves in the supervisor mode *************/	
-        p0.l = (EVT_IVG15_ADDR & 0xFFFF);
-        p0.h = (EVT_IVG15_ADDR >> 16);	
+	/* To keep ourselves in the supervisor mode */
+	p0.l = (EVT_IVG15_ADDR & 0xFFFF);
+	p0.h = (EVT_IVG15_ADDR >> 16);
         
-        p1.l = _real_start;	
-        p1.h = _real_start;
+	p1.l = _real_start;
+	p1.h = _real_start;
+	[p0] = p1;
         
-        [p0] = p1;		
-        
-        p0.l = (IMASK & 0xFFFF);
-        p0.h = (IMASK >> 16);
-        	
-        p1.l = 0x8000;
-        p1.h = 0x0;
-        [p0] = p1;		
-        
-       	raise 15;	
-        
-       	p0.l = WAIT_HERE;
-       	p0.h = WAIT_HERE;
-        
-       	reti = p0;
-       	rti;
-        	
- WAIT_HERE:
-       	jump WAIT_HERE;
+	p0.l = (IMASK & 0xFFFF);
+	p0.h = (IMASK >> 16);
+	r0 = IVG15_POS;
+	[p0] = r0;
+	raise 15;
+	p0.l = WAIT_HERE;
+	p0.h = WAIT_HERE;
+	reti = p0;
+	rti;
+
+WAIT_HERE:
+	jump WAIT_HERE;
 
 .global _real_start;
 _real_start:
@@ -188,13 +235,12 @@ _real_start:
 	
 #ifdef CONFIG_EZKIT533
 	p0.l = (WDOG_CTL & 0xFFFF);
-        p0.h = (WDOG_CTL >> 16);	
+        p0.h = (WDOG_CTL >> 16);
         r0 = WATCHDOG_DISABLE(z);
-        w[p0] = r0;	
+        w[p0] = r0;
 #endif
 
-	/**************Code for initializing Async mem banks *****************/
-
+	/* Code for initializing Async mem banks */
 	p2.h = (EBIU_AMBCTL1 >> 16);
 	p2.l = (EBIU_AMBCTL1 & 0xFFFF);
 	r0.h = (AMBCTL1VAL >> 16);
@@ -207,13 +253,13 @@ _real_start:
 	r0.h = (AMBCTL0VAL >> 16);
 	r0.l = (AMBCTL0VAL & 0xFFFF);
 	[p2] = r0;
-	ssync;	
+	ssync;
 	
 	p2.h = (EBIU_AMGCTL >> 16);
 	p2.l = (EBIU_AMGCTL & 0xffff);
 	r0 = AMGCTLVAL;
 	w[p2] = r0;
-	ssync;	
+	ssync;
 
 	/* Code update for BSS size == 0
 	 * Zero out the bss region.
@@ -256,7 +302,8 @@ _clear_bss_skip:	/* to skip bss clear */
 	p2.h = _bf533_data_dest;
 	r0.l = _bf533_data_size;
 	r0.h = _bf533_data_size;
-loop:	r1 = [p1];
+loop:
+	r1 = [p1];
 	[p2] = r1;
 	p3=0x4;
 	p1=p1+p3;	
@@ -270,32 +317,32 @@ loop:	r1 = [p1];
 	jump (p0);
 
 _pll_set_system_clocks:
-	p0.h = 0xffc0;
-	p0.l = 0x4;
+	p0.h = (PLL_DIV >> 16);
+	p0.l = (PLL_DIV & 0xFFFF);
 	r2 = 0x5;
 	w[p0] = r2;
 	ssync;
 	rts;
 
 _pll_set_system_vco:
-	p0.h = 0xffc0;
-	p0.l = 0x0;
+	p0.h = (PLL_CTL >> 16);
+	p0.l = (PLL_CTL & 0xFFFF);
 	r3 = 0x2C00;
-	p2.h = 0xffc0 ;
-	p2.l = 0x10 ;
+	p2.h = (PLL_LOCKCNT >> 16);
+	p2.l = (PLL_LOCKCNT & 0xFFFF);
 	r2 = 0x300;
 	w [ p2 ] = r2 ;
-	p2.h = 0xffc0 ;
-	p2.l = 0x124 ;
-	r2 = [ p2 ] ;
-	BITSET(r2,0x0) ;
-	[ p2 ] = r2 ;
-	w [ p0 ] = r3 ;
-	ssync ;
-	cli r2 ;
-	idle ;
-	sti r2 ;
-	rts ;
+	p2.h = (SIC_IWR >> 16);
+	p2.l = (SIC_IWR & 0xFFFF);
+	r2 = [ p2 ];
+	BITSET(r2,0x0);
+	[ p2 ] = r2;
+	w [ p0 ] = r3;
+	ssync;
+	cli r2;
+	idle;
+	sti r2;
+	rts;
 	nop;
 	nop;
 
