@@ -64,7 +64,7 @@ void blackfin_irq_panic(int reason, struct pt_regs *regs)
 
 void blackfin_init_IRQ(void)
 {
-	*(unsigned volatile long *) (SIC_IMASK) = SIC_MASK_ALL;
+	*(unsigned volatile long *) (SIC_IMASK) = SIC_UNMASK_ALL;
 	cli();
 #ifndef CONFIG_KGDB
 	*(unsigned volatile long *) (EVT_EMULATION_ADDR) = 0x0;
