@@ -125,37 +125,43 @@ int strncmp(const char *cs, const char *ct, size_t count)
 void * memcpy(void * dest,const void *src,size_t count)
 {
 	char *tmp = (char *) dest, *s = (char *) src;
+	int status;
 
 	if ((tmp >= (char*)L1_ISRAM) && (tmp < (char*)L1_ISRAM_END)) {
-		/* Copy sram functions from sdram to L1 sram */
+
+		*pMDMA_D0_IRQ_STATUS = DMA_DONE | DMA_ERR;
+
+		/* Copy sram functions from sdram to sram */
 		/* Setup destination start address */
-		*(volatile unsigned long *)MDMA_D0_START_ADDR = (unsigned long)dest;
+		*pMDMA_D0_START_ADDR = dest;
 		/* Setup destination xcount */
-		*(volatile unsigned short *)MDMA_D0_X_COUNT = count / 2 ;
+		*pMDMA_D0_X_COUNT = count ;
 		/* Setup destination xmodify */
-		*(volatile unsigned short *)MDMA_D0_X_MODIFY = 2;
+		*pMDMA_D0_X_MODIFY = 1;
 
 		/* Setup Source start address */
-		*(volatile unsigned long *)MDMA_S0_START_ADDR = (unsigned long)src;
+		*pMDMA_S0_START_ADDR = src;
 		/* Setup Source xcount */
-		*(volatile unsigned short *)MDMA_S0_X_COUNT = count /2 ;
+		*pMDMA_S0_X_COUNT = count;
 		/* Setup Source xmodify */
-		*(volatile unsigned short *)MDMA_S0_X_MODIFY = 2;
+		*pMDMA_S0_X_MODIFY = 1;
 
-		/* Set word size to 16, set to read, enable interrupt for wakeup */
 		/* Enable source DMA */
-		*(volatile unsigned short *)MDMA_S0_CONFIG = (WDSIZE16 | DMAEN);
+		*pMDMA_S0_CONFIG = (DMAEN);
 		asm("ssync;");
-		/* Enable Destination DMA */
-		*(volatile unsigned short *)MDMA_D0_CONFIG = (DI_EN | WDSIZE16 | WNR | DMAEN);
 
-		/* Go into idle and wait for wakeup that indicates DMA is done */
-		asm("idle;");
+		/* set to read, enable interrupt for wakeup */
+		/* Enable Destination DMA */
+		*pMDMA_D0_CONFIG = (DI_EN | WNR | DMAEN);
+
+		while(!((status = (*pMDMA_D0_IRQ_STATUS)) & (DMA_DONE | DMA_ERR)));
+
+		if(status & (DMA_ERR))
+			fprintf(stderr, "DMA Error \n");
+
 		/* Clear interrupt */
-		*(volatile unsigned short *)MDMA_D0_IRQ_STATUS = 0x1;
-	}
-	else
-	{
+		*pMDMA_D0_IRQ_STATUS = 0x1;
+	} else {
 		while (count--)
 			*tmp++ = *s++;
 	}
