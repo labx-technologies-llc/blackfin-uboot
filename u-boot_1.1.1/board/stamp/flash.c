@@ -119,65 +119,88 @@ unsigned long GetOffset(int sec_num)
 			((sec_num - 4) * AFP_SectorSize1));
 }
 
-
-int write_buff(flash_info_t * info, uchar * src, ulong addr, ulong cnt)
+int write_buff (flash_info_t *info, uchar *src, ulong addr, ulong cnt)
 {
-	if((addr + cnt) > (CFG_FLASH0_BASE + FLASH_SIZE)) {
-		printf("Outside available Flash \n");
-		return ERR_INVAL;
+    ulong cp, wp, data;
+    int l;
+    int i, rc;
+
+    wp = (addr & ~(FLASH_WIDTH-1));	/* get lower word aligned address */
+
+    /*
+     * handle unaligned start bytes
+     */
+    if ((l = addr - wp) != 0) {
+	data = 0;
+	for (i=0, cp=wp; i<l; ++i, ++cp) {
+	    data = (data >> 8) | (*(uchar *)cp);
+	}
+	for (; i<FLASH_WIDTH && cnt>0; ++i) {
+	    data = (data << 8) | *src++;
+	    --cnt;
+	    ++cp;
+	}
+	for (; cnt==0 && i<FLASH_WIDTH; ++i, ++cp) {
+	    data = (data << 8) | (*(uchar *)cp);
 	}
 
-	return WriteData(addr, cnt, 1, (int *) src);
-}
-
-int WriteData(long lStart, long lCount, long lStride, int *pnData)
-{
-	long i = 0;
-	int j = 0;
-	unsigned long ulOffset = lStart - CFG_FLASH_BASE;
-	int iShift = 0;
-	int iNumWords = 2;
-	int nLeftover = lCount % 4;
-	int rcode;
-
-	for (i = 0; (i < lCount / 4) && (i < BUFFER_SIZE); i++) {
-		for (iShift = 0, j = 0; (j < iNumWords);
-		     j++, ulOffset += (lStride * 2)) {
-			rcode = FLASH_Write(ulOffset, pnData[i] >> iShift);
-			if (rcode < 0) {
-				printf("Error in Flash Write \n");
-				return rcode;
-			}
-			iShift += 16;
-		}
+	if ((rc = write_word(info, wp, data)) != 0) {
+	    return (rc);
 	}
-	iShift = 16;
-	if (nLeftover > 0) {
-		rcode = FLASH_Write(ulOffset, pnData[i]);
-		if(rcode < 0) {
-			printf("Error in Flash Write \n");
-			return rcode;
-		}
-		if (nLeftover == 3) {
-			ulOffset += 2;
-			rcode = FLASH_Write(ulOffset, (pnData[i] >> iShift));
-			if(rcode < 0) {
-				printf("Error in Flash Write \n");
-				return rcode;
-			}
-		}
-	}
+	wp += FLASH_WIDTH;
+    }
+
+    /*
+     * handle word aligned part
+     */
+    while (cnt >= FLASH_WIDTH) {
+	data = 0;
+	for (i=0; i<FLASH_WIDTH; ++i) {
+            data = (data << 8) | *src++;
+        }
+        if ((rc = write_word(info, wp, data)) != 0) {
+            return (rc);
+        }
+        wp  += FLASH_WIDTH;
+        cnt -= FLASH_WIDTH;
+    }
+    if (cnt == 0) {
 	return ERR_OK;
+    }
+
+    /*
+     * handle unaligned tail bytes
+     */
+    data = 0;
+    for (i=0, cp=wp; i<FLASH_WIDTH && cnt>0; ++i, ++cp) {
+	data = (data << 8) | *src++;
+	--cnt;
+    }
+    for (; i<FLASH_WIDTH; ++i, ++cp) {
+	data = (data << 8) | (*(uchar *)cp);
+    }
+
+    return write_word(info, wp, data);
 }
 
-int FLASH_Write(long addr, int data)
+int write_word(flash_info_t *info, ulong addr, ulong data)
 {
+	volatile unsigned short *dest = (volatile unsigned short *)addr;
+	ushort sdata = (ushort)data;
 	int rcode;
+
+	sdata = ((sdata & 0xff00) >> 8) | ((sdata & 0xff) << 8 );
+
+	/* Check if Flash is (sufficiently) erased */
+	if ((*dest & sdata) != sdata) {
+        	return ERR_NOT_ERASED;
+	}
+
 	LED6_On();
 	FLASH_Base[WRITE_CMD1] = WRITE_DATA1;
 	FLASH_Base[WRITE_CMD2] = WRITE_DATA2;
-	FLASH_Base[WRITE_CMD3] = WRITE_DATA3;
-	*(volatile unsigned short *) (CFG_FLASH0_BASE + addr) = data;
+	FLASH_Base[WRITE_CMD3] = WRITE_DATA3;	
+    	*dest = sdata;
 	asm("ssync;");
 	rcode = FlashDataToggle();
 	if (rcode != ERR_OK) {
