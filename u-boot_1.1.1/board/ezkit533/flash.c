@@ -218,6 +218,9 @@ bool ReadData( long ulStart, long lCount, long lStride, int *pnData )
 		GetSectorNumber( ulOffset, &nSector );
 		ReadFlash( ulOffset, &pnData[i] );
 	}
+	i = 0;	/*FIXME */
+	i = 0;
+	i = 0;	/*end */
 	return TRUE;
 }
 
