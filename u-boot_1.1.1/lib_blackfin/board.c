@@ -58,6 +58,7 @@ void *sbrk(ptrdiff_t increment)
 
 static int display_banner(void)
 {
+	sprintf(version_string, VERSION_STRING_FORMAT, VERSION_STRING);
 	printf("%s\n", version_string);
 	printf("%s\n", moreinfo_string);
 
