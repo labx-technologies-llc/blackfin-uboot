@@ -399,7 +399,7 @@ _clear_bss_skip:
 	p2.h = _bf533_data_dest;
 	r0.l = _bf533_data_size;
 	r0.h = _bf533_data_size;
-loop:
+copy_data:
 	r1 = [p1];
 	[p2] = r1;
 	p3=0x4;
@@ -408,7 +408,7 @@ loop:
 	r2=0x4;	
 	r0=r0-r2;
 	cc=r0==0x0;
-	if !cc jump loop;	
+	if !cc copy_data;	
 	p0.l = (CFG_MONITOR_BASE & 0xFFFF);
 	p0.h = (CFG_MONITOR_BASE >> 16);
 	jump (p0);
