@@ -1,13 +1,12 @@
-/**********************************************************************************************************
-
-                        PROJECT                 :       BFIN
-                        VERISON                 :       2.0
-                        FILE                    :       entry.h
-                        MODIFIED DATE           :       29 jun 2004
-                        AUTHOR                  :       BFin Project-ADI
-                        LOCATION                :       LG Soft India,Bangalore
-
-***********************************************************************************************************/
+/*
+ *
+ *	PROJECT				:	BFIN
+ *	VERSION				:	2.0
+ *	FILE				:	entry.h
+ *	MODIFIED DATE			:	29 jun 2004
+ *	AUTHOR				:	BFin Project-ADI
+ *	LOCATION			:	LG Soft India,Bangalore
+ */
 
 #ifndef __FRIO_ENTRY_H
 #define __FRIO_ENTRY_H
@@ -43,29 +42,28 @@
 
 #if defined(NEW_PT_REGS)
 
-# define SAVE_ALL_INT		save_context_no_interrupts
-# define SAVE_ALL_SYS		save_context_no_interrupts
-# define SAVE_CONTEXT		save_context_with_interrupts
+#define SAVE_ALL_INT		save_context_no_interrupts
+#define SAVE_ALL_SYS		save_context_no_interrupts
+#define SAVE_CONTEXT		save_context_with_interrupts
 
-# define RESTORE_ALL		restore_context_no_interrupts
-# define RESTORE_ALL_SYS	restore_context_no_interrupts
-# define RESTORE_CONTEXT	restore_context_with_interrupts
+#define RESTORE_ALL		restore_context_no_interrupts
+#define RESTORE_ALL_SYS		restore_context_no_interrupts
+#define RESTORE_CONTEXT		restore_context_with_interrupts
 
 #else
 
-# define SAVE_ALL_INT		save_all_int
-# define SAVE_ALL_SYS		save_all_sys
-# define SAVE_CONTEXT		save_context
-
-# define RESTORE_ALL		restore_context
-# define RESTORE_CONTEXT	restore_context
+#define SAVE_ALL_INT		save_all_int
+#define SAVE_ALL_SYS		save_all_sys
+#define SAVE_CONTEXT		save_context
+#define RESTORE_ALL		restore_context
+#define RESTORE_CONTEXT		restore_context
 
 #endif
 
 /*
  * Code to save processor context.
- *  We even save the register which are preserved by a function call
- *	 - r4, r5, r6, r7, p3, p4, p5
+ * We even save the register which are preserved by a function call
+ * - r4, r5, r6, r7, p3, p4, p5
  */
 .macro save_context_with_interrupts
 	[--sp] = R0;
@@ -167,7 +165,7 @@
 	[--sp] = SYSCFG;
 	[--sp] = r0;	/* Skip IPEND as well. */
 .endm
-	 
+
 .macro restore_context_no_interrupts
 	sp += 4;
 	SYSCFG = [sp++];
@@ -289,23 +287,22 @@
 .macro	save_all_int
 /* reserved and disable the single step of SYSCFG, by Steven Chen 03/07/10 */
 	[--sp] = r0;
-	r0.l = 0x30;	/* Errata for BF533 */
+	r0.l = 0x30;		/* Errata for BF533 */
 	r0.h = 0x0;
-	syscfg = r0;	 /* disable single step flag in SYSCFG */
+	syscfg = r0;		/* disable single step flag in SYSCFG */
 	r0 = [sp++];
 	[--sp] = syscfg;	/* store SYSCFG */
 
-/********************************/
 /* Added by HuTao, May 26 2003 3:31PM */
-	[--sp] = r0;		/* Reserved for IPEND */	
+	[--sp] = r0;	/* Reserved for IPEND */	
 	[--sp] = fp;
 	[--sp] = usp;
-/*******************************/
 	[--sp] = r0;
 
-#if 0 /* HuTao, May 21, 2003 4:48 */
+#if 0
+	/* HuTao, May 21, 2003 4:48 */
 	r0 = -1;
-#endif 
+#endif
 	[--sp] = r0;
 	r0 = [sp + 8];
 	[--sp] = a0.x;
@@ -321,14 +318,6 @@
 	[--sp] = r2;
 	[--sp] = r4;
 	[--sp] = r3;
-
-
-/******************************
-	clrl	%sp@-		 stk_adj 
-	pea	-1:w		 orig d0 
-	movel	%d0,%sp@-	 d0 
-	moveml	%d1-%d5/%a0-%a1/%curptr,%sp@-
-******************************/
 .endm
 
 .macro	save_all_sys
@@ -365,7 +354,7 @@
 	a0.x = [sp++];
 	sp += 4;	/* orig r0 */
 	r0 = [sp++];
-	
+
 	/* usp = [sp++]; */
 	sp += 4;
 	fp = [sp++];
@@ -373,32 +362,24 @@
 
 	syscfg = [sp++];
 
-/*******************************************************/
-
 .endm
 
 #endif
 
-#define STR(X) STR1(X)
-#define STR1(X) #X
+#define STR(X) 			STR1(X)
+#define STR1(X) 		#X
 
 #if defined(NEW_PT_REGS)
 
-# define PT_OFF_ORIG_R0		208
-# define PT_OFF_SR		8
+#define PT_OFF_ORIG_R0		208
+#define PT_OFF_SR		8
 
 #else
 
-# define PT_OFF_ORIG_R0	 0x54
-# define PT_OFF_SR	 0x38	/* seqstat in pt_regs	*/
+#define PT_OFF_ORIG_R0		0x54
+#define PT_OFF_SR		0x38	/* seqstat in pt_regs */
 
 #endif
 #endif	/* __ASSEMBLY__	*/
 
 #endif	/* __FRIO_ENTRY_H */
-
-
-/**************************** garbage *************************
-
-#define GET_CURRENT(tmp)
-**************************************************************/

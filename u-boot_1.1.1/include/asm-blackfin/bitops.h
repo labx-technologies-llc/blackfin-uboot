@@ -1,21 +1,19 @@
-/**********************************************************************************************************
-
-                        PROJECT                 :       BFIN
-                        VERISON                 :       2.0
-                        FILE                    :       bitops.h
-                        MODIFIED DATE           :       29 jun 2004
-                        AUTHOR                  :       BFin Project-ADI
-                        LOCATION                :       LG Soft India,Bangalore
-
-***********************************************************************************************************/
-
+/*
+ *
+ *	PROJECT				:	BFIN
+ *	VERSION				:	2.0
+ *	FILE				:	bitops.h
+ *	MODIFIED DATE			:	29 jun 2004
+ *	AUTHOR				:	BFin Project-ADI
+ *	LOCATION			:	LG Soft India,Bangalore
+ */
 
 #ifndef _FRIONOMMU_BITOPS_H
 #define _FRIONOMMU_BITOPS_H
 
 /*
  * Copyright 1992, Linus Torvalds.
-*/
+ */
 
 #include <linux/config.h>
 #include <asm/byteorder.h>
@@ -23,34 +21,33 @@
 
 #ifdef __KERNEL__
 /*
-* Function prototypes to keep gcc -Wall happy
-*/
+ * Function prototypes to keep gcc -Wall happy
+ */
 
 /*
-* The __ functions are not atomic
-*/  
+ * The __ functions are not atomic
+ */
 
 /*
-* ffz = Find First Zero in word. Undefined if no zero exists,
-* so code should check against ~0UL first..
-*/
+ * ffz = Find First Zero in word. Undefined if no zero exists,
+ * so code should check against ~0UL first..
+ */
 static __inline__ unsigned long ffz(unsigned long word)
 {
 	unsigned long result = 0;
 
-	while(word & 1) {
+	while (word & 1) {
 		result++;
 		word >>= 1;
 	}
 	return result;
 }
 
-
-static __inline__ void set_bit(int nr, volatile void * addr)
+static __inline__ void set_bit(int nr, volatile void *addr)
 {
-	int * a = (int *) addr;
-    	int mask;
-    	unsigned long flags;
+	int *a = (int *) addr;
+	int mask;
+	unsigned long flags;
 
 	a += nr >> 5;
 	mask = 1 << (nr & 0x1f);
@@ -59,14 +56,14 @@ static __inline__ void set_bit(int nr, volatile void * addr)
 	restore_flags(flags);
 }
 
-static __inline__ void __set_bit(int nr, volatile void * addr)
+static __inline__ void __set_bit(int nr, volatile void *addr)
 {
-        int * a = (int *) addr;
-        int mask;
- 
-        a += nr >> 5;
-        mask = 1 << (nr & 0x1f);
-        *a |= mask;
+	int *a = (int *) addr;
+	int mask;
+
+	a += nr >> 5;
+	mask = 1 << (nr & 0x1f);
+	*a |= mask;
 }
 
 /*
@@ -75,9 +72,9 @@ static __inline__ void __set_bit(int nr, volatile void * addr)
 #define smp_mb__before_clear_bit()	barrier()
 #define smp_mb__after_clear_bit()	barrier()
 
-static __inline__ void clear_bit(int nr, volatile void * addr)
+static __inline__ void clear_bit(int nr, volatile void *addr)
 {
-	int * a = (int *) addr;
+	int *a = (int *) addr;
 	int mask;
 	unsigned long flags;
 
@@ -88,7 +85,7 @@ static __inline__ void clear_bit(int nr, volatile void * addr)
 	restore_flags(flags);
 }
 
-static __inline__ void change_bit(int nr, volatile void * addr)
+static __inline__ void change_bit(int nr, volatile void *addr)
 {
 	int mask, flags;
 	unsigned long *ADDR = (unsigned long *) addr;
@@ -100,17 +97,17 @@ static __inline__ void change_bit(int nr, volatile void * addr)
 	restore_flags(flags);
 }
 
-static __inline__ void __change_bit(int nr, volatile void * addr)
+static __inline__ void __change_bit(int nr, volatile void *addr)
 {
-        int mask;
-        unsigned long *ADDR = (unsigned long *) addr;
- 
-        ADDR += nr >> 5;
-        mask = 1 << (nr & 31);
-        *ADDR ^= mask;
+	int mask;
+	unsigned long *ADDR = (unsigned long *) addr;
+
+	ADDR += nr >> 5;
+	mask = 1 << (nr & 31);
+	*ADDR ^= mask;
 }
 
-static __inline__ int test_and_set_bit(int nr, volatile void * addr)
+static __inline__ int test_and_set_bit(int nr, volatile void *addr)
 {
 	int mask, retval;
 	volatile unsigned int *a = (volatile unsigned int *) addr;
@@ -126,19 +123,19 @@ static __inline__ int test_and_set_bit(int nr, volatile void * addr)
 	return retval;
 }
 
-static __inline__ int __test_and_set_bit(int nr, volatile void * addr)
+static __inline__ int __test_and_set_bit(int nr, volatile void *addr)
 {
-        int mask, retval;
-        volatile unsigned int *a = (volatile unsigned int *) addr;
- 
-        a += nr >> 5;
-        mask = 1 << (nr & 0x1f);
-        retval = (mask & *a) != 0;
-        *a |= mask;
-        return retval;
+	int mask, retval;
+	volatile unsigned int *a = (volatile unsigned int *) addr;
+
+	a += nr >> 5;
+	mask = 1 << (nr & 0x1f);
+	retval = (mask & *a) != 0;
+	*a |= mask;
+	return retval;
 }
 
-static __inline__ int test_and_clear_bit(int nr, volatile void * addr)
+static __inline__ int test_and_clear_bit(int nr, volatile void *addr)
 {
 	int mask, retval;
 	volatile unsigned int *a = (volatile unsigned int *) addr;
@@ -154,19 +151,19 @@ static __inline__ int test_and_clear_bit(int nr, volatile void * addr)
 	return retval;
 }
 
-static __inline__ int __test_and_clear_bit(int nr, volatile void * addr)
+static __inline__ int __test_and_clear_bit(int nr, volatile void *addr)
 {
-        int mask, retval;
-        volatile unsigned int *a = (volatile unsigned int *) addr;
- 
-        a += nr >> 5;
-        mask = 1 << (nr & 0x1f);
-        retval = (mask & *a) != 0;
-        *a &= ~mask;
-        return retval;
+	int mask, retval;
+	volatile unsigned int *a = (volatile unsigned int *) addr;
+
+	a += nr >> 5;
+	mask = 1 << (nr & 0x1f);
+	retval = (mask & *a) != 0;
+	*a &= ~mask;
+	return retval;
 }
 
-static __inline__ int test_and_change_bit(int nr, volatile void * addr)
+static __inline__ int test_and_change_bit(int nr, volatile void *addr)
 {
 	int mask, retval;
 	volatile unsigned int *a = (volatile unsigned int *) addr;
@@ -182,29 +179,31 @@ static __inline__ int test_and_change_bit(int nr, volatile void * addr)
 	return retval;
 }
 
-static __inline__ int __test_and_change_bit(int nr, volatile void * addr)
+static __inline__ int __test_and_change_bit(int nr, volatile void *addr)
 {
-        int mask, retval;
-        volatile unsigned int *a = (volatile unsigned int *) addr;
- 
-        a += nr >> 5;
-        mask = 1 << (nr & 0x1f);
-        retval = (mask & *a) != 0;
-        *a ^= mask;
-        return retval;
+	int mask, retval;
+	volatile unsigned int *a = (volatile unsigned int *) addr;
+
+	a += nr >> 5;
+	mask = 1 << (nr & 0x1f);
+	retval = (mask & *a) != 0;
+	*a ^= mask;
+	return retval;
 }
 
 /*
  * This routine doesn't need to be atomic.
  */
-static __inline__ int __constant_test_bit(int nr, const volatile void * addr)
+static __inline__ int __constant_test_bit(int nr,
+					  const volatile void *addr)
 {
-	return ((1UL << (nr & 31)) & (((const volatile unsigned int *) addr)[nr >> 5])) != 0;
+	return ((1UL << (nr & 31)) &
+		(((const volatile unsigned int *) addr)[nr >> 5])) != 0;
 }
 
-static __inline__ int __test_bit(int nr, volatile void * addr)
+static __inline__ int __test_bit(int nr, volatile void *addr)
 {
-	int * a = (int *) addr;
+	int *a = (int *) addr;
 	int mask;
 
 	a += nr >> 5;
@@ -212,15 +211,15 @@ static __inline__ int __test_bit(int nr, volatile void * addr)
 	return ((mask & *a) != 0);
 }
 
-#define test_bit(nr,addr) \
+#define	test_bit(nr,addr) \
 (__builtin_constant_p(nr) ? \
  __constant_test_bit((nr),(addr)) : \
  __test_bit((nr),(addr)))
 
-#define find_first_zero_bit(addr, size) \
-        find_next_zero_bit((addr), (size), 0)
+#define	find_first_zero_bit(addr, size) \
+	find_next_zero_bit((addr), (size), 0)
 
-static __inline__ int find_next_zero_bit (void * addr, int size, int offset)
+static __inline__ int find_next_zero_bit(void *addr, int size, int offset)
 {
 	unsigned long *p = ((unsigned long *) addr) + (offset >> 5);
 	unsigned long result = offset & ~31UL;
@@ -232,7 +231,7 @@ static __inline__ int find_next_zero_bit (void * addr, int size, int offset)
 	offset &= 31UL;
 	if (offset) {
 		tmp = *(p++);
-		tmp |= ~0UL >> (32-offset);
+		tmp |= ~0UL >> (32 - offset);
 		if (size < 32)
 			goto found_first;
 		if (~tmp)
@@ -250,9 +249,9 @@ static __inline__ int find_next_zero_bit (void * addr, int size, int offset)
 		return result;
 	tmp = *p;
 
-found_first:
+      found_first:
 	tmp |= ~0UL >> size;
-found_middle:
+      found_middle:
 	return result + ffz(tmp);
 }
 
@@ -262,18 +261,18 @@ found_middle:
  * differs in spirit from the above ffz (man ffs).
  */
 
-#define ffs(x) generic_ffs(x)
+#define ffs(x)		generic_ffs(x)
 
 /*
  * hweightN: returns the hamming weight (i.e. the number
  * of bits set) of a N-bit word
  */
 
-#define hweight32(x) generic_hweight32(x)
-#define hweight16(x) generic_hweight16(x)
-#define hweight8(x) generic_hweight8(x)
+#define hweight32(x)	generic_hweight32(x)
+#define hweight16(x)	generic_hweight16(x)
+#define hweight8(x)	generic_hweight8(x)
 
-static __inline__ int ext2_set_bit(int nr, volatile void * addr)
+static __inline__ int ext2_set_bit(int nr, volatile void *addr)
 {
 	int mask, retval;
 	unsigned long flags;
@@ -288,7 +287,7 @@ static __inline__ int ext2_set_bit(int nr, volatile void * addr)
 	return retval;
 }
 
-static __inline__ int ext2_clear_bit(int nr, volatile void * addr)
+static __inline__ int ext2_clear_bit(int nr, volatile void *addr)
 {
 	int mask, retval;
 	unsigned long flags;
@@ -303,7 +302,7 @@ static __inline__ int ext2_clear_bit(int nr, volatile void * addr)
 	return retval;
 }
 
-static __inline__ int ext2_test_bit(int nr, const volatile void * addr)
+static __inline__ int ext2_test_bit(int nr, const volatile void *addr)
 {
 	int mask;
 	const volatile unsigned char *ADDR = (const unsigned char *) addr;
@@ -314,9 +313,12 @@ static __inline__ int ext2_test_bit(int nr, const volatile void * addr)
 }
 
 #define ext2_find_first_zero_bit(addr, size) \
-        ext2_find_next_zero_bit((addr), (size), 0)
+	ext2_find_next_zero_bit((addr), (size), 0)
 
-static __inline__ unsigned long ext2_find_next_zero_bit(void *addr, unsigned long size, unsigned long offset)
+static __inline__ unsigned long ext2_find_next_zero_bit(void *addr,
+							unsigned long size,
+							unsigned long
+							offset)
 {
 	unsigned long *p = ((unsigned long *) addr) + (offset >> 5);
 	unsigned long result = offset & ~31UL;
@@ -326,39 +328,39 @@ static __inline__ unsigned long ext2_find_next_zero_bit(void *addr, unsigned lon
 		return size;
 	size -= result;
 	offset &= 31UL;
-	if(offset) {
+	if (offset) {
 		tmp = *(p++);
-		tmp |= ~0UL >> (32-offset);
-		if(size < 32)
+		tmp |= ~0UL >> (32 - offset);
+		if (size < 32)
 			goto found_first;
-		if(~tmp)
+		if (~tmp)
 			goto found_middle;
 		size -= 32;
 		result += 32;
 	}
-	while(size & ~31UL) {
-		if(~(tmp = *(p++)))
+	while (size & ~31UL) {
+		if (~(tmp = *(p++)))
 			goto found_middle;
 		result += 32;
 		size -= 32;
 	}
-	if(!size)
+	if (!size)
 		return result;
 	tmp = *p;
 
-found_first:
+      found_first:
 	tmp |= ~0UL >> size;
-found_middle:
+      found_middle:
 	return result + ffz(tmp);
 }
 
-/* Bitmap functions for the minix filesystem.  */
-#define minix_test_and_set_bit(nr,addr) test_and_set_bit(nr,addr)
-#define minix_set_bit(nr,addr) set_bit(nr,addr)
-#define minix_test_and_clear_bit(nr,addr) test_and_clear_bit(nr,addr)
-#define minix_test_bit(nr,addr) test_bit(nr,addr)
-#define minix_find_first_zero_bit(addr,size) find_first_zero_bit(addr,size)
+/* Bitmap functions for the minix filesystem. */
+#define minix_test_and_set_bit(nr,addr)		test_and_set_bit(nr,addr)
+#define minix_set_bit(nr,addr)			set_bit(nr,addr)
+#define minix_test_and_clear_bit(nr,addr)	test_and_clear_bit(nr,addr)
+#define minix_test_bit(nr,addr)			test_bit(nr,addr)
+#define minix_find_first_zero_bit(addr,size)	find_first_zero_bit(addr,size)
 
-#endif /* __KERNEL__ */
+#endif	/* __KERNEL__ */
 
-#endif /* _FRIONOMMU_BITOPS_H */
+#endif	/* _FRIONOMMU_BITOPS_H */

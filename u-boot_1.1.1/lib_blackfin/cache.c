@@ -23,7 +23,7 @@
 
 /* for now: just dummy functions to satisfy the linker */
 
-void  flush_cache (unsigned long dummy1, unsigned long dummy2)
+void flush_cache(unsigned long dummy1, unsigned long dummy2)
 {
 	return;
 }

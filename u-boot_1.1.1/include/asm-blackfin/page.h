@@ -1,13 +1,12 @@
-/**********************************************************************************************************
-
-                        PROJECT                 :       BFIN
-                        VERISON                 :       2.0
-                        FILE                    :       page.h
-                        MODIFIED DATE           :       29 jun 2004
-                        AUTHOR                  :       BFin Project-ADI
-                        LOCATION                :       LG Soft India,Bangalore
-
-***********************************************************************************************************/
+/*
+ *
+ *	PROJECT				:	BFIN
+ *	VERSION				:	2.0
+ *	FILE				:	page.h
+ *	MODIFIED DATE			:	29 jun 2004
+ *	AUTHOR				:	BFin Project-ADI
+ *	LOCATION			:	LG Soft India,Bangalore
+ */
 
 #ifndef _FRIONOMMU_PAGE_H
 #define _FRIONOMMU_PAGE_H
@@ -25,13 +24,13 @@
 #include <asm/setup.h>
 
 #if PAGE_SHIFT < 13
-#define 				KTHREAD_SIZE (8192)
+#define					KTHREAD_SIZE (8192)
 #else
-#define			 		KTHREAD_SIZE PAGE_SIZE
+#define					KTHREAD_SIZE PAGE_SIZE
 #endif
- 
+
 #ifndef __ASSEMBLY__
- 
+
 #define get_user_page(vaddr)		__get_free_page(GFP_KERNEL)
 #define free_user_page(page, addr)	free_page(addr)
 
@@ -44,10 +43,18 @@
 /*
  * These are used to make use of C type-checking..
  */
-typedef struct { unsigned long pte; } pte_t;
-typedef struct { unsigned long pmd[16]; } pmd_t;
-typedef struct { unsigned long pgd; } pgd_t;
-typedef struct { unsigned long pgprot; } pgprot_t;
+typedef struct {
+	unsigned long pte;
+} pte_t;
+typedef struct {
+	unsigned long pmd[16];
+} pmd_t;
+typedef struct {
+	unsigned long pgd;
+} pgd_t;
+typedef struct {
+	unsigned long pgprot;
+} pgprot_t;
 
 #define pte_val(x)			((x).pte)
 #define pmd_val(x)			((&x)->pmd[0])
@@ -67,7 +74,7 @@ extern __inline__ int get_order(unsigned long size)
 {
 	int order;
 
-	size = (size-1) >> (PAGE_SHIFT-1);
+	size = (size - 1) >> (PAGE_SHIFT - 1);
 	order = -1;
 	do {
 		size >>= 1;
@@ -76,7 +83,7 @@ extern __inline__ int get_order(unsigned long size)
 	return order;
 }
 
-#endif /* !__ASSEMBLY__ */
+#endif	/* !__ASSEMBLY__ */
 
 #include <asm/page_offset.h>
 
@@ -91,17 +98,17 @@ extern __inline__ int get_order(unsigned long size)
 #define virt_to_page(addr)		(mem_map + (((unsigned long)(addr)-PAGE_OFFSET) >> PAGE_SHIFT))
 #define VALID_PAGE(page)		((page - mem_map) < max_mapnr)
 
-#define BUG() do { \
+#define BUG() do	{ \
 	 \
-        while (1);	/* dead-loop */ \
+	while (1);	/* dead-loop */ \
 } while (0)
 
-#define PAGE_BUG(page) do { \
+#define PAGE_BUG(page) do	{ \
 	BUG(); \
 } while (0)
 
-#endif /* __ASSEMBLY__ */
+#endif	/* __ASSEMBLY__ */
 
-#endif /* __KERNEL__ */
+#endif	/* __KERNEL__ */
 
-#endif /* _FRIONOMMU_PAGE_H */
+#endif	/* _FRIONOMMU_PAGE_H */

@@ -19,6 +19,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
+ *
+ *	PROJECT				:	BFIN
+ *	VERSION				:	2.0
+ *	FILE				:	global_data.h
+ *	MODIFIED DATE			:	29 jun 2004
+ *	AUTHOR				:	BFin Project-ADI
+ *	LOCATION			:	LG Soft India,Bangalore
  */
 
 #ifndef	__ASM_GBL_DATA_H
@@ -35,26 +42,26 @@
  *
  * Keep it *SMALL* and remember to set CFG_GBL_DATA_SIZE > sizeof(gd_t)
  */
-typedef	struct	global_data {
-	bd_t		*bd;
-	unsigned long	flags;
-	unsigned long	board_type;
-	unsigned long	baudrate;
-	unsigned long	have_console;	/* serial_init() was called */
-	unsigned long	ram_size;	/* RAM size */
-	unsigned long	reloc_off;	/* Relocation Offset */
-	unsigned long	env_addr;	/* Address  of Environment struct */
-	unsigned long	env_valid;	/* Checksum of Environment valid? */
-	void		**jt;		/* jump table */
+typedef struct global_data {
+	bd_t *bd;
+	unsigned long flags;
+	unsigned long board_type;
+	unsigned long baudrate;
+	unsigned long have_console;	/* serial_init() was called */
+	unsigned long ram_size;		/* RAM size */
+	unsigned long reloc_off;	/* Relocation Offset */
+	unsigned long env_addr;		/* Address  of Environment struct */
+	unsigned long env_valid;	/* Checksum of Environment valid? */
+	void **jt;			/* jump table */
 } gd_t;
 
 /*
  * Global Data Flags
  */
-#define	GD_FLG_RELOC	0x00001		/* Code was relocated to RAM     */
-#define	GD_FLG_DEVINIT	0x00002		/* Devices have been initialized */
-#define	GD_FLG_SILENT	0x00004		/* Silent mode			 */
+#define	GD_FLG_RELOC	0x00001	/* Code was relocated to RAM     */
+#define	GD_FLG_DEVINIT	0x00002	/* Devices have been initialized */
+#define	GD_FLG_SILENT	0x00004	/* Silent mode                   */
 
 #define DECLARE_GLOBAL_DATA_PTR     register volatile gd_t *gd asm ("P5")
 
-#endif /* __ASM_GBL_DATA_H */
+#endif	/* __ASM_GBL_DATA_H */

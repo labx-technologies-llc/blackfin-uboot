@@ -1,22 +1,15 @@
-/**********************************************************************************************************
-
-                        PROJECT                 :       BFIN
-                        VERISON                 :       2.0
-                        FILE                    :       processor.h
-                        MODIFIED DATE           :       29 jun 2004
-                        AUTHOR                  :       BFin Project-ADI
-                        LOCATION                :       LG Soft India,Bangalore
-
-***********************************************************************************************************/
-
-
-/* Changes made by Akbar Hussain Lineo, Inc, May 2001 for FRIO */
-
-
-/*
+/* Changes made by Akbar Hussain Lineo, Inc, May 2001 for FRIO
+ *
  * include/asm-m68k/processor.h
  *
  * Copyright (C) 1995 Hamish Macdonald
+ *
+ *	PROJECT				:	BFIN
+ *	VERSION				:	2.0
+ *	FILE				:	processor.h
+ *	MODIFIED DATE			:	29 jun 2004
+ *	AUTHOR				:	BFin Project-ADI
+ *	LOCATION			:	LG Soft India,Bangalore
  */
 
 #ifndef __ASM_FRIO_PROCESSOR_H
@@ -26,60 +19,62 @@
  * Default implementation of macro that returns current
  * instruction pointer ("program counter").
  */
-#define current_text_addr()	 ({ __label__ _l; _l: &&_l;})
+#define current_text_addr()	({ __label__ _l; _l: &&_l;})
 
 #include <linux/config.h>
 #include <asm/segment.h>
-/*   #include <asm/fpu.h>	*/
 #include <asm/ptrace.h>
 #include <asm/current.h>
 
-extern inline unsigned long rdusp(void) {
-  	unsigned long usp;
+extern inline unsigned long rdusp(void)
+{
+	unsigned long usp;
 
-	__asm__ __volatile__("%0 = usp;\n\t" : "=da" (usp));
+	__asm__ __volatile__("%0 = usp;\n\t":"=da"(usp));
 	return usp;
 }
 
-extern inline void wrusp(unsigned long usp) {
-	__asm__ __volatile__("usp = %0;\n\t" : : "da" (usp));
+extern inline void wrusp(unsigned long usp)
+{
+	__asm__ __volatile__("usp = %0;\n\t"::"da"(usp));
 }
 
 /*
  * User space process size: 3.75GB. This is hardcoded into a few places,
  * so don't change it unless you know what you are doing.
  */
-#define TASK_SIZE	(0xF0000000UL)
+#define TASK_SIZE		(0xF0000000UL)
 
 /*
  * Bus types
  */
-#define EISA_bus 	0
-#define MCA_bus 	0
+#define EISA_bus		0
+#define MCA_bus			0
 
 /*  There is no pc register avaliable for FRIO, so we are going to get
-    it indirectly   */
+ *  it indirectly
+ */
 
 #if 0
-inline unsigned long obtain_pc_indirectly (void)
+inline unsigned long obtain_pc_indirectly(void)
 {
 	unsigned long pc;
-	__asm__ __volatile__ ("%0 = rets;\n" : "=d" (pc));
+	__asm__ __volatile__("%0 = rets;\n":"=d"(pc));
 	return (pc - 4);	/* call pcrel24 is 4 bytes long  */
 }
 #endif
 
-/* 
+/*
  * if you change this structure, you must change the code and offsets
  * in m68k/machasm.S
  */
-   
+
 struct thread_struct {
-	unsigned long  ksp;		/* kernel stack pointer */
-	unsigned long  usp;		/* user stack pointer */
-	unsigned short seqstat;		/* saved status register */
-	unsigned long  esp0;		/* points to SR of stack frame pt_regs*/
-	unsigned long  pc;		/* instruction pointer */
+	unsigned long ksp;	/* kernel stack pointer */
+	unsigned long usp;	/* user stack pointer */
+	unsigned short seqstat;	/* saved status register */
+	unsigned long esp0;	/* points to SR of stack frame pt_regs */
+	unsigned long pc;	/* instruction pointer */
 };
 
 #define INIT_MMAP { &init_mm, 0, 0x40000000, NULL, __pgprot(_PAGE_PRESENT|_PAGE_ACCESSED), VM_READ | VM_WRITE | VM_EXEC, 1, NULL, NULL }
@@ -116,7 +111,8 @@ static inline void release_thread(struct task_struct *dead_task)
 {
 }
 
-extern int kernel_thread(int (*fn)(void *), void * arg, unsigned long flags);
+extern int kernel_thread(int (*fn) (void *), void *arg,
+			 unsigned long flags);
 
 #define copy_segments(tsk, mm)		do { } while (0)
 #define release_segments(mm)		do { } while (0)
@@ -142,23 +138,22 @@ extern inline unsigned long thread_saved_pc(struct thread_struct *t)
 unsigned long get_wchan(struct task_struct *p);
 
 #define	KSTK_EIP(tsk)	\
-    ({			\
+	({			\
 	unsigned long eip = 0;	 \
 	if ((tsk)->thread.esp0 > PAGE_SIZE && \
-	    MAP_NR((tsk)->thread.esp0) < max_mapnr) \
-	      eip = ((struct pt_regs *) (tsk)->thread.esp0)->pc; \
+		MAP_NR((tsk)->thread.esp0) < max_mapnr) \
+		eip = ((struct pt_regs *) (tsk)->thread.esp0)->pc; \
 	eip; })
 #define	KSTK_ESP(tsk)	((tsk) == current ? rdusp() : (tsk)->thread.usp)
-
-#define THREAD_SIZE (2*PAGE_SIZE)
+#define THREAD_SIZE	(2*PAGE_SIZE)
 
 /* Allocation and freeing of basic task resources. */
 #define alloc_task_struct() \
 	((struct task_struct *) __get_free_pages(GFP_KERNEL,1))
 #define free_task_struct(p)	free_pages((unsigned long)(p),1)
-#define get_task_struct(tsk)      atomic_inc(&mem_map[MAP_NR(tsk)].count)
+#define get_task_struct(tsk)	atomic_inc(&mem_map[MAP_NR(tsk)].count)
 
-#define init_task	(init_task_union.task)
-#define init_stack	(init_task_union.stack)
+#define init_task		(init_task_union.task)
+#define init_stack		(init_task_union.stack)
 
 #endif

@@ -1,15 +1,12 @@
-/**********************************************************************************************************
-
-                        PROJECT                 :       BFIN
-                        VERISON                 :       2.0
-                        FILE                    :       ptrace.h
-                        MODIFIED DATE           :       29 jun 2004
-                        AUTHOR                  :       BFin Project-ADI
-                        LOCATION                :       LG Soft India,Bangalore
-
-***********************************************************************************************************/
-
-
+/*
+ *
+ *	PROJECT				:	BFIN
+ *	VERSION				:	2.0
+ *	FILE				:	ptrace.h
+ *	MODIFIED DATE			:	29 jun 2004
+ *	AUTHOR				:	BFin Project-ADI
+ *	LOCATION			:	LG Soft India,Bangalore
+ */
 
 #ifndef _FRIO_PTRACE_H
 #define _FRIO_PTRACE_H
@@ -24,7 +21,6 @@
  *      16 - 31 dsp registers I/B/L0 -- I/B/L3 & M0--M3
  *      32 - 33 A registers A0 & A1
  *      34 -    status register
- * -----------------------------
  *
  * We follows above, except:
  *      32-33 --- Low 32-bit of A0&1
@@ -95,49 +91,48 @@
  *                     [pregs + imm16s4] = dpregs
  * to access defferent saved reg in stack
  */
-#define PT_R3	  	 0
-#define PT_R4	  	 4
-#define PT_R2	  	 8
-#define PT_R1	  	 12
-#define PT_P5	  	 16
-#define PT_P4	  	 20
-#define PT_P3	  	 24
-#define PT_P2	  	 28
-#define PT_P1	  	 32
-#define PT_P0	  	 36
-#define PT_R7	  	 40
-#define PT_R6	  	 44
-#define PT_R5	  	 48
-#define PT_PC		 52
-#define PT_SEQSTAT	 56	/* so-called SR reg */
-#define PT_SR		 PT_SEQSTAT
-#define PT_ASTAT	 60
-#define PT_RETS		 64
-#define PT_A1w		 68
-#define PT_A0w		 72
-#define PT_A1x		 76
-#define PT_A0x		 80
-#define PT_ORIG_R0	 84
-#define PT_R0	  	 88
-#define PT_USP	  	 92
-#define PT_FP	  	 96
-#define PT_SP		 100
+#define PT_R3		0
+#define PT_R4		4
+#define PT_R2		8
+#define PT_R1		12
+#define PT_P5		16
+#define PT_P4		20
+#define PT_P3		24
+#define PT_P2		28
+#define PT_P1		32
+#define PT_P0		36
+#define PT_R7		40
+#define PT_R6		44
+#define PT_R5		48
+#define PT_PC		52
+#define PT_SEQSTAT	56	/* so-called SR reg */
+#define PT_SR		PT_SEQSTAT
+#define PT_ASTAT	60
+#define PT_RETS		64
+#define PT_A1w		68
+#define PT_A0w		72
+#define PT_A1x		76
+#define PT_A0x		80
+#define PT_ORIG_R0	84
+#define PT_R0		88
+#define PT_USP		92
+#define PT_FP		96
+#define PT_SP		100
 
-/* Added by HuTao, May26 2003 3:18PM */ 
-#define PT_IPEND	 100
+/* Added by HuTao, May26 2003 3:18PM */
+#define PT_IPEND	100
 
 /* Add SYSCFG register for single stepping support */
-#define PT_SYSCFG	 104
+#define PT_SYSCFG	104
 
 #endif
 
 #ifndef __ASSEMBLY__
 
-
 #if defined(NEW_PT_REGS)
 /* this struct defines the way the registers are stored on the
-   stack during a system call. */
-
+ * stack during a system call.
+ */
 struct pt_regs {
 	long ipend;
 	long syscfg;
@@ -145,9 +140,9 @@ struct pt_regs {
 	long rete;
 	long retn;
 	long retx;
-	long pc;	// PC == RETI
+	long pc;
 	long rets;
-	long reserved; // Used as scratch during system calls
+	long reserved;
 	long astat;
 	long lb1;
 	long lb0;
@@ -197,65 +192,64 @@ struct pt_regs {
 #else
 /* now we don't know what regs the system call will use	*/
 struct pt_regs {
-  long     r3;
-  long     r4;
-  long     r2;
-  long     r1;
-  long     p5;
-  long     p4;
-  long     p3;
-  long     p2;
-  long     p1;
-  long     p0;
-  long     r7;
-  long     r6;
-  long     r5;
-  unsigned long pc;
-  unsigned long seqstat;
-  unsigned long astat;
-  unsigned long rets;
-  long     a1w;
-  long     a0w;
-  long     a1x;
-  long     a0x;
-  long     orig_r0;
-  long	   r0;
-  long	   usp;
-  long     fp;
-
+	long r3;
+	long r4;
+	long r2;
+	long r1;
+	long p5;
+	long p4;
+	long p3;
+	long p2;
+	long p1;
+	long p0;
+	long r7;
+	long r6;
+	long r5;
+	unsigned long pc;
+	unsigned long seqstat;
+	unsigned long astat;
+	unsigned long rets;
+	long a1w;
+	long a0w;
+	long a1x;
+	long a0x;
+	long orig_r0;
+	long r0;
+	long usp;
+	long fp;
 /*
  * Added for supervisor/user mode switch.
  *
  * HuTao May26 03 3:23PM
  */
- long ipend;
-
- long	syscfg;
+	long ipend;
+	long syscfg;
 };
 
 #endif
 
 /* Arbitrarily choose the same ptrace numbers as used by the Sparc code. */
-#define PTRACE_GETREGS            12
-#define PTRACE_SETREGS            13	/* ptrace signal  */
+#define PTRACE_GETREGS		12
+#define PTRACE_SETREGS		13	/* ptrace signal */
 
 #ifdef __KERNEL__
 
 #ifndef PS_S
-#define PS_S  (0x0c00)  
+#define PS_S			(0x0c00)
+
 /* Bit 11:10 of SEQSTAT defines user/supervisor/debug mode
- *        00: user 
+ *        00: user
  *        01: supervisor
  *        1x: debug
  */
 
-#define PS_M  (0x1000)  /*  I am not sure why this is required here Akbar  */
+#define PS_M			(0x1000)	/* I am not sure why this is required here Akbar */
 #endif
 
-#define user_mode(regs) (!((regs)->seqstat & PS_S))
-#define instruction_pointer(regs) ((regs)->pc)
+#define user_mode(regs)			(!((regs)->seqstat & PS_S))
+#define instruction_pointer(regs)	((regs)->pc)
 extern void show_regs(struct pt_regs *);
 
-#endif /* __KERNEL__ */
-#endif /* __ASSEMBLY__ */
-#endif /* _FRIO_PTRACE_H */
+#endif	/* __KERNEL__ */
+#endif	/* __ASSEMBLY__ */
+#endif	/* _FRIO_PTRACE_H */

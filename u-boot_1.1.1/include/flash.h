@@ -305,6 +305,7 @@ extern void flash_read_factory_serial(flash_info_t * info, void * buffer, int of
 #define FLASH_STM320DB	0x00CB		/* STM M29W320DB (4M = 64K x 64, bottom)*/
 #define FLASH_STM800DT	0x00D7		/* STM M29W800DT (1M = 64K x 16, top)	*/
 #define FLASH_STM800DB	0x005B		/* STM M29W800DB (1M = 64K x 16, bottom)*/
+#define FLASH_PSD4256GV	0x00E9		/* Fujitsu MBM 29LV650UE/651UE		*/
 
 #define FLASH_28F400_T	0x0062		/* MT  28F400B3 ID (  4M = 256K x 16 )	*/
 #define FLASH_28F400_B	0x0063		/* MT  28F400B3 ID (  4M = 256K x 16 )	*/
@@ -356,8 +357,8 @@ extern void flash_read_factory_serial(flash_info_t * info, void * buffer, int of
 #define FLASH_28F256L18T 0x00B0
 #define FLASH_AMDL163T	0x00B2		/* AMD AM29DL163T (2M x 16 )			*/
 #define FLASH_AMDL163B	0x00B3
+
 #define FLASH_FUJLV650	0x00B4		/* Fujitsu MBM 29LV650UE/651UE		*/
-#define FLASH_PSD4256G6V 0x00BB		/* BFIN-LG */
 
 #define FLASH_UNKNOWN	0xFFFF		/* unknown flash type			*/
 

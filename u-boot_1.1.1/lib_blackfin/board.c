@@ -23,17 +23,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
- 
-**********************************************************************************************************
-
-			PROJECT			:	BFIN
-			VERISON			:	2.0
-			FILE			:	board.c
-			MODIFIED DATE		:	29 jun 2004
-			AUTHOR			:	BFin Project-ADI
-			LOCATION		:	LG Soft India,Bangalore
-
-***********************************************************************************************************/
+ *
+ *	PROJECT				:	BFIN
+ *	VERSION				:	2.0
+ *	FILE				:	board.c
+ *	MODIFIED DATE			:	29 jun 2004
+ *	AUTHOR				:	BFin Project-ADI
+ *	LOCATION			:	LG Soft India,Bangalore
+ */
 
 #include <common.h>
 #include <command.h>
@@ -42,23 +39,21 @@
 #include <version.h>
 #include <net.h>
 #include <environment.h>
-
 #include "blackfin_board.h"
 
-static void mem_malloc_init (void)
+static void mem_malloc_init(void)
 {
 	ulong dest_addr = CFG_MALLOC_BASE;
 
 	mem_malloc_end = dest_addr;
 	mem_malloc_start = dest_addr - CFG_MALLOC_LEN;
 	mem_malloc_brk = mem_malloc_start;
-	memset ((void *) mem_malloc_start,
-		0,
-		mem_malloc_end - mem_malloc_start);
+	memset((void *) mem_malloc_start, 0,
+	       mem_malloc_end - mem_malloc_start);
 
 }
 
-void *sbrk (ptrdiff_t increment)
+void *sbrk(ptrdiff_t increment)
 {
 	ulong old = mem_malloc_brk;
 	ulong new = old + increment;
@@ -71,36 +66,31 @@ void *sbrk (ptrdiff_t increment)
 	return ((void *) old);
 }
 
-static int init_func_ram (void)
-{
-	return (1);
-}
-
 static int display_banner(void)
 {
-	printf("%s\n",version_string);
-	printf("%s\n",moreinfo_string);
+	printf("%s\n", version_string);
+	printf("%s\n", moreinfo_string);
 
 	return (0);
 }
 
 static void display_flash_config(ulong size)
 {
-	puts ("Flash Size ");
-	print_size (size, "\n");
+	puts("Flash Size ");
+	print_size(size, "\n");
 	return;
 }
 
 
-static int init_baudrate (void)
+static int init_baudrate(void)
 {
 	DECLARE_GLOBAL_DATA_PTR;
 
-	uchar tmp[64];	
-	int i = getenv_r ("baudrate", tmp, sizeof (tmp));
+	uchar tmp[64];
+	int i = getenv_r("baudrate", tmp, sizeof(tmp));
 	gd->bd->bi_baudrate = gd->baudrate = (i > 0)
-			? (int) simple_strtoul (tmp, NULL, 10)
-			: CONFIG_BAUDRATE;
+	    ? (int) simple_strtoul(tmp, NULL, 10)
+	    : CONFIG_BAUDRATE;
 	return (0);
 }
 
@@ -132,7 +122,7 @@ void board_init_f(ulong bootflag)
 	gd_t gd_data;
 
 	gd = &gd_data;
-	memset ((void *)gd, 0, sizeof (gd_t));
+	memset((void *) gd, 0, sizeof(gd_t));
 
 	init_IRQ();
 	env_init();		/* initialize environment */
@@ -143,17 +133,19 @@ void board_init_f(ulong bootflag)
 	checkboard();
 	rtc_init();
 	initdram(0);
-	board_init_r(gd,0x20000010);
+	timer_init();
+	board_init_r((gd_t *) gd, 0x20000010);
 }
 
-void board_init_r (gd_t *id, ulong dest_addr)
+void board_init_r(gd_t * id, ulong dest_addr)
 {
 	DECLARE_GLOBAL_DATA_PTR;
 	cmd_tbl_t *cmdtp;
 	ulong size;
-	extern void malloc_bin_reloc (void);
+	ulong addr;
+	extern void malloc_bin_reloc(void);
 #ifndef CFG_ENV_IS_NOWHERE
-	extern char * env_name_spec;
+	extern char *env_name_spec;
 #endif
 	char *s, *e;
 	bd_t *bd;
@@ -161,40 +153,35 @@ void board_init_r (gd_t *id, ulong dest_addr)
 	gd = id;
 	gd->flags |= GD_FLG_RELOC;	/* tell others: relocation done */
 
-	monitor_flash_len = (ulong)&uboot_end_data - dest_addr;
-
+	monitor_flash_len = (ulong) &uboot_end_data - dest_addr;
 	/*
 	 * We have to relocate the command table manually
 	 */
- 	for (cmdtp = &__u_boot_cmd_start; cmdtp !=  &__u_boot_cmd_end; cmdtp++) {
-		ulong addr;
-
+	for (cmdtp = &__u_boot_cmd_start; cmdtp != &__u_boot_cmd_end;
+	     cmdtp++) {
 		addr = (ulong) (cmdtp->cmd) + gd->reloc_off;
 		cmdtp->cmd =
-			(int (*)(struct cmd_tbl_s *, int, int, char *[]))addr;
-
-		addr = (ulong)(cmdtp->name) + gd->reloc_off;
-		cmdtp->name = (char *)addr;
-
+			(int (*)(struct cmd_tbl_s *, int, int, char *[])) addr;
+		addr = (ulong) (cmdtp->name) + gd->reloc_off;
+		cmdtp->name = (char *) addr;
 		if (cmdtp->usage) {
-			addr = (ulong)(cmdtp->usage) + gd->reloc_off;
-			cmdtp->usage = (char *)addr;
+			addr = (ulong) (cmdtp->usage) + gd->reloc_off;
+			cmdtp->usage = (char *) addr;
 		}
-#ifdef	CFG_LONGHELP
+#ifdef CFG_LONGHELP
 		if (cmdtp->help) {
-			addr = (ulong)(cmdtp->help) + gd->reloc_off;
-			cmdtp->help = (char *)addr;
+			addr = (ulong) (cmdtp->help) + gd->reloc_off;
+			cmdtp->help = (char *) addr;
 		}
 #endif
 	}
-	/* there are some other pointer constants we must deal with */
+	/* There are some other pointer constants we must deal with */
 #ifndef CFG_ENV_IS_NOWHERE
 	env_name_spec += gd->reloc_off;
 #endif
 	/* configure available FLASH banks */
 	size = flash_init();
-	display_flash_config (size);
-
+	display_flash_config(size);
 	bd = gd->bd;
 	bd->bi_flashstart = CFG_FLASH_BASE;
 	bd->bi_flashsize = size;
@@ -208,9 +195,9 @@ void board_init_r (gd_t *id, ulong dest_addr)
 	env_relocate();
 
 	/* board MAC address */
-	s = getenv ("ethaddr");
+	s = getenv("ethaddr");
 	for (i = 0; i < 6; ++i) {
-		bd->bi_enetaddr[i] = s ? simple_strtoul (s, &e, 16) : 0;
+		bd->bi_enetaddr[i] = s ? simple_strtoul(s, &e, 16) : 0;
 		if (s)
 			s = (*e) ? e + 1 : e;
 	}
@@ -219,37 +206,35 @@ void board_init_r (gd_t *id, ulong dest_addr)
 	bd->bi_ip_addr = getenv_IPaddr("ipaddr");
 
 	/* Initialize devices */
-	devices_init ();
-
-	jumptable_init ();
+	devices_init();
+	jumptable_init();
 
 	/* Initialize the console (after the relocation and devices init) */
-	console_init_r ();
+	console_init_r();
 
 	/* Initialize from environment */
-	if ((s = getenv ("loadaddr")) != NULL) {
-		load_addr = simple_strtoul (s, NULL, 16);
+	if ((s = getenv("loadaddr")) != NULL) {
+		load_addr = simple_strtoul(s, NULL, 16);
 	}
 #if (CONFIG_COMMANDS & CFG_CMD_NET)
-	if ((s = getenv ("bootfile")) != NULL) {
-		copy_filename (BootFile, s, sizeof (BootFile));
+	if ((s = getenv("bootfile")) != NULL) {
+		copy_filename(BootFile, s, sizeof(BootFile));
 	}
 #endif
-
 #if defined(CONFIG_MISC_INIT_R)
 	/* miscellaneous platform dependent initialisations */
-	misc_init_r ();
+	misc_init_r();
 #endif
-
+	asyncbank_init();
 	/* main_loop() can return to retry autoboot, if so just run it again. */
 	for (;;) {
-		main_loop ();
+		main_loop();
 	}
 }
 
 
-void hang (void)
+void hang(void)
 {
-	puts ("### ERROR ### Please RESET the board ###\n");
+	puts("### ERROR ### Please RESET the board ###\n");
 	for (;;);
 }

@@ -48,7 +48,7 @@
 #define IH_OS_RTEMS		18	/* RTEMS	*/
 #define IH_OS_ARTOS		19	/* ARTOS	*/
 #define IH_OS_UNITY		20	/* Unity OS	*/
-#define IH_OS_UCLINUX		21	/* uClinux 	*/
+#define IH_OS_UCLINUX		21	/* uClinux OS	*/
 
 /*
  * CPU Architecture Codes (supported by Linux)
@@ -68,7 +68,7 @@
 #define IH_CPU_M68K		12	/* M68K		*/
 #define IH_CPU_NIOS		13	/* Nios-32	*/
 #define IH_CPU_MICROBLAZE	14	/* MicroBlaze   */
-#define IH_CPU_BLACKFIN         15      /* BF533	*/
+#define IH_CPU_BLACKFIN		15	/* Blackfin	*/
 
 /*
  * Image Types

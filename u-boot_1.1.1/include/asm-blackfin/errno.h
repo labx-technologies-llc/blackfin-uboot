@@ -1,26 +1,25 @@
-/**********************************************************************************************************
-
-                        PROJECT                 :       BFIN
-                        VERISON                 :       2.0
-                        FILE                    :       errno.h
-                        MODIFIED DATE           :       29 jun 2004
-                        AUTHOR                  :       BFin Project-ADI
-                        LOCATION                :       LG Soft India,Bangalore
-
-***********************************************************************************************************/
+/*
+ *
+ *	PROJECT				:	BFIN
+ *	VERSION				:	2.0
+ *	FILE				:	errno.h
+ *	MODIFIED DATE			:	29 jun 2004
+ *	AUTHOR				:	BFin Project-ADI
+ *	LOCATION			:	LG Soft India,Bangalore
+ */
 
 #ifndef _FRIO_ERRNO_H
 #define _FRIO_ERRNO_H
 
-#define	EPERM		 1	/* Operation not permitted */
-#define	ENOENT		 2	/* No such file or directory */
-#define	ESRCH		 3	/* No such process */
-#define	EINTR		 4	/* Interrupted system call */
-#define	EIO		 5	/* I/O error */
-#define	ENXIO		 6	/* No such device or address */
-#define	E2BIG		 7	/* Arg list too long */
-#define	ENOEXEC		 8	/* Exec format error */
-#define	EBADF		 9	/* Bad file number */
+#define	EPERM		1	/* Operation not permitted */
+#define	ENOENT		2	/* No such file or directory */
+#define	ESRCH		3	/* No such process */
+#define	EINTR		4	/* Interrupted system call */
+#define	EIO		5	/* I/O error */
+#define	ENXIO		6	/* No such device or address */
+#define	E2BIG		7	/* Arg list too long */
+#define	ENOEXEC		8	/* Exec format error */
+#define	EBADF		9	/* Bad file number */
 #define	ECHILD		10	/* No child processes */
 #define	EAGAIN		11	/* Try again */
 #define	ENOMEM		12	/* Out of memory */
@@ -140,4 +139,4 @@
 #define	ENOMEDIUM	123	/* No medium found */
 #define	EMEDIUMTYPE	124	/* Wrong medium type */
 
-#endif /* _FRIO_ERRNO_H */
+#endif	/* _FRIO_ERRNO_H */

@@ -1,14 +1,12 @@
-/**********************************************************************************************************
-
-                        PROJECT                 :       BFIN
-                        VERISON                 :       2.0
-                        FILE                    :       types.h
-                        MODIFIED DATE           :       29 jun 2004
-                        AUTHOR                  :       BFin Project-ADI
-                        LOCATION                :       LG Soft India,Bangalore
-
-***********************************************************************************************************/
-
+/*
+ *
+ *	PROJECT				:	BFIN
+ *	VERSION				:	2.0
+ *	FILE				:	types.h
+ *	MODIFIED DATE			:	29 jun 2004
+ *	AUTHOR				:	BFin Project-ADI
+ *	LOCATION			:	LG Soft India,Bangalore
+ */
 
 #ifndef _FRIO_TYPES_H
 #define _FRIO_TYPES_H
@@ -62,10 +60,10 @@ typedef unsigned long long u64;
 
 #define BITS_PER_LONG 32
 
-/* Dma addresses are 32-bits wide.  */
+/* Dma addresses are 32-bits wide. */
 
 typedef u32 dma_addr_t;
 
-#endif /* __KERNEL__ */
+#endif				/* __KERNEL__ */
 
-#endif /* _FRIO_TYPES_H */
+#endif				/* _FRIO_TYPES_H */

@@ -1,13 +1,13 @@
-/**********************************************************************************************************
+/*
+ *
+ *	PROJECT				:	BFIN
+ *	VERSION				:	2.0
+ *	FILE				:	current.h
+ *	MODIFIED DATE			:	29 jun 2004
+ *	AUTHOR				:	BFin Project-ADI
+ *	LOCATION			:	LG Soft India,Bangalore
+ */
 
-                        PROJECT                 :       BFIN
-                        VERISON                 :       2.0
-                        FILE                    :       current.h
-                        MODIFIED DATE           :       29 jun 2004
-                        AUTHOR                  :       BFin Project-ADI
-                        LOCATION                :       LG Soft India,Bangalore
-
-***********************************************************************************************************/
 #ifndef _FRIONOMMU_CURRENT_H
 #define _FRIONOMMU_CURRENT_H
 /*
@@ -21,6 +21,6 @@
 
 extern struct task_struct *_current_task;
 #define get_current()	_current_task
-#define current _current_task
+#define current 	_current_task
 
-#endif /* _FRIONOMMU_CURRENT_H */
+#endif				/* _FRIONOMMU_CURRENT_H */

@@ -1,13 +1,13 @@
-/**********************************************************************************************************
+/*
+ *
+ *	PROJECT				:	BFIN
+ *	VERSION				:	2.0
+ *	FILE				:	delay.h
+ *	MODIFIED DATE			:	29 jun 2004
+ *	AUTHOR				:	BFin Project-ADI
+ *	LOCATION			:	LG Soft India,Bangalore
+ */
 
-                        PROJECT                 :       BFIN
-                        VERISON                 :       2.0
-                        FILE                    :       delay.h
-                        MODIFIED DATE           :       29 jun 2004
-                        AUTHOR                  :       BFin Project-ADI
-                        LOCATION                :       LG Soft India,Bangalore
-
-***********************************************************************************************************/
 #ifndef _FRIONOMMU_DELAY_H
 #define _FRIONOMMU_DELAY_H
 
@@ -20,11 +20,10 @@
 
 extern __inline__ void __delay(unsigned long loops)
 {
-	__asm__ __volatile__ (	"1:\t%0 += -1;\n\t"
-				"cc = %0 == 0;\n\t"
-				"if ! cc jump 1b;\n"
-				: "=d" (loops) 
-				: "0" (loops));
+	__asm__ __volatile__("1:\t%0 += -1;\n\t"
+			     "cc = %0 == 0;\n\t"
+			     "if ! cc jump 1b;\n":"=d"(loops)
+			     :"0"(loops));
 }
 
 /*
@@ -36,9 +35,7 @@ extern __inline__ void __delay(unsigned long loops)
  */
 extern __inline__ void udelay(unsigned long usecs)
 {
-
 	__delay(usecs);
 }
 
-
-#endif /* defined(_FRIONOMMU_DELAY_H) */
+#endif	/* defined(_FRIONOMMU_DELAY_H) */

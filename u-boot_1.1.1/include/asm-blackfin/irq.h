@@ -14,17 +14,14 @@
  * Adapted for BlackFin (ADI) by Ted Ma <mated@sympatico.ca>
  * Copyright (c) 2002 Arcturus Networks Inc. (www.arcturusnetworks.com)
  * Copyright (c) 2002 Lineo, Inc. <mattw@lineo.com>
-**********************************************************************************************************
-
-                        PROJECT                 :       BFIN
-                        VERISON                 :       2.0
-                        FILE                    :       irq
-                        MODIFIED DATE           :       29 jun 2004
-                        AUTHOR                  :       BFin Project-ADI
-                        LOCATION                :       LG Soft India,Bangalore
-
-***********************************************************************************************************/
-
+ *
+ *	PROJECT				:	BFIN
+ *	VERSION				:	2.0
+ *	FILE				:	irq.h
+ *	MODIFIED DATE			:	29 jun 2004
+ *	AUTHOR				:	BFin Project-ADI
+ *	LOCATION			:	LG Soft India,Bangalore
+ */
 
 #ifndef _FRIO_IRQ_H_
 #define _FRIO_IRQ_H_
@@ -32,8 +29,7 @@
 #include <linux/config.h>
 #include <asm/bf533_irq.h>
 
-/*******************************************************************************
- *****   INTRODUCTION ***********
+/*
  *   On the Blackfin, the interrupt structure allows remmapping of the hardware
  *   levels.
  * - I'm going to assume that the H/W level is going to stay at the default
@@ -44,15 +40,13 @@
  *   levels that uClinux sees, you should be able to do most of it here.
  * - I've left the "abstract" numbering sparce in case someone wants to pull the
  *   interrupts apart (just the TX/RX for the various devices)
- *******************************************************************************/
-
+ */
 
 #define	NR_IRQS		SYS_IRQS
-
 /*
  * "Generic" interrupt sources
  */
-#define IRQ_SCHED_TIMER	(8)    /* interrupt source for scheduling timer */
+#define IRQ_SCHED_TIMER	(8)	/* interrupt source for scheduling timer */
 
 static __inline__ int irq_cannonicalize(int irq)
 {
@@ -73,15 +67,14 @@ static __inline__ int irq_cannonicalize(int irq)
  * to use function pointers, as used by the Sparc port, and select the
  * interrupt handling functions when initializing the kernel. This way
  * we save some unnecessary overhead at run-time. 
- *                                                      01/11/97 - Jes
+ * 01/11/97 - Jes
  */
 
-extern void (*mach_enable_irq)(unsigned int);
-extern void (*mach_disable_irq)(unsigned int);
-
-extern int sys_request_irq(unsigned int, 
-	void (*)(int, void *, struct pt_regs *), 
-	unsigned long, const char *, void *);
+extern void (*mach_enable_irq) (unsigned int);
+extern void (*mach_disable_irq) (unsigned int);
+extern int sys_request_irq(unsigned int,
+			   void (*)(int, void *, struct pt_regs *),
+			   unsigned long, const char *, void *);
 extern void sys_free_irq(unsigned int, void *);
 
 /*
@@ -89,33 +82,32 @@ extern void sys_free_irq(unsigned int, void *);
  * mechanism like all other architectures - SA_INTERRUPT and SA_SHIRQ
  * are your friends.
  */
-#define IRQ_FLG_LOCK    (0x0001)        /* handler is not replaceable   */
-#define IRQ_FLG_REPLACE (0x0002)        /* replace existing handler     */
-#define IRQ_FLG_FAST    (0x0004)
-#define IRQ_FLG_SLOW    (0x0008)
-#define IRQ_FLG_STD     (0x8000)        /* internally used              */
+#define IRQ_FLG_LOCK	(0x0001)	/* handler is not replaceable   */
+#define IRQ_FLG_REPLACE	(0x0002)	/* replace existing handler     */
+#define IRQ_FLG_FAST	(0x0004)
+#define IRQ_FLG_SLOW	(0x0008)
+#define IRQ_FLG_STD	(0x8000)	/* internally used              */
 
 /*
  * This structure is used to chain together the ISRs for a particular
  * interrupt source (if it supports chaining).
  */
 typedef struct irq_node {
-	void		(*handler)(int, void *, struct pt_regs *);
-	unsigned long	flags;
-	void		*dev_id;
-	const char	*devname;
+	void (*handler) (int, void *, struct pt_regs *);
+	unsigned long flags;
+	void *dev_id;
+	const char *devname;
 	struct irq_node *next;
 } irq_node_t;
-
 
 /*
  * This structure has only 4 elements for speed reasons
  */
 typedef struct irq_handler {
-	void		(*handler)(int, void *, struct pt_regs *);
-	unsigned long	flags;
-	void		*dev_id;
-	const char	*devname;
+	void (*handler) (int, void *, struct pt_regs *);
+	unsigned long flags;
+	void *dev_id;
+	const char *devname;
 } irq_handler_t;
 
 /* count of spurious interrupts */
@@ -135,4 +127,4 @@ extern irq_node_t *new_irq_node(void);
 #define enable_irq_nosync(x)	enable_irq(x)
 #define disable_irq_nosync(x)	disable_irq(x)
 
-#endif /* _FRIO_IRQ_H_ */
+#endif	/* _FRIO_IRQ_H_ */

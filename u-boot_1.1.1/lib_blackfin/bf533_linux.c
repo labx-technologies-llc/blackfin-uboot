@@ -19,6 +19,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ *
+ *	PROJECT				:	BFIN
+ *	VERSION				:	2.0
+ *	FILE				:	bf533_linux.c
+ *	MODIFIED DATE			:	29 jun 2004
+ *	AUTHOR				:	BFin Project-ADI
+ *	LOCATION			:	LG Soft India,Bangalore
  */
 
 /* Dummy functions, currently not in Use */
@@ -33,13 +40,16 @@
 #define	LINUX_MAX_ARGS		256
 
 #ifdef CONFIG_SHOW_BOOT_PROGRESS
-# include <status_led.h>
-# define SHOW_BOOT_PROGRESS(arg)	show_boot_progress(arg)
+#include <status_led.h>
+#define SHOW_BOOT_PROGRESS(arg)	show_boot_progress(arg)
 #else
-# define SHOW_BOOT_PROGRESS(arg)
+#define SHOW_BOOT_PROGRESS(arg)
 #endif
 
 extern image_header_t header;
-extern int do_reset (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[]);
-void do_bootm_linux (cmd_tbl_t * cmdtp, int flag, int argc, char *argv[],
-		     ulong addr, ulong * len_ptr, int verify)	{	}
+extern int do_reset(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[]);
+void do_bootm_linux(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[],
+		    ulong addr, ulong * len_ptr, int verify)
+{
+
+}

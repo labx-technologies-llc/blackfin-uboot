@@ -1,4 +1,3 @@
-
 /*
  *  linux/include/asm/traps.h
  *
@@ -9,25 +8,20 @@
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file COPYING in the main directory of this archive
  * for more details.
-
-**********************************************************************************************************
-
-                        PROJECT                 :       BFIN
-                        VERISON                 :       2.0
-                        FILE                    :       traps.h
-                        MODIFIED DATE           :       29 jun 2004
-                        AUTHOR                  :       BFin Project-ADI
-                        LOCATION                :       LG Soft India,Bangalore
-
-***********************************************************************************************************/
-
-
+ *
+ *	PROJECT				:	BFIN
+ *	VERSION				:	2.0
+ *	FILE				:	traps.h
+ *	MODIFIED DATE			:	29 jun 2004
+ *	AUTHOR				:	BFin Project-ADI
+ *	LOCATION			:	LG Soft India,Bangalore
+ */
 
 #ifndef _FRIO_TRAPS_H
 #define _FRIO_TRAPS_H
 
 #ifndef __ASSEMBLY__
-typedef void (*e_vector)(void);
+typedef void (*e_vector) (void);
 extern e_vector vectors[];
 #endif
 
@@ -64,17 +58,16 @@ extern e_vector vectors[];
 #define VEC_CPLB_I_MHIT	(45)
 #define VEC_ILL_RES	(46)	/* including unvalid supervisor mode insn */
 
-#define VECOFF(vec) ((vec)<<2)
+#define VECOFF(vec)	((vec)<<2)
 
 #ifndef __ASSEMBLY__
 
 /* Status register bits */
 #define PS_T  (0x8000)
-#define PS_S  (0x0c00)	/*  Supervisor mode = 0b01 	*/
-#define PS_D  (0x0c00)	/*  Debug mode = 0b1x		*/
+#define PS_S  (0x0c00)		/*  Supervisor mode = 0b01      */
+#define PS_D  (0x0c00)		/*  Debug mode = 0b1x           */
 #define PS_M  (0x1000)
 #define PS_C  (0x0001)
 
-#endif /* __ASSEMBLY__ */
-#endif /* _FRIO_TRAPS_H */
-
+#endif	/* __ASSEMBLY__ */
+#endif	/* _FRIO_TRAPS_H */
