@@ -13,10 +13,11 @@
 #define CONFIG_SMC91111_BASE	0x20300300
 #define HARDCODE_MAC		1
 #define CONFIG_RTC_BF533	1
+#define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
 
 #define CONFIG_CRYSTAL_FREQ	11
-#define PLL_DIV_FACTOR		4	
-#define CONFIG_VCO		520
+#define PLL_DIV_FACTOR	 	5		
+#define CONFIG_VCO		396	
 #define CONFIG_CCLK		CONFIG_VCO
 #define CONFIG_SCLK		(CONFIG_VCO/PLL_DIV_FACTOR)
 
@@ -78,6 +79,8 @@
 #define CFG_GBL_DATA_SIZE	0x4000
 #define CFG_GBL_DATA_OFFSET	(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
 #define CFG_ENV_IS_IN_FLASH	1
+
+
 
 /*
  * FLASH organization and environment definitions
