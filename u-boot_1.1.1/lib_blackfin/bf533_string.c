@@ -23,7 +23,7 @@
 #include <common.h>
 #include <asm/setup.h>
 #include <asm/page.h>
-#include <asm/bf533.h>
+#include <asm/cpu/defBF533.h>
 
 char *strcpy(char *dest, const char *src)
 {

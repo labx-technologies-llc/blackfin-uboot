@@ -15,7 +15,7 @@
 
 #include <asm/setup.h>
 #include <asm/page.h>
-#include <asm/bf533.h>
+#include <asm/cpu/defBF533.h>
 
 #define __HAVE_ARCH_STRCPY
 #define __HAVE_ARCH_STRNCPY

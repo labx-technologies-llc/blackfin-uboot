@@ -29,7 +29,7 @@
 #include <asm/hw_irq.h>
 #include <asm/entry.h>
 #include <asm/blackfin_defs.h>
-#include <asm/bf533_irq.h>
+#include <asm/cpu/bf533_irq.h>
 
 .global blackfin_irq_panic;
 

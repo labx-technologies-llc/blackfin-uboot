@@ -52,7 +52,7 @@
 
 #if defined(CONFIG_RTC_BF533) && (CONFIG_COMMANDS & CFG_CMD_DATE)
 
-#include <asm/bf533_rtc.h>
+#include <asm/cpu/bf533_rtc.h>
 
 void rtc_reset(void)
 {

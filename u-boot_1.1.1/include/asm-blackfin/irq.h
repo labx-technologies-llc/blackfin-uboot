@@ -20,7 +20,7 @@
 #define _BLACKFIN_IRQ_H_
 
 #include <linux/config.h>
-#include <asm/bf533_irq.h>
+#include <asm/cpu/bf533_irq.h>
 
 /*
  *   On the Blackfin, the interrupt structure allows remmapping of the hardware
