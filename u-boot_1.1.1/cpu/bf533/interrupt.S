@@ -245,7 +245,8 @@ evt_timer:
 	SAVE_CONTEXT
 	r0 = IRQ_CORETMR;
 	sp += -12;
-	call timer_int;
+	/* Polling method used now. */
+	/* call timer_int; */
 	sp += 12;
 	RESTORE_CONTEXT
 	rti;

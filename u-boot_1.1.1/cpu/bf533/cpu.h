@@ -6,6 +6,7 @@
 #define INTERNAL_IRQS (32)
 #define NUM_IRQ_NODES 16
 #define DEF_INTERRUPT_FLAGS 1
+#define MAX_TIM_LOAD	0xFFFFFFFF
 
 void blackfin_irq_panic(int reason, struct pt_regs * reg);
 extern void dump(struct pt_regs * regs);
@@ -36,5 +37,5 @@ extern int do_reset (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[]);
 int blackfin_request_irq(unsigned int irq,
 		     void (*handler)(int, void *, struct pt_regs *),
 		     unsigned long flags,const char *devname,void *dev_id);
-
+void timer_init(void);
 #endif
