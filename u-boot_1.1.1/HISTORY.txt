@@ -1,25 +1,22 @@
-u-boot-1.1.1 (Version 2.0)
+u-boot-1.1.1 (Version alpha1)
 -----------------------------
-Initial version of Bootloader source for Stamp and Ezkit boards
------------------------------------------------------------------
 
-Previous Release contained:
+Previous Release Dated: 22/07/2004 contained:
 
 Configuration for stamp and ezkit boards.
 Version supports the following on both the boards.
 
 1. Flash boot
 2. Downloading files via Serial and Network.
+3. Timeout on Network commands, if failed
+4. Autoscr command enabled
+5. Ezkit Flash implemented as 3 flash banks.
 
-Dated: 22/07/2004
 Current Release contains:
 ---------------------------
 
 1. Previous Release features as mentioned above
-2. Timeout on Network commands, if fails
-3. Autoscr command enabled
-4. Ezkit Flash implemented as 3 flash banks (To avoid touching arch
-independent files).
+2. Timeout occurs if network cable is not connected.
 
 Next Release will contain:
 ------------------------------
@@ -29,7 +26,6 @@ Next Release will contain:
 Features not supported
 ------------------------
 1. Srec file download
-2. Timeout will not occur if network cable is not connected.
 
 Known Issues
 ---------------
