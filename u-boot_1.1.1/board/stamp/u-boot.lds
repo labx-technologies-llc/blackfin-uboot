@@ -67,10 +67,12 @@ SECTIONS
 
 		*(.setup.init)
 		*(.exitcall.exit)
+		. = ALIGN(16) ;
 
 		__u_boot_cmd_start = .;
 		 *(.u_boot_cmd)
 		__u_boot_cmd_end = .;
+		. = ALIGN(16) ;
 
 		_edata = . ;
 		edata = . ;

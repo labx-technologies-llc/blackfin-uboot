@@ -96,7 +96,9 @@ unsigned long flash_init(void)
 		    ("## Unknown FLASH on Bank 0 - Size = 0x%08lx = %ld MB\n",
 		     size_b0, size_b0 >> 20);
 	}
+#if DEFAULT_NETWORK
 	asyncbank_init();
+#endif
 	return size_b0;
 }
 
@@ -104,8 +106,10 @@ void flash_print_info(flash_info_t * info)
 {
 	int i;
 
+#if DEFAULT_NETWORK
 	init_EBIU();
 	init_Flags();
+#endif
 
 	if (info->flash_id == FLASH_UNKNOWN) {
 		printf("missing or unknown FLASH type\n");
@@ -127,7 +131,9 @@ void flash_print_info(flash_info_t * info)
 		       info->protect[i] ? " (RO)" : "     ");
 	}
 	printf("\n");
+#if DEFAULT_NETWORK
 	asyncbank_init();
+#endif
 	return;
 }
 
@@ -136,8 +142,10 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 	int i = 0, cnt = 0, j;
 	unsigned long Off;
 
+#if DEFAULT_NETWORK
 	init_EBIU();
 	init_Flags();
+#endif
 
 	cnt = s_last - s_first + 1;
 	udelay(1000);
@@ -158,7 +166,9 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 		}
 	}
 	ResetFlash();
+#if DEFAULT_NETWORK
 	asyncbank_init();
+#endif
 	return 0;
 }
 
@@ -184,11 +194,14 @@ int write_buff(flash_info_t * info, uchar * src, ulong addr, ulong cnt)
 		printf("Outside available Flash \n");
 		return -1;
 	}
-
+#if DEFAULT_NETWORK
 	init_EBIU();
 	init_Flags();
+#endif
 	WriteData(addr, cnt, 1, (int *) src);
+#if DEFAULT_NETWORK
 	asyncbank_init();
+#endif
 	return 0;
 }
 
@@ -247,8 +260,10 @@ bool ReadData(long ulStart, long lCount, long lStride, int *pnData)
 	int nLeftover = lCount % 4;
 	int nHi, nLow;
 
+#if DEFAULT_NETWORK
 	init_EBIU();
 	init_Flags();
+#endif
 
 	for (i = 0; (i < lCount / 4) && (i < BUFFER_SIZE); i++) {
 		for (iShift = 0, j = 0; j < iNumWords; j += 2) {
@@ -262,7 +277,9 @@ bool ReadData(long ulStart, long lCount, long lStride, int *pnData)
 	if (nLeftover > 0) {
 		FLASH_Read(ulOffset, &pnData[i]);
 	}
+#if DEFAULT_NETWORK
 	asyncbank_init();
+#endif
 	return TRUE;
 }
 

@@ -206,6 +206,11 @@ static int smc_rcv(void);
 int smc_get_ethaddr(bd_t *bd);
 int get_rom_mac(char *v_rom_mac);
 
+#ifdef CONFIG_STAMP
+extern void init_EBIU(void);
+extern void init_Flags(void);
+#endif
+
 /*
  ------------------------------------------------------------
  .
@@ -450,6 +455,10 @@ static void smc_shutdown()
 	SMC_SELECT_BANK( 0 );
 	SMC_outb( RCR_CLEAR, RCR_REG );
 	SMC_outb( TCR_CLEAR, TCR_REG );
+#ifdef CONFIG_STAMP
+	init_EBIU();
+	init_Flags();	
+#endif
 }
 
 
@@ -1386,6 +1395,9 @@ static void print_packet( byte * buf, int length )
 #endif
 
 int eth_init(bd_t *bd) {
+#ifdef CONFIG_STAMP
+	asyncbank_init();
+#endif
 	return (smc_open(bd));
 }
 

@@ -34,9 +34,13 @@ unsigned long flash_get_size(ulong baseaddr, flash_info_t * info,
 			     int bank_flag)
 {
 	int id = 0, i = 0;
+	static int FlagDev = 1;
 
 	id = GetCodes();
-	printf("Device ID of the Flash is %x\n", id);
+	if(FlagDev)	{
+		printf("Device ID of the Flash is %x\n", id);
+		FlagDev = 0;
+	}
 	info->flash_id = id;
 
 	switch (bank_flag) {
@@ -127,7 +131,6 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 {
 	int i = 0, j, cnt = 0;
 
-	ResetFlash();
 	cnt = s_last - s_first + 1;
 
 	if (cnt == FLASH_TOT_SECT) {
@@ -286,18 +289,19 @@ bool PollToggleBit(long lOffset)
 	asm("DONE_TOGGLE_BIT:");
 	bError = TRUE;
 
+	ResetFlash();
+
 	return !bError;
 }
 
 bool ResetFlash()
 {
-	WriteFlash(WRITESEQ1, 0xf0);
+	WriteFlash(0x0AAA, 0xf0);
 	return TRUE;
 }
 
 bool EraseFlash()
 {
-/* Hardcoding to be removed later. Currently wrong code is getting generated */
 	int ErrorCode = 0;
 
 	WriteFlash(0x0AAA, 0xaa);
