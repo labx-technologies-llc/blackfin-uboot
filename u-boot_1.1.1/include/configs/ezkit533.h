@@ -13,6 +13,7 @@
 #define CONFIG_SMC91111_BASE	0x20300300
 #define HARDCODE_MAC		1
 #define CONFIG_RTC_BF533	1
+#define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
 
 #define CONFIG_CRYSTAL_FREQ	27
 #define PLL_DIV_FACTOR		5
@@ -54,7 +55,7 @@
 #define CFG_MEMTEST_START	0x01000000	/* memtest works on */
 #define CFG_MEMTEST_END		0x12000000	/* 4 ... 12 MB in DRAM */
 #define	CFG_LOAD_ADDR		0x1000000	/* default load address */
-#define	CFG_HZ			100	/* decrementer freq: 10 ms ticks */
+#define	CFG_HZ			1000	/* decrementer freq: 10 ms ticks */
 #define CFG_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 #define	CFG_SDRAM_BASE		0x00000000
 #define CFG_MAX_RAM_SIZE	0x2000000
