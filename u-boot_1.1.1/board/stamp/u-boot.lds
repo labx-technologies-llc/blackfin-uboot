@@ -25,7 +25,11 @@ OUTPUT_FORMAT("elf32-bfin")
 ENTRY(start)
 MEMORY 
 	{
-	ram		: ORIGIN = 0x7000020,  	LENGTH = 0x1000000
+<<<<<<< u-boot.lds
+	ram		: ORIGIN = 0x7000024,  	LENGTH = 0x1000000
+=======
+	ram		: ORIGIN = 0x7000030,  	LENGTH = 0x1000000
+>>>>>>> 1.2
 	flash		: ORIGIN = 0x20000000, 	LENGTH = 0x80000
 	sram		: ORIGIN = 0xFFA00000, 	LENGTH = 0xC000
 	}
