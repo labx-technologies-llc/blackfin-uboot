@@ -112,6 +112,8 @@
 
 #define CONFIG_DRIVER_SMC91111		1
 #define CONFIG_SMC91111_BASE		0x20300300
+/* To remove hardcoding and enable MAC storage in EEPROM */
+/* #define HARDCODE_MAC			1 */
 #if 0
 #define	CONFIG_MII
 #endif
@@ -143,6 +145,38 @@
  */
 #define CFG_FLASH_LOCK_TOUT		5	/* Timeout for Flash Set Lock Bit (in ms) */
 #define CFG_FLASH_UNLOCK_TOUT		10000	/* Timeout for Flash Clear Lock Bits (in ms) */
+
+/*
+ * Compact Flash settings
+ */
+
+/* Enabled below option for CF support */
+/* #define CONFIG_STAMP_CF		1 */
+
+#if defined(CONFIG_STAMP_CF) && (CONFIG_COMMANDS & CFG_CMD_IDE)
+
+#define CONFIG_MISC_INIT_R		1
+#define CONFIG_DOS_PARTITION		1
+
+/*
+ * IDE/ATA stuff
+ */
+#undef  CONFIG_IDE_8xx_DIRECT		/* no pcmcia interface required */
+#undef  CONFIG_IDE_LED			/* no led for ide supported */
+#undef  CONFIG_IDE_RESET		/* no reset for ide supported */
+
+#define CFG_IDE_MAXBUS	1		/* max. 1 IDE busses */
+#define CFG_IDE_MAXDEVICE		(CFG_IDE_MAXBUS*1) /* max. 1 drives per IDE bus */
+
+#define CFG_ATA_BASE_ADDR		0x20200000
+#define CFG_ATA_IDE0_OFFSET		0x0000
+
+#define CFG_ATA_DATA_OFFSET		0x0020  /* Offset for data I/O */
+#define CFG_ATA_REG_OFFSET		0x0020  /* Offset for normal register accesses */
+#define CFG_ATA_ALT_OFFSET		0x0007  /* Offset for alternate registers */
+
+#define CFG_ATA_STRIDE			2
+#endif
 
 /*
  * SDRAM settings
