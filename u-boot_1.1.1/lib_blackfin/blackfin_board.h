@@ -1,7 +1,6 @@
 #ifndef __BOARD_H__
 #define __BOARD_H_
 
-extern void asyncbank_init(void);
 extern void timer_init(void);
 extern void init_IRQ(void);
 extern void rtc_init(void);

@@ -79,20 +79,3 @@ int dcache_status(void)
 {
 	return 0;
 }
-
-void asyncbank_init(void)
-{
-#ifdef CONFIG_STAMP
-	asm("p2.h = 0xFFC0;");
-	asm("p2.l = 0x0730;");
-	asm("r0 = 0x01;");
-	asm("w[p2] = r0;");
-	asm("ssync;");
-
-	asm("p2.h = 0xffc0;");
-	asm("p2.l = 0x0708;");
-	asm("r0 = 0x01;");
-	asm("w[p2] = r0;");
-	asm("ssync;");
-#endif
-}

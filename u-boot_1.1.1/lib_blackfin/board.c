@@ -229,9 +229,9 @@ void board_init_r(gd_t * id, ulong dest_addr)
 #endif
 
 #ifdef CONFIG_DRIVER_SMC91111
-#ifdef CONFIG_STAMP
+#ifdef SHARED_RESOURCES
 	/* Switch to Ethernet */
-	asyncbank_init();
+	swap_to(ETHERNET);
 #endif
 	if  ( (SMC_inw(BANK_SELECT) & UPPER_BYTE_MASK) != SMC_IDENT ) {
 		printf("ERROR: Can't find SMC91111 at address %x\n", SMC_BASE_ADDRESS);
@@ -239,8 +239,8 @@ void board_init_r(gd_t * id, ulong dest_addr)
 		printf("Net: Found SMC91111 at address %x\n", SMC_BASE_ADDRESS);
 	}
 
-#ifdef CONFIG_STAMP
-	init_Flags();
+#ifdef SHARED_RESOURCES
+	swap_to(FLASH);
 #endif
 #endif
 
