@@ -637,37 +637,8 @@
  * Values for registers, stack etc
  */
 
-/* Default PLL selection for sclk and cclk */
-#define PLL_CSEL		0x0
-#define PLL_SSEL		0x5
-
-/* SDRRC values to be used for Ezkit and Stamp */
-#define EZKIT_RDIV		0x817
-#define STAMP_RDIV		0x305
-
 /* Watch Dog timer values setup */ 
 #define WATCHDOG_DISABLE	WDOG_TMR_DISABLE | ICTL_DISABLE
-
-/* SDRAM Settings for Ezkit and Stamp */
-#ifdef CONFIG_EZKIT533
-#define SDRRCVAL 		EZKIT_RDIV
-#define SDBCTL			(EBCAW_9 | EBSZ_32 | EBE)	/* SDBCTL value for Ezkit = 0x0013 */
-/* #define SDGCTL		(~CDDBG | ~TCSR | ~EMREN | ~FBBRW | ~EBUFE | ~SRFS | PSS |	\
- *				~PSM | ~PUPSD | TWR_2 | TRCD_3 | TRP_3 | TRAS_6 | PASR_4 | CL_3 | SCTLE )
- */
-#define SDGCTL			0x0091998D
-/* SDGCTL value for Ezkit = 0x0091998D */
-#endif
-
-#ifdef CONFIG_STAMP
-#define SDRRCVAL		STAMP_RDIV
-#define SDBCTL			(EBCAW_11 | EBSZ_128 | EBE)	/* SDBCTL value for Stamp = 0x0037 */
-/* #define SDGCTL		(~CDDBG | ~TCSR | ~EMREN | ~FBBRW | ~EBUFE | ~SRFS | PSS | ~PSM |	\
- *				~PUPSD | TWR_2 | TRCD_2 | TRP_2 | TRAS_5 | PASR_4 | CL_2 | SCTLE)
- */
-#define SDGCTL			0x00911149
-/* SDGCTL value for Stamp = 0x00911149 */
-#endif
 
 /* Async Mem Bank Settings for Ezkit and Stamp */
 #ifdef CONFIG_EZKIT533
