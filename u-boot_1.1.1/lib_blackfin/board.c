@@ -138,7 +138,6 @@ void board_init_f(ulong bootflag)
 	DECLARE_GLOBAL_DATA_PTR;
 	ulong addr;
 	bd_t *bd;
-	unsigned long cck;
 
 	gd = (gd_t *) (CFG_GBL_DATA_ADDR);
 	memset((void *) gd, 0, sizeof(gd_t));
@@ -155,8 +154,6 @@ void board_init_f(ulong bootflag)
 	/* Initialize */
 	init_IRQ();
 	env_init();		/* initialize environment */
-	cck = get_clock();
-	get_sclk();
 	init_baudrate();	/* initialze baudrate settings */
 	serial_init();		/* serial communications setup */
 	console_init_f();
@@ -165,8 +162,9 @@ void board_init_f(ulong bootflag)
 	rtc_init();
 	initdram(0);
 	timer_init();
-	printf("Core Clock %d MHz\n",cck/1000000);
-	printf("System Clock %d MHz\n",sclk/1000000);
+	printf("VCO Clock \t=%lu.%03lu MHz\n",   CONFIG_VCO_HZ/1000000, CONFIG_VCO_HZ%1000000);
+	printf("Core Clock \t=%lu.%03lu MHz\n",  CONFIG_CCLK_HZ/1000000,CONFIG_CCLK_HZ%1000000);
+	printf("System Clock \t=%lu.%03lu MHz\n",CONFIG_SCLK_HZ/1000000,CONFIG_SCLK_HZ%1000000);
 	board_init_r((gd_t *) gd, 0x20000010);
 }
 
