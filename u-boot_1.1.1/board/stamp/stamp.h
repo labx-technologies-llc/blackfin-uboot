@@ -6,15 +6,6 @@ extern void init_Flags(void);
 extern volatile unsigned long *ambctl0;
 extern volatile unsigned long *ambctl1;
 extern volatile unsigned long *amgctl;
-extern volatile unsigned long *pFIO_DIR;
-extern volatile unsigned long *pFIO_FLAG_S;
-extern volatile unsigned long *pFIO_FLAG_C;
-extern volatile unsigned long *pFIO_MASKA_D;
-extern volatile unsigned long *pFIO_MASKB_D;
-extern volatile unsigned long *pFIO_POLAR;
-extern volatile unsigned long *pFIO_EDGE;
-extern volatile unsigned long *pFIO_INEN;
-extern volatile unsigned long *pFIO_FLAG_D;
 
 extern unsigned long pll_div_fact;
 extern void serial_setbrg(void);
