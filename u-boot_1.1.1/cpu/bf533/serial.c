@@ -75,16 +75,16 @@ void serial_setbrg(void)
 	}
 
         /* Enable UART */
-        UART_GCTL |= UART_GCTL_UCEN;
+        *pUART_GCTL |= UART_GCTL_UCEN;
         asm("ssync;");
 
         /* Set DLAB in LCR to Access DLL and DLH */
         ACCESS_LATCH;
         asm("ssync;");
 
-	UART_DLL = hw_baud_table[i].dl_low;
+	*pUART_DLL = hw_baud_table[i].dl_low;
 	asm("ssync;");
-	UART_DLH = hw_baud_table[i].dl_high;
+	*pUART_DLH = hw_baud_table[i].dl_high;
 	asm("ssync;");
 
 	/* Clear DLAB in LCR to Access THR RBR IER */
@@ -93,11 +93,11 @@ void serial_setbrg(void)
 
         /* Enable  ERBFI and ELSI interrupts
          * to poll SIC_ISR register*/
-        UART_IER = UART_IER_ELSI | UART_IER_ERBFI | UART_IER_ETBEI;
+        *pUART_IER = UART_IER_ELSI | UART_IER_ERBFI | UART_IER_ETBEI;
         asm("ssync;");
 
 	/* Set LCR to Word Lengh 8-bit word select */
-	UART_LCR = UART_LCR_WLS8;
+	*pUART_LCR = UART_LCR_WLS8;
 	asm("ssync;");
 
 	return;
@@ -111,7 +111,7 @@ int serial_init(void)
 
 void serial_putc(const char c)
 {
-	if (UART_LSR & UART_LSR_TEMT) {
+	if ((*pUART_LSR) & UART_LSR_TEMT) {
 		if (c == '\n') {
 			local_put_char('\r');
 		}
@@ -121,7 +121,7 @@ void serial_putc(const char c)
 		}
 	}
 
-	while (!(UART_LSR & UART_LSR_TEMT))
+	while (!((*pUART_LSR) & UART_LSR_TEMT))
 		SYNC_ALL;
 
 	return;
@@ -129,7 +129,7 @@ void serial_putc(const char c)
 
 int serial_tstc(void)
 {
-	if (UART_LSR & UART_LSR_DR)
+	if (*pUART_LSR & UART_LSR_DR)
 		return 1;
 	else
 		return 0;
@@ -145,8 +145,8 @@ int serial_getc(void)
 	while (!((isr_val = *(volatile unsigned long *)SIC_ISR) & IRQ_UART_RX_BIT)); 
 	asm("csync;");
 
-	uart_lsr_val = UART_LSR;	/* Clear status bit */
-	uart_rbr_val = UART_RBR;	/* getc() */
+	uart_lsr_val = *pUART_LSR;	/* Clear status bit */
+	uart_rbr_val = *pUART_RBR;	/* getc() */
 
 	if (isr_val & IRQ_UART_ERROR_BIT) {
 		ret =  -1; 
@@ -175,10 +175,10 @@ static void local_put_char(char ch)
 	save_and_cli(flags);
 
         /* Poll for TX Interruput */
-        while (!((isr_val = *(volatile unsigned long *)SIC_ISR) & IRQ_UART_TX_BIT));
+        while (!((isr_val = *pSIC_ISR) & IRQ_UART_TX_BIT));
         asm("csync;");
 
-	UART_THR = ch;			/* putc() */
+	*pUART_THR = ch;			/* putc() */
 
         if (isr_val & IRQ_UART_ERROR_BIT) {
                 printf("?");
