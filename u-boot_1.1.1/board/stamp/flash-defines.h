@@ -13,50 +13,54 @@
 
 #include <common.h>
 
-#define V_ULONG(a)	(*(volatile unsigned long *)( a ))
-#define V_BYTE(a)	(*(volatile unsigned char *)( a ))
-#define bool 		unsigned char
-#define TRUE		0x1
-#define FALSE		0x0
 #define BUFFER_SIZE	0x100000
-#define NO_COMMAND	0
-#define GET_CODES	1
-#define RESET		2
-#define WRITE		3
-#define FILL		4
-#define ERASE_ALL	5
-#define ERASE_SECT	6
-#define READ		7
-#define GET_SECTNUM	8
-#define FLASH_START_L 	0x0000
-#define FLASH_START_H 	0x2000
 #define FLASH_TOT_SECT	67
 #define FLASH_SIZE 	0x400000
 #define FLASH_MAN_ST 	2
 #define FLASH_DEV_ID	0x22CB
 #define CFG_FLASH0_BASE	0x20000000
 
-asm("#define FLASH_START_L 0x0000");
-asm("#define FLASH_START_H 0x2000");
+#define SECT1_ADDR	CFG_FLASH0_BASE
+#define SECT2_ADDR	(CFG_FLASH0_BASE + 0x4000)
+#define SECT3_ADDR	(SECT2_ADDR + 0x2000)
+#define SECT4_ADDR	(SECT3_ADDR + 0x2000)
+
+#define FLASH_SUCCESS	0
+#define FLASH_FAIL	-1
+#define ERASE_TIMEOUT	2
+
+#define WRITE_CMD1	0x555
+#define WRITE_CMD2	0x2AA
+#define WRITE_CMD3	0x555
+#define WRITE_DATA1	0xAA
+#define WRITE_DATA2	0x55
+#define WRITE_DATA3	0xA0
+
+#define ANY_OFF		0x0
+#define RESET_DATA	0xF0
+
+#define ERASE_DATA1	0xAA
+#define ERASE_DATA2	0x55
+#define ERASE_DATA3	0x80
+#define ERASE_DATA4	0xAA
+#define ERASE_DATA5	0x55
+#define ERASE_DATA6	0x10
+
+#define GETCODE_DATA	0x90
 
 flash_info_t flash_info[CFG_MAX_FLASH_BANKS];
 int GetCodes(void);
-bool ResetFlash(void);
-bool EraseFlash(void);
-bool WriteData(long lStart, long lCount, long lStride, int *pnData);
-bool FLASH_Write(long addr, int data);
-bool FLASH_Read(long addr, int *pnValue);
-bool ReadData(long ulStart, long lCount, long lStride, int *pnData);
-bool GetSectorNumber(long lOffset, int *pnSector);
-int GetSectorProtectionStatus(flash_info_t * info, int nSector);
+int ResetFlash(void);
+int EraseFlash(void);
+int WriteData(long lStart, long lCount, long lStride, int *pnData);
+int FLASH_Write(long addr, int data);
 unsigned long GetOffset(int sec_num);
-void FLASH_Block_Erase(unsigned long Block_Address);
-void init_EBIU(void);
+int FLASH_Block_Erase(unsigned long, unsigned long);
 void init_Flags(void);
-extern void asyncbank_init(void);
+int FlashDataToggle(void);
 
 int AFP_SectorSize1 = 0x10000;
-int AFP_SectorSize2 = 0x4000;
+
 volatile unsigned long *ambctl0 = (volatile unsigned long *) 0xffc00a04;
 volatile unsigned long *ambctl1 = (volatile unsigned long *) 0xffc00a08;
 volatile unsigned long *amgctl = (volatile unsigned long *) 0xffc00a00;
@@ -73,10 +77,25 @@ volatile unsigned long *pFIO_FLAG_D = (volatile unsigned long *) 0xffc00700;
 inline void LED6_On(void)
 {
 	*(volatile unsigned short *) pFIO_FLAG_C = 0x0004;
+	asm("ssync;");
 }
 inline void LED6_Off(void)
 {
 	*(volatile unsigned short *) pFIO_FLAG_S = 0x0004;
+	asm("ssync;");
+}
+
+inline void init_Flags(void)
+{
+	*(volatile unsigned short *) pFIO_DIR = 0x1F;
+	*(volatile unsigned short *) pFIO_FLAG_S = 0x1C;
+	*(volatile unsigned short *) pFIO_MASKA_D = 0x160;
+	*(volatile unsigned short *) pFIO_MASKB_D = 0x80;
+	*(volatile unsigned short *) pFIO_POLAR = 0x160;
+	*(volatile unsigned short *) pFIO_EDGE = 0x1E0;
+	*(volatile unsigned short *) pFIO_INEN = 0x1e0;
+	*(volatile unsigned short *) pFIO_FLAG_D = 0x1C;
+	asm("ssync;");
 }
 
 volatile unsigned short *FLASH_Base = (unsigned short *) 0x20000000;

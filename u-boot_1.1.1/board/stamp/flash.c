@@ -1,21 +1,5 @@
 /*
- * BF533EzFlash.c
- * 
- * Analog Devices, Inc. - 2001
- * 
- * 
- * Change Log
- * 
- * 	1.00.1
- *	- made changes so that the driver will work with
- * 	  the revised GUI
- *
- *	1.00.0
- *	- initial release
- *
- * VisualDSP++ "Flash Programmer" flash driver for use with the
- * ADSP-BF533 EZ-KIT Lite containing the STMicroelectronics PSD4256G
- * flash device.
+ * (C) Copyright 2004 - Analog Devices, Inc.  All rights reserved. 
  *
  *	PROJECT				:	BFIN
  *	VERSION				:	2.0
@@ -32,25 +16,6 @@ void flash_reset(void)
 	ResetFlash();
 }
 
-void init_EBIU(void)
-{
-	*(volatile unsigned long *) ambctl0 = 0xbbc3bbc3;
-	*(volatile unsigned long *) ambctl1 = 0x99b39983;
-	*(volatile unsigned short *) amgctl = 0xf9;
-}
-
-void init_Flags(void)
-{
-	*(volatile unsigned short *) pFIO_DIR = 0x1F;
-	*(volatile unsigned short *) pFIO_FLAG_S = 0x1C;
-	*(volatile unsigned short *) pFIO_MASKA_D = 0x160;
-	*(volatile unsigned short *) pFIO_MASKB_D = 0x80;
-	*(volatile unsigned short *) pFIO_POLAR = 0x160;
-	*(volatile unsigned short *) pFIO_EDGE = 0x1E0;
-	*(volatile unsigned short *) pFIO_INEN = 0x1e0;
-	*(volatile unsigned short *) pFIO_FLAG_D = 0x1C;
-}
-
 unsigned long flash_get_size(ulong baseaddr, flash_info_t * info)
 {
 	int man_id = 0, dev_id = 0, i = 0;
@@ -61,16 +26,16 @@ unsigned long flash_get_size(ulong baseaddr, flash_info_t * info)
 
 	printf("Device ID of the Flash is %x\n", dev_id);
 	printf("Manufacture ID of the Flash is %x\n", man_id);
-	printf("Memory Map of Flash: 0x20000000 - 0x2003ffff\n");
+	printf("Memory Map of Flash: 0x%x - 0x%x\n",CFG_FLASH0_BASE,(CFG_FLASH0_BASE+FLASH_SIZE));
 
 	info->flash_id = dev_id;
 	info->sector_count = FLASH_TOT_SECT;
 	info->size = FLASH_SIZE;
 
-	info->start[0] = 0x20000000;
-	info->start[1] = 0x20004000;
-	info->start[2] = 0x20006000;
-	info->start[3] = 0x20008000;
+	info->start[0] = SECT1_ADDR; 
+	info->start[1] = SECT2_ADDR;
+	info->start[2] = SECT3_ADDR;
+	info->start[3] = SECT4_ADDR;
 
 	for (i = 4; i < 67; i++)
 		info->start[i] = ((baseaddr + AFP_SectorSize1)
@@ -96,20 +61,12 @@ unsigned long flash_init(void)
 		    ("## Unknown FLASH on Bank 0 - Size = 0x%08lx = %ld MB\n",
 		     size_b0, size_b0 >> 20);
 	}
-#if DEFAULT_NETWORK
-	asyncbank_init();
-#endif
 	return size_b0;
 }
 
 void flash_print_info(flash_info_t * info)
 {
 	int i;
-
-#if DEFAULT_NETWORK
-	init_EBIU();
-	init_Flags();
-#endif
 
 	if (info->flash_id == FLASH_UNKNOWN) {
 		printf("missing or unknown FLASH type\n");
@@ -131,81 +88,64 @@ void flash_print_info(flash_info_t * info)
 		       info->protect[i] ? " (RO)" : "     ");
 	}
 	printf("\n");
-#if DEFAULT_NETWORK
-	asyncbank_init();
-#endif
 	return;
 }
 
 int flash_erase(flash_info_t * info, int s_first, int s_last)
 {
-	int i = 0, cnt = 0, j;
-	unsigned long Off;
-
-#if DEFAULT_NETWORK
-	init_EBIU();
-	init_Flags();
-#endif
+	int cnt = 0;
+	int ret;
 
 	cnt = s_last - s_first + 1;
-	udelay(1000);
 
 	if (cnt == FLASH_TOT_SECT) {
 		printf("Erasing flash, Please Wait \n");
-		EraseFlash();
+		if(EraseFlash() == FLASH_FAIL) {
+			printf("Error Erasing Flash \n");
+			return FLASH_FAIL;
+		}
 	} else {
 		printf("Sector erasing, Please Wait\n");
-		for (i = s_first; i <= s_last; i++) {
-			Off = (GetOffset(i) - 0x20000000);
-			udelay(1000);
-			FLASH_Block_Erase(Off);
-			for (j = 0; j < 500000; j++);
-			for (j = 0; j < 500000; j++);
-			for (j = 0; j < 500000; j++);
-			for (j = 0; j < 500000; j++);
+		ret = FLASH_Block_Erase(s_first,s_last);
+		if(ret == FLASH_FAIL) {
+			printf("Error Sector erasing \n");
+			return FLASH_FAIL;
+		}
+		else if(ret == ERASE_TIMEOUT) {
+			printf("Timeout occured during erasure\n");
+			return FLASH_FAIL;
 		}
 	}
-	ResetFlash();
-#if DEFAULT_NETWORK
-	asyncbank_init();
-#endif
-	return 0;
+	return FLASH_SUCCESS;
 }
 
 unsigned long GetOffset(int sec_num)
 {
 	if (sec_num == 0)
-		return 0x20000000;
+		return SECT1_ADDR;
 	else if (sec_num == 1)
-		return 0x20004000;
+		return SECT2_ADDR;
 	else if (sec_num == 2)
-		return 0x20006000;
+		return SECT3_ADDR;
 	else if (sec_num == 3)
-		return 0x20008000;
+		return SECT4_ADDR;
 	else
-		return ((0x20000000 + AFP_SectorSize1) +
+		return ((SECT1_ADDR + AFP_SectorSize1) +
 			((sec_num - 4) * AFP_SectorSize1));
 }
 
 
 int write_buff(flash_info_t * info, uchar * src, ulong addr, ulong cnt)
 {
-	if ((addr + cnt) > 0x20400000) {
+	if((addr + cnt) > (CFG_FLASH0_BASE + FLASH_SIZE)) {
 		printf("Outside available Flash \n");
-		return -1;
+		return FLASH_FAIL;
 	}
-#if DEFAULT_NETWORK
-	init_EBIU();
-	init_Flags();
-#endif
 	WriteData(addr, cnt, 1, (int *) src);
-#if DEFAULT_NETWORK
-	asyncbank_init();
-#endif
-	return 0;
+	return FLASH_SUCCESS;
 }
 
-bool WriteData(long lStart, long lCount, long lStride, int *pnData)
+int WriteData(long lStart, long lCount, long lStride, int *pnData)
 {
 	long i = 0;
 	int j = 0;
@@ -217,116 +157,96 @@ bool WriteData(long lStart, long lCount, long lStride, int *pnData)
 	for (i = 0; (i < lCount / 4) && (i < BUFFER_SIZE); i++) {
 		for (iShift = 0, j = 0; (j < iNumWords);
 		     j++, ulOffset += (lStride * 2)) {
-			FLASH_Write(ulOffset, pnData[i] >> iShift);
+			if(FLASH_Write(ulOffset, pnData[i] >> iShift) < 0) {
+				printf("Error in Flash Write \n");
+				return FLASH_FAIL;
+			}
 			iShift += 16;
 		}
 	}
 	iShift = 16;
 	if (nLeftover > 0) {
-		FLASH_Write(ulOffset, pnData[i]);
+		if(FLASH_Write(ulOffset, pnData[i]) < 0) {
+			printf("Error in Flash Write \n");
+			return FLASH_FAIL;
+		}
 		if (nLeftover == 3) {
 			ulOffset += 2;
-			FLASH_Write(ulOffset, (pnData[i] >> iShift));
+			if(FLASH_Write(ulOffset, (pnData[i] >> iShift)) < 0) {
+				printf("Error in Flash Write \n");
+				return FLASH_FAIL;
+			}
 		}
 	}
-	ResetFlash();
-	return 0;
+	return FLASH_SUCCESS;
 }
 
-bool FLASH_Write(long addr, int data)
+int FLASH_Write(long addr, int data)
 {
-	int t;
-
 	LED6_On();
-	/* This C code works fine, but very slow */
-	FLASH_Base[0x555] = 0xAA;
-	FLASH_Base[0x2AA] = 0x55;
-	FLASH_Base[0x555] = 0xA0;
-	udelay(10000);	
-	*(volatile unsigned short *) (0x20000000 + addr) = data;
+	FLASH_Base[WRITE_CMD1] = WRITE_DATA1;
+	FLASH_Base[WRITE_CMD2] = WRITE_DATA2;
+	FLASH_Base[WRITE_CMD3] = WRITE_DATA3;
+	*(volatile unsigned short *) (CFG_FLASH0_BASE + addr) = data;
 	asm("ssync;");
-	udelay(10000);	
+	if(FlashDataToggle() != FLASH_SUCCESS) {
+		ResetFlash();
+		return FLASH_FAIL;
+	}	
 	LED6_Off();
-	return TRUE;
+	return FLASH_SUCCESS;
 }
 
-bool ReadData(long ulStart, long lCount, long lStride, int *pnData)
+int ResetFlash()
 {
-	long i = 0;
-	int j = 0;
-	long ulOffset = ulStart;
-	int iShift = 0;
-	int iNumWords = 2;
-	int nLeftover = lCount % 4;
-	int nHi, nLow;
+	FLASH_Base[WRITE_CMD1] = WRITE_DATA1;
+	FLASH_Base[WRITE_CMD2] = WRITE_DATA2;
+	FLASH_Base[ANY_OFF] = RESET_DATA;
 
-#if DEFAULT_NETWORK
-	init_EBIU();
-	init_Flags();
-#endif
+	/* Pause for 10 micro seconds */
+	udelay(10);	
 
-	for (i = 0; (i < lCount / 4) && (i < BUFFER_SIZE); i++) {
-		for (iShift = 0, j = 0; j < iNumWords; j += 2) {
-			FLASH_Read(ulOffset, &nLow);
-			ulOffset += (lStride * 2);
-			FLASH_Read(ulOffset, &nHi);
-			ulOffset += (lStride * 2);
-			pnData[i] = (nHi << 16) | nLow;
+	return FLASH_SUCCESS;
+}
+
+int EraseFlash()
+{
+	FLASH_Base[WRITE_CMD1] = ERASE_DATA1; 
+	FLASH_Base[WRITE_CMD2] = ERASE_DATA2;
+	FLASH_Base[WRITE_CMD3] = ERASE_DATA3;
+	FLASH_Base[WRITE_CMD1] = ERASE_DATA4;
+	FLASH_Base[WRITE_CMD2] = ERASE_DATA5;
+	FLASH_Base[WRITE_CMD3] = ERASE_DATA6;
+
+	if(FlashDataToggle() != FLASH_SUCCESS)
+		return FLASH_FAIL;
+	else
+		return FLASH_SUCCESS;
+}
+
+int FlashDataToggle(void)
+{
+	unsigned int u1,u2;
+	unsigned long timeout = 0xFFFFFFFF;
+	while(1) {
+		if(timeout < 0)
+			break;
+		u1 = FLASH_Base[ANY_OFF];
+		u2 = FLASH_Base[ANY_OFF];
+		if((u1 & 0x0040) == (u2 & 0x0040))
+			return FLASH_SUCCESS;
+		if((u2 & 0x0020) == 0x0000)
+			continue;
+		u1 = FLASH_Base[ANY_OFF];
+		if((u2 & 0x0040) == (u1 & 0x0040))
+			return FLASH_SUCCESS;
+		else {
+			ResetFlash();
+			return FLASH_FAIL;
 		}
+		timeout--;
 	}
-	if (nLeftover > 0) {
-		FLASH_Read(ulOffset, &pnData[i]);
-	}
-#if DEFAULT_NETWORK
-	asyncbank_init();
-#endif
-	return TRUE;
-}
-
-bool FLASH_Read(long addr, int *pnValue)
-{
-	int nValue = 0x0, t;
-	long Off = (CFG_FLASH_BASE + addr);
-
-	FLASH_Base[0x0] = 0xF0;
-	for (t = 0; t < 500; t++) {
-	}
-
-	nValue = *(volatile unsigned short *) Off;
-	*pnValue = nValue;
-	return TRUE;
-}
-
-bool ResetFlash()
-{
-	int j;
-
-	for (j = 0; j < 500000; j++);
-
-	FLASH_Base[0x555] = 0xaa;
-	FLASH_Base[0x2aa] = 0x55;
-	FLASH_Base[0x0] = 0xF0;
-
-	for (j = 0; j < 50000; j++);
-
-	return TRUE;
-}
-
-bool EraseFlash()
-{
-	short t;
-
-	udelay(1000);
-	FLASH_Base[0x555] = 0xAA;
-	FLASH_Base[0x2AA] = 0x55;
-	FLASH_Base[0x555] = 0x80;
-	FLASH_Base[0x555] = 0xAA;
-	FLASH_Base[0x2AA] = 0x55;
-	FLASH_Base[0x555] = 0x10;
-	for (t = 0; t < 1000; t++);
-	while ((FLASH_Base[0] & 3) == 0);
-	udelay(1000);
-	return TRUE;
+	if(timeout <0)	return FLASH_FAIL;
 }
 
 int GetCodes()
@@ -334,29 +254,43 @@ int GetCodes()
 	unsigned long dev_id = 0;
 	unsigned long man_id = 0;
 
-	FLASH_Base[0x555] = 0xAA;
-	FLASH_Base[0x2AA] = 0x55;
-	FLASH_Base[0x555] = 0x90;
+	FLASH_Base[WRITE_CMD1] = WRITE_DATA1;
+	FLASH_Base[WRITE_CMD2] = WRITE_DATA2;
+	FLASH_Base[WRITE_CMD3] = GETCODE_DATA;
 	asm("ssync;");
-	man_id = FLASH_Base[0x0];
+	man_id = FLASH_Base[ANY_OFF];
 	dev_id = *(unsigned short *) FB;
 	asm("ssync;");
 
-	FLASH_Base[0x0] = 0xF0;
+	FLASH_Base[ANY_OFF] = RESET_DATA;
 	return ((man_id << 16) | dev_id);
 }
 
-void FLASH_Block_Erase(unsigned long Block_Address)
+int FLASH_Block_Erase(unsigned long s_f,unsigned long s_l)
 {
-	int t;
+	int i;
+	unsigned long Off;
+	int flag_timeout = 0;
 
-	udelay(1000);
-	FLASH_Base[0x555] = 0xAA;
-	FLASH_Base[0x2AA] = 0x55;
-	FLASH_Base[0x555] = 0x80;
-	FLASH_Base[0x555] = 0xAA;
-	FLASH_Base[0x2AA] = 0x55;
-	*(volatile unsigned short *) (0x20000000 + Block_Address) = 0x30;
-
-	for (t = 0; t < 1000; t++);
+	FLASH_Base[WRITE_CMD1] = ERASE_DATA1;
+	FLASH_Base[WRITE_CMD2] = ERASE_DATA2;
+	FLASH_Base[WRITE_CMD3] = ERASE_DATA3;
+	FLASH_Base[WRITE_CMD1] = ERASE_DATA4;
+	FLASH_Base[WRITE_CMD2] = ERASE_DATA5;
+	for (i = s_f; i <= s_l; i++) {
+		Off = (GetOffset(i) - CFG_FLASH0_BASE);
+		*(volatile unsigned short *) (CFG_FLASH0_BASE + Off) = 0x30;
+		if((FLASH_Base[0] & 0x0008) == 0x0008) {
+			flag_timeout = 1;
+			break;
+		}
+	}
+	if(flag_timeout == 1)
+		return ERASE_TIMEOUT;
+	
+	if(FlashDataToggle() != FLASH_SUCCESS) {
+		ResetFlash();
+		return FLASH_FAIL;
+	}
+	return FLASH_SUCCESS;
 }
