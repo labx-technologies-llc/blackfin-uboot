@@ -21,5 +21,13 @@
 # MA 02111-1307 USA
 #
 
+#<Blackfin - Execute from RAM> : Uncomment following Assignment 
+# to execute from RAM
+#TEXT_BASE = 0x7f80000
+
+#Comment following to run from RAM
 TEXT_BASE = 0x20000000
+
 PLATFORM_CPPFLAGS += -I$(TOPDIR)
+
+
