@@ -36,8 +36,14 @@ int get_clock(void);
 
 int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 {
-	asm("raise 1;");
-	return 0;
+        __asm__ __volatile__
+	("P0 = %0;"
+        "CALL (P0);"
+	:
+	: "r" (L1_ISRAM)
+	);
+
+        return 0;
 }
 
 /* These functions are just used to satisfy the linker */
