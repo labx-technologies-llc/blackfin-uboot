@@ -57,6 +57,28 @@
 #include <asm/uaccess.h>
 #include "bf533_serial.h"
 
+static struct bf533_serial bf533_soft = { 0, 0, IRQ_UART, 0 };
+static int baud_table[5] = {
+	9600, 19200, 38400, 57600, 115200
+};
+
+extern unsigned long sclk;
+
+struct {
+	unsigned char dl_high;
+	unsigned char dl_low;
+} hw_baud_table[5];
+
+void calc_baud(void)
+{
+	unsigned char i;
+
+	for(i = 0; i < sizeof(baud_table)/sizeof(int); i++) {
+		hw_baud_table[i].dl_high = ((sclk/baud_table[i]/16) >> 8)& 0xFF;
+		hw_baud_table[i].dl_low = (sclk/baud_table[i]/16) & 0xFF;
+	}
+}
+
 void serial_setbrg(void)
 {
 	int i;
@@ -66,6 +88,9 @@ void serial_setbrg(void)
 	ACCESS_PORT_IER;
 	UART_IER &= ~UART_IER_ETBEI;
 	ACCESS_LATCH;
+
+	sclk = GetClock()/PLL_DIV_FACTOR;
+	calc_baud();
 
 	for (i = 0; i < sizeof(baud_table) / sizeof(int); i++) {
 		if (gd->baudrate == baud_table[i])

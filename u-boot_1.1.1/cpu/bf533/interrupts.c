@@ -107,7 +107,8 @@ int interrupt_init(void)
 
 void udelay(unsigned long usec)
 {
-	unsigned long i;
-	unsigned long j = usec / 3;
-	for (i = 0; i < j; i++);
+	__asm__ __volatile__("1:\t%0 += -1;\n\t"
+			     "cc = %0 == 0;\n\t"
+			     "if ! cc jump 1b;\n":"=d"(usec)
+			     :"0"(usec));
 }

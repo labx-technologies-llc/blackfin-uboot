@@ -1,4 +1,4 @@
-u-boot-1.1.1 (Version alpha1.1)
+u-boot-1.1.1 (Version alpha2)
 -----------------------------
 
 Previous Release Dated: 30/08/2004 contained:

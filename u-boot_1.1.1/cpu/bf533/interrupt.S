@@ -377,3 +377,18 @@ evt_soft_int1:
 
 evt_soft_int1_exit:
 	rti;
+
+/*
+.global do_reset
+do_reset:
+	SAVE_CONTEXT;
+	p2.h = 0xffc0;
+	p2.l = 0x0104;
+	r2 = 0x1;
+	w[p2] = r2;
+	ssync;
+	RAISE 1;		
+	RESTORE_CONTEXT;
+do_reset_end:
+	rti;
+*/

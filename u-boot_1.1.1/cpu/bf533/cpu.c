@@ -35,6 +35,9 @@
 #include <common.h>
 #include <asm/blackfin.h>
 #include <command.h>
+#include <asm/entry.h>
+
+unsigned long sclk;
 
 int cpu_init(void)
 {
@@ -48,8 +51,12 @@ int cleanup_before_linux(void)
 
 int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 {
-	printf("Reset function Not enabled \n");
-	return (0);
+	asm("raise 1;");
+#if 0
+	void (*f)(void) = (void *) 0x20000000;
+	f();	
+#endif
+	return 0;
 }
 
 void icache_enable(void)
@@ -98,3 +105,20 @@ void asyncbank_init(void)
 	asm("ssync;");
 #endif
 }
+
+int GetClock(void)	{
+	unsigned long val;
+	volatile unsigned long *pllctl = 0xFFC00000;
+	
+	val = *(volatile unsigned short *)pllctl;
+	val = (val >> 9) & 0x3F;
+	val = val * CONFIG_CRYSTAL_FREQ;
+	val = val * 1000000;
+	
+	return val;
+}
+
+int Getsclk(void)	{
+	sclk = GetClock()/PLL_DIV_FACTOR;
+}
+

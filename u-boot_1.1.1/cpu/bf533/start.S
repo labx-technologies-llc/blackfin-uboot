@@ -110,69 +110,51 @@ initend:
 	call delay;
 	call delay;
 	sti r4;
-
 _start:
 start:
 _stext:
+	r0 = CONFIG_VCO;
+	r1 = CONFIG_CRYSTAL_FREQ;
+	r2 = 0;
+	r3 = 1;
+	r4 = -1;
+dp_begin:
+	r0 = r0 - r1;
+	CC = r0 <= r4;
+	if CC jump dp_skip;
+	r2 = r2 + r3;
+	jump dp_begin;
+dp_skip:
+	r0 = r2;
+	r3 = r0;
 
-#ifdef CONFIG_STAMP
-	cli r2;
-        p0.h = (PLL_CTL >> 16);
+	r1 = 0x3F;
+	r0 = r0 & r1;
+	r0 = r0 << 9;
+	p0.h = (PLL_CTL >> 16);
         p0.l = (PLL_CTL & 0xFFFF);
-        r0 = STAMP_CCLK_396MHZ;
-        w[p0] = r0;
+	r1 = w[p0](z);
+	r5 = 0x8E;
+	r1 = r1 & r5;
+	r1 = r1 | r0;
+	cli r2;
+	w[p0] = r1;
         idle;
         sti r2;
         ssync;
 
+        r0 = PLL_DIV_FACTOR; 
 	p0.h = (PLL_DIV >> 16);
 	p0.l = (PLL_DIV & 0xFFFF);
-	r0 = STAMP_SCLK_132MHZ;
 	w[p0] = r0;
 	ssync;
 
-	p1.l = DELAY;	/* delay for transition */
+	p1.l = DELAY;
 	p1.h = 0x0;
 	lsetup ( del_start,del_end ) lc0 = p1;
 del_start:
 	nop;
 del_end:
-#endif
-	
-	/* Early UART Initialization if required */
-	p0.h = (UART_GCTL_ADDR>>16);
-	p0.l = (UART_GCTL_ADDR & 0xFFFF);
-	r0 = UART_GCTL_UCEN;
-	w[p0] = r0;
-	ssync;
-
-	p0.h = (UART_LCR_ADDR >> 16);
-	p0.l = (UART_LCR_ADDR & 0xFFFF);
-	r0 = UART_LCR_DLAB;	
-	w[p0] = r0;
-	ssync;
-
-	p0.h = (UART_DLL_ADDR >> 16);
-	p0.l = (UART_DLL_ADDR & 0xFFFF);
-#ifdef CONFIG_STAMP
-	r0 = 0x8F;
-#elif CONFIG_EZKIT533
-	r0 = 0x3A;
-#endif
-	w[p0] = r0;
-	ssync;
-
-	p0.h = (UART_DLH_ADDR >> 16);
-	p0.l = (UART_DLH_ADDR & 0xFFFF);
-	r0 = 0x00;
-	w[p0] = r0;
-	ssync;
-
-	p0.h = (UART_LCR_ADDR >> 16);
-	p0.l = (UART_LCR_ADDR & 0xFFFF);
-	r0 = UART_LCR_WLS8;	
-	w[p0] = r0;
-	ssync;
 
 	/* SDRAM initialization */
 	p0.l = (EBIU_SDGCTL & 0xFFFF);

@@ -14,7 +14,7 @@
 #define CFG_LONGHELP		1
 #define CONFIG_BAUDRATE		57600
 #define CONFIG_STAMP		1
-#define U_BOOT_BF533_RELEASE	"Release Version alpha1"
+#define U_BOOT_BF533_RELEASE	"Release Version alpha2"
 #define CFG_ENV_IS_NOWHERE	1
 #define CONFIG_BOOTDELAY	30
 #define CONFIG_BOARD_TYPES	1
@@ -23,6 +23,12 @@
 #define CONFIG_SMC91111_BASE	0x20300300
 #define HARDCODE_MAC		1
 #define CONFIG_RTC_BF533	1
+
+#define CONFIG_CRYSTAL_FREQ	11
+#define PLL_DIV_FACTOR		5
+#define CONFIG_VCO		396
+#define CONFIG_CCLK		CONFIG_VCO
+#define CONFIG_SCLK		(CONFIG_VCO/PLL_DIV_FACTOR)
 
 #define	CONFIG_EXTRA_ENV_SETTINGS					\
 	"netdev=eth0\0"							\
@@ -42,7 +48,7 @@
 
 #define CONFIG_COMMANDS		(CFG_CMD_BDI | CFG_CMD_LOADB | CFG_CMD_IMI | CFG_CMD_MEMORY | CFG_CMD_NET | \
 				CFG_CMD_ELF | CFG_CMD_PING | CFG_CMD_DHCP | CFG_CMD_RUN | \
-				CFG_CMD_ENV | CFG_CMD_FLASH | CFG_CMD_DATE | CFG_CMD_AUTOSCRIPT)
+				CFG_CMD_ENV | CFG_CMD_FLASH | CFG_CMD_DATE | CFG_CMD_AUTOSCRIPT | CFG_CMD_MISC)
 
 /* This must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
@@ -113,5 +119,15 @@
 #endif
 
 #undef	CONFIG_STATUS_LED
+
+#define CONFIG_VDSP		1
+
+#ifdef CONFIG_VDSP
+#define ET_EXEC_VDSP		0x8
+#define SHT_STRTAB_VDSP		0x1
+#define ELFSHDRSIZE_VDSP	0x2C
+#define VDSP_RAM_ADDR		0x1000
+#endif
+
 
 #endif	/* __CONFIG_STAMP_H__ */

@@ -83,11 +83,8 @@ struct bf533_serial {
 #define SYNC_ALL			__asm__ __volatile__ ("ssync;\n")
 #define ACCESS_LATCH			UART_LCR |= UART_LCR_DLAB;
 #define ACCESS_PORT_IER			UART_LCR &= (~UART_LCR_DLAB);
-#define	CONSOLE_BAUD_RATE		57600
-#define	DEFAULT_CBAUD			B57600
 #define _INLINE_ 			inline
 #define NR_PORTS 			(sizeof(bf533_soft) / sizeof(struct bf533_serial))
-#define BAUD_TABLE_SIZE 		(sizeof(baud_table)/sizeof(baud_table[0]))
 
 extern int request_irq(unsigned int irq,
 		       void (*handler) (int, void *, struct pt_regs *),
@@ -100,76 +97,5 @@ static _INLINE_ void receive_chars(struct bf533_serial *info,
 				   unsigned short rx);
 static _INLINE_ void transmit_chars(struct bf533_serial *info);
 static void local_put_char(char ch);
-
-static struct bf533_serial bf533_soft = { 0, 0, IRQ_UART, 0 };
-static int baud_table[] = {
-	0, 114, 300, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 0
-};
-
-#ifdef CONFIG_EZKIT533
-struct {
-	unsigned short dl_high, dl_low;
-} hw_baud_table[] = {
-	{
-	0xff, 0xff},		/* approximately 0 */
-	{
-	0xff, 0xff},		/* 114 */
-	{
-	0x61, 0xa8},		/* 300 */
-	{
-	0x18, 0x6a},		/* 1200 */
-	{
-	0xc, 0x35},		/* 2400 */
-	{
-	0x6, 0x1a},		/* 4800 */
-	{
-	0x1, 0x5f},		/* 9600 */
-	{
-	0x0, 0xaf},		/* 19200 */
-	{
-	0x0, 0x57},		/* 38400 */
-	{
-	0x0, 0x3a},		/* 57600 */
-	{
-	0x0, 0x1D},		/* 115200 */
-/*
- * rate = SCLK / (16 * DL) - SCLK = 120MHz
- * DL = (dl_high:dl_low) 
- */
-};
-#endif
-
-#ifdef CONFIG_STAMP
-struct {
-	unsigned short dl_high, dl_low;
-} hw_baud_table[] = {
-	{
-	0xff, 0xff},		/* approximately 0 */
-	{
-	0xff, 0xff},		/* 114 */
-	{
-	0x61, 0xa8},		/* 300 */
-	{
-	0x18, 0x6a},		/* 1200 */
-	{
-	0xc, 0x35},		/* 2400 */
-	{
-	0x6, 0x1a},		/* 4800 */
-	{
-	0x3, 0x5B},		/* 9600 */
-	{
-	0x1, 0xad},		/* 19200 */
-	{
-	0x0, 0xd6},		/* 38400 */
-	{
-	0x0, 0x8F},		/* 57600 */
-	{
-	0x0, 0x47},		/* 115200 */
-/*
- * rate = SCLK / (16 * DL) - SCLK = 120MHz 
- * DL = (dl_high:dl_low)
- */
-};
-#endif
 
 #endif
