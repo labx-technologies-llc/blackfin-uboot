@@ -41,7 +41,7 @@ Version
 Development Environment
 -----------------------
 
-	Tool chain: 3.3.x Blackfin Toolchain
+	Tool chain: 3.4.x Blackfin Toolchain
 	Host platform: Red hat Linux 9.0
 	Target board: STAMP Board/ EZKIT board
 
