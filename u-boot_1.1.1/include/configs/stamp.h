@@ -180,7 +180,7 @@
 #define FLASH_SIZE		0x400000
 #define CFG_FLASH_SIZE		0x400000
 
-#define CFG_FLASH_ERASE_TOUT		2000000	/* Timeout for Chip Erase (in ms) */
+#define CFG_FLASH_ERASE_TOUT		200000	/* Timeout for Chip Erase (in ms) */
 #define CFG_FLASH_ERASEBLOCK_TOUT	6000	/* Timeout for Block Erase (in ms) */
 #define CFG_FLASH_WRITE_TOUT		1	/* Timeout for Flash Write (in ms) */
 
