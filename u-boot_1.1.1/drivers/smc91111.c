@@ -1349,6 +1349,9 @@ static void smc_phy_configure ()
 	SMC_outw (RPC_DEFAULT, RPC_REG);
 
       smc_phy_configure_exit:
+#ifdef CONFIG_blackfin
+	;
+#endif
 
 }
 #endif /* !CONFIG_SMC91111_EXT_PHY */
