@@ -54,97 +54,12 @@
 
 #include <asm/bf533_rtc.h>
 
-void rtc_init()
-{
-	*(volatile unsigned short *) RTC_PREN = 0x1;
-	wait_for_complete();
-}
-
-void rtc_set(struct rtc_time *rtc_tm)
-{
-	unsigned char mon, day, hrs, min, sec, leap_yr, wday;
-	unsigned int yrs;
-
-	yrs = rtc_tm->tm_year;
-	mon = rtc_tm->tm_mon + 1;
-	day = rtc_tm->tm_mday;
-	hrs = rtc_tm->tm_hour;
-	min = rtc_tm->tm_min;
-	sec = rtc_tm->tm_sec;
-	wday = rtc_tm->tm_wday;
-	leap_yr = ((!(yrs % 4) && (yrs % 100)) || !(yrs % 400));
-	g_year = yrs;
-	g_mon = mon - 1;
-	day--;
-	g_last_day = 0;
-
-	rtc_tm->tm_mday -= g_last_day;
-	rtc_tm->tm_mday++;
-
-	rtc_tm->tm_mon = g_mon;
-	rtc_tm->tm_year = g_year;
-
-	*(volatile unsigned long *) RTC_STAT =
-		((day << DAY_BITS_OFF) | (hrs << HOUR_BITS_OFF) |
-		(min << MIN_BITS_OFF) | (sec << SEC_BITS_OFF));
-	wait_for_complete();
-}
-
-void rtc_get(struct rtc_time *rtc_tm)
-{
-	unsigned long cur_rtc_stat;
-	unsigned long day;
-	unsigned long cur_stat;
-	int leap_yr1;
-	int mon2;
-
-	cur_rtc_stat = *(volatile unsigned long *) RTC_STAT;
-
-	rtc_tm->tm_sec = (cur_rtc_stat >> SEC_BITS_OFF) & 0x3f;
-	rtc_tm->tm_min = (cur_rtc_stat >> MIN_BITS_OFF) & 0x3f;
-	rtc_tm->tm_hour = (cur_rtc_stat >> HOUR_BITS_OFF) & 0x1f;
-	rtc_tm->tm_mday = (cur_rtc_stat >> DAY_BITS_OFF) & 0x7fff;
-
-	day = (cur_rtc_stat >> 24) & 0xff;
-	mon2 = 0;
-
-	leap_yr1 = ((!(g_year % 4) && (g_year % 100)) || !(g_year % 400));
-
-	if ((g_mon == 1) && leap_yr1)
-		mon2 = 1;
-
-	if ((day - g_last_day) >= (days_in_mo[g_mon + 1] + mon2)) {
-		if ((255 - day) <= 31) {
-			day = 0;
-		}
-		g_last_day = day;
-		g_mon++;
-		if (g_mon > 12) {
-			g_year++;
-			g_mon = 0;
-		}
-		if (day == 0) {
-			cur_rtc_stat = (cur_stat & 0x00ffffff);
-			*(volatile unsigned long *) RTC_STAT =
-				cur_rtc_stat;
-			wait_for_complete();
-		}
-	}
-
-	rtc_tm->tm_mday -= g_last_day;
-	rtc_tm->tm_mday++;
-
-	rtc_tm->tm_mon = g_mon;
-	rtc_tm->tm_year = g_year;
-
-	GregorianDay(rtc_tm);
-}
-
 void rtc_reset(void)
 {
 	return;			/* nothing to do */
 }
 
+/* Wait for pending writes to complete */
 void wait_for_complete(void)
 {
 	while (!(*(volatile unsigned short *) RTC_ISTAT & 0x8000)) {
@@ -153,4 +68,77 @@ void wait_for_complete(void)
 	*(volatile unsigned short *) RTC_ISTAT = 0x8000;
 }
 
+/* Enable the RTC prescaler enable register */
+void rtc_init()
+{
+	*(volatile unsigned short *) RTC_PREN = 0x1;
+	wait_for_complete();
+}
+
+/* Set the time. Get the time_in_secs which is the number of seconds since Jan 1970 and set the RTC registers 
+ * based on this value.
+ */
+void rtc_set (struct rtc_time *tmp)
+{
+	unsigned long num_sec;
+	unsigned long n_days_1970 = 0;
+	unsigned long n_secs_rem  = 0;
+	unsigned long n_hrs	  = 0;
+	unsigned long n_mins	  = 0;
+	unsigned long n_secs	  = 0;
+	unsigned long time_in_secs;
+
+	if(tmp == NULL) {
+		printf("Error setting the date/time \n");
+		return;
+	}
+
+	time_in_secs = mktime(tmp->tm_year, tmp->tm_mon, tmp->tm_mday,tmp->tm_hour, tmp->tm_min, tmp->tm_sec);
+
+	/* Compute no. of days since 1970 */
+	n_days_1970 = (unsigned long) (time_in_secs / (NUM_SECS_IN_DAY));
+
+	/* From the remining secs, compute the hrs(0-23), mins(0-59) and secs(0-59) */
+	n_secs_rem = (unsigned long)(time_in_secs % (NUM_SECS_IN_DAY));
+	n_hrs 	= n_secs_rem / (NUM_SECS_IN_HOUR);
+	n_secs_rem = n_secs_rem % (NUM_SECS_IN_HOUR);
+	n_mins = n_secs_rem / (NUM_SECS_IN_MIN);
+	n_secs = n_secs_rem % (NUM_SECS_IN_MIN);
+	
+	/* Store the new time in the RTC_STAT register */
+	*(volatile unsigned long *) RTC_STAT =
+		((n_days_1970 << DAY_BITS_OFF) | (n_hrs << HOUR_BITS_OFF) |
+		(n_mins << MIN_BITS_OFF) | (n_secs << SEC_BITS_OFF));
+
+	wait_for_complete();
+}
+
+/* Read the time from the RTC_STAT. time_in_seconds is seconds since Jan 1970 */
+void rtc_get (struct rtc_time *tmp)
+{
+	unsigned long cur_rtc_stat = 0;
+	unsigned long time_in_sec;
+	unsigned long tm_sec = 0, tm_min = 0, tm_hour = 0, tm_day = 0; 
+
+	if(tmp == NULL) {
+		printf("Error getting the date/time \n");
+		return;
+	}
+
+	/* Read the RTC_STAT register */
+	cur_rtc_stat = *(volatile unsigned long *) RTC_STAT;
+	
+	/* Get the secs (0-59), mins (0-59), hrs (0-23) and the days since Jan 1970 */
+	tm_sec = (cur_rtc_stat >> SEC_BITS_OFF) & 0x3f;
+	tm_min = (cur_rtc_stat >> MIN_BITS_OFF) & 0x3f;
+	tm_hour = (cur_rtc_stat >> HOUR_BITS_OFF) & 0x1f;
+	tm_day = (cur_rtc_stat >> DAY_BITS_OFF) & 0x7fff;
+
+	/* Calculate the total number of seconds since Jan 1970 */
+	time_in_sec 	= 	(tm_sec) + 
+					MIN_TO_SECS(tm_min) + 
+						HRS_TO_SECS(tm_hour) + 
+							DAYS_TO_SECS(tm_day);
+	to_tm(time_in_sec,tmp);	
+}
 #endif	/* CONFIG_RTC_BF533 && CFG_CMD_DATE */
