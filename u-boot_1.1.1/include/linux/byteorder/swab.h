@@ -90,9 +90,9 @@
  ___swab64((x)) : \
  __fswab64((x)))
 #else
-#  define __swab16(x) ___swab16(x)
-#  define __swab32(x) ___swab32(x)
-#  define __swab64(x) ___swab64(x)
+#  define __swab16(x) __fswab16(x)
+#  define __swab32(x) __fswab32(x)
+#  define __swab64(x) __fswab64(x)
 #endif /* OPTIMIZE */
 
 

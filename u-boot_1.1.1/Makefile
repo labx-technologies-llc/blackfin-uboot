@@ -79,7 +79,7 @@ ifeq ($(ARCH),microblaze)
 CROSS_COMPILE = mb-
 endif
 ifeq ($(ARCH),blackfin)
-CROSS_COMPILE = nisa-elf-
+CROSS_COMPILE = bfin-elf-
 endif
 endif
 endif
@@ -136,30 +136,18 @@ SUBDIRS	= tools \
 #########################################################################
 #########################################################################
 
-
-ifeq ($(ARCH),blackfin)
-ALL = u-boot.hex u-boot.bin System.map
-else
 ALL = u-boot.srec u-boot.bin System.map
-endif
 
 all:		$(ALL)
 
 u-boot.srec:	u-boot
 		$(OBJCOPY) ${OBJCFLAGS} -O srec $< $@
 
-ifeq ($(ARCH),blackfin)
-u-boot.bin:	u-boot
-		./scr
-
-u-boot.hex:	u-boot
-		$(OBJCOPY) ${OBJCFLAGS_HEX} -O ihex $< $@
-
-u-boot.dxe:
-		cp u-boot /home/vidya/u-boot.dxe
-else
 u-boot.bin:	u-boot
 		$(OBJCOPY) ${OBJCFLAGS} -O binary $< $@
+ifeq ($(ARCH),blackfin)
+		chmod 777 scr
+		./scr
 endif
 
 u-boot.img:	u-boot.bin
@@ -177,8 +165,6 @@ u-boot:		depend $(SUBDIRS) $(OBJS) $(LIBS) $(LDSCRIPT)
 		$(LD) $(LDFLAGS) $$UNDEF_SYM $(OBJS) \
 			--start-group $(LIBS) $(PLATFORM_LIBS) --end-group \
 			-Map u-boot.map -o u-boot
-
-
 
 $(LIBS):
 		$(MAKE) -C `dirname $@`
@@ -1270,10 +1256,13 @@ dbau1500_config		: 	unconfig
 	@echo "#define CONFIG_DBAU1500 1" >>include/config.h
 	@./mkconfig -a dbau1x00 mips mips dbau1x00
 
-ezkit533_config            :       unconfig
+#########################################################################
+## Blackfin
+#########################################################################
+ezkit533_config	:	unconfig
 	@./mkconfig $(@:_config=) blackfin bf533 ezkit533
 
-stamp_config            :       unconfig
+stamp_config	:	unconfig
 	@./mkconfig $(@:_config=) blackfin bf533 stamp
 
 #########################################################################

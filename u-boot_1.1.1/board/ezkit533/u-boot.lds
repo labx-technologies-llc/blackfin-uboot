@@ -19,12 +19,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
+ *
+ *	PROJECT				:	BFIN
+ *	VERSION				:	2.0
+ *	FILE				:	u-boot.lds
+ *	MODIFIED DATE			:	29 jun 2004
+ *	AUTHOR				:	BFin Project-ADI
+ *	LOCATION			:	LG Soft India,Bangalore
  */
 
-OUTPUT_FORMAT("elf32-little-nisa")
-OUTPUT_ARCH(nisa)
+OUTPUT_FORMAT("elf32-bfin")
 ENTRY(start)
-
 MEMORY 
 	{
 	ram		: ORIGIN = 0x1800000,  	LENGTH = 0x1000000
@@ -33,51 +38,67 @@ MEMORY
 
 SECTIONS
 {
-	. = 0x20000000;
-
-	. = ALIGN(4);
-	.text      :
-	{
-	  cpu/bf533/start.o	(.text)
-	  flashdataend = .;
+	.text : {
+		cpu/bf533/start.o (.text)
+		flashdataend = ABSOLUTE(.);
 	} > flash
 
-	. = 0x1800000;
-	. = ALIGN(4);
-	.text1      :
-	{
-	  *(.text)
+	.text1 : {
+		cpu/bf533/start1.o (.text)
+		*(.text)
+		*(.fixup)
+		*(.got1)
+		. = ALIGN(4);
+		*(.rodata)
+		*(.rodata1)
+		*(.rodata.str1.4)
+	} > ram 
+
+	.data :	{
+		_sdata = . ;
+		__data_start = . ;
+		*(.rodata)
+		*(.data)
+		*(.data.*)
+		. = ALIGN(16) ;
+		ramdisk_begin = .;
+		*(.ramdisk)
+		ramdisk_end = .;
+
+		*(.setup.init)
+		*(.exitcall.exit)
+
+		__u_boot_cmd_start = .;
+		 *(.u_boot_cmd)
+		__u_boot_cmd_end = .;
+
+		_edata = . ;
+		edata = . ;
 	} > ram
 
-	. = ALIGN(4);
-	.rodata : { *(.rodata) } > ram
-
-	. = ALIGN(4);
-	.data : { *(.data)
-	__u_boot_cmd_start = .;
-	*(.u_boot_cmd)
-	__u_boot_cmd_end = .;
-	 } > ram
-
-	. = ALIGN(4);
-	.got : { *(.got) } > ram
-
-
-	. = ALIGN(4);
-	__bss_start = .;
-	.bss : { *(.bss) } > ram
-	_end = .;
-
-	. = 0x1800000;
+	. = 0x1800000;	/* Ram data segment to use */
 	_bf533_data_dest = ABSOLUTE(.);
 	_bf533_data_start = LOADADDR(.data);
-	
-	. = ALIGN(4);
-	_bf533_data_size = SIZEOF(.text1) + SIZEOF(.data);
 
-	. = 0x2000000;
-	  .eram :
-	{
-	__ramend = . ;
+	. = ALIGN(4);
+	.got : AT ( LOADADDR(.data) + SIZEOF(.data) ) { *(.got) }
+	_bf533_data_size = SIZEOF(.text1) + SIZEOF(.data) + SIZEOF(.got);
+
+	.bss :	{
+		. = ALIGN(16) ;
+		_sbss = . ;
+		__bss_start = . ;
+		__data_end = . ;
+		*(.bss)
+		*(COMMON)
+		. = ALIGN(16) ;
+		end = . ;
+		_ebss = . ;
+		_end = . ;
+	} > ram
+ 
+	. = 0x1F00000;
+	.eram :	{
+		__ramend = . ;
 	} > ram
 }

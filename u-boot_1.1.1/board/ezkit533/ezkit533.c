@@ -1,6 +1,10 @@
 /*
- * (C) Copyright 2001
+ * (C) Copyright 2002
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+ *
+ * (C) Copyright 2002
+ * Sysgo Real-Time Solutions, GmbH <www.elinos.com>
+ * Marius Groeger <mgroeger@sysgo.de>
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -19,34 +23,32 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
-
-**********************************************************************************************************
-
-                        PROJECT                 :       BFIN
-                        VERISON                 :       2.0
-                        FILE                    :       ezkit533.c
-                        MODIFIED DATE           :       29 jun 2004
-                        AUTHOR                  :       BFin Project-ADI
-                        LOCATION                :       LG Soft India,Bangalore
-
-***********************************************************************************************************/
+ *
+ *	PROJECT				:	BFIN
+ *	VERSION				:	2.0
+ *	FILE				:	ezkit533.c
+ *	MODIFIED DATE			:	29 jun 2004
+ *	AUTHOR				:	BFin Project-ADI
+ *	LOCATION			:	LG Soft India,Bangalore
+ */
 
 #include <common.h>
 
-int checkboard (void)
+int checkboard(void)
 {
 	return 0;
 }
 
-long int initdram (int board_type)
+long int initdram(int board_type)
 {
 	DECLARE_GLOBAL_DATA_PTR;
 	printf("SDRAM attributes:\n");
-	printf("tRCD %d SCLK Cycles,tRP %d SCLK Cycles,tRAS %d SCLK Cycles,tWR %d SCLK Cycles,CAS Latency %d SCLK cycles \n",3,3,6,2,3);
-	printf("SDRAM Begin: 0x%x\n",CFG_SDRAM_BASE);
-	printf("Bank size = %d MB\n",32);
-
+	printf("tRCD %d SCLK Cycles,tRP %d SCLK Cycles,tRAS %d SCLK Cycles"
+	       "tWR %d SCLK Cycles,CAS Latency %d SCLK cycles \n",
+	       3, 3, 6, 2, 3);
+	printf("SDRAM Begin: 0x%x\n", CFG_SDRAM_BASE);
+	printf("Bank size = %d MB\n", 32);
 	gd->bd->bi_memstart = CFG_SDRAM_BASE;
-	gd->bd->bi_memsize  = CFG_MAX_RAM_SIZE;
-	return 0; 
+	gd->bd->bi_memsize = CFG_MAX_RAM_SIZE;
+	return 0;
 }

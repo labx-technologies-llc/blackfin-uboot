@@ -103,26 +103,19 @@ OBJDUMP = $(CROSS_COMPILE)objdump
 RANLIB	= $(CROSS_COMPILE)RANLIB
 
 RELFLAGS= $(PLATFORM_RELFLAGS)
-ifeq ($(ARCH),blackfin)
-DBGFLAGS=
-#OPTFLAGS= -O0 -fno-gcse -fomit-frame-pointer	
-OPTFLAGS = -O0
-else
 DBGFLAGS= -g #-DDEBUG
 OPTFLAGS= -Os #-fomit-frame-pointer
+ifeq ($(ARCH),blackfin)
+DBGFLAGS=
+OPTFLAGS= -O0
 endif
-
 ifndef LDSCRIPT
 #LDSCRIPT := $(TOPDIR)/board/$(BOARDDIR)/u-boot.lds.debug
 LDSCRIPT := $(TOPDIR)/board/$(BOARDDIR)/u-boot.lds
 endif
-
 OBJCFLAGS += --gap-fill=0xff
-
 ifeq ($(ARCH),blackfin)
-OBJCFLAGS += --set-start=0x00 --adjust-section-vma=.text-0x20000000
-OBJCFLAGS_BIN = --set-start=0x00 --adjust-section-vma=.text-0x20000000
-OBJCFLAGS_HEX = --set-start=0x00 --adjust-section-vma=.text-0x20000000
+OBJCFLAGS += --set-start=0x0 --adjust-section-vma=.text-0x20000000
 endif
 
 gccincdir := $(shell $(CC) -print-file-name=include)
@@ -149,7 +142,6 @@ endif
 endif
 
 AFLAGS_DEBUG := -Wa,-gstabs
-
 AFLAGS := $(AFLAGS_DEBUG) -D__ASSEMBLY__ $(CPPFLAGS)
 
 LDFLAGS += -Bstatic -T $(LDSCRIPT) -Ttext $(TEXT_BASE) $(PLATFORM_LDFLAGS)

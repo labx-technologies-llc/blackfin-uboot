@@ -1,13 +1,13 @@
 u-boot for Blackfin BF533 processor - STAMP and Ezkit boards
---------------------------------------------------------
+--------------------------------------------------------------
 
 u-boot version - u-boot-1.1.1
 
 Development Environment 
 -----------------------
-Cross compiler	: nisa-elf 
-			gcc:  nisa-elf-gcc-2.95.3-9.i386.rpm (version 2.95.3)
-                  binutils: nisa-elf-binutils-2.9-6.i386.rpm (version 2.9)
+Cross compiler	: bfin-elf
+			gcc 3.3.x
+
 Host platform  	: Red hat Linux
 Target board	: STAMP Board/ EZKIT board
 
@@ -17,18 +17,19 @@ Installation and Execution Sequence
 Note:  Please refer Section "How to use the source" for more details on how to obtain u-boot.bin from the source.
 --------------------------------------------------------------------------------------------------------------------
 
-1. Untar the source. The released tar contains as follows
-   XXX.tar.gz (where XXX is the name of the tar.gz)
-
-   Run the following command from the base directory. 
-
-	make clean 
-	make mrproper 
-	make stamp_config  or make ezkit_config
-	make
-	./scr (This is required to get a u-boot.bin)
-
- 
+1. Unzip the u-boot-1.1.1-2.0.2.tar.gz file.
+	linux-ezkit.bin - bin file of the kernel for ezkit board (use with go command)
+	linux-stamp.bin - bin file of the kernel for stamp board (use with go command)
+	u-boot-ezkit.bin - bootloader to be programmed to the flash for ezkit
+	u-boot-stamp.bin - bootloader to be programmed to the flash for stamp
+	uImage-ezkit - uboot standard kernel image for ezkit board (to use with bootm command)
+	linux-ezkit.dxe - elf file of the kernel for ezkit (use with bootelf command)
+	linux-stamp.dxe - elf file of the kernel for stamp (use with bootelf command)
+	u-boot-ezkit.dxe - to be used initally for flash programming (ezkit board)
+	u-boot-stamp.dxe  - to be used initally for flash programming (stamp board)
+	uImage-stamp - uboot standard kernel image for stamp board (to use with bootm command)
+	mkimage - to create u-boot standard images
+   
 2. a. Make sure that the environment contains the Target Board,Host PC and DHCP server.
    b. The DHCP Server needs to be configured as given in the Instructions in the section 
       "How to set up dhcpd".
@@ -103,14 +104,15 @@ Execution Sequence:
    
    Registers->ADSP-BF533 Extended Registers->External Bus Interface Unit.
 
-	EBIU_SDGCTL = 0x00911149
-	EBIU_SDBCTL = 0x0037
-	EBIU_SDRRC  = 0x0305
+	EBIU_SDGCTL = 0x00911149 (stamp) OR 0x0091998D (ezkit533)
+	EBIU_SDBCTL = 0x0037 (stamp) OR 0x0013 (ezkit533)
+	EBIU_SDRRC  = 0x0305 (stamp) OR 0x817 (ezkit533)
 
 
-6. Load the DXE/u-boot-stamp.dxe (for stamp board) or DXE/u-boot-ezkit.dxe (for ezkit board) given with this release using VDSP++.(File -> LoadProgram)
+6. Load the u-boot-stamp.dxe or u-boot-ezkit.dxe (depending on the board) given with this release using VDSP++.
+(File -> LoadProgram)
   
-7. Set the Program Counter(PC) to 0x600000 using Registers->PC Counters.
+7. Set the Program Counter(PC) to 0x1800000 (ezit) OR 0x7000000 (stamp) using Registers->PC Counters.
 
 8. Execute the Program u-boot.dxe by Debug->Run (From VDSP ++)
 
@@ -118,14 +120,14 @@ Serial Boot :
 
 9. Once you get the u-boot prompt in the serial port terminal type loadb.
 	Now press cntl \C to get c-kermit>
-	Type "send u-boot.bin" (the one which is obtained from this source after the build)
+	Type "send u-boot-stamp.bin (OR u-boot-ezkit.bin)" (the one which is obtained from this source after the build)
 	Type "connect"
 	Now we should get the u-boot prompt.
 
 10. At the u-boot prompt, type erase all to erase all the sectors of the Flash.
 
-11. cp.b 0x1000000 0x20000000 0x20000	(copy u-boot.bin to flash)
-	(Please wait till the operation is complete. Flash write takes a long time).
+11. cp.b 0x1000000 0x20000000 0x20000	(copy u-boot-stamp.bin to flash)
+	(Please wait till the operation is complete. Flash write takes a long time on stamp).
 	(D5 LED glows to indicate flash programming is in progress).
 
 12.Change the BMODE pins to 00.Reset the board and wait for the u-boot 
@@ -165,7 +167,7 @@ Commands supported in this release:
 22.	version - print monitor version
 23.	help    - print online help
 24.	?       - alias for 'help'
-
+25.	autoscr - running a script file, used for automated testing of commands
 
 setenv:
 
@@ -200,45 +202,65 @@ loadb 0x1000000
 
 Press <Ctrl>\c to get kermit shell prompt.
 
-send linux.dxe
+send linux-stamp.dxe OR linux-ezkit.dxe
 
 2. bootelf 0x1000000
 
-bootelf 0x1000000 (after loading linux.dxe to 0x1000000)
+bootelf 0x1000000 (after loading linux-stamp.dxe (OR linux-ezkit.dxe) to 0x1000000)
 
 Execution sequence to load the compressed and un-compressed linux images 
 ---------------------------------------------------------------------------- 
 1. For this feature the linux.dxe ELF image has to be changed as per u-boot
-standards.
+standards. 
+
+Note: Currently, kernel images compiled with NISA are being used. Further releases will use kernel images 
+compiled out of bfin.
 
 	i) Generate the binary file from the ELF file.
-		nisa-elf-objcopy -O binary linux.dxe linux.bin
+		nisa-elf-objcopy -O binary linux-stamp.dxe linux-stamp.bin
 
-	ii) Compress the binary file(linux.bin)as follows.It will generate linux.bin.gz.
-		gzip -9 linux.bin
+	ii) Compress the binary file(linux-stamp.bin)as follows.It will generate linux-stamp.bin.gz.
+		gzip -9 linux-stamp.bin
 
 	iii) Use the utility mkimage present in the u-boot to merge the header 
 	     information like Image Name, Image Type, Data Size, Load Address, 
-	     Entry Point into the linux.bin.gz	
+	     Entry Point into the linux-stamp.bin.gz	
+
+	STAMP:
 	
 	     IF COMPRESSED:
 	     --------------
 	     ./tools/mkimage -A blackfin -O uclinux -T kernel -C gzip -a 0x1000 
-		-e 0x1000 -n "Bfin uClinux Kernel" -d linux.bin.gz uImage
+		-e 0x1000 -n "Bfin uClinux Kernel" -d linux-stamp.bin.gz uImage-stamp
 
 	     IF UNCOMPRESSED:
 	     ----------------
 	     ./tools/mkimage -A blackfin -O uclinux -T kernel -C none -a 0x1000
-               -e 0x1000 -n "Bfin uClinux kernel" -d linux.dxe uImage
+               -e 0x1000 -n "Bfin uClinux kernel" -d linux-stamp.dxe uImage-stamp
 
-	Note - 0x1000 is used because we have compiled the kernel with that location as the entry point. If 
-	anyone wants to chose a different address for entry point (for eg, the default 0x1000), then please 
-	give that address instead of 0x1000.
+		
+	EZKIT:
 
-	iv) Copy the final image "uImage" into the TFTP server's root.
+	     IF COMPRESSED:
+	     --------------
+	     ./tools/mkimage -A blackfin -O uclinux -T kernel -C gzip -a 0x1000 
+		-e 0x20000 -n "Bfin uClinux Kernel" -d linux-ezkit.bin.gz uImage-ezkit
+
+	     IF UNCOMPRESSED:
+	     ----------------
+	     ./tools/mkimage -A blackfin -O uclinux -T kernel -C none -a 0x1000
+               -e 0x20000 -n "Bfin uClinux kernel" -d linux-ezkit.dxe uImage-ezkit
+
+
+
+	Note - 0x1000 or 0x20000 is used because we have compiled the kernel with that location as the entry point. If 
+	anyone wants to chose a different address for entry point (for eg, 0x500000), then please 
+	give that address instead of 0x1000 and 0x20000.
+
+	iv) Copy the final image "uImage-stamp" into the TFTP server's root.
 
 2. After making either the compessed or uncompressed image,
-	tftp 0x1000000 uImage
+	tftp 0x1000000 uImage-stamp OR tftp 0x1000000 uImage-ezkit
 	bootm 0x1000000
 
 3. The command "iminfo" can be used to display the information of the 
@@ -251,11 +273,11 @@ standards.
 To test "go" command:
 -----------------------
 
-1.	nisa-elf-objcopy -O binary linux.dxe linux.bin
+1.	nisa-elf-objcopy -O binary linux.dxe linux-stamp.bin (or linux-ezkit.bin if reqd for ezkit board)
 
-2.	tftp 0x1000 linux.bin OR dhcp
+2.	tftp 0x1000 linux-stamp.bin OR tftp 0x20000 linux-ezkit.bin
 
-3. 	go 0x1000000
+3. 	go 0x1000 (stamp) OR go 0x20000 (ezkit)
 
 
 To test autoboot
@@ -269,9 +291,9 @@ To test the feature:
 ---------------------
 
 Get the prompt.
-tftp 0x1000000 uImage Or Run the command "dhcp"
+tftp 0x1000000 uImage-stamp
 erase 0x20100000 0x201fffff
-cp.b 0x1000000 0x20100000 0x100000	(LED D6 glows till the copy is in progress)
+cp.b 0x1000000 0x20100000 0x100000	(LED D6 glows till the copy is in progress in case of STAMP)
 setenv linuxrun bootm 0x20100000
 setenv bootcmd linuxrun
 saveenv
@@ -279,14 +301,14 @@ saveenv
 Reset the board and dont hit any key when the u-boot starts booting. u-boot automatically 
 executes linuxrun and displays the kernel prompt.
 
-Note - loading u-boot.bin through u-boot.dxe is only due to absence of flash utility. Once that is done, 
-u-boot.bin can be directly programmed to flash without u-boot.dxe.
+Note - loading u-boot-stamp.bin through u-boot-stamp.dxe is only due to absence of flash utility. Once that is done, 
+u-boot-stamp.bin can be directly programmed to flash without u-boot-stamp.dxe. Similar is the case with ezkit board.
 
 Known Issued to be sorted
 ---------------------------
 
 Flash programming takes a very long time.
-Around 0x90000 bytes copying takes around 10 minutes.
+Around 0x90000 bytes copying takes around 10-15 minutes.
 
 Since protection on Flash locations is not available, please ensure 0x20040000 - 0x2004ffff is not erased. Those locations
 contain environment variables. Bootloader 0x20000000 - 0x2002ffff is reserved for bootloader.
@@ -294,12 +316,52 @@ contain environment variables. Bootloader 0x20000000 - 0x2002ffff is reserved fo
 How to make a standalone system - Flashboot
 ---------------------------------------------
 
-First program the flash with the bootloader (u-boot.bin).
+First program the flash with the bootloader (u-boot-stamp.bin).
 Reset the board to get the u-boot prompt.
 
 erase 0x20100000 0x201fffff
-tftp 0x1000000 uImage or Run the command "dhcp"
+tftp 0x1000000 uImage-stamp OR tftp 0x1000000 uImage-ezkit
 cp.b 0x1000000 0x20100000 0x100000 (Please wait for the copy to get completed)
 cmp.b 0x1000000 0x20100000 0x100000 (check to see if copy was correct)
 Reset the board.
 
+
+How to use the source
+----------------------
+
+1.	Untar the source. The released tar contains as follows
+	u-boot_1.1.1-Blackfin-BfinTools.tar.gz
+
+2.	Run the following command from the base directory. 
+
+	make clean 
+	make mrproper 
+	make stamp_config  or make ezkit533_config
+	make
+
+Note: In some places only u-boot-stamp.dxe or uImage-stamp are mentioned. Same is the case with ezkit also.
+Whereever u-boot-stamp.bin is mentioned please consider u-boot-ezkit.bin instead if using u-boot-stamp.bin
+
+To test the autoscr command:
+------------------------------
+On the Host:
+-------------
+
+Write the commands to a file, say test.script
+
+STAMP:
+
+mkimage -A blackfin -O uClinux -T script -C none -a 0x5000000 -e 0x5000000 -n "autoscr example script" -d test.script test.img
+
+					OR
+
+EZKIT:
+mkimage -A blackfin -O uClinux -T script -C none -a 0x1800000 -e 0x1800000 -n "autoscr example script" -d test.script test.img
+
+On the Target:
+---------------
+
+On getting the u-boot prompt:
+
+tftp 0x5000000 test.img	(On ezkit u can use for eg, 0x1500000)
+autoscr 0x5000000 (stamp) OR autoscr 0x1500000 (ezkit)
