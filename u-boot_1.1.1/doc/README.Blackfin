@@ -1,12 +1,11 @@
 		Release Notes for u-boot_1.1.1-Beta_1 Release + Bug Fixes
-		---------------------------------------------------------
+                ---------------------------------------------------------
 
 IMP NOTE:
 --------
         Current cvs version is not completely tested and may not be stable.
         Testing is in progress.
         For the stable u-boot version get the previous tagged cvs version.
-
 
 Find these sections in this Release Notes,
 
@@ -30,6 +29,7 @@ Find these sections in this Release Notes,
 	Different VCO frequency support
 	Precautions
 	HOWTO (Help on testing selected commands)
+	U-Boot Memory map
 	Report Bugs
 
 Version
@@ -477,7 +477,11 @@ Miscellaneous
 --------------
 
 VDSP Executable Support
---------------------------
+------------------------
+
+	U-Boot Alpha-2 
+	--------------
+		Following steps shall be followed with u-boot alpha-2 version
 
 	1. Download the following examples provided from,
 	   http://blackfin.uclinux.org/frs/?group_id=20
@@ -515,7 +519,25 @@ VDSP Executable Support
 
 	Pre-Requisites: The VDSP programs should be compiled with SDRAM address only. Currently it has been chosen to 
 	compiled and execute at 0x1000.
+
+	U-Boot from Current CVS:
+	-----------------------
+		In case u-boot is compiled from current cvs following method shall be followed
+
+	1. Open Any VDSP application through VDSP toolkit.
 	
+	2. Add linker file
+
+	3. Make sure in the linker file, program section should start from 0xFFA00000
+
+	4. Make sure in the linker file, any section doesn't overlap with u-boot memory map.
+	  (Can be found at the end of this readme)
+
+	5. Compile and generate dxe 
+
+        6. Execute the application in bootloader using following commands
+		BOOT> tftp 0x1000000 <application>.dxe
+		BOOT> bootelf 0x1000000
 
 Different VCO frequency support:
 ---------------------------------
@@ -605,6 +627,71 @@ HOWTO (Help on testing selected commands)
 		BOOT> autoscr 0x1000000
 
 	7. In case of this example the message "hi" can be seen on the screen.
+
+U-Boot Memory MAP
+-----------------
+
+                U-Boot memory map for STAMP
+                ---------------------------
+
+                Memory Map after relocation:
+
+                0x0000 0000     --------------------CFG_SDRAM_BASE
+                      :
+                      :
+                0x06fb c000     --------------------CFG_GLOBAL_DATA_OFFSET
+                      :         + U-Boot Global Data storage
+                      :
+                0x06fc 0000     --------------------CFG_MALLC_BASE
+                      :         + U-Boot Heap
+                      :
+                0x0700 0000
+                      :         + U-Boot in SDRAM
+                      :
+                0x0800 0000     --------------------SDRAM End
+
+                0x2000 0000     --------------------CFG_FLASH_BASE
+                      :         + U-Boot in flash
+                      :
+                0x2007 0000
+                      :         + Environment storage
+                      :
+                0x2007 ffff
+                      :
+                      :
+                0x2040 0000     --------------------Flash end
+
+
+		U-Boot memory map for EZKIT-533
+		---------------------------
+
+		Memory Map after relocation:
+
+                0x0000 0000     --------------------CFG_SDRAM_BASE
+                      :
+                      :
+                0x017d c000     --------------------CFG_GLOBAL_DATA_OFFSET
+                      :         + U-Boot Global Data storage
+                      :
+                0x017e 0000     --------------------CFG_MALLC_BASE
+                      :         + U-Boot Heap
+                      :
+                0x0180 0000
+                      :         + U-Boot in SDRAM 
+                      :
+                0x0200 0000     --------------------SDRAM End
+
+                0x2000 0000     --------------------FLASH A Primary
+                      :         + U-Boot in flash 
+                      : 
+                0x2004 0000         
+                      :         + Environment storage
+                      :
+                0x2004 ffff
+                      :
+                      :
+                0x200f ffff
+
 
 Report Bugs
 ------------
