@@ -35,6 +35,8 @@ static ulong timestamp;
 static ulong last_time;
 static int int_flag;
 
+int irq_flags; /* needed by asm-blackfin/system.h */
+
 /* Functions just to satisfy the linker */
 
 /*
