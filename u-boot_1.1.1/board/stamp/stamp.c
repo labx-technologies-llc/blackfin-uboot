@@ -33,6 +33,7 @@
  */
 
 #include <common.h>
+#include <asm/mem_init.h>
 #include "stamp.h"
 
 int checkboard(void)
@@ -44,8 +45,9 @@ long int initdram(int board_type)
 {
 	DECLARE_GLOBAL_DATA_PTR;
 	printf("SDRAM attributes:\n");
-	printf("tRCD %d SCLK Cycles,tRP %d SCLK Cycles,tRAS %d SCLK Cycles,tWR %d "
-	       "SCLK Cycles,CAS Latency %d SCLK cycles \n", 2, 2, 5, 2, 2);
+	printf("  tRCD:%d Cycles; tRP:%d Cycles; tRAS:%d Cycles; tWR:%d Cycles; "
+		"CAS Latency:%d cycles\n", (SDRAM_tRCD >> 15), (SDRAM_tRP >> 11),
+		(SDRAM_tRAS >> 6), ( SDRAM_tWR >> 19), (SDRAM_CL >> 2 ) );
 	printf("SDRAM Begin: 0x%x\n", CFG_SDRAM_BASE);
 	printf("Bank size = %d MB\n", 128);
 	gd->bd->bi_memstart = CFG_SDRAM_BASE;
