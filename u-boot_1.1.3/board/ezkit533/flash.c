@@ -41,7 +41,9 @@ unsigned long flash_get_size(ulong baseaddr, flash_info_t * info,
 
 	id = get_codes();
 	if(FlagDev)	{
+#ifdef DEBUG
 		printf("Device ID of the Flash is %x\n", id);
+#endif
 		FlagDev = 0;
 	}
 	info->flash_id = id;

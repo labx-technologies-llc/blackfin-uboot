@@ -29,25 +29,29 @@
 
 int checkboard(void)
 {
+	printf("CPU:   ADSP BF533 Rev.: 0.%d\n", *pDSPID & 0x0000ffff);
+	printf("Board: ADI BF533 EZ-Kit Lite board\n");
+	printf("       Support: http://blackfin.uclinux.org/\n");
+	printf("       Richard Klingler <richard@uclinux.net>\n");
 	return 0;
 }
 
 long int initdram(int board_type)
 {
 	DECLARE_GLOBAL_DATA_PTR;
+#ifdef DEBUG
 	int brate;
 	char *tmp = getenv("baudrate");
 	brate = simple_strtoul(tmp, NULL, 16);
 	printf("Serial Port initialized with Baud rate = %x\n",brate);
-#ifdef DEBUG
 	printf("SDRAM attributes:\n");
 	printf("tRCD %d SCLK Cycles,tRP %d SCLK Cycles,tRAS %d SCLK Cycles"
 	       "tWR %d SCLK Cycles,CAS Latency %d SCLK cycles \n",
 	       3, 3, 6, 2, 3);
 	printf("SDRAM Begin: 0x%x\n", CFG_SDRAM_BASE);
-	printf("Bank size = %d MB\n", 32);
+	printf("Bank size = %d MB\n", CFG_MAX_RAM_SIZE >> 20);
 #endif
 	gd->bd->bi_memstart = CFG_SDRAM_BASE;
 	gd->bd->bi_memsize = CFG_MAX_RAM_SIZE;
-	return 0;
+	return CFG_MAX_RAM_SIZE;
 }

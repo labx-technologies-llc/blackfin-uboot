@@ -1,9 +1,5 @@
 #
-# U-boot - config.mk
-#
-# Copyright (c) 2005 blackfin.uclinux.org
-#
-# (C) Copyright 2000-2004
+# (C) Copyright 2001
 # Wolfgang Denk, DENX Software Engineering, wd@denx.de.
 #
 # See file CREDITS for list of people who contributed to this
@@ -25,13 +21,6 @@
 # MA 02111-1307 USA
 #
 
-TEXT_BASE = 0x20000000
+TEXT_BASE = 0x01FC0000
 PLATFORM_CPPFLAGS += -I$(TOPDIR)
 
-# OBJCFLAGS options to be given:
-# --set-start=0x00 --adjust-section-vma=.text-$(TEXT_BASE)
-#                  --adjust-section-vma=.text1-($(CFG_MONITOR_BASE) - XIP code size)
-#                  --adjust-section-vma=.data-($(CFG_MONITOR_BASE) - XIP code size)
-# where XIP code size is - size of instructions that got compiled to run from flash = .text code size
-#                  This is same as the .text size outputed in u-boot.map
-OBJCFLAGS = --set-start=0x00 --adjust-section-vma=.text-0x20000000 --adjust-section-vma=.text1-0x1f7fd48 --adjust-section-vma=.data-0x1f7fd48

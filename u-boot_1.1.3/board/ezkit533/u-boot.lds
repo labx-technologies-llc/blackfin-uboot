@@ -25,78 +25,127 @@
  * MA 02111-1307 USA
  */
 
-OUTPUT_FORMAT("elf32-bfin")
-ENTRY(start)
-MEMORY
-	{
-	ram		: ORIGIN = 0x1f80000,  	LENGTH = 0x80000
-	flash		: ORIGIN = 0x20000000, 	LENGTH = 0x80000
-	}
-
+OUTPUT_ARCH(bfin)
+SEARCH_DIR(/lib); SEARCH_DIR(/usr/lib); SEARCH_DIR(/usr/local/lib);
+/* Do we need any of these for elf?
+   __DYNAMIC = 0;    */
 SECTIONS
 {
-	.text : {
-		cpu/bf533/start.o (.text)
-		flashdataend = ABSOLUTE(.);
-	} > flash
+  /* Read-only sections, merged into text segment: */
+  . = + SIZEOF_HEADERS;
+  .interp : { *(.interp) }
+  .hash          : { *(.hash)		}
+  .dynsym        : { *(.dynsym)		}
+  .dynstr        : { *(.dynstr)		}
+  .rel.text      : { *(.rel.text)	}
+  .rela.text     : { *(.rela.text) 	}
+  .rel.data      : { *(.rel.data)	}
+  .rela.data     : { *(.rela.data) 	}
+  .rel.rodata    : { *(.rel.rodata) 	}
+  .rela.rodata   : { *(.rela.rodata) 	}
+  .rel.got       : { *(.rel.got)	}
+  .rela.got      : { *(.rela.got)	}
+  .rel.ctors     : { *(.rel.ctors)	}
+  .rela.ctors    : { *(.rela.ctors)	}
+  .rel.dtors     : { *(.rel.dtors)	}
+  .rela.dtors    : { *(.rela.dtors)	}
+  .rel.bss       : { *(.rel.bss)	}
+  .rela.bss      : { *(.rela.bss)	}
+  .rel.plt       : { *(.rel.plt)	}
+  .rela.plt      : { *(.rela.plt)	}
+  .init          : { *(.init)		}
+  .plt : { *(.plt) }
+  .text      :
+  {
+    /* WARNING - the following is hand-optimized to fit within	*/
+    /* the sector before the environment sector. If it throws 	*/
+    /* an error during compilation remove an object here to get	*/
+    /* it linked after the configuration sector.		*/
 
-	.text1 : {
-		cpu/bf533/start1.o (.text)
-		*(.text)
-		*(.fixup)
-		*(.got1)
-		. = ALIGN(4);
-		*(.rodata)
-		*(.rodata1)
-		*(.rodata.str1.4)
-	} > ram
+    cpu/bf533/start.o		(.text)
+    cpu/bf533/start1.o		(.text)
+    cpu/bf533/traps.o		(.text)
+    cpu/bf533/interrupt.o	(.text)
+    cpu/bf533/serial.o		(.text)
+    common/dlmalloc.o		(.text)
+    lib_blackfin/bf533_string.o	(.text)
+    lib_blackfin/bf533_linux.o	(.text)
+    lib_generic/vsprintf.o	(.text)
+    lib_generic/crc32.o		(.text)
+    lib_generic/zlib.o		(.text)
+    board/ezkit533/ezkit533.o		(.text)
 
-	.data :	{
-		_sdata = . ;
-		__data_start = . ;
-		*(.rodata)
-		*(.data)
-		*(.data.*)
-		. = ALIGN(16) ;
-		ramdisk_begin = .;
-		*(.ramdisk)
-		ramdisk_end = .;
+    . = DEFINED(env_offset) ? env_offset : .;
+    common/environment.o	(.text)
 
-		*(.setup.init)
-		*(.exitcall.exit)
+    *(.text)
+    *(.fixup)
+    *(.got1)
+  }
+  _etext = .;
+  PROVIDE (etext = .);
+  .rodata    :
+  {
+    *(.rodata)
+    *(.rodata1)
+    *(.rodata.str1.4)
+  }
+  .fini      : { *(.fini)    } =0
+  .ctors     : { *(.ctors)   }
+  .dtors     : { *(.dtors)   }
 
-		. = ALIGN(16);
-		__u_boot_cmd_start = .;
-		 *(.u_boot_cmd)
-		__u_boot_cmd_end = .;
-		. = ALIGN(16);
+  /* Read-write section, merged into data segment: */
+  . = (. + 0x00FF) & 0xFFFFFF00;
+  _erotext = .;
+  PROVIDE (erotext = .);
+  .reloc   :
+  {
+    *(.got)
+    _GOT2_TABLE_ = .;
+    *(.got2)
+    _FIXUP_TABLE_ = .;
+    *(.fixup)
+  }
+  __got2_entries = (_FIXUP_TABLE_ - _GOT2_TABLE_) >>2;
+  __fixup_entries = (. - _FIXUP_TABLE_)>>2;
 
-		_edata = . ;
-		edata = . ;
-	} > ram
+  .data    :
+  {
+    *(.data)
+    *(.data1)
+    *(.sdata)
+    *(.sdata2)
+    *(.dynamic)
+    CONSTRUCTORS
+  }
+  _edata  =  .;
+  PROVIDE (edata = .);
 
-	. = 0x1f80000;	/* Ram data segment to use */
-	_bf533_data_dest = ABSOLUTE(.);
-	_bf533_data_start = LOADADDR(.data);
+  __u_boot_cmd_start = .;
+  .u_boot_cmd : { *(.u_boot_cmd) }
+  __u_boot_cmd_end = .;
 
-	. = ALIGN(4);
-	.got : AT ( LOADADDR(.data) + SIZEOF(.data) ) { *(.got) }
-	_bf533_data_size = SIZEOF(.text1) + SIZEOF(.data) + SIZEOF(.got);
 
-	.bss :	{
-		. = ALIGN(16) ;
-		_sbss = . ;
-		__bss_start = . ;
-		__data_end = . ;
-		*(.bss)
-		*(COMMON)
-		. = ALIGN(16) ;
-		end = . ;
-		_ebss = . ;
-		_end = . ;
-	} > ram
- 
-	.eram :	{
-		__ramend = . ;
-	} > ram
+  __start___ex_table = .;
+  __ex_table : { *(__ex_table) }
+  __stop___ex_table = .;
+
+  . = ALIGN(256);
+  __init_begin = .;
+  .text.init : { *(.text.init) }
+  .data.init : { *(.data.init) }
+  . = ALIGN(256);
+  __init_end = .;
+
+  __bss_start = .;
+  .bss       :
+  {
+   *(.sbss) *(.scommon)
+   *(.dynbss)
+   *(.bss)
+   *(COMMON)
+  }
+  _end = . ;
+  PROVIDE (end = .);
 }
+
