@@ -2,7 +2,7 @@
  * Copyright (c) 2003 by BuyWays B.V. (www.buyways.nl)
  * Copyright (c) 2000, 2001 by Lineo, Inc./Lineo Canada Corp. (www.lineo.com),
  * Copyright (c) 2001,2002 by Arcturus Networks Inc. (www.arcturusnetworks.com),
- * Ported for Blackfin/Frio Architecture by 
+ * Ported for Blackfin/Bfin Architecture by 
  *					Akbar Hussain  <akbar.hussain@arcturusnetworks.com>,
  *             Tony Kou <tony.ko@arcturusnetworks.com>
  *					MaTed <mated@sympatico.ca> <mated@arcturusnetworks.com>
