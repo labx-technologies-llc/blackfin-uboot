@@ -136,7 +136,7 @@ ulong get_timer(ulong base)
 	ulong milisec;
 
 	/* Number of clocks elapsed */
-	ulong clocks = (MAX_TIM_LOAD - TCOUNT);
+	ulong clocks = (MAX_TIM_LOAD - (*pTCOUNT));
 
 	/* Find if the TCOUNT is reset
 	   timestamp gives the number of times
