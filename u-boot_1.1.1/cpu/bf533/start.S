@@ -76,6 +76,55 @@
 _start:
 start:
 _stext:
+
+	R0 = 0x30;
+	SYSCFG = R0;
+	SSYNC;
+
+	/* As per HW reference manual DAG registers,
+	 * DATA and Address resgister shall be zero'd 
+	 * in initialization, after a reset state
+	 */
+	r1 = 0;	/* Data registers zero'd */
+	r2 = 0;
+	r3 = 0;
+	r4 = 0;
+	r5 = 0;
+	r6 = 0;
+	r7 = 0;
+
+	p0 = 0; /* Address registers zero'd */
+	p1 = 0;
+	p2 = 0;
+	p3 = 0;
+	p4 = 0;
+	p5 = 0;
+	
+	i0 = 0; /* DAG Registers zero'd */
+	i1 = 0;
+	i2 = 0;
+	i3 = 0;
+	m0 = 0;
+	m1 = 0;
+	m3 = 0;
+	m3 = 0;
+	l0 = 0;
+	l1 = 0;
+	l2 = 0;
+	l3 = 0;
+	b0 = 0;
+	b1 = 0;
+	b2 = 0;
+	b3 = 0;
+
+	/* Set loop counters to zero, to make sure that
+	 * hw loops are disabled.
+	 */
+	lc0 = 0;
+	lc1 = 0;
+
+	SSYNC;
+
 	/* Check soft reset status */
 	p0.h = SWRST >> 16;
 	p0.l = SWRST & 0xFFFF;
@@ -91,51 +140,7 @@ _stext:
 
 no_soft_reset:
 	nop;
-	r0 = 0x30;
-	syscfg = r0;
-	
-	/* As per HW reference manual DAG registers,
-	 * DATA and Address resgister shall be zero'd 
-	 * in initialization, after a reset state
-	 */
-	r1 = 0;	/* Data registers zero'd */
-	r2 = 0;
-	r3 = 0;
-	r4 = 0;
-	r5 = 0;
-	r6 = 0;
-	r7 = 0;
 
-	p0 = r7; /* Address registers zero'd */
-	p1 = r7;
-	p2 = r7;
-	p3 = r7;
-	p4 = r7;
-	p5 = r7;
-	
-	i0 = r7; /* DAG Registers zero'd */
-	i1 = r7;
-	i2 = r7;
-	i3 = r7;
-	m0 = r7;
-	m1 = r7;
-	m3 = r7;
-	m3 = r7;
-	l0 = r7;
-	l1 = r7;
-	l2 = r7;
-	l3 = r7;
-	b0 = r7;
-	b1 = r7;
-	b2 = r7;
-	b3 = r7;
-
-	/* Set loop counters to zero, to make sure that
-	 * hw loops are disabled.
-	 */
-	lc0 = r7;
-	lc1 = r7;
-	
 	/* Clear EVT registers */
 	p0.h = (EVT_EMULATION_ADDR >> 16);
 	p0.l = (EVT_EMULATION_ADDR & 0xFFFF);
@@ -188,11 +193,12 @@ no_soft_reset:
 	w[p0] = r0;
 	ssync;
 
-	p1.l = DELAY;
-	p1.h = 0x0;
-	lsetup ( del_start,del_end ) lc0 = p1;
-del_start:
-del_end: nop;
+wait_for_pll_stab:
+	p0.h = (PLL_STAT >> 16);
+	p0.l = (PLL_STAT & 0xFFFF);
+	r0.l = w[p0];
+	cc = bittst(r0,5);
+	if !cc jump wait_for_pll_stab;
 
 	/* Configure SDRAM if SDRAM is already not enabled */
 	p0.l = (EBIU_SDSTAT & 0xFFFF);
@@ -421,8 +427,5 @@ reset_start:
 	RAISE 1 ;
 reset_end: nop;
 
-delay:
-	rts;
-	nop;
 _exit:
 	jump.s	_exit;
