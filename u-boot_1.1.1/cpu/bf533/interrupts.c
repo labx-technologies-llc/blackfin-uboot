@@ -28,7 +28,7 @@
 #include <common.h>
 #include <asm/machdep.h>
 #include <asm/irq.h>
-#include <asm/bf533.h>
+#include <asm/cpu/defBF533.h>
 #include "cpu.h"
 
 static ulong timestamp;
@@ -79,9 +79,7 @@ int interrupt_init(void)
 void udelay(unsigned long usec)
 {
         unsigned long delay, start, stop;
-
 	unsigned long cclk;
-
 	cclk = (CONFIG_CCLK_HZ);
 
 	while ( usec > 1 ) {
@@ -109,11 +107,11 @@ void udelay(unsigned long usec)
 
 void timer_init(void)
 {
-	TCNTL = 0x1;
-	TSCALE = 0x0;
-	TCOUNT  = MAX_TIM_LOAD;
-	TPERIOD = MAX_TIM_LOAD;
-	TCNTL = 0x7;
+	*pTCNTL = 0x1;
+	*pTSCALE = 0x0;
+	*pTCOUNT  = MAX_TIM_LOAD;
+	*pTPERIOD = MAX_TIM_LOAD;
+	*pTCNTL = 0x7;
 	asm("CSYNC;");
 
 	timestamp = 0;
