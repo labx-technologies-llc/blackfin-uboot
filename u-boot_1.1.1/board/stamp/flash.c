@@ -385,6 +385,10 @@ int	flash_erase (flash_info_t *info, int s_first, int s_last)
 	/* Start erase on unprotected sectors */
 	for (sect = s_first; sect<=s_last; sect++)
 	{
+	    if (info->protect[sect] ) {
+			continue;
+		}
+
 		printf("Erasing sector: %2d ... ", sect);
 		addr[ERASE_ADDR1] = ERASE_DATA1;
 		addr[ERASE_ADDR2] = ERASE_DATA2;
