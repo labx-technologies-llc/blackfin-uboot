@@ -23,13 +23,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	ezkit533.c
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
 #include <common.h>
@@ -42,6 +35,10 @@ int checkboard(void)
 long int initdram(int board_type)
 {
 	DECLARE_GLOBAL_DATA_PTR;
+	int brate;
+	char *tmp = getenv("baudrate");
+	brate = simple_strtoul(tmp, NULL, 16);
+	printf("Serial Port initialized with Baud rate = %x\n",brate);
 	printf("SDRAM attributes:\n");
 	printf("tRCD %d SCLK Cycles,tRP %d SCLK Cycles,tRAS %d SCLK Cycles"
 	       "tWR %d SCLK Cycles,CAS Latency %d SCLK cycles \n",

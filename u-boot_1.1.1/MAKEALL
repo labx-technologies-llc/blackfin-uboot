@@ -178,7 +178,7 @@ LIST_x86="${LIST_I486}"
 ## Blackfin Systems
 #########################################################################
 
-LIST_blackfin="stamp ezkit533" 
+LIST_blackfin="ezkit533 stamp"
 
 #########################################################################
 ## NIOS Systems
@@ -214,7 +214,7 @@ for arg in $@
 do
 	case "$arg" in
 	ppc|5xx|5xxx|8xx|824x|8260|85xx|4xx|7xx|74xx| \
-	arm|SA|ARM7|ARM9|pxa|ixp| \
+	arm|blackfin|SA|ARM7|ARM9|pxa|ixp| \
 	mips| \
 	nios| \
 	x86|I486)

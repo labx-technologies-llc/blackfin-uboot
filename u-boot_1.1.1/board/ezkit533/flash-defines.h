@@ -1,13 +1,3 @@
-/*
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	flash-defines.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
- */
-
 #ifndef __FLASHDEFINES_H__
 #define __FLASHDEFINES_H__
 
@@ -22,7 +12,6 @@
 
 #define V_ULONG(a)		(*(volatile unsigned long *)( a ))
 #define V_BYTE(a)		(*(volatile unsigned char *)( a ))
-#define bool 			unsigned char
 #define TRUE			0x1
 #define FALSE			0x0
 #define BUFFER_SIZE		0x80000
@@ -40,26 +29,27 @@
 #define FLASH_TOT_SECT		40
 #define FLASH_SIZE 		0x220000
 #define FLASH_MAN_ST 		2
-/* #define FLASH_DEV_ID		233 */
 #define CFG_FLASH0_BASE		0x20000000
+#define RESET_VAL		0xF0
+
 
 asm("#define FLASH_START_L 0x0000");
 asm("#define FLASH_START_H 0x2000");
 
 flash_info_t flash_info[CFG_MAX_FLASH_BANKS];
 
-int GetCodes(void);
-bool PollToggleBit(long lOffset);
-bool ResetFlash(void);
-bool EraseFlash(void);
-bool EraseBlockFlash(int nBlock,unsigned long address);
-bool UnlockFlash(long lOffset);
-bool WriteData(long lStart, long lCount, long lStride, int *pnData);
-bool FillData(long lStart, long lCount, long lStride, int *pnData);
-bool ReadData(long lStart, long lCount, long lStride, int *pnData);
-bool ReadFlash(long nOffset, int *pnValue);
-bool WriteFlash(long nOffset, int nValue);
-bool GetSectorNumber(long lOffset, int *pnSector);
+int get_codes(void);
+int poll_toggle_bit(long lOffset);
+void reset_flash(void);
+int erase_flash(void);
+int erase_block_flash(int,unsigned long);
+void unlock_flash(long lOffset);
+int write_data(long lStart, long lCount, long lStride, int *pnData);
+int FillData(long lStart, long lCount, long lStride, int *pnData);
+int read_data(long lStart, long lCount, long lStride, int *pnData);
+int read_flash(long nOffset, int *pnValue);
+int write_flash(long nOffset, int nValue);
+void get_sector_number(long lOffset, int *pnSector);
 int GetSectorProtectionStatus(flash_info_t * info, int nSector);
 int GetOffset(int nBlock);
 int AFP_NumSectors = 40;
@@ -104,5 +94,17 @@ int AFP_SectorSize2 = 0x4000;
 #define SecFlashBSec3Off	0x286000
 #define SecFlashBSec4Off	0x288000
 #define SecFlashBEndOff		0x290000
+
+#define SECT32			32
+#define SECT33			33
+#define SECT34			34
+#define SECT35			35
+#define SECT36			36
+#define SECT37			37
+#define SECT38			38
+#define SECT39			39
+
+#define FLASH_SUCCESS	0
+#define FLASH_FAIL	-1
 
 #endif

@@ -14,20 +14,13 @@
  * VisualDSP++ "Flash Programmer" flash driver for use with the
  * ADSP-BF533 EZ-KIT Lite containing the STMicroelectronics PSD4256G
  * flash device.
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	flash.c
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
 #include "flash-defines.h"
 
 void flash_reset(void)
 {
-	ResetFlash();
+	reset_flash();
 }
 
 unsigned long flash_get_size(ulong baseaddr, flash_info_t * info,
@@ -36,7 +29,7 @@ unsigned long flash_get_size(ulong baseaddr, flash_info_t * info,
 	int id = 0, i = 0;
 	static int FlagDev = 1;
 
-	id = GetCodes();
+	id = get_codes();
 	if(FlagDev)	{
 		printf("Device ID of the Flash is %x\n", id);
 		FlagDev = 0;
@@ -129,38 +122,52 @@ void flash_print_info(flash_info_t * info)
 
 int flash_erase(flash_info_t * info, int s_first, int s_last)
 {
-	int i = 0, j, cnt = 0;
+	int cnt = 0,i,j;
 
 	cnt = s_last - s_first + 1;
 
 	if (cnt == FLASH_TOT_SECT) {
 		printf("Erasing flash, Please Wait \n");
-		EraseFlash();
+		if(erase_flash() < 0) {
+			printf("Erasing flash failed \n");
+			return FLASH_FAIL;
+		}
 	} else {
 		printf("Erasing Flash locations, Please Wait\n");
 		for (i = s_first; i <= s_last; i++) {
-			if (info->start[i] >= 0x20100000) {
+			if (info->start[i] >= CFG_FLASH_BASE + PriFlashBOff) {
+			/* FIXME */
+				for (j = 0; j < 500000; j++);
+				for (j = 0; j < 500000; j++);
 				for (j = 0; j < 500000; j++);
 				for (j = 0; j < 500000; j++);
 			}
-			EraseBlockFlash(i, info->start[i]);
+			if(erase_block_flash(i, info->start[i]) < 0) {
+				printf("Error Sector erasing \n");
+				return FLASH_FAIL;
+			}
 		}
 	}
-	return 0;
+	return FLASH_SUCCESS;
 }
 
 int write_buff(flash_info_t * info, uchar * src, ulong addr, ulong cnt)
 {
-	WriteData(addr, cnt, 1, (int *) src);
-	return 0;
+	int ret;
+
+	ret = write_data(addr, cnt, 1, (int *) src);
+	if(ret == FLASH_FAIL)
+		return ERR_NOT_ERASED;
+	return FLASH_SUCCESS;
 }
 
 
-bool WriteData(long lStart, long lCount, long lStride, int *pnData)
+int write_data(long lStart, long lCount, long lStride, int *pnData)
 {
 	long i = 0;
 	int j = 0;
 	unsigned long ulOffset = lStart - CFG_FLASH_BASE;
+	int d;
 	int iShift = 0;
 	int iNumWords = 2;
 	int nLeftover = lCount % 4;
@@ -172,29 +179,43 @@ bool WriteData(long lStart, long lCount, long lStride, int *pnData)
 			if ((ulOffset >= INVALIDLOCNSTART)
 			    && (ulOffset < INVALIDLOCNEND)) {
 				printf("Invalid locations, Try writing to another location \n");
-				return -1;	/* Invalid Location */
+				return FLASH_FAIL;
 			}
-			GetSectorNumber(ulOffset, &nSector);
-			UnlockFlash(ulOffset);
-			WriteFlash(ulOffset, (pnData[i] >> iShift));
-			PollToggleBit(ulOffset);
+			get_sector_number(ulOffset, &nSector);
+			read_flash(ulOffset,&d);
+			if(d != 0xffff) {
+				printf("Flash not erased at offset 0x%x Please erase to reprogram \n",ulOffset);
+				return FLASH_FAIL;
+			}
+			unlock_flash(ulOffset);
+			if(write_flash(ulOffset, (pnData[i] >> iShift)) < 0) {
+				printf("Error programming the flash \n");
+				return FLASH_FAIL;
+			}
 			iShift += 16;
 		}
 	}
 	if (nLeftover > 0) {
 		if ((ulOffset >= INVALIDLOCNSTART)
 		    && (ulOffset < INVALIDLOCNEND))
-			return -1;
-		GetSectorNumber(ulOffset, &nSector);
-		UnlockFlash(ulOffset);
-		WriteFlash(ulOffset, pnData[i]);
-		PollToggleBit(ulOffset);
+			return FLASH_FAIL;
+		get_sector_number(ulOffset, &nSector);
+		read_flash(ulOffset,&d);
+		if(d != 0xffff) {
+			printf("Flash already programmed. Please erase to reprogram \n");
+			printf("uloffset = 0x%x \t d = 0x%x\n",ulOffset,d);
+			return FLASH_FAIL;
+		}
+		unlock_flash(ulOffset);
+		if(write_flash(ulOffset, pnData[i]) < 0) {
+			printf("Error programming the flash \n");
+			return FLASH_FAIL;
+		}
 	}
-	ResetFlash();
-	return 0;
+	return FLASH_SUCCESS;
 }
 
-bool ReadData(long ulStart, long lCount, long lStride, int *pnData)
+int read_data(long ulStart, long lCount, long lStride, int *pnData)
 {
 	long i = 0;
 	int j = 0;
@@ -209,12 +230,12 @@ bool ReadData(long ulStart, long lCount, long lStride, int *pnData)
 		for (iShift = 0, j = 0; j < iNumWords; j += 2) {
 			if ((ulOffset >= INVALIDLOCNSTART)
 			    && (ulOffset < INVALIDLOCNEND))
-				return -1;
+				return FLASH_FAIL;
 
-			GetSectorNumber(ulOffset, &nSector);
-			ReadFlash(ulOffset, &nLow);
+			get_sector_number(ulOffset, &nSector);
+			read_flash(ulOffset, &nLow);
 			ulOffset += (lStride * 2);
-			ReadFlash(ulOffset, &nHi);
+			read_flash(ulOffset, &nHi);
 			ulOffset += (lStride * 2);
 			pnData[i] = (nHi << 16) | nLow;
 		}
@@ -222,15 +243,15 @@ bool ReadData(long ulStart, long lCount, long lStride, int *pnData)
 	if (nLeftover > 0) {
 		if ((ulOffset >= INVALIDLOCNSTART)
 		    && (ulOffset < INVALIDLOCNEND))
-			return -1;
+			return FLASH_FAIL;
 
-		GetSectorNumber(ulOffset, &nSector);
-		ReadFlash(ulOffset, &pnData[i]);
+		get_sector_number(ulOffset, &nSector);
+		read_flash(ulOffset, &pnData[i]);
 	}
-	return TRUE;
+	return FLASH_SUCCESS;
 }
 
-bool WriteFlash(long nOffset, int nValue)
+int write_flash(long nOffset, int nValue)
 {
 	long addr;
 
@@ -238,16 +259,18 @@ bool WriteFlash(long nOffset, int nValue)
 	asm("ssync;");
 	*(unsigned volatile short *) addr = nValue;
 	asm("ssync;");
-	return TRUE;
+	if(poll_toggle_bit(nOffset) < 0)
+		return FLASH_FAIL;
+	return FLASH_SUCCESS;
 }
 
-bool ReadFlash(long nOffset, int *pnValue)
+int read_flash(long nOffset, int *pnValue)
 {
 	int nValue = 0x0;
 	long addr = (CFG_FLASH_BASE + nOffset);
 
 	if (nOffset != 0x2)
-		ResetFlash();	/* FIXME */
+		reset_flash();
 	asm("ssync;");
 	nValue = *(volatile unsigned short *) addr;
 	asm("ssync;");
@@ -255,177 +278,169 @@ bool ReadFlash(long nOffset, int *pnValue)
 	return TRUE;
 }
 
-bool PollToggleBit(long lOffset)
-{
-	bool bError = FALSE;
-
-	asm("POLL_TOGGLE_BIT:");
-	asm("p2.l = 0x0000;");
-	asm("p2.h = 0x2000;");
-	asm("r2 = r0;");
-	asm("r1 = p2;");
-	asm("r1 = r1 + r2;");
-	asm("p2 = r1;");
-	asm("r1 = w[p2](z);");
-	asm("SSYNC;");
-	asm("r2 = w[p2](z);");
-	asm("SSYNC;");
-	asm("r1 = r1 ^ r2;");
-	asm("cc = bittst(r1, 6);");
-	asm("if !cc jump DONE_TOGGLE_BIT;");
-	asm("cc = bittst(r2, 5);");
-	asm("if !cc jump POLL_TOGGLE_BIT;");
-	asm("r1 = w[p2](z);");
-	asm("SSYNC;");
-	asm("r2 = w[p2](z);");
-	asm("SSYNC;");
-	asm("r1 = r1 ^ r2;");
-	asm("cc = bittst(r1, 6);");
-	asm("if !cc jump DONE_TOGGLE_BIT;");
-	
-	ResetFlash();
-	
-	asm("DONE_TOGGLE_BIT:");
-	bError = TRUE;
-
-	return !bError;
+int poll_toggle_bit(long lOffset)
+{		
+	unsigned int u1,u2;
+	unsigned long timeout = 0xFFFFFFFF;
+	volatile unsigned long *FB = (volatile unsigned long *)(0x20000000 + lOffset);
+	while(1) {
+		if(timeout < 0)
+			break;
+		u1 = *(volatile unsigned short *)FB;
+		u2 = *(volatile unsigned short *)FB;
+		if((u1 & 0x0040) == (u2 & 0x0040))
+			return FLASH_SUCCESS;
+		if((u2 & 0x0020) == 0x0000)
+			continue;
+		u1 = *(volatile unsigned short *)FB;
+		if((u2 & 0x0040) == (u1 & 0x0040))
+			return FLASH_SUCCESS;
+		else {
+			reset_flash();
+			return FLASH_FAIL;
+		}
+		timeout--;
+	}
+	printf("Time out occured \n");
+	if(timeout <0)	return FLASH_FAIL;
 }
 
-bool ResetFlash()
+void reset_flash(void)
 {
-	WriteFlash(0x0AAA, 0xf0);
-	return TRUE;
+	write_flash(WRITESEQ1, RESET_VAL);
+	/* Wait for 10 micro seconds */
+	udelay(10);
 }
 
-bool EraseFlash()
+int erase_flash(void)
 {
-	int ErrorCode = 0;
+	write_flash(WRITESEQ1, WRITEDATA1);
+	write_flash(WRITESEQ2, WRITEDATA2);
+	write_flash(WRITESEQ3, WRITEDATA3);
+	write_flash(WRITESEQ4, WRITEDATA4);
+	write_flash(WRITESEQ5, WRITEDATA5);
+	write_flash(WRITESEQ6, WRITEDATA6);
 
-	WriteFlash(0x0AAA, 0xaa);
-	WriteFlash(0x0554, 0x55);
-	WriteFlash(0x0AAA, 0x80);
-	WriteFlash(0x0AAA, 0xaa);
-	WriteFlash(0x0554, 0x55);
-	WriteFlash(0x0AAA, 0x10);
+	if(poll_toggle_bit(0x0000) < 0)
+		return FLASH_FAIL;
 
-	PollToggleBit(0x0000);
+	write_flash(SecFlashAOff + WRITESEQ1, WRITEDATA1);
+	write_flash(SecFlashAOff + WRITESEQ2, WRITEDATA2);
+	write_flash(SecFlashAOff + WRITESEQ3, WRITEDATA3);
+	write_flash(SecFlashAOff + WRITESEQ4, WRITEDATA4);
+	write_flash(SecFlashAOff + WRITESEQ5, WRITEDATA5);
+	write_flash(SecFlashAOff + WRITESEQ6, WRITEDATA6);
 
-	WriteFlash(0x200AAA, 0xaa);
-	WriteFlash(0x200554, 0x55);
-	WriteFlash(0x200AAA, 0x80);
-	WriteFlash(0x200AAA, 0xaa);
-	WriteFlash(0x200554, 0x55);
-	WriteFlash(0x200AAA, 0x10);
+	if(poll_toggle_bit(SecFlashASec1Off) < 0)
+		return FLASH_FAIL;
 
-	PollToggleBit(0x200000);
+	write_flash(PriFlashBOff + WRITESEQ1, WRITEDATA1);
+	write_flash(PriFlashBOff + WRITESEQ2, WRITEDATA2);
+	write_flash(PriFlashBOff + WRITESEQ3, WRITEDATA3);
+	write_flash(PriFlashBOff + WRITESEQ4, WRITEDATA4);
+	write_flash(PriFlashBOff + WRITESEQ5, WRITEDATA5);
+	write_flash(PriFlashBOff + WRITESEQ6, WRITEDATA6);
 
-	WriteFlash(0x100AAA, 0xaa);
-	WriteFlash(0x100554, 0x55);
-	WriteFlash(0x100AAA, 0x80);
-	WriteFlash(0x100AAA, 0xaa);
-	WriteFlash(0x100554, 0x55);
-	WriteFlash(0x100AAA, 0x10);
+	if(poll_toggle_bit(PriFlashBOff) <0)
+		return FLASH_FAIL;
 
-	PollToggleBit(0x100000);
+	write_flash(SecFlashBOff + WRITESEQ1, WRITEDATA1);
+	write_flash(SecFlashBOff + WRITESEQ2, WRITEDATA2);
+	write_flash(SecFlashBOff + WRITESEQ3, WRITEDATA3);
+	write_flash(SecFlashBOff + WRITESEQ4, WRITEDATA4);
+	write_flash(SecFlashBOff + WRITESEQ5, WRITEDATA5);
+	write_flash(SecFlashBOff + WRITESEQ6, WRITEDATA6);
 
-	WriteFlash(0x280AAA, 0xaa);
-	WriteFlash(0x280554, 0x55);
-	WriteFlash(0x280AAA, 0x80);
-	WriteFlash(0x280AAA, 0xaa);
-	WriteFlash(0x280554, 0x55);
-	WriteFlash(0x280AAA, 0x10);
+	if(poll_toggle_bit(SecFlashBOff) < 0)
+		return FLASH_FAIL;
 
-	ErrorCode = PollToggleBit(0x280000);
-
-	return TRUE;
+	return FLASH_SUCCESS;
 }
 
-bool EraseBlockFlash(int nBlock, unsigned long address)
+int erase_block_flash(int nBlock, unsigned long address)
 {
 
 	long ulSectorOff = 0x0;
-	int ErrorCode = 0;
 
 	if ((nBlock < 0) || (nBlock > AFP_NumSectors))
 		return FALSE;
 
-	ulSectorOff = (address - 0x20000000);
+	ulSectorOff = (address - CFG_FLASH_BASE);
 
-	WriteFlash((0x0AAA | ulSectorOff), 0xaa);
-	WriteFlash((0x0554 | ulSectorOff), 0x55);
-	WriteFlash((0x0AAA | ulSectorOff), 0x80);
-	WriteFlash((0x0AAA | ulSectorOff), 0xaa);
-	WriteFlash((0x0554 | ulSectorOff), 0x55);
+	write_flash((WRITESEQ1 | ulSectorOff), WRITEDATA1);
+	write_flash((WRITESEQ2 | ulSectorOff), WRITEDATA2);
+	write_flash((WRITESEQ3 | ulSectorOff), WRITEDATA3);
+	write_flash((WRITESEQ4 | ulSectorOff), WRITEDATA4);
+	write_flash((WRITESEQ5 | ulSectorOff), WRITEDATA5);
 
-	WriteFlash(ulSectorOff, 0x30);
+	write_flash(ulSectorOff, BlockEraseVal);
 
-	ErrorCode = PollToggleBit(ulSectorOff);
+	if(poll_toggle_bit(ulSectorOff) < 0)		
+		return FLASH_FAIL;
 
-	return TRUE;
+	return FLASH_SUCCESS;
 }
 
-bool UnlockFlash(long ulOffset)
+void unlock_flash(long ulOffset)
 {
 	unsigned long ulOffsetAddr = ulOffset;
 	ulOffsetAddr &= 0xFFFF0000;
 
-	WriteFlash((WRITESEQ1 | ulOffsetAddr), UNLOCKDATA1);
-	WriteFlash((WRITESEQ2 | ulOffsetAddr), UNLOCKDATA2);
-	WriteFlash((WRITESEQ3 | ulOffsetAddr), UNLOCKDATA3);
-
-	return 1;
+	write_flash((WRITESEQ1 | ulOffsetAddr), UNLOCKDATA1);
+	write_flash((WRITESEQ2 | ulOffsetAddr), UNLOCKDATA2);
+	write_flash((WRITESEQ3 | ulOffsetAddr), UNLOCKDATA3);
 }
 
-int GetCodes()
+int get_codes()
 {
 	int dev_id = 0;
 
-	WriteFlash(WRITESEQ1, GETCODEDATA1);
-	WriteFlash(WRITESEQ2, GETCODEDATA2);
-	WriteFlash(WRITESEQ3, GETCODEDATA3);
+	write_flash(WRITESEQ1, GETCODEDATA1);
+	write_flash(WRITESEQ2, GETCODEDATA2);
+	write_flash(WRITESEQ3, GETCODEDATA3);
 
-	ReadFlash(0x0002, &dev_id);
+	read_flash(0x0002, &dev_id);
 	dev_id &= 0x00FF;
 
-	ResetFlash();
+	reset_flash();
 
 	return dev_id;
 }
 
-bool GetSectorNumber(long ulOffset, int *pnSector)
+void get_sector_number(long ulOffset, int *pnSector)
 {
 	int nSector = 0;
 
 	if (ulOffset >= SecFlashAOff) {
 		if ((ulOffset < SecFlashASec1Off)
 		    && (ulOffset < SecFlashASec2Off)) {
-			nSector = 32;
+			nSector = SECT32;
 		} else if ((ulOffset >= SecFlashASec2Off)
 			   && (ulOffset < SecFlashASec3Off)) {
-			nSector = 33;
+			nSector = SECT33;
 		} else if ((ulOffset >= SecFlashASec3Off)
 			   && (ulOffset < SecFlashASec4Off)) {
-			nSector = 34;
+			nSector = SECT34;
 		} else if ((ulOffset >= SecFlashASec4Off)
 			   && (ulOffset < SecFlashAEndOff)) {
-			nSector = 35;
+			nSector = SECT35;
 		}
 	} else if (ulOffset >= SecFlashBOff) {
 		if ((ulOffset < SecFlashBSec1Off)
 		    && (ulOffset < SecFlashBSec2Off)) {
-			nSector = 36;
+			nSector = SECT36;
 		}
 		if ((ulOffset < SecFlashBSec2Off)
 		    && (ulOffset < SecFlashBSec3Off)) {
-			nSector = 37;
+			nSector = SECT37;
 		}
 		if ((ulOffset < SecFlashBSec3Off)
 		    && (ulOffset < SecFlashBSec4Off)) {
-			nSector = 38;
+			nSector = SECT38;
 		}
 		if ((ulOffset < SecFlashBSec4Off)
 		    && (ulOffset < SecFlashBEndOff)) {
-			nSector = 39;
+			nSector = SECT39;
 		}
 	} else if ((ulOffset >= PriFlashAOff) && (ulOffset < SecFlashAOff)) {
 		nSector = ulOffset & 0xffff0000;
@@ -435,36 +450,5 @@ bool GetSectorNumber(long ulOffset, int *pnSector)
 
 	if ((nSector >= 0) && (nSector < AFP_NumSectors)) {
 		*pnSector = nSector;
-		return 1;
-	} else
-		return -1;
-}
-
-int GetOffset(int nBlock)
-{
-	int ulSectorOff;
-
-	if ((nBlock < 0) || (nBlock > AFP_NumSectors))
-		return FALSE;
-
-	if ((nBlock >= 0) && (nBlock < SecFlashABegin)) {
-		ulSectorOff = (nBlock * AFP_SectorSize1);
-	} else if (nBlock == SecFlashABegin) {
-		ulSectorOff = SecFlashASec1Off;
-	} else if (nBlock == (SecFlashABegin + 1)) {
-		ulSectorOff = SecFlashASec2Off;
-	} else if (nBlock == (SecFlashABegin + 2)) {
-		ulSectorOff = SecFlashASec3Off;
-	} else if (nBlock == (SecFlashABegin + 3)) {
-		ulSectorOff = SecFlashASec4Off;
-	} else if (nBlock == SecFlashBBegin) {
-		ulSectorOff = SecFlashBSec1Off;
-	} else if (nBlock == (SecFlashBBegin + 1)) {
-		ulSectorOff = SecFlashBSec2Off;
-	} else if (nBlock == (SecFlashBBegin + 2)) {
-		ulSectorOff = SecFlashBSec3Off;
-	} else if (nBlock == (SecFlashBBegin + 3)) {
-		ulSectorOff = SecFlashBSec4Off;
 	}
-	return ulSectorOff;
 }

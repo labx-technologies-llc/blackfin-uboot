@@ -1,7 +1,7 @@
-u-boot-1.1.1 (Version alpha2)
+u-boot-1.1.1 (Version Beta)
 -----------------------------
 
-Previous Release Dated: 30/08/2004 contained:
+Previous Release Alpha2 contained:
 
 Configuration for stamp and ezkit boards.
 Version supports the following on both the boards.
@@ -11,14 +11,14 @@ Version supports the following on both the boards.
 3. Timeout on Network commands, if failed
 4. Autoscr command enabled
 5. Ezkit Flash implemented as 3 flash banks.
+6. VDSP executable support
+7. Different VCO frequency support
+9. sleep command support
 
-Current Release Dated 17/08/2004 contains:
+Current Release Dated 07/09/2004 contains:
 ---------------------------
-
-1. Previous Release features as mentioned above
-2. VDSP executable support (Yet to be tested on Stamp)
-3. Different VCO frequency support
-4. sleep command support
+1. Previous Release features as mentioned above and some bug fixes 
+mentioned in ReleaseNotes-Beta.txt 
 
 Next Release will contain:
 ------------------------------
@@ -30,6 +30,4 @@ Features not supported
 
 Known Issues
 ---------------
-1. Flash programming takes a lot of time.
-2. On Ezkit, if location on flash is programmed without erasure,
-   further flash operations fail. Only way is to reset the board.
+	Clock varies with standard second.
