@@ -267,6 +267,45 @@ DMA:
 	R0 = 0x1;
 	W[P1+OFFSET_(MDMA_D0_IRQ_STATUS)] = R0;	//Write 1 to clear DMA interrupt
 
+	/* DMA reset code to DATA BANK A which uses this port 
+	 * to avoid following problem
+	 * " Data from a Data Cache fill can be corrupoted after or during
+	 *   instruction DMA if certain core stalls exist"
+	 */
+
+copy_as_data:
+	R0.H = reset_start;             /* Source Address (high) */
+	R0.L = reset_start;             /* Source Address (low) */
+	R1.H = reset_end;
+	R1.L = reset_end;
+	R2 = R1 - R0;                   /* Count */
+	R1.H = hi(DATA_BANKA_SRAM);    	/* Destination Address (high) */
+	R1.L = lo(DATA_BANKA_SRAM);     /* Destination Address (low) */
+	R3.L = DMAEN;                   /* Source DMAConfig Value (8-bit words) */
+	R4.L = (DI_EN | WNR | DMAEN);   /* Destination DMAConfig Value (8-bit words) */
+
+DMA_DATA:
+	R6 = 0x1 (Z);
+	W[P1+OFFSET_(MDMA_S0_X_MODIFY)] = R6;   /* Source Modify = 1 */
+	W[P1+OFFSET_(MDMA_D0_X_MODIFY)] = R6;   /* Destination Modify = 1 */
+
+ 	[P1+OFFSET_(MDMA_S0_START_ADDR)] = R0;  /* Set Source Base Address */
+	W[P1+OFFSET_(MDMA_S0_X_COUNT)] = R2;    /* Set Source Count */
+	/* Set Source      DMAConfig = DMA Enable,
+	Memory Read,  8-Bit Transfers, 1-D DMA, Flow - Stop */
+	W[P1+OFFSET_(MDMA_S0_CONFIG)] = R3;
+
+	[P1+OFFSET_(MDMA_D0_START_ADDR)] = R1;  /* Set Destination Base Address */
+	W[P1+OFFSET_(MDMA_D0_X_COUNT)] = R2;    /* Set Destination Count */
+	/* Set Destination DMAConfig = DMA Enable,
+	Memory Write, 8-Bit Transfers, 1-D DMA, Flow - Stop, IOC */
+	W[P1+OFFSET_(MDMA_D0_CONFIG)] = R4;
+
+	IDLE;                                   //Wait for DMA to Complete
+
+	R0 = 0x1;
+`	W[P1+OFFSET_(MDMA_D0_IRQ_STATUS)] = R0; //Write 1 to clear DMA interrupt
+
 copy_end: nop;
 
         /* Initialize BSS Section with 0 s */
