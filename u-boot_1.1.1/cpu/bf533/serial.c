@@ -57,8 +57,8 @@ void calc_baud(void)
 	unsigned char i;
 
 	for(i = 0; i < sizeof(baud_table)/sizeof(int); i++) {
-		hw_baud_table[i].dl_high = ((sclk/baud_table[i]/16) >> 8)& 0xFF;
-		hw_baud_table[i].dl_low = (sclk/baud_table[i]/16) & 0xFF;
+		hw_baud_table[i].dl_high = ((sclk/(baud_table[i]*16)) >> 8)& 0xFF;
+		hw_baud_table[i].dl_low = (sclk/(baud_table[i]*16)) & 0xFF;
 	}
 }
 
@@ -119,9 +119,6 @@ int serial_init(void)
 
 void serial_putc(const char c)
 {
-	while (!(UART_LSR & UART_LSR_TEMT))
-		SYNC_ALL;
-
 	if (UART_LSR & UART_LSR_TEMT) {
 		if (c == '\n') {
 			local_put_char('\r');
@@ -131,6 +128,10 @@ void serial_putc(const char c)
 			local_put_char('\n');
 		}
 	}
+
+	while (!(UART_LSR & UART_LSR_TEMT))
+		SYNC_ALL;
+
 	return;
 }
 
