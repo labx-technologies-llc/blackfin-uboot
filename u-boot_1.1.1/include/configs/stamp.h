@@ -12,7 +12,7 @@
 #define CONFIG_DRIVER_SMC91111	1
 #define CONFIG_SMC91111_BASE	0x20300300
 /* Enabled below option for CF support */
-/* #define CONFIG_STAMP_CF         1 */	
+/* #define CONFIG_STAMP_CF         1 */
 
 
 /* To remove hardcoding and enable MAC storage in EEPROM */
@@ -20,6 +20,8 @@
 
 #define CONFIG_RTC_BF533	1
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
+
+#ifndef CONFIG_STAMP_CF
 
 /* CONFIG_CLKIN_HZ is any value in Hz                            */
 #define CONFIG_CLKIN_HZ          11059200
@@ -39,6 +41,16 @@
 /* Values can range from 1-15                                    */
 #define CONFIG_SCLK_DIV                 5
 
+#else
+/* For Compact Flash support Sclk must be less than 79MHz 	 */
+#define CONFIG_CLKIN_HALF       	0
+#define CONFIG_PLL_BYPASS       	0
+#define CONFIG_VCO_MULT                36
+#define CONFIG_CCLK_DIV                 1
+#define CONFIG_SCLK_DIV                 5
+
+#endif
+
 #if ( CONFIG_CLKIN_HALF == 0 )
   #define CONFIG_VCO_HZ           ( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT )
 #else
@@ -56,10 +68,6 @@
 #define CONFIG_MEM_SIZE                128             /* 128, 64, 32, 16 */
 #define CONFIG_MEM_ADD_WDTH     	11             /* 8, 9, 10, 11    */
 #define CONFIG_MEM_MT48LC64M4A2FB_7E	1
-/* Clock settings for Compact Falsh */
-#define CF_CONFIG_CRYSTAL_FREQ	11
-#define CF_PLL_DIV_FACTOR	5
-#define CF_CONFIG_VCO		396
 
 #define	CONFIG_EXTRA_ENV_SETTINGS					\
 	"netdev=eth0\0"							\
@@ -133,11 +141,7 @@
 #define CFG_FLASH0_BASE		0x20000000
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	67	/* max number of sectors on one chip */
-#ifdef CONFIG_STAMP_CF
-#define CFG_ENV_ADDR		0x20050000
-#else
 #define CFG_ENV_ADDR		0x20020000
-#endif
 
 #define CFG_ENV_SECT_SIZE 	0x10000	/* Total Size of Environment Sector */
 
@@ -180,6 +184,24 @@
 #undef	CONFIG_STATUS_LED
 
 #define CONFIG_VDSP		1
+
+/* FLASH/ETHERNET uses the same address range */
+#define SHARED_RESOURCES 	1
+
+#define __ADSPLPBLACKFIN__	1
+#define __ADSPBF533__		1
+
+/* 0xFF, 0xBBC3BBc3, 0x99B39983 */
+/*#define AMGCTLVAL             (AMBEN_P0 | AMBEN_P1 | AMBEN_P2 | AMCKEN)
+#define AMBCTL0VAL              (B1WAT_11 | B1RAT_11 | B1HT_3 | B1ST_4 | B1TT_4 | B1RDYPOL |    \
+                                B1RDYEN | B0WAT_11 | B0RAT_11 | B0HT_3 | B0ST_4 | B0TT_4 | B0RDYPOL | B0RDYEN)
+#define AMBCTL1VAL              (B3WAT_9 | B3RAT_9 | B3HT_2 | B3ST_3 | B3TT_4 | B3RDYPOL |      \
+                                B3RDYEN | B2WAT_9 | B2RAT_9 | B2HT_2 | B2ST_4 | B2TT_4 | B2RDYPOL | B2RDYEN)
+*/
+#define AMGCTLVAL               0xFF
+#define AMBCTL0VAL              0xBBC3BBC3
+#define AMBCTL1VAL              0x99B39983
+#define CF_AMBCTL1VAL           0x99B3ffc2
 
 #ifdef CONFIG_VDSP
 #define ET_EXEC_VDSP		0x8

@@ -25,7 +25,7 @@
 #define CONFIG_PLL_BYPASS               0
 /* CONFIG_VCO_MULT controls what the multiplier of the PLL is.   */
 /* Values can range from 1-64                                    */
-#define CONFIG_VCO_MULT                22
+#define CONFIG_VCO_MULT                 22 
 /* CONFIG_CCLK_DIV controls what the core clock divider is       */
 /* Values can be 1, 2, 4, or 8 ONLY                              */
 #define CONFIG_CCLK_DIV                 1
@@ -140,6 +140,22 @@
 #endif
 
 #undef	CONFIG_STATUS_LED
+/* FLASH and ETHERNET uses different address ranges */
+#undef SHARED_RESOURCES 
+
+#define __ADSPLPBLACKFIN__	1
+#define __ADSPBF533__		1
+
+/* 0xFF, 0x7BB07BB0, 0x22547BB0 */
+/* #define AMGCTLVAL            (AMBEN_P0 | AMBEN_P1 | AMBEN_P2 | AMCKEN)
+#define AMBCTL0VAL              (B1WAT_7 | B1RAT_11 | B1HT_2 | B1ST_3 | B1TT_4 | ~B1RDYPOL |    \
+                                ~B1RDYEN | B0WAT_7 | B0RAT_11 | B0HT_2 | B0ST_3 | B0TT_4 | ~B0RDYPOL | ~B0RDYEN)
+#define AMBCTL1VAL              (B3WAT_2 | B3RAT_2 | B3HT_1 | B3ST_1 | B3TT_4 | B3RDYPOL | ~B3RDYEN |   \
+                                B2WAT_7 | B2RAT_11 | B2HT_2 | B2ST_3 | B2TT_4 | ~B2RDYPOL | ~B2RDYEN)
+*/
+#define AMGCTLVAL               0xFF
+#define AMBCTL0VAL              0x7BB07BB0
+#define AMBCTL1VAL              0x22547BB0
 
 #define CONFIG_VDSP		1
 
