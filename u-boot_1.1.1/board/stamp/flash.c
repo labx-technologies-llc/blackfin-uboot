@@ -44,7 +44,7 @@ unsigned long flash_init(void)
 
 	printf("Flash Memory Start 0x%x\n", CFG_FLASH_BASE);
 	printf("Please type command flinfo for information on Sectors \n");
-	init_Flags();
+	swap_to(FLASH);
 	for (i = 0; i < CFG_MAX_FLASH_BANKS; ++i) {
 		flash_info[i].flash_id = FLASH_UNKNOWN;
 	}
