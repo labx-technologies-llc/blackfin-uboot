@@ -105,10 +105,6 @@ RANLIB	= $(CROSS_COMPILE)RANLIB
 RELFLAGS= $(PLATFORM_RELFLAGS)
 DBGFLAGS= -g #-DDEBUG
 OPTFLAGS= -Os #-fomit-frame-pointer
-ifeq ($(ARCH),blackfin)
-DBGFLAGS=
-OPTFLAGS= -O0
-endif
 ifndef LDSCRIPT
 #LDSCRIPT := $(TOPDIR)/board/$(BOARDDIR)/u-boot.lds.debug
 LDSCRIPT := $(TOPDIR)/board/$(BOARDDIR)/u-boot.lds
