@@ -33,6 +33,7 @@
 #include <net.h>
 #include <environment.h>
 #include "blackfin_board.h"
+#include "../drivers/smc91111.h"
 
 static void mem_malloc_init(void)
 {
@@ -230,7 +231,19 @@ void board_init_r(gd_t * id, ulong dest_addr)
 #endif
 
 #ifdef CONFIG_DRIVER_SMC91111
-	printf("Compiled with SMC91111 support\n");
+#ifdef CONFIG_STAMP
+	/* Switch to Ethernet */
+	asyncbank_init();
+#endif
+	if  ( (SMC_inw(BANK_SELECT) & UPPER_BYTE_MASK) != SMC_IDENT ) {
+		printf("ERROR: Can't find SMC91111 at address %x\n", SMC_BASE_ADDRESS);
+	} else {
+		printf("Net: Found SMC91111 at address %x\n", SMC_BASE_ADDRESS);
+	}
+
+#ifdef CONFIG_STAMP
+	init_Flags();
+#endif
 #endif
 
 #ifdef DEBUG

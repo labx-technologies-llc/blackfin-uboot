@@ -38,4 +38,9 @@ extern char _sram_inst_size[];
 static void display_global_data(void);
 #endif
 
+/* definitions used to check the SMC card availability */
+#define SMC_BASE_ADDRESS CONFIG_SMC91111_BASE
+#define UPPER_BYTE_MASK	0xFF00
+#define SMC_IDENT	0x3300
+
 #endif
