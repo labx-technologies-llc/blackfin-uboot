@@ -19,7 +19,7 @@ unsigned long flash_get_size(ulong baseaddr, flash_info_t * info)
 
 	printf("Device ID of the Flash is %x\n", dev_id);
 	printf("Manufacture ID of the Flash is %x\n", man_id);
-	printf("Memory Map of Flash: 0x%x - 0x%x\n",CFG_FLASH0_BASE,(CFG_FLASH0_BASE+FLASH_SIZE));
+	printf("Memory Map of Flash: 0x%x - 0x%x\n",CFG_FLASH0_BASE,(CFG_FLASH0_BASE+FLASH_SIZE)-1);
 
 	info->flash_id = dev_id;
 	info->sector_count = FLASH_TOT_SECT;
