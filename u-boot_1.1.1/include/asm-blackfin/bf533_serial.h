@@ -19,13 +19,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	bf533_serial.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
 #ifndef _BF533_SERIAL_H_
@@ -96,4 +89,4 @@
 #define UART_GCTL		HALFWORD_REF(UART_GCTL_ADDR)
 #define UART_GCTL_UCEN		0x01
 
-#endif	/* _BF533_SERIAL_H_ */
+#endif

@@ -2,17 +2,10 @@
  *
  * Based on: include/asm-m68knommu/uaccess.h
  *
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	uacess.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
-#ifndef __FRIONOMMU_UACCESS_H
-#define __FRIONOMMU_UACCESS_H
+#ifndef __BLACKFIN_UACCESS_H
+#define __BLACKFIN_UACCESS_H
 
 /*
  * User space memory access functions
@@ -189,4 +182,4 @@ static inline unsigned long clear_user(void *to, unsigned long n)
 	return (0);
 }
 
-#endif				/* _FRIONOMMU_UACCESS_H */
+#endif

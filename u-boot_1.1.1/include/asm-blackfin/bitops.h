@@ -1,15 +1,5 @@
-/*
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	bitops.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
- */
-
-#ifndef _FRIONOMMU_BITOPS_H
-#define _FRIONOMMU_BITOPS_H
+#ifndef _BLACKFIN_BITOPS_H
+#define _BLACKFIN_BITOPS_H
 
 /*
  * Copyright 1992, Linus Torvalds.
@@ -361,6 +351,6 @@ static __inline__ unsigned long ext2_find_next_zero_bit(void *addr,
 #define minix_test_bit(nr,addr)			test_bit(nr,addr)
 #define minix_find_first_zero_bit(addr,size)	find_first_zero_bit(addr,size)
 
-#endif	/* __KERNEL__ */
+#endif
 
-#endif	/* _FRIONOMMU_BITOPS_H */
+#endif

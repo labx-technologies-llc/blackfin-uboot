@@ -1,19 +1,12 @@
-/* Changes made by Akbar Hussain Lineo, Inc, May 2001 for FRIO
+/* Changes made by Akbar Hussain Lineo, Inc, May 2001 for BLACKFIN
  *
  * include/asm-m68k/processor.h
  *
  * Copyright (C) 1995 Hamish Macdonald
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	processor.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
-#ifndef __ASM_FRIO_PROCESSOR_H
-#define __ASM_FRIO_PROCESSOR_H
+#ifndef __ASM_BLACKFIN_PROCESSOR_H
+#define __ASM_BLACKFIN_PROCESSOR_H
 
 /*
  * Default implementation of macro that returns current
@@ -51,7 +44,7 @@ extern inline void wrusp(unsigned long usp)
 #define EISA_bus		0
 #define MCA_bus			0
 
-/*  There is no pc register avaliable for FRIO, so we are going to get
+/*  There is no pc register avaliable for BLACKFIN, so we are going to get
  *  it indirectly
  */
 

@@ -1,15 +1,5 @@
-/*
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	virtconvert.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
- */
-
-#ifndef __FRIONOMMU_VIRT_CONVERT__
-#define __FRIONOMMU_VIRT_CONVERT__
+#ifndef __BLACKFIN_VIRT_CONVERT__
+#define __BLACKFIN_VIRT_CONVERT__
 
 /*
  * Macros used for converting between virtual and physical mappings.
@@ -29,5 +19,5 @@
 #define virt_to_bus		virt_to_phys
 #define bus_to_virt		phys_to_virt
 
-#endif	/* __KERNEL__ */
-#endif	/* __FRIONOMMU_VIRT_CONVERT__ */
+#endif
+#endif

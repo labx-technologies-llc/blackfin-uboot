@@ -23,81 +23,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	start.S
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
 #include <common.h>
 #include <asm/machdep.h>
 #include <asm/irq.h>
+#include <asm/bf533.h>
 
-extern void FRIO_enable_irq(unsigned int irq);
-extern void FRIO_disable_irq(unsigned int irq);
+static unsigned long timer_count;
+void timer_int(void);
+void timer_init(void);
 
-/* enable IRQ/FIQ interrupts */
+/* Functions just to satisfy the linker */
 void enable_interrupts(void)
 {
-	FRIO_enable_irq(IRQ_UART);
 }
 
-/* 
- * disable IRQ/FIQ interrupts returns true if interrupts 
- * had been enabled before we disabled them 
- */
 int disable_interrupts(void)
 {
-	FRIO_disable_irq(IRQ_UART);
 	return 0;
-}
-
-void bad_mode(void)
-{
-
-}
-
-void show_regs(struct pt_regs *regs)
-{
-
-}
-
-void do_undefined_instruction(struct pt_regs *pt_regs)
-{
-
-}
-
-void do_software_interrupt(struct pt_regs *pt_regs)
-{
-
-}
-
-void do_prefetch_abort(struct pt_regs *pt_regs)
-{
-
-}
-
-void do_data_abort(struct pt_regs *pt_regs)
-{
-
-}
-
-void do_not_used(struct pt_regs *pt_regs)
-{
-
-}
-
-void do_fiq(struct pt_regs *pt_regs)
-{
-
-}
-
-void do_irq(struct pt_regs *pt_regs)
-{
-
 }
 
 int interrupt_init(void)
@@ -107,8 +51,33 @@ int interrupt_init(void)
 
 void udelay(unsigned long usec)
 {
-	__asm__ __volatile__("1:\t%0 += -1;\n\t"
-			     "cc = %0 == 0;\n\t"
-			     "if ! cc jump 1b;\n":"=d"(usec)
-			     :"0"(usec));
+	unsigned long i=0;
+	
+	for(i=0;i<usec;i++) {
+		i++;
+		i--;
+	}
+}
+
+void timer_int(void)
+{
+#if 0
+	timer_count++;
+#endif
+}
+
+void timer_init(void)
+{
+#if 0
+	TCNTL = 0x1;
+	TSCALE = 0x95;
+	TCOUNT  = 0x105E;
+	TPERIOD = 0x105E;
+	TCNTL = 0x7;
+#endif
+}
+
+ulong get_timer(ulong base)
+{
+	return timer_count;
 }

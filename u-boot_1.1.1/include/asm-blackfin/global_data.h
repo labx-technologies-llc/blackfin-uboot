@@ -19,13 +19,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	global_data.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
 #ifndef	__ASM_GBL_DATA_H
@@ -64,4 +57,4 @@ typedef struct global_data {
 
 #define DECLARE_GLOBAL_DATA_PTR     register volatile gd_t *gd asm ("P5")
 
-#endif	/* __ASM_GBL_DATA_H */
+#endif

@@ -1,12 +1,5 @@
 /*
  * (C) Copyright 2004 - Analog Devices, Inc.  All rights reserved. 
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	flash.c
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
 #include "flash-defines.h"
@@ -94,29 +87,21 @@ void flash_print_info(flash_info_t * info)
 int flash_erase(flash_info_t * info, int s_first, int s_last)
 {
 	int cnt = 0;
-	int ret;
 
 	cnt = s_last - s_first + 1;
 
 	if (cnt == FLASH_TOT_SECT) {
 		printf("Erasing flash, Please Wait \n");
-		if(EraseFlash() == FLASH_FAIL) {
-			printf("Error Erasing Flash \n");
-			return FLASH_FAIL;
-		}
-	} else {
+		return EraseFlash(); 
+	} else if (cnt > 0) {
 		printf("Sector erasing, Please Wait\n");
-		ret = FLASH_Block_Erase(s_first,s_last);
-		if(ret == FLASH_FAIL) {
-			printf("Error Sector erasing \n");
-			return FLASH_FAIL;
-		}
-		else if(ret == ERASE_TIMEOUT) {
-			printf("Timeout occured during erasure\n");
-			return FLASH_FAIL;
-		}
+		return FLASH_Block_Erase(s_first,s_last);
 	}
-	return FLASH_SUCCESS;
+	else {
+		printf("Invalid target address\n");
+		return ERR_INVAL;
+	}
+	return ERR_OK;
 }
 
 unsigned long GetOffset(int sec_num)
@@ -139,10 +124,10 @@ int write_buff(flash_info_t * info, uchar * src, ulong addr, ulong cnt)
 {
 	if((addr + cnt) > (CFG_FLASH0_BASE + FLASH_SIZE)) {
 		printf("Outside available Flash \n");
-		return FLASH_FAIL;
+		return ERR_INVAL;
 	}
-	WriteData(addr, cnt, 1, (int *) src);
-	return FLASH_SUCCESS;
+
+	return WriteData(addr, cnt, 1, (int *) src);
 }
 
 int WriteData(long lStart, long lCount, long lStride, int *pnData)
@@ -153,48 +138,54 @@ int WriteData(long lStart, long lCount, long lStride, int *pnData)
 	int iShift = 0;
 	int iNumWords = 2;
 	int nLeftover = lCount % 4;
+	int rcode;
 
 	for (i = 0; (i < lCount / 4) && (i < BUFFER_SIZE); i++) {
 		for (iShift = 0, j = 0; (j < iNumWords);
 		     j++, ulOffset += (lStride * 2)) {
-			if(FLASH_Write(ulOffset, pnData[i] >> iShift) < 0) {
+			rcode = FLASH_Write(ulOffset, pnData[i] >> iShift);
+			if (rcode < 0) {
 				printf("Error in Flash Write \n");
-				return FLASH_FAIL;
+				return rcode;
 			}
 			iShift += 16;
 		}
 	}
 	iShift = 16;
 	if (nLeftover > 0) {
-		if(FLASH_Write(ulOffset, pnData[i]) < 0) {
+		rcode = FLASH_Write(ulOffset, pnData[i]);
+		if(rcode < 0) {
 			printf("Error in Flash Write \n");
-			return FLASH_FAIL;
+			return rcode;
 		}
 		if (nLeftover == 3) {
 			ulOffset += 2;
-			if(FLASH_Write(ulOffset, (pnData[i] >> iShift)) < 0) {
+			rcode = FLASH_Write(ulOffset, (pnData[i] >> iShift));
+			if(rcode < 0) {
 				printf("Error in Flash Write \n");
-				return FLASH_FAIL;
+				return rcode;
 			}
 		}
 	}
-	return FLASH_SUCCESS;
+	return ERR_OK;
 }
 
 int FLASH_Write(long addr, int data)
 {
+	int rcode;
 	LED6_On();
 	FLASH_Base[WRITE_CMD1] = WRITE_DATA1;
 	FLASH_Base[WRITE_CMD2] = WRITE_DATA2;
 	FLASH_Base[WRITE_CMD3] = WRITE_DATA3;
 	*(volatile unsigned short *) (CFG_FLASH0_BASE + addr) = data;
 	asm("ssync;");
-	if(FlashDataToggle() != FLASH_SUCCESS) {
+	rcode = FlashDataToggle();
+	if (rcode != ERR_OK) {
 		ResetFlash();
-		return FLASH_FAIL;
+		return rcode;
 	}	
 	LED6_Off();
-	return FLASH_SUCCESS;
+	return rcode;
 }
 
 int ResetFlash()
@@ -206,7 +197,7 @@ int ResetFlash()
 	/* Pause for 10 micro seconds */
 	udelay(10);	
 
-	return FLASH_SUCCESS;
+	return ERR_OK;
 }
 
 int EraseFlash()
@@ -218,10 +209,7 @@ int EraseFlash()
 	FLASH_Base[WRITE_CMD2] = ERASE_DATA5;
 	FLASH_Base[WRITE_CMD3] = ERASE_DATA6;
 
-	if(FlashDataToggle() != FLASH_SUCCESS)
-		return FLASH_FAIL;
-	else
-		return FLASH_SUCCESS;
+	return FlashDataToggle();
 }
 
 int FlashDataToggle(void)
@@ -234,19 +222,19 @@ int FlashDataToggle(void)
 		u1 = FLASH_Base[ANY_OFF];
 		u2 = FLASH_Base[ANY_OFF];
 		if((u1 & 0x0040) == (u2 & 0x0040))
-			return FLASH_SUCCESS;
+			return ERR_OK;
 		if((u2 & 0x0020) == 0x0000)
 			continue;
 		u1 = FLASH_Base[ANY_OFF];
 		if((u2 & 0x0040) == (u1 & 0x0040))
-			return FLASH_SUCCESS;
+			return ERR_OK;
 		else {
 			ResetFlash();
-			return FLASH_FAIL;
+			return ERR_PROG_ERROR;
 		}
 		timeout--;
 	}
-	if(timeout <0)	return FLASH_FAIL;
+	if(timeout <0)	return ERR_TIMOUT;
 }
 
 int GetCodes()
@@ -266,7 +254,7 @@ int GetCodes()
 	return ((man_id << 16) | dev_id);
 }
 
-int FLASH_Block_Erase(unsigned long s_f,unsigned long s_l)
+int FLASH_Block_Erase(unsigned long s_first,unsigned long s_last)
 {
 	int i;
 	unsigned long Off;
@@ -277,7 +265,7 @@ int FLASH_Block_Erase(unsigned long s_f,unsigned long s_l)
 	FLASH_Base[WRITE_CMD3] = ERASE_DATA3;
 	FLASH_Base[WRITE_CMD1] = ERASE_DATA4;
 	FLASH_Base[WRITE_CMD2] = ERASE_DATA5;
-	for (i = s_f; i <= s_l; i++) {
+	for (i = s_first; i <= s_last; i++) {
 		Off = (GetOffset(i) - CFG_FLASH0_BASE);
 		*(volatile unsigned short *) (CFG_FLASH0_BASE + Off) = 0x30;
 		if((FLASH_Base[0] & 0x0008) == 0x0008) {
@@ -286,11 +274,136 @@ int FLASH_Block_Erase(unsigned long s_f,unsigned long s_l)
 		}
 	}
 	if(flag_timeout == 1)
-		return ERASE_TIMEOUT;
+		return ERR_TIMOUT;
 	
-	if(FlashDataToggle() != FLASH_SUCCESS) {
+	if(FlashDataToggle() != ERR_OK) {
 		ResetFlash();
-		return FLASH_FAIL;
+		return ERR_NOT_ERASED;
 	}
-	return FLASH_SUCCESS;
+	return ERR_OK;
 }
+
+#if defined(CONFIG_MISC_INIT_R)
+/* miscellaneous platform dependent initialisations */
+int misc_init_r(void)
+{
+	int i;
+	int cf_stat = 0;
+
+	/* Check whether CF card is inserted */
+	*(volatile unsigned short *) pFIO_EDGE = FIO_EDGE_CF_BITS;
+	*(volatile unsigned short *) pFIO_POLAR = FIO_POLAR_CF_BITS;
+	for (i=0; i < 0x300 ; i++) asm("nop;");
+			
+	if ( (*(volatile unsigned short *) pFIO_FLAG_S) & CF_STAT_BITS) {
+		cf_stat = 0;
+	}
+	else {
+		cf_stat = 1;
+	}
+
+	*(volatile unsigned short *) pFIO_EDGE  = FIO_EDGE_BITS;
+	*(volatile unsigned short *) pFIO_POLAR = FIO_POLAR_BITS;
+	
+
+	if (cf_stat) {
+                printf ("Booting from COMPACT flash\n");
+
+		/* Set cycle time for CF */
+		*(volatile unsigned long *) ambctl1 = CF_AMBCTL1VAL;
+
+
+		pll_set(CF_CONFIG_VCO, CF_CONFIG_CRYSTAL_FREQ, CF_PLL_DIV_FACTOR);
+
+		pll_div_fact = CF_PLL_DIV_FACTOR;
+
+		for (i=0; i < 0x1000 ; i++) asm("nop;");
+		for (i=0; i < 0x1000 ; i++) asm("nop;");
+		for (i=0; i < 0x1000 ; i++) asm("nop;");
+
+		serial_setbrg();
+		ide_init();
+
+                setenv ("bootargs", "");
+                setenv ("bootcmd", "fatload ide 0:1 0x1000000 uImage-stamp;bootm 0x1000000;bootm 0x20100000" );
+        } else {
+                printf ("Booting from FLASH\n");
+        }
+
+	return 1;
+}
+#endif
+
+#ifdef CONFIG_STAMP_CF
+
+void cf_outb(unsigned char val, volatile unsigned char* addr)
+{
+	/* 
+	 * Set PF1 PF0 respectively to 0 1 to divert address
+	 * to the expansion memory banks  
+	 */
+        *(volatile unsigned short *) pFIO_FLAG_S = CF_PF0;
+        *(volatile unsigned short *) pFIO_FLAG_C = CF_PF1;
+        asm("ssync;");
+
+        *(addr) = val;
+        asm("ssync;");
+
+	/* Setback PF1 PF0 to 0 0 to address external 
+	 * memory banks  */
+        *(volatile unsigned short *) pFIO_FLAG_C = CF_PF1_PF0;
+        asm("ssync;");
+}
+
+unsigned char cf_inb(volatile unsigned char *addr)
+{
+	volatile unsigned char c;
+
+	*(volatile unsigned short *) pFIO_FLAG_S = CF_PF0;
+	*(volatile unsigned short *) pFIO_FLAG_C = CF_PF1;
+	asm("ssync;");
+
+	c = *(addr);
+	asm("ssync;");
+
+	*(volatile unsigned short *) pFIO_FLAG_C = CF_PF1_PF0;
+	asm("ssync;");
+
+	return c;
+}
+
+void cf_insw(unsigned short *sect_buf, unsigned short *addr, int words)
+{
+        int i;
+
+        *(volatile unsigned short *) pFIO_FLAG_S = CF_PF0;
+        *(volatile unsigned short *) pFIO_FLAG_C = CF_PF1;
+        asm("ssync;");
+
+        for (i = 0;i < words; i++) {
+                *(sect_buf + i) = *(addr);
+                asm("ssync;");
+        }
+
+        *(volatile unsigned short *) pFIO_FLAG_C = CF_PF1_PF0;
+        asm("ssync;");
+}
+
+void cf_outsw(unsigned short *addr, unsigned short *sect_buf, int words)
+{
+        int i;
+
+        *(volatile unsigned short *) pFIO_FLAG_S = CF_PF0;
+        *(volatile unsigned short *) pFIO_FLAG_C = CF_PF1;
+        asm("ssync;");
+
+        for (i = 0;i < words; i++) {
+                *(addr) = *(sect_buf + i);
+                asm("ssync;");
+        }
+
+        *(volatile unsigned short *) pFIO_FLAG_C = CF_PF1_PF0;
+        asm("ssync;");
+}
+
+#endif

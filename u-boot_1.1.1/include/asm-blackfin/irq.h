@@ -14,17 +14,10 @@
  * Adapted for BlackFin (ADI) by Ted Ma <mated@sympatico.ca>
  * Copyright (c) 2002 Arcturus Networks Inc. (www.arcturusnetworks.com)
  * Copyright (c) 2002 Lineo, Inc. <mattw@lineo.com>
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	irq.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
-#ifndef _FRIO_IRQ_H_
-#define _FRIO_IRQ_H_
+#ifndef _BLACKFIN_IRQ_H_
+#define _BLACKFIN_IRQ_H_
 
 #include <linux/config.h>
 #include <asm/bf533_irq.h>
@@ -127,4 +120,4 @@ extern irq_node_t *new_irq_node(void);
 #define enable_irq_nosync(x)	enable_irq(x)
 #define disable_irq_nosync(x)	disable_irq(x)
 
-#endif	/* _FRIO_IRQ_H_ */
+#endif

@@ -1,15 +1,5 @@
-/*
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	ptrace.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
- */
-
-#ifndef _FRIO_PTRACE_H
-#define _FRIO_PTRACE_H
+#ifndef _BLACKFIN_PTRACE_H
+#define _BLACKFIN_PTRACE_H
 
 #define NEW_PT_REGS
 
@@ -87,7 +77,7 @@
 
 #else
 /*
- * Here utilize frio : dpregs = [pregs + imm16s4]
+ * Here utilize blackfin : dpregs = [pregs + imm16s4]
  *                     [pregs + imm16s4] = dpregs
  * to access defferent saved reg in stack
  */
@@ -250,6 +240,6 @@ struct pt_regs {
 #define instruction_pointer(regs)	((regs)->pc)
 extern void show_regs(struct pt_regs *);
 
-#endif	/* __KERNEL__ */
-#endif	/* __ASSEMBLY__ */
-#endif	/* _FRIO_PTRACE_H */
+#endif
+#endif
+#endif

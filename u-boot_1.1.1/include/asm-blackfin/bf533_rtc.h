@@ -1,13 +1,3 @@
-/*
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	bf533_rtc.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
- */
-
 #ifndef _BF533_RTC_H_
 #define _BF533_RTC_H_
 

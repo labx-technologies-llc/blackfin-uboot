@@ -1,15 +1,5 @@
-/*
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	types.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
- */
-
-#ifndef _FRIO_TYPES_H
-#define _FRIO_TYPES_H
+#ifndef _BLACKFIN_TYPES_H
+#define _BLACKFIN_TYPES_H
 
 /*
  * This file is never included by application software unless
@@ -64,6 +54,6 @@ typedef unsigned long long u64;
 
 typedef u32 dma_addr_t;
 
-#endif				/* __KERNEL__ */
+#endif
 
-#endif				/* _FRIO_TYPES_H */
+#endif

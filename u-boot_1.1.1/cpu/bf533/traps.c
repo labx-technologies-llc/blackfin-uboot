@@ -33,13 +33,6 @@
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	traps.c
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
 #include <common.h>
@@ -54,88 +47,13 @@
 
 void init_IRQ(void)
 {
-	FRIO_init_IRQ();
+	blackfin_init_IRQ();
 	return;
 }
-
-#if 0
-irq_node_t *new_irq_node(void)
-{
-	irq_node_t *node;
-	short i;
-
-	for (node = nodes, i = NUM_IRQ_NODES - 1; i >= 0; node++, i--)
-		if (!node->handler)
-			return node;
-	return NULL;
-}
-#endif
-
-int request_irq(unsigned int irq,
-		void (*handler) (int, void *, struct pt_regs *),
-		unsigned long flags, const char *devname, void *dev_id)
-{
-#if 0
-	if (irq)
-		return FRIO_request_irq(irq, handler, flags, devname,
-					dev_id);
-
-	if (irq < IRQ_EMU || irq > IRQ_SW_INT2) {
-		return -ENXIO;
-	}
-
-	if (!(irq_list[irq].flags & IRQ_FLG_STD)) {
-		if (irq_list[irq].flags & IRQ_FLG_LOCK) {
-			return -EBUSY;
-		}
-		if (flags & IRQ_FLG_REPLACE) {
-			return -EBUSY;
-		}
-	}
-	irq_list[irq].handler = handler;
-	irq_list[irq].flags = flags;
-	irq_list[irq].dev_id = dev_id;
-	irq_list[irq].devname = devname;
-#endif
-	return 0;
-}
-
-void free_irq(unsigned int irq, void *dev_id)
-{
-#if 0
-	if (irq) {
-		FRIO_free_irq(irq, dev_id);
-		return;
-	}
-	if (irq < IRQ_EMU || irq > IRQ_SW_INT2) {
-		return;
-	}
-#endif
-}
-
-#if 0
-unsigned long probe_irq_on(void)
-{
-	return 0;
-}
-
-int probe_irq_off(unsigned long irqs)
-{
-	return 0;
-}
-#endif
 
 void process_int(unsigned long vec, struct pt_regs *fp)
 {
-	if (FRIO_do_irq)
-		FRIO_do_irq(vec, fp);
-	else;
 	return;
-}
-
-int get_irq_list(char *buf)
-{
-	return 0;
 }
 
 void dump(struct pt_regs *fp)

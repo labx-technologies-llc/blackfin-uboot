@@ -1,20 +1,10 @@
-/*
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	stamp.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
- */
-
 #ifndef __CONFIG_STAMP_H__
 #define __CONFIG_STAMP_H__
 
 #define CFG_LONGHELP		1
 #define CONFIG_BAUDRATE		57600
 #define CONFIG_STAMP		1
-#define U_BOOT_BF533_RELEASE	"Release Version alpha2"
+#define U_BOOT_BF533_RELEASE	"Release Version Beta"
 #define CFG_ENV_IS_NOWHERE	1
 #define CONFIG_BOOTDELAY	30
 #define CONFIG_BOARD_TYPES	1
@@ -29,6 +19,11 @@
 #define CONFIG_VCO		396
 #define CONFIG_CCLK		CONFIG_VCO
 #define CONFIG_SCLK		(CONFIG_VCO/PLL_DIV_FACTOR)
+
+/* Clock settings for Compact Falsh */
+#define CF_CONFIG_CRYSTAL_FREQ	11
+#define CF_PLL_DIV_FACTOR	5	
+#define CF_CONFIG_VCO		396
 
 #define	CONFIG_EXTRA_ENV_SETTINGS					\
 	"netdev=eth0\0"							\
@@ -48,7 +43,8 @@
 
 #define CONFIG_COMMANDS		(CFG_CMD_BDI | CFG_CMD_LOADB | CFG_CMD_IMI | CFG_CMD_MEMORY | CFG_CMD_NET | \
 				CFG_CMD_ELF | CFG_CMD_PING | CFG_CMD_DHCP | CFG_CMD_RUN | \
-				CFG_CMD_ENV | CFG_CMD_FLASH | CFG_CMD_DATE | CFG_CMD_AUTOSCRIPT | CFG_CMD_MISC)
+				CFG_CMD_ENV | CFG_CMD_FLASH | CFG_CMD_DATE | CFG_CMD_AUTOSCRIPT | CFG_CMD_MISC | \
+				CFG_CMD_IDE | CFG_CMD_FAT)
 
 /* This must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
@@ -68,7 +64,7 @@
 #define CFG_MEMTEST_START	0x1000000	/* memtest works on */
 #define CFG_MEMTEST_END		0x12000000	/* 4 ... 12 MB in DRAM */
 #define	CFG_LOAD_ADDR		0x1000000	/* default load address */
-#define	CFG_HZ			100	/* decrementer freq: 1 ms ticks */
+#define	CFG_HZ			100		/* decrementer freq: 10 ms ticks */
 #define CFG_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 #define	CFG_SDRAM_BASE		0x00000000
 #define CFG_MAX_RAM_SIZE	0x8000000
@@ -90,7 +86,7 @@
 #define CFG_FLASH0_BASE		0x20000000
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	67	/* max number of sectors on one chip */
-#define CFG_ENV_ADDR		0x20040000
+#define CFG_ENV_ADDR		0x20070000
 #define	CFG_ENV_OFFSET		0x0	/* Offset of Environment Sector */
 #define	CFG_ENV_SIZE		0x10000	/* Total Size of Environment Sector */
 
@@ -129,5 +125,32 @@
 #define VDSP_RAM_ADDR		0x1000
 #endif
 
+#define CONFIG_STAMP_CF	   	1
 
-#endif	/* __CONFIG_STAMP_H__ */
+#ifdef CONFIG_STAMP_CF
+
+#define CONFIG_MISC_INIT_R 	1
+#define CONFIG_DOS_PARTITION 	1
+
+/*
+ * IDE/ATA stuff
+ */
+#undef  CONFIG_IDE_8xx_DIRECT	/* no pcmcia interface required */
+#undef  CONFIG_IDE_LED		/* no led for ide supported */
+#undef  CONFIG_IDE_RESET	/* no reset for ide supported */
+
+#define CFG_IDE_MAXBUS	1	/* max. 1 IDE busses */
+#define CFG_IDE_MAXDEVICE	(CFG_IDE_MAXBUS*1) /* max. 1 drives per IDE bus */
+
+#define CFG_ATA_BASE_ADDR	0x20200000
+#define CFG_ATA_IDE0_OFFSET	0x0000
+
+#define CFG_ATA_DATA_OFFSET	0x0020  /* Offset for data I/O */
+#define CFG_ATA_REG_OFFSET	0x0020  /* Offset for normal register accesses */
+#define CFG_ATA_ALT_OFFSET	0x0007  /* Offset for alternate registers */
+
+#define CFG_ATA_STRIDE		2
+
+#endif
+
+#endif

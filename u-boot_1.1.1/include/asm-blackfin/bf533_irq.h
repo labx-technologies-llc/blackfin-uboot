@@ -17,13 +17,6 @@
  *
  * Adapted for BlackFin BF533 by Bas Vermeulen <bas@buyways.nl>
  * Copyright (c) 2003 BuyWays B.V. (www.buyways.nl)
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	bf533_irq.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
 #ifndef _BF533_IRQ_H_
@@ -119,4 +112,4 @@
 #define IVG15			15
 #define SYS_IRQS		33
 
-#endif	/* _BF535_IRQ_H_ */
+#endif

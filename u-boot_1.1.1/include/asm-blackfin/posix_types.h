@@ -1,15 +1,5 @@
-/*
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	posix_types.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
- */
-
-#ifndef __ARCH_FRIO_POSIX_TYPES_H
-#define __ARCH_FRIO_POSIX_TYPES_H
+#ifndef __ARCH_BLACKFIN_POSIX_TYPES_H
+#define __ARCH_BLACKFIN_POSIX_TYPES_H
 
 /*
  * This file is generally used by user-level software, so you need to

@@ -22,21 +22,15 @@
  *		 	Upon each exception, the exception handler identifies 
  *			the cause and takes corrective action accordingly.
  *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	interrupt.S
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
 #define ASSEMBLY
 
 #include <asm/hw_irq.h>
 #include <asm/entry.h>
-#include <asm/frio_defs.h>
+#include <asm/blackfin_defs.h>
 
-.global frio_irq_panic;
+.global blackfin_irq_panic;
 
 .text
 .align 2
@@ -48,7 +42,7 @@ evt_emulation:
 	r0 = IRQ_EMU;
 	r1 = seqstat;
 	sp += -12;
-	call frio_irq_panic;
+	call blackfin_irq_panic;
 	sp += 12;
 	rte;
 #endif
@@ -59,7 +53,7 @@ evt_nmi:
 	r0 = IRQ_NMI;
 	r1 = RETN;
 	sp += -12;
-	call frio_irq_panic;
+	call blackfin_irq_panic;
 	sp += 12;
 
 _evt_nmi_exit:
@@ -235,7 +229,7 @@ irq_panic:
 	r0 = IRQ_EVX;
 	r1 =  sp;
 	sp += -12;
-	call frio_irq_panic;
+	call blackfin_irq_panic;
 	sp += 12;
 
 .global evt_ivhw
@@ -251,7 +245,7 @@ evt_timer:
 	SAVE_CONTEXT
 	r0 = IRQ_CORETMR;
 	sp += -12;
-	call process_int;
+	call timer_int;
 	sp += 12;
 	RESTORE_CONTEXT
 	rti;
@@ -377,18 +371,3 @@ evt_soft_int1:
 
 evt_soft_int1_exit:
 	rti;
-
-/*
-.global do_reset
-do_reset:
-	SAVE_CONTEXT;
-	p2.h = 0xffc0;
-	p2.l = 0x0104;
-	r2 = 0x1;
-	w[p2] = r2;
-	ssync;
-	RAISE 1;		
-	RESTORE_CONTEXT;
-do_reset_end:
-	rti;
-*/

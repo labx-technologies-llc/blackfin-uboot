@@ -1,5 +1,5 @@
 #
-# (C) Copyright 2001
+# (C) Copyright 2004
 # Josh Huber <huber@mclx.com>, Mission Critical Linux, Inc.
 #
 # See file CREDITS for list of people who contributed to this

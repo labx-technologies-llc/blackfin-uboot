@@ -23,13 +23,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	cpu.c
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
 #include <common.h>
@@ -38,7 +31,16 @@
 #include <asm/entry.h>
 
 unsigned long sclk;
+void get_sclk(void);
+int get_clock(void);
 
+int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
+{
+	asm("raise 1;");
+	return 0;
+}
+
+/* These functions are just used to satisfy the linker */
 int cpu_init(void)
 {
 	return 0;
@@ -49,24 +51,12 @@ int cleanup_before_linux(void)
 	return 0;
 }
 
-int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
-{
-	asm("raise 1;");
-#if 0
-	void (*f)(void) = (void *) 0x20000000;
-	f();	
-#endif
-	return 0;
-}
-
 void icache_enable(void)
 {
-
 }
 
 void icache_disable(void)
 {
-
 }
 
 int icache_status(void)
@@ -76,12 +66,10 @@ int icache_status(void)
 
 void dcache_enable(void)
 {
-
 }
 
 void dcache_disable(void)
 {
-
 }
 
 int dcache_status(void)
@@ -106,19 +94,19 @@ void asyncbank_init(void)
 #endif
 }
 
-int GetClock(void)	{
+int get_clock(void)
+{
 	unsigned long val;
-	volatile unsigned long *pllctl = 0xFFC00000;
-	
+	volatile unsigned long *pllctl = (volatile unsigned long *)0xFFC00000;
+
 	val = *(volatile unsigned short *)pllctl;
 	val = (val >> 9) & 0x3F;
 	val = val * CONFIG_CRYSTAL_FREQ;
 	val = val * 1000000;
-	
+
 	return val;
 }
 
-int Getsclk(void)	{
-	sclk = GetClock()/PLL_DIV_FACTOR;
+void get_sclk(void)	{
+	sclk = get_clock()/PLL_DIV_FACTOR;
 }
-

@@ -1,20 +1,10 @@
-/*
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	machdep.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
- */
-
-#ifndef _FRIONOMMU_MACHDEP_H
-#define _FRIONOMMU_MACHDEP_H
+#ifndef _BLACKFIN_MACHDEP_H
+#define _BLACKFIN_MACHDEP_H
 
 /* Machine dependent initial routines:
  *
  * Based on include/asm-m68knommu/machdep.h
- * For frio, just now we only have nisa, so they'd point to the default nisa
+ * For blackfin, just now we only have bfin, so they'd point to the default bfin
  *
  */
 
@@ -72,4 +62,4 @@ extern void config_BSP(char *command, int len);
 extern void (*mach_tick) (void);
 #endif
 
-#endif	/* _FRIONOMMU_MACHDEP_H */
+#endif

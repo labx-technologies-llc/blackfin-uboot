@@ -6,18 +6,10 @@
  * for more details.
  *
  * Copyright Lineo, Inc 2001 Tony Kou
- *
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	setup.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
-#ifndef _FRIO_SETUP_H
-#define _FRIO_SETUP_H
+#ifndef _BLACKFIN_SETUP_H
+#define _BLACKFIN_SETUP_H
 
 #include <linux/config.h>
 
@@ -25,23 +17,23 @@
  * Linux/Frio Architectures
  */
 
-#define MACH_NISA	1
+#define MACH_BFIN	1
 
 #ifdef __KERNEL__
 
 #ifndef __ASSEMBLY__
-extern unsigned long frio_machtype;
-#endif				/* !__ASSEMBLY__ */
+extern unsigned long blackfin_machtype;
+#endif
 
-#if defined(CONFIG_NISA)
-#define MACH_IS_NISA (frio_machtype == MACH_NISA)
+#if defined(CONFIG_BFIN)
+#define MACH_IS_BFIN (blackfin_machtype == MACH_BFIN)
 #endif
 
 #ifndef MACH_TYPE
-#define MACH_TYPE (frio_machtype)
+#define MACH_TYPE (blackfin_machtype)
 #endif
 
-#endif				/* __KERNEL__ */
+#endif
 
 /*
  * CPU, FPU and MMU types
@@ -51,7 +43,7 @@ extern unsigned long frio_machtype;
  */
 
 #ifndef __ASSEMBLY__
-extern unsigned long frio_cputype;
+extern unsigned long blackfin_cputype;
 #ifdef CONFIG_VME
 extern unsigned long vme_brdtype;
 #endif
@@ -63,14 +55,14 @@ extern unsigned long vme_brdtype;
 #define NUM_MEMINFO	4
 #define CL_SIZE		256
 
-extern int frio_num_memory;	/* # of memory blocks found (and used) */
-extern int frio_realnum_memory;	/* real # of memory blocks found */
-extern struct mem_info frio_memory[NUM_MEMINFO];	/* memory description */
+extern int blackfin_num_memory;	/* # of memory blocks found (and used) */
+extern int blackfin_realnum_memory;	/* real # of memory blocks found */
+extern struct mem_info blackfin_memory[NUM_MEMINFO];	/* memory description */
 
 struct mem_info {
 	unsigned long addr;	/* physical address of memory chunk */
 	unsigned long size;	/* length of memory chunk (in bytes) */
 };
-#endif				/* __ASSEMBLY__ */
+#endif
 
-#endif				/* _FRIO_SETUP_H */
+#endif

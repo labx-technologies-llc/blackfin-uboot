@@ -13,13 +13,6 @@
  * Copyright (C) 1998       Kenneth Albanowski <kjahds@kjahds.com>
  * Copyright (C) 1998, 1999 D. Jeff Dionne     <jeff@uclinux.org>
  * Copyright (C) 1999       Vladimir Gurevich  <vgurevic@cisco.com>
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	bf533_serial.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
 #ifndef _Bf533_SERIAL_H
@@ -28,74 +21,32 @@
 #include <linux/config.h>
 #include <asm/blackfin.h>
 
-struct serial_struct {
-	int type;
-	int line;
-	int hub2;
-	int irq;
-	int flags;
-	int xmit_fifo_size;
-	int custom_divisor;
-	int baud_base;
-	unsigned short close_delay;
-	char reserved_char[2];
-	int hub6;
-	unsigned short closing_wait;
-	unsigned short closing_wait2;
-	int reserved[4];
-};
+#define SYNC_ALL	__asm__ __volatile__ ("ssync;\n")
+#define ACCESS_LATCH	UART_LCR |= UART_LCR_DLAB;
+#define ACCESS_PORT_IER	UART_LCR &= (~UART_LCR_DLAB);
 
-struct bf533_serial {
-	int magic;
-	int hub2;
-	int irq;
-	int flags;		/* defined in tty.h */
-	char soft_carrier;	/* Use soft carrier on this channel */
-	char break_abort;	/* Is serial console in, so process brk/abrt */
-	char is_cons;		/* Is this our console. */
-	unsigned char clk_divisor;
-	int baud;
-	int baud_base;
-	int type;		/* UART type */
-	struct tty_struct *tty;
-	int read_status_mask;
-	int ignore_status_mask;
-	int timeout;
-	int xmit_fifo_size;
-	int custom_divisor;
-	int x_char;		/* xon/xoff character */
-	int close_delay;
-	unsigned short closing_wait;
-	unsigned short closing_wait2;
-	unsigned long event;
-	unsigned long last_active;
-	int line;
-	int count;		/* # of fd on device */
-	int blocked_open;	/* # of blocked opens */
-	long session;		/* Session of opening process */
-	long pgrp;		/* pgrp of opening process */
-	unsigned char *xmit_buf;
-	int xmit_head;
-	int xmit_tail;
-	int xmit_cnt;
-};
-
-#define SYNC_ALL			__asm__ __volatile__ ("ssync;\n")
-#define ACCESS_LATCH			UART_LCR |= UART_LCR_DLAB;
-#define ACCESS_PORT_IER			UART_LCR &= (~UART_LCR_DLAB);
-#define _INLINE_ 			inline
-#define NR_PORTS 			(sizeof(bf533_soft) / sizeof(struct bf533_serial))
-
-extern int request_irq(unsigned int irq,
-		       void (*handler) (int, void *, struct pt_regs *),
-		       unsigned long flags, const char *devname,
-		       void *dev_id);
 void serial_setbrg(void);
-void serial_isr(int irq, void *dev_id, struct pt_regs *regs);
-static _INLINE_ void receive_chars(struct bf533_serial *info,
-				   struct pt_regs *regs,
-				   unsigned short rx);
-static _INLINE_ void transmit_chars(struct bf533_serial *info);
 static void local_put_char(char ch);
+void calc_baud(void);
+void serial_setbrg(void);
+int serial_init(void);
+void serial_putc(const char c);
+int serial_tstc(void);
+int serial_getc(void);
+void serial_puts(const char *s);
+static void local_put_char(char ch);
+
+extern int get_clock(void);
+extern unsigned long sclk;
+int baud_table[5] = {9600, 19200, 38400, 57600, 115200};
+
+struct {
+	unsigned char dl_high;
+	unsigned char dl_low;
+} hw_baud_table[5];
+
+#ifdef CONFIG_STAMP
+extern unsigned long pll_div_fact;
+#endif
 
 #endif

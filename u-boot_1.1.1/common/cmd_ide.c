@@ -851,7 +851,7 @@ output_data_short(int dev, ulong *sect_buf, int words)
 
 /* We only need to swap data if we are running on a big endian cpu. */
 /* But Au1x00 cpu:s already swaps data in big endian mode! */
-#if defined(__LITTLE_ENDIAN) || defined(CONFIG_AU1X00)
+#if defined(__LITTLE_ENDIAN) || defined(CONFIG_AU1X00) || defined(CONFIG_STAMP_CF)
 #define input_swap_data(x,y,z) input_data(x,y,z)
 #else
 static void

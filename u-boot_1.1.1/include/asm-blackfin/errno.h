@@ -1,15 +1,5 @@
-/*
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	errno.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
- */
-
-#ifndef _FRIO_ERRNO_H
-#define _FRIO_ERRNO_H
+#ifndef _BLACKFIN_ERRNO_H
+#define _BLACKFIN_ERRNO_H
 
 #define	EPERM		1	/* Operation not permitted */
 #define	ENOENT		2	/* No such file or directory */
@@ -139,4 +129,4 @@
 #define	ENOMEDIUM	123	/* No medium found */
 #define	EMEDIUMTYPE	124	/* Wrong medium type */
 
-#endif	/* _FRIO_ERRNO_H */
+#endif

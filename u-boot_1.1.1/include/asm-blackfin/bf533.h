@@ -9,12 +9,6 @@
  * Ported to the BlackFin BF533 by Bas Vermeulen <bas@buyways.nl>
  * Tab Size == 4 ....MaTed
  *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	bf533.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
 #ifndef _BF533_H
@@ -525,6 +519,15 @@
 #define IVGTMR_POS		0x00000040
 #define IVGHW_POS		0x00000020
 
+#define TCNTL_ADDR		0xffe03000 /*  register 32 bit */
+#define TCNTL			WORD_REF(TCNTL_ADDR)
+#define TPERIOD_ADDR		0xffe03004 /*  register 32 bit */
+#define TPERIOD			WORD_REF(TPERIOD_ADDR)
+#define TSCALE_ADDR		0xffe03008 /*  register 32 bit */
+#define TSCALE			WORD_REF(TSCALE_ADDR)
+#define TCOUNT_ADDR		0xffe0300c /*  register 32 bit */
+#define TCOUNT			WORD_REF(TCOUNT_ADDR)
+
 /* L1 Memory */
 #define DATASRAM_A		0xFF800000
 #define DATASRAM_CACHE_A	0xFF804000
@@ -596,6 +599,7 @@
 #define AMGCTLVAL		0xFF
 #define AMBCTL0VAL		0xBBC3BBC3
 #define AMBCTL1VAL		0x99B39983
+#define CF_AMBCTL1VAL		0x99B3ffc2
 
 #endif
 

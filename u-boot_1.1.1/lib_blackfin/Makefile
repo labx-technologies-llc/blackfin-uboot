@@ -1,5 +1,5 @@
 #
-# (C) Copyright 2003
+# (C) Copyright 2004
 # Wolfgang Denk, DENX Software Engineering, wd@denx.de.
 #
 # See file CREDITS for list of people who contributed to this
@@ -27,7 +27,7 @@ LIB	= lib$(ARCH).a
 
 AOBJS	=
 
-COBJS	= board.o bf533_linux.o time.o cache.o
+COBJS	= board.o bf533_linux.o cache.o
 OBJS	= $(AOBJS) $(COBJS)
 
 $(LIB):	.depend $(OBJS)

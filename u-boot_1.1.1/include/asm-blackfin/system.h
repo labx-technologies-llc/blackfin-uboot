@@ -1,15 +1,14 @@
 /*
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	system.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
+ * Project		: BFin
+ * Version		: 2.0
+ * File			: system.h
+ * Modified date	: 29 jun 2004
+ * Author		: BFin Project-ADI
+ * Location		: LG Soft India,Bangalore
  */
 
-#ifndef _FRIONOMMU_SYSTEM_H
-#define _FRIONOMMU_SYSTEM_H
+#ifndef _BLACKFIN_SYSTEM_H
+#define _BLACKFIN_SYSTEM_H
 
 #include <linux/config.h>	/* get configuration macros */
 #include <asm/linkage.h>
@@ -165,4 +164,4 @@ static inline unsigned long __xchg(unsigned long x, volatile void *ptr,
 /* YES it does, but it is tricky to implement - FIXME later ...MaTed--- */
 #define HARD_RESET_NOW() ({})
 
-#endif	/* _FRIONOMMU_SYSTEM_H */
+#endif	/* _BLACKFIN_SYSTEM_H */

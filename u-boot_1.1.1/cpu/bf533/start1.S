@@ -31,18 +31,15 @@
  *                     The Silver Hammer Group, Ltd.
  * (c) 1995, Dionne & Associates
  * (c) 1995, DKG Display Tech.
- *
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	start1.S
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
 #define ASSEMBLY
 #include <linux/config.h>
+#include <asm/blackfin.h>
+#include <config.h>
+
+.global pll_set;
+.global _pll_set;
 
 .text
 _start1:
@@ -50,3 +47,68 @@ start1:
 	sp += -12;
 	call	board_init_f;
 	sp += 12;
+
+_pll_set:
+pll_set:
+	LINK 0;
+	[--sp] = r3;
+	[--sp] = r4;
+	[--sp] = r5;
+	[--sp] = p0;
+	[--sp] = p1;
+	[--sp] = r2;
+
+	r2 = 0;
+	r3 = 1;
+	r4 = -1;
+dp_begin:
+	r0 = r0 - r1;
+	CC = r0 <= r4;
+	if CC jump dp_skip;
+	r2 = r2 + r3;
+	jump dp_begin;
+dp_skip:
+
+	r0 = r2;
+	r3 = r0;
+
+	r1 = 0x3F;
+	r0 = r0 & r1;
+	r0 = r0 << 9;
+	p0.h = (PLL_CTL >> 16);
+	p0.l = (PLL_CTL & 0xFFFF);
+	r1 = w[p0](z);
+	r5 = 0x8E;
+	r1 = r1 & r5;
+	r1 = r1 | r0;
+	cli r2;
+	w[p0] = r1;
+	idle;
+	sti r2;
+	ssync;
+
+	r0 = [sp]; /* r0 = PLL_DIV_FACTOR */
+	p0.h = (PLL_DIV >> 16);
+	p0.l = (PLL_DIV & 0xFFFF);
+	w[p0] = r0;
+	ssync;
+
+	p1.l = DELAY;
+	p1.h = 0x0;
+	lsetup ( del_start,del_end ) lc0 = p1;
+del_start:
+	nop;
+del_end:
+	nop;
+
+	r2 = [sp++];
+	p1 = [sp++];
+	p0 = [sp++];
+	r5 = [sp++];
+	r4 = [sp++];
+	r3 = [sp++];
+	UNLINK;
+	rts;
+	nop;
+	nop;
+	nop;

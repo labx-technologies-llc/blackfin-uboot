@@ -43,13 +43,6 @@
  *	1.10c	Cesar Barros: SMP locking fixes and cleanup
  *	1.10d	Paul Gortmaker: delete paranoia check in rtc_exit
  *	1.10e   LG Soft India: Register access is different in BF533. 	
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	bf533.c
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
 #include <common.h>

@@ -1,15 +1,5 @@
-/*
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	page.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
- */
-
-#ifndef _FRIONOMMU_PAGE_H
-#define _FRIONOMMU_PAGE_H
+#ifndef _BLACKFIN_PAGE_H
+#define _BLACKFIN_PAGE_H
 
 #include <linux/config.h>
 
@@ -107,8 +97,8 @@ extern __inline__ int get_order(unsigned long size)
 	BUG(); \
 } while (0)
 
-#endif	/* __ASSEMBLY__ */
+#endif
 
-#endif	/* __KERNEL__ */
+#endif
 
-#endif	/* _FRIONOMMU_PAGE_H */
+#endif

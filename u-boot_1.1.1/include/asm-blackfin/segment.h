@@ -1,15 +1,5 @@
-/*
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	segment.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
- */
-
-#ifndef _FRIO_SEGMENT_H
-#define _FRIO_SEGMENT_H
+#ifndef _BLACKFIN_SEGMENT_H
+#define _BLACKFIN_SEGMENT_H
 
 /* define constants */
 typedef unsigned long mm_segment_t;	/* domain register */
@@ -29,4 +19,4 @@ typedef unsigned long mm_segment_t;	/* domain register */
 #define segment_eq(a,b)		((a) == (b))
 #define set_fs(val)
 
-#endif	/* _FRIO_SEGMENT_H */
+#endif

@@ -1,15 +1,15 @@
 /* Changed by Lineo Inc. May 2001
  *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	string.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
+ * Project		: BFin
+ * Version		: 2.0
+ * File			: string.h
+ * Modified date	: 29 jun 2004
+ * Author		: BFin Project-ADI
+ * Location		: LG Soft India,Bangalore
  */
 
-#ifndef _FRIONOMMU_STRING_H_
-#define _FRIONOMMU_STRING_H_
+#ifndef _BLACKFINNOMMU_STRING_H_
+#define _BLACKFINNOMMU_STRING_H_
 
 #ifdef __KERNEL__		/* only set these up for kernel code */
 
@@ -137,4 +137,4 @@ extern int memcmp(const void *, const void *, __kernel_size_t);
 
 #endif				/* KERNEL */
 
-#endif				/* _FRIO_STRING_H_ */
+#endif				/* _BLACKFIN_STRING_H_ */

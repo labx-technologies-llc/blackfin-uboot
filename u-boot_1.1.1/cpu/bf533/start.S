@@ -31,13 +31,6 @@
  *                     The Silver Hammer Group, Ltd.
  * (c) 1995, Dionne & Associates
  * (c) 1995, DKG Display Tech.
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	start.S
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
 #define ASSEMBLY

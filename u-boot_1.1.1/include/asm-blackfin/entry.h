@@ -1,15 +1,5 @@
-/*
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	entry.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
- */
-
-#ifndef __FRIO_ENTRY_H
-#define __FRIO_ENTRY_H
+#ifndef __BLACKFIN_ENTRY_H
+#define __BLACKFIN_ENTRY_H
 
 #include <linux/config.h>
 #include <asm/setup.h>
@@ -380,6 +370,6 @@
 #define PT_OFF_SR		0x38	/* seqstat in pt_regs */
 
 #endif
-#endif	/* __ASSEMBLY__	*/
+#endif
 
-#endif	/* __FRIO_ENTRY_H */
+#endif

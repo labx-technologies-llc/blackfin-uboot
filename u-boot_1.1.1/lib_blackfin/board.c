@@ -1,8 +1,8 @@
 /*
- * (C) Copyright 2002
+ * (C) Copyright 2004
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
- * (C) Copyright 2002
+ * (C) Copyright 2004
  * Sysgo Real-Time Solutions, GmbH <www.elinos.com>
  * Marius Groeger <mgroeger@sysgo.de>
  *
@@ -23,13 +23,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	board.c
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
 #include <common.h>
@@ -120,12 +113,15 @@ void board_init_f(ulong bootflag)
 {
 	DECLARE_GLOBAL_DATA_PTR;
 	gd_t gd_data;
+	unsigned long cck;
 
 	gd = &gd_data;
 	memset((void *) gd, 0, sizeof(gd_t));
 
 	init_IRQ();
 	env_init();		/* initialize environment */
+	cck = get_clock();
+	get_sclk();
 	init_baudrate();	/* initialze baudrate settings */
 	serial_init();		/* serial communications setup */
 	console_init_f();
@@ -134,6 +130,8 @@ void board_init_f(ulong bootflag)
 	rtc_init();
 	initdram(0);
 	timer_init();
+	printf("Core Clock %d MHz\n",cck/1000000);
+	printf("System Clock %d MHz\n",sclk/1000000);
 	board_init_r((gd_t *) gd, 0x20000010);
 }
 
@@ -228,6 +226,7 @@ void board_init_r(gd_t * id, ulong dest_addr)
 
 #ifdef CONFIG_DRIVER_SMC91111
 	printf("EZ-LAN Network card probed\n");
+	printf("EZ-LAN memory mapped to 0x20300000 - 0x203fffff\n");
 #endif
 	/* main_loop() can return to retry autoboot, if so just run it again. */
 	for (;;) {

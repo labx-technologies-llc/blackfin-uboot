@@ -8,17 +8,10 @@
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file COPYING in the main directory of this archive
  * for more details.
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	traps.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
-#ifndef _FRIO_TRAPS_H
-#define _FRIO_TRAPS_H
+#ifndef _BLACKFIN_TRAPS_H
+#define _BLACKFIN_TRAPS_H
 
 #ifndef __ASSEMBLY__
 typedef void (*e_vector) (void);
@@ -69,5 +62,5 @@ extern e_vector vectors[];
 #define PS_M  (0x1000)
 #define PS_C  (0x0001)
 
-#endif	/* __ASSEMBLY__ */
-#endif	/* _FRIO_TRAPS_H */
+#endif
+#endif

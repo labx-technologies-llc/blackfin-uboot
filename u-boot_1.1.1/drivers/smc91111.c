@@ -154,6 +154,9 @@ extern void eth_halt(void);
 extern int eth_rx(void);
 extern int eth_send(volatile void *packet, int length);
 
+#ifdef CONFIG_STAMP
+	extern void asyncbank_init(void);
+#endif
 
 /*
  . This is called by  register_netdev().  It is responsible for

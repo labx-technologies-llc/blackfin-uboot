@@ -1,18 +1,8 @@
-/*
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	delay.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
- */
-
-#ifndef _FRIONOMMU_DELAY_H
-#define _FRIONOMMU_DELAY_H
+#ifndef _BLACKFIN_DELAY_H
+#define _BLACKFIN_DELAY_H
 
 /*
- * Changes made by akbar.hussain@Lineo.com, for FRIO
+ * Changes made by akbar.hussain@Lineo.com, for BLACKFIN
  * Copyright (C) 1994 Hamish Macdonald
  *
  * Delay routines, using a pre-computed "loops_per_second" value.
@@ -38,4 +28,4 @@ extern __inline__ void udelay(unsigned long usecs)
 	__delay(usecs);
 }
 
-#endif	/* defined(_FRIONOMMU_DELAY_H) */
+#endif
