@@ -1,0 +1,28 @@
+#!/bin/sh
+
+/opt/uClinux/blackfin/bin/nisa-elf-objcopy -O binary --remove-section=.data --remove-section=.bss --remove-section=.stab --remove-section=.stabstr --remove-section=.text1 --remove-section=.got --remove-section=.eram u-boot u-boot.text
+
+/opt/uClinux/blackfin/bin/nisa-elf-objcopy -O binary --remove-section=.data --remove-section=.bss --remove-section=.stab --remove-section=.stabstr --remove-section=.text --remove-section=.got --remove-section=.eram u-boot u-boot.text1
+
+/opt/uClinux/blackfin/bin/nisa-elf-objcopy -O binary --remove-section=.text --remove-section=.bss --remove-section=.stab --remove-section=.stabstr --remove-section=.text1 --remove-section=.got --remove-section=.eram u-boot u-boot.data
+
+/opt/uClinux/blackfin/bin/nisa-elf-objcopy -O binary --remove-section=.data --remove-section=.text --remove-section=.stab --remove-section=.stabstr --remove-section=.text1 --remove-section=.got --remove-section=.eram u-boot u-boot.bss
+
+/opt/uClinux/blackfin/bin/nisa-elf-objcopy -O binary --remove-section=.data --remove-section=.text --remove-section=.stab --remove-section=.text1 --remove-section=.bss --remove-section=.got --remove-section=.eram u-boot u-boot.stabstr
+
+/opt/uClinux/blackfin/bin/nisa-elf-objcopy -O binary --remove-section=.data --remove-section=.text --remove-section=.bss --remove-section=.stabstr --remove-section=.text1 --remove-section=.got --remove-section=.eram u-boot u-boot.stab
+
+/opt/uClinux/blackfin/bin/nisa-elf-objcopy -O binary --remove-section=.data --remove-section=.text --remove-section=.bss --remove-section=.stabstr --remove-section=.text1 --remove-section=.stab --remove-section=.eram u-boot u-boot.got
+
+/opt/uClinux/blackfin/bin/nisa-elf-objcopy -O binary --remove-section=.data --remove-section=.text --remove-section=.bss --remove-section=.stabstr --remove-section=.text1 --remove-section=.got --remove-section=.stab u-boot u-boot.eram
+
+cat u-boot.text u-boot.text1 u-boot.data u-boot.bss u-boot.stab u-boot.stabstr u-boot.got u-boot.eram > u-boot.bin
+
+rm u-boot.text
+rm u-boot.text1
+rm u-boot.data
+rm u-boot.stab
+rm u-boot.stabstr
+rm u-boot.got
+rm u-boot.eram
+rm u-boot.bss

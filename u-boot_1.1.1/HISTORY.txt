@@ -1,0 +1,31 @@
+u-boot-1.1.1 (Version 2.0)
+-----------------------------
+Initial version of Bootloader source for Stamp and Ezkit boards
+-----------------------------------------------------------------
+
+Current Release contains:
+
+Configuration for stamp and ezkit boards.
+Version supports the following on both the boards.
+
+1. Flash boot
+2. Downloading files via Serial and Network.
+
+
+Features not supported
+------------------------
+
+1. Srec file download
+2. Timeout will not occur if network cable is not connected.
+
+
+Known Issues
+---------------
+
+1. Flash programming takes a lot of time.
+
+
+
+
+
+

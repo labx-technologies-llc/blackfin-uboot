@@ -1,0 +1,305 @@
+u-boot for Blackfin BF533 processor - STAMP and Ezkit boards
+--------------------------------------------------------
+
+u-boot version - u-boot-1.1.1
+
+Development Environment 
+-----------------------
+Cross compiler	: nisa-elf 
+			gcc:  nisa-elf-gcc-2.95.3-9.i386.rpm (version 2.95.3)
+                  binutils: nisa-elf-binutils-2.9-6.i386.rpm (version 2.9)
+Host platform  	: Red hat Linux
+Target board	: STAMP Board/ EZKIT board
+
+Installation and Execution Sequence
+-----------------------------------
+
+Note:  Please refer Section "How to use the source" for more details on how to obtain u-boot.bin from the source.
+--------------------------------------------------------------------------------------------------------------------
+
+1. Untar the source. The released tar contains as follows
+   XXX.tar.gz (where XXX is the name of the tar.gz)
+
+   Run the following command from the base directory. 
+
+	make clean 
+	make mrproper 
+	make stamp_config  or make ezkit_config
+	make
+	./scr (This is required to get a u-boot.bin)
+
+ 
+2. a. Make sure that the environment contains the Target Board,Host PC and DHCP server.
+   b. The DHCP Server needs to be configured as given in the Instructions in the section 
+      "How to set up dhcpd".
+   c. Connect one end of the Ethernet cable to Network interface slot of the Target Board 
+      and other end to the Network Hub.
+   d. Make sure that the Target Board,DHCP server and the Host PC are all connected to the Network Hub.
+   e. Connect the serial cable from the Host PC to the Target board.
+
+	How to setup the dhcpd
+	----------------------
+	Ensure dhcpd is installed in the dhcp server.
+
+	Please make the /etc/dhcpd.conf file look like this:
+
+	ddns-update-style ad-hoc;
+	allow bootp;
+	subnet 10.100.4.0 netmask 255.255.255.0 {
+	default-lease-time 122209600;
+	max-lease-time 31557600;
+	group   {
+	host bf533      {
+	hardware ethernet 02:80:ad:20:31:b8;
+	fixed-address 10.100.4.50;
+	filename "linux.dxe";
+	}
+	}
+	}
+	
+        Note : The fixed-address is the ipaddress of the Target Board.	
+               The filename is the file that is supposed to be downloaded to the Target Board. 
+
+	How to setup tftp
+	------------------
+
+	Create a directory /tftpboot in the DHCP server 
+        Place the files that is required for download to the /tftpboot directory.
+
+	Download the C-Kermit to the dhcp server and Make sure that the configuration is as below 
+	after the installation :
+
+	C-kermit settings
+	------------------
+	Ensure .kermrc in /root and /home/user looks like this
+	
+	set line /dev/ttyS0
+	set speed 57600
+	set carrier-watch off
+	set handshake none
+	set flow-control none
+	robust
+	set file type bin
+	set file name lit
+	set rec pack 1000
+	set send pack 1000
+	set window 5
+	
+3. Use the serial port terminal to communicate with the Target with the following settings in the host machine
+	baud rate: 57600
+	Data: 8bit
+	Parity: None
+	Stop bit: 1
+	FlowControl:None
+
+Execution Sequence:
+-------------------
+
+4. Open the VDSP and do the following :
+
+   Ensure that "Reset before loading" field is not checked under "Target Options" of VDSP++.   
+  
+5. Initialise the SDRAM manually. 
+   
+   Registers->ADSP-BF533 Extended Registers->External Bus Interface Unit.
+
+	EBIU_SDGCTL = 0x00911149
+	EBIU_SDBCTL = 0x0037
+	EBIU_SDRRC  = 0x0305
+
+
+6. Load the DXE/u-boot-stamp.dxe (for stamp board) or DXE/u-boot-ezkit.dxe (for ezkit board) given with this release using VDSP++.(File -> LoadProgram)
+  
+7. Set the Program Counter(PC) to 0x600000 using Registers->PC Counters.
+
+8. Execute the Program u-boot.dxe by Debug->Run (From VDSP ++)
+
+Serial Boot :
+
+9. Once you get the u-boot prompt in the serial port terminal type loadb.
+	Now press cntl \C to get c-kermit>
+	Type "send u-boot.bin" (the one which is obtained from this source after the build)
+	Type "connect"
+	Now we should get the u-boot prompt.
+
+10. At the u-boot prompt, type erase all to erase all the sectors of the Flash.
+
+11. cp.b 0x1000000 0x20000000 0x20000	(copy u-boot.bin to flash)
+	(Please wait till the operation is complete. Flash write takes a long time).
+	(D5 LED glows to indicate flash programming is in progress).
+
+12.Change the BMODE pins to 00.Reset the board and wait for the u-boot 
+   prompt to bootup..
+
+Network Boot:
+--------------
+
+ Please refer to the section "Execution sequence to load the compressed
+ and un-compressed linux images" to convert the linux.dxe obtained to uImage(Of uboot standards)
+
+
+Commands supported in this release:
+-----------------------------------
+
+1.	go      - start application at address 'addr'
+2.	run     - run commands in an environment variable
+3.	bootm   - boot application image from memory
+4.	tftpboot- boot image via network using TFTP protocol
+5.	date 	- to set and display date
+6.	loadb   - load binary file over serial line (kermit mode)
+7.	md      - memory display
+8.	mm      - memory modify
+9.	mw      - memory write
+10.	cp      - memory copy
+11.	cmp     - memory compare
+12.	crc32   - checksum calculation
+13.	base    - print or set address offset
+14.	printenv- print environment variables
+15.	setenv  - set environment variables
+16.	saveenv - save environment variables to persistent storage
+17.	erase   - erase FLASH memory
+18.	flinfo  - print FLASH memory information
+19.	bdinfo  - print Board Info structure
+20.	iminfo  - print header information for application image
+21.	echo    - echo args to console
+22.	version - print monitor version
+23.	help    - print online help
+24.	?       - alias for 'help'
+
+
+setenv:
+
+bootdelay     - see CONFIG_BOOTDELAY
+bootcmd       - see CONFIG_BOOTCOMMAND
+bootfile      - Name of the image to load with TFTP
+autoload      - if set to "no" (any string beginning with 'n'),
+		"tftp" will just load perform a lookup of the
+		configuration from the BOOTP server, but not try to
+		load any image using TFTP
+autostart     - if set to "yes", an image loaded using the "tftpboot" or "dhcp" commands 
+		will be automatically started (by internally calling
+		"bootm")
+		If set to "no", a standalone image passed to the
+		"bootm" command will be copied to the load address
+		(and eventually uncompressed), but NOT be started.
+		This can be used to load and uncompress arbitrary
+		data.
+ipaddr        - IP address; needed for tftpboot command
+loadaddr      - Default load address for commands like "tftpboot", "loadb"
+serverip      - TFTP server IP address; needed for tftpboot command
+
+
+How to test some of the commands
+-------------------------------------
+
+1. loadb
+
+Please ensure to use c-kermit as the terminal emulation program.
+
+loadb 0x1000000
+
+Press <Ctrl>\c to get kermit shell prompt.
+
+send linux.dxe
+
+2. bootelf 0x1000000
+
+bootelf 0x1000000 (after loading linux.dxe to 0x1000000)
+
+Execution sequence to load the compressed and un-compressed linux images 
+---------------------------------------------------------------------------- 
+1. For this feature the linux.dxe ELF image has to be changed as per u-boot
+standards.
+
+	i) Generate the binary file from the ELF file.
+		nisa-elf-objcopy -O binary linux.dxe linux.bin
+
+	ii) Compress the binary file(linux.bin)as follows.It will generate linux.bin.gz.
+		gzip -9 linux.bin
+
+	iii) Use the utility mkimage present in the u-boot to merge the header 
+	     information like Image Name, Image Type, Data Size, Load Address, 
+	     Entry Point into the linux.bin.gz	
+	
+	     IF COMPRESSED:
+	     --------------
+	     ./tools/mkimage -A blackfin -O uclinux -T kernel -C gzip -a 0x1000 
+		-e 0x1000 -n "Bfin uClinux Kernel" -d linux.bin.gz uImage
+
+	     IF UNCOMPRESSED:
+	     ----------------
+	     ./tools/mkimage -A blackfin -O uclinux -T kernel -C none -a 0x1000
+               -e 0x1000 -n "Bfin uClinux kernel" -d linux.dxe uImage
+
+	Note - 0x1000 is used because we have compiled the kernel with that location as the entry point. If 
+	anyone wants to chose a different address for entry point (for eg, the default 0x1000), then please 
+	give that address instead of 0x1000.
+
+	iv) Copy the final image "uImage" into the TFTP server's root.
+
+2. After making either the compessed or uncompressed image,
+	tftp 0x1000000 uImage
+	bootm 0x1000000
+
+3. The command "iminfo" can be used to display the information of the 
+   downloaded image.
+	
+	iminfo 0x1000000	
+
+
+
+To test "go" command:
+-----------------------
+
+1.	nisa-elf-objcopy -O binary linux.dxe linux.bin
+
+2.	tftp 0x1000 linux.bin OR dhcp
+
+3. 	go 0x1000000
+
+
+To test autoboot
+-------------------
+
+u-boot waits for a delay of 30 seconds for the user to type any character
+inorder to display the prompt. If the user does not press any key u-boot
+automatically takes the command configured for autoboot and executes the same.
+
+To test the feature:
+---------------------
+
+Get the prompt.
+tftp 0x1000000 uImage Or Run the command "dhcp"
+erase 0x20100000 0x201fffff
+cp.b 0x1000000 0x20100000 0x100000	(LED D6 glows till the copy is in progress)
+setenv linuxrun bootm 0x20100000
+setenv bootcmd linuxrun
+saveenv
+
+Reset the board and dont hit any key when the u-boot starts booting. u-boot automatically 
+executes linuxrun and displays the kernel prompt.
+
+Note - loading u-boot.bin through u-boot.dxe is only due to absence of flash utility. Once that is done, 
+u-boot.bin can be directly programmed to flash without u-boot.dxe.
+
+Known Issued to be sorted
+---------------------------
+
+Flash programming takes a very long time.
+Around 0x90000 bytes copying takes around 10 minutes.
+
+Since protection on Flash locations is not available, please ensure 0x20040000 - 0x2004ffff is not erased. Those locations
+contain environment variables. Bootloader 0x20000000 - 0x2002ffff is reserved for bootloader.
+
+How to make a standalone system - Flashboot
+---------------------------------------------
+
+First program the flash with the bootloader (u-boot.bin).
+Reset the board to get the u-boot prompt.
+
+erase 0x20100000 0x201fffff
+tftp 0x1000000 uImage or Run the command "dhcp"
+cp.b 0x1000000 0x20100000 0x100000 (Please wait for the copy to get completed)
+cmp.b 0x1000000 0x20100000 0x100000 (check to see if copy was correct)
+Reset the board.
+
