@@ -11,15 +11,28 @@
 #undef	CONFIG_BOOTARGS
 #define CONFIG_DRIVER_SMC91111	1
 #define CONFIG_SMC91111_BASE	0x20300300
-/* #define HARDCODE_MAC		1 */
+#define HARDCODE_MAC		1
 #define CONFIG_RTC_BF533	1
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
 
-#define CONFIG_CRYSTAL_FREQ	27
-#define PLL_DIV_FACTOR		5
-#define CONFIG_VCO		450
-#define CONFIG_CCLK		CONFIG_VCO
-#define CONFIG_SCLK		(CONFIG_VCO/PLL_DIV_FACTOR)
+#define CONFIG_CRYSTAL_FREQ     27000000        /* 27000000 Hz = 27.0000 */
+#define CONFIG_CRYSTAL_DIV      1               /* divide by 1 */
+
+/* CCLK - 513MHz, SCLK - 128Mhz */
+#if 0
+#define CONFIG_PLL              19              /* VCO runs 19x Crystal = 513.0000 MHz */
+#define CONFIG_CORE_DIV         1               /* CCLK runs @ VCO / 1  = 513.0000 MHz */
+#define CONFIG_SCLK_DIV         4               /* SCLK runs @ VCO / 4  = 128.0000 MHz */
+#endif
+
+/* CCLK - 459MHz, SCLK - 91 MHz */
+#define CONFIG_PLL              17              /* VCO runs 16x Crystal = 459.000 MHz */
+#define CONFIG_CORE_DIV         1               /* CCLK runs @ VCO / 1  = 459.000 MHz */
+#define CONFIG_SCLK_DIV         5               /* SCLK runs @ VCO / 4  = 91.1000 MHz */
+
+#define VCO                     ((CONFIG_CRYSTAL_FREQ / CONFIG_CRYSTAL_DIV) * CONFIG_PLL)
+#define CCLK                    ((CONFIG_CRYSTAL_FREQ / CONFIG_CRYSTAL_DIV) * CONFIG_PLL) / CONFIG_CORE_DIV
+#define SCLK                    ((CONFIG_CRYSTAL_FREQ / CONFIG_CRYSTAL_DIV) * CONFIG_PLL) / CONFIG_SCLK_DIV
 
 #define	CONFIG_EXTRA_ENV_SETTINGS					\
 	"netdev=eth0\0"							\
@@ -99,7 +112,7 @@
 #define CONFIG_GATEWAYIP	10.10.13.9
 #define CONFIG_SERVERIP		10.100.4.174
 #define CONFIG_HOSTNAME		EZKIT533
-/* #define CONFIG_ETHADDR		02:80:ad:20:31:b8 */
+#define CONFIG_ETHADDR		02:80:ad:20:31:b8
 
 #undef CONFIG_AUTOBOOT_KEYED
 #ifdef CONFIG_AUTOBOOT_KEYED

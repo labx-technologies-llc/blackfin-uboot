@@ -127,49 +127,56 @@ no_soft_reset:
 	LSETUP(4,4) lc0 = p1;
 	[ p0 ++ ] = r1;
 
-	/* Configure PLL */
-	r0 = CONFIG_VCO;
-	r1 = CONFIG_CRYSTAL_FREQ;
-	r2 = 0;
-	r3 = 1;
-	r4 = -1;
-dp_begin:
-	r0 = r0 - r1;
-	CC = r0 <= r4;
-	if CC jump dp_skip;
-	r2 = r2 + r3;
-	jump dp_begin;
-dp_skip:
-	r0 = r2;
-	r3 = r0;
 
-	r1 = 0x3F;
-	r0 = r0 & r1;
-	r0 = r0 << 9;
+	/* Configure MSEL on PLL_CTL */
 	p0.h = (PLL_CTL >> 16);
         p0.l = (PLL_CTL & 0xFFFF);
 	r1 = w[p0](z);
-	r5 = 0x8E;
-	r1 = r1 & r5;
+	r2 = r1;
+	r0 = 0(z);
+
+	r0.l = ~(0x3f << 9);
+	r1 = r1 & r0;
+	r0.l = ((CONFIG_PLL & 0x3f) << 9);
 	r1 = r1 | r0;
-	cli r2;
-	w[p0] = r1;
-        idle;
-        sti r2;
-        ssync;
 
-	/* Configure SCLK */
-        r0 = PLL_DIV_FACTOR; 
-	p0.h = (PLL_DIV >> 16);
-	p0.l = (PLL_DIV & 0xFFFF);
-	w[p0] = r0;
+	cc = r1 == r2;		/* check if PLL_CTL changed */
+	if cc jump skip_pll;	/* skip the PLL_CTL update */
+
+	p1.l = lo(SIC_IWR);	/* enable PLL Wakeup Interrupt */
+	p1.h = hi(SIC_IWR);
+	r0 = [p1];
+	bitset(r0,0);
+	[p1] = r0;
+	
+	w[p0] = r1;		/* Apply PLL_CTL changes */
 	ssync;
+	/* because i am in the reset routine
+	 * there is no need to disable(cli)/enable(sti)
+	 * interrupts 
+	 */
+	idle;	/* wait for Loop_count expired wake up */
+	/* no sync required */
 
-	p1.l = DELAY;
-	p1.h = 0x0;
-	lsetup ( del_start,del_end ) lc0 = p1;
-del_start:
-del_end: nop;
+skip_pll:
+	nop;
+
+	/* Reconfigure PLL_DIV register 
+	 * Can be done on the fly
+	 */
+
+	p0.h = (PLL_DIV >> 16);
+        p0.l = (PLL_DIV & 0xFFFF);
+	r1 = w[p0](z);
+	r0 = 0(z);
+
+	r0.l = ~(0xf);
+	r1 = r1 & r0;
+	r0.l = (CONFIG_SCLK_DIV & 0xf);
+	r1 = r1 | r0;
+
+	w[p0] = r1;
+	ssync;
 
 	/* Configure SDRAM if SDRAM is already
 	   not enabled */
@@ -366,6 +373,8 @@ _clear_bss_end:
         [p1++] = r0;
 _clear_bss_skip:
 
+#ifndef CONFIG_EXEC_FROM_RAM
+
 	/* copy data section to RAM */
 	p1.l = flashdataend;
 	p1.h = flashdataend;
@@ -389,6 +398,11 @@ loop:
 	r6 = r4 + r6;
 	p0 = r6;
 	jump (p0);
+#else
+	p0.h = _start1;
+	p0.l = _start1;
+	jump (p0);
+#endif
 
 reset_start:
         /* Soft Reset */
