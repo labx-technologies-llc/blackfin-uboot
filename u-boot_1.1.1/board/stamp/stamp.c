@@ -55,6 +55,33 @@ long int initdram(int board_type)
 	return 0;
 }
 
+void swap_to(int device_id)
+{
+
+	if (device_id == ETHERNET) {
+		*pFIO_DIR = PF0;
+		asm("ssync;");
+		*pFIO_FLAG_S = PF0;
+		asm("ssync;");
+	}
+	else if (device_id == FLASH) {
+        	*pFIO_DIR = (PF4 | PF3 | PF2 | PF1 | PF0);
+        	*pFIO_FLAG_S = (PF4 | PF3 | PF2 );
+        	*pFIO_MASKA_D = (PF8 | PF6 | PF5);
+        	*pFIO_MASKB_D = (PF7);
+        	*pFIO_POLAR = (PF8 | PF6 | PF5 );
+        	*pFIO_EDGE = (PF8 | PF7 | PF6 | PF5);
+        	*pFIO_INEN = (PF8 | PF7 | PF6 | PF5);
+        	*pFIO_FLAG_D = (PF4 | PF3 | PF2 );
+        	asm("ssync;");
+	}
+	else {
+		printf("Unknown bank to switch\n");
+	}	
+	
+	return;
+}
+
 #if defined(CONFIG_MISC_INIT_R)
 /* miscellaneous platform dependent initialisations */
 int misc_init_r(void)
@@ -63,19 +90,19 @@ int misc_init_r(void)
 	int cf_stat = 0;
 
 	/* Check whether CF card is inserted */
-	*(volatile unsigned short *) pFIO_EDGE = FIO_EDGE_CF_BITS;
-	*(volatile unsigned short *) pFIO_POLAR = FIO_POLAR_CF_BITS;
+	*pFIO_EDGE = FIO_EDGE_CF_BITS;
+	*pFIO_POLAR = FIO_POLAR_CF_BITS;
 	for (i=0; i < 0x300 ; i++) asm("nop;");
 			
-	if ( (*(volatile unsigned short *) pFIO_FLAG_S) & CF_STAT_BITS) {
+	if ( (*pFIO_FLAG_S) & CF_STAT_BITS) {
 		cf_stat = 0;
 	}
 	else {
 		cf_stat = 1;
 	}
 
-	*(volatile unsigned short *) pFIO_EDGE  = FIO_EDGE_BITS;
-	*(volatile unsigned short *) pFIO_POLAR = FIO_POLAR_BITS;
+	*pFIO_EDGE  = FIO_EDGE_BITS;
+	*pFIO_POLAR = FIO_POLAR_BITS;
 	
 
 	if (cf_stat) {
@@ -83,11 +110,6 @@ int misc_init_r(void)
 
 		/* Set cycle time for CF */
 		*(volatile unsigned long *) ambctl1 = CF_AMBCTL1VAL;
-
-
-		pll_set(CF_CONFIG_VCO, CF_CONFIG_CRYSTAL_FREQ, CF_PLL_DIV_FACTOR);
-
-		pll_div_fact = CF_PLL_DIV_FACTOR;
 
 		for (i=0; i < 0x1000 ; i++) asm("nop;");
 		for (i=0; i < 0x1000 ; i++) asm("nop;");
@@ -114,8 +136,8 @@ void cf_outb(unsigned char val, volatile unsigned char* addr)
 	 * Set PF1 PF0 respectively to 0 1 to divert address
 	 * to the expansion memory banks  
 	 */
-        *(volatile unsigned short *) pFIO_FLAG_S = CF_PF0;
-        *(volatile unsigned short *) pFIO_FLAG_C = CF_PF1;
+        *pFIO_FLAG_S = CF_PF0;
+        *pFIO_FLAG_C = CF_PF1;
         asm("ssync;");
 
         *(addr) = val;
@@ -131,14 +153,14 @@ unsigned char cf_inb(volatile unsigned char *addr)
 {
 	volatile unsigned char c;
 
-	*(volatile unsigned short *) pFIO_FLAG_S = CF_PF0;
-	*(volatile unsigned short *) pFIO_FLAG_C = CF_PF1;
+	*pFIO_FLAG_S = CF_PF0;
+	*pFIO_FLAG_C = CF_PF1;
 	asm("ssync;");
 
 	c = *(addr);
 	asm("ssync;");
 
-	*(volatile unsigned short *) pFIO_FLAG_C = CF_PF1_PF0;
+	*pFIO_FLAG_C = CF_PF1_PF0;
 	asm("ssync;");
 
 	return c;
@@ -148,8 +170,8 @@ void cf_insw(unsigned short *sect_buf, unsigned short *addr, int words)
 {
         int i;
 
-        *(volatile unsigned short *) pFIO_FLAG_S = CF_PF0;
-        *(volatile unsigned short *) pFIO_FLAG_C = CF_PF1;
+        *pFIO_FLAG_S = CF_PF0;
+        *pFIO_FLAG_C = CF_PF1;
         asm("ssync;");
 
         for (i = 0;i < words; i++) {
@@ -157,7 +179,7 @@ void cf_insw(unsigned short *sect_buf, unsigned short *addr, int words)
                 asm("ssync;");
         }
 
-        *(volatile unsigned short *) pFIO_FLAG_C = CF_PF1_PF0;
+        *pFIO_FLAG_C = CF_PF1_PF0;
         asm("ssync;");
 }
 
@@ -165,8 +187,8 @@ void cf_outsw(unsigned short *addr, unsigned short *sect_buf, int words)
 {
         int i;
 
-        *(volatile unsigned short *) pFIO_FLAG_S = CF_PF0;
-        *(volatile unsigned short *) pFIO_FLAG_C = CF_PF1;
+        *pFIO_FLAG_S = CF_PF0;
+        *pFIO_FLAG_C = CF_PF1;
         asm("ssync;");
 
         for (i = 0;i < words; i++) {
@@ -174,7 +196,7 @@ void cf_outsw(unsigned short *addr, unsigned short *sect_buf, int words)
                 asm("ssync;");
         }
 
-        *(volatile unsigned short *) pFIO_FLAG_C = CF_PF1_PF0;
+        *pFIO_FLAG_C = CF_PF1_PF0;
         asm("ssync;");
 }
 #endif
