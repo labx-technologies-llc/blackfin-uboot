@@ -110,9 +110,6 @@ ifndef LDSCRIPT
 LDSCRIPT := $(TOPDIR)/board/$(BOARDDIR)/u-boot.lds
 endif
 OBJCFLAGS += --gap-fill=0xff
-ifeq ($(ARCH),blackfin)
-OBJCFLAGS += --set-start=0x0 --adjust-section-vma=.text-0x20000000
-endif
 
 gccincdir := $(shell $(CC) -print-file-name=include)
 
