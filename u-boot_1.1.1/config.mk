@@ -105,11 +105,13 @@ RANLIB	= $(CROSS_COMPILE)RANLIB
 RELFLAGS= $(PLATFORM_RELFLAGS)
 ifeq ($(ARCH),blackfin)
 DBGFLAGS=
-OPTFLAGS= -O0 -fno-gcse -fomit-frame-pointer	
+#OPTFLAGS= -O0 -fno-gcse -fomit-frame-pointer	
+OPTFLAGS = -O0
 else
 DBGFLAGS= -g #-DDEBUG
 OPTFLAGS= -Os #-fomit-frame-pointer
 endif
+
 ifndef LDSCRIPT
 #LDSCRIPT := $(TOPDIR)/board/$(BOARDDIR)/u-boot.lds.debug
 LDSCRIPT := $(TOPDIR)/board/$(BOARDDIR)/u-boot.lds
@@ -147,6 +149,7 @@ endif
 endif
 
 AFLAGS_DEBUG := -Wa,-gstabs
+
 AFLAGS := $(AFLAGS_DEBUG) -D__ASSEMBLY__ $(CPPFLAGS)
 
 LDFLAGS += -Bstatic -T $(LDSCRIPT) -Ttext $(TEXT_BASE) $(PLATFORM_LDFLAGS)

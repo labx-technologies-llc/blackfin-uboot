@@ -180,6 +180,9 @@ int write_buff (flash_info_t * info, uchar * src, ulong addr, ulong cnt)
 	return 0;
 }
 
+extern int _bf533_data_size,edata,_bf533_data_dest;
+
+
 bool WriteData( long lStart, long lCount, long lStride, int *pnData )	{
 	
 	long i = 0;					
@@ -200,24 +203,7 @@ bool WriteData( long lStart, long lCount, long lStride, int *pnData )	{
 		FLASH_Write(ulOffset,pnData[i]);
 		if(nLeftover == 3)	{
 			ulOffset += 2;
-		FLASH_Write(ulOffset,(pnData[i] >> iShift));
-		iShift = 0;			/* FIXME, some issue with the linker script */
-		iShift = 0;
-		iShift = 0;
-		iShift = 0;
-		iShift = 0;
-		iShift = 0;
-		iShift = 0;
-		iShift = 0;
-		iShift = 0;
-		iShift = 0;
-		iShift = 0;
-		iShift = 0;
-		iShift = 0;
-		iShift = 0;
-		iShift = 0;
-		iShift = 0;
-		iShift = 0;
+			FLASH_Write(ulOffset,(pnData[i] >> iShift));
 		}
 	}
 	ResetFlash();

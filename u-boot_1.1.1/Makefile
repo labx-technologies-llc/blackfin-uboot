@@ -138,7 +138,7 @@ SUBDIRS	= tools \
 
 
 ifeq ($(ARCH),blackfin)
-ALL = u-boot.bin u-boot.hex System.map
+ALL = u-boot.hex u-boot.bin System.map
 else
 ALL = u-boot.srec u-boot.bin System.map
 endif
@@ -150,7 +150,7 @@ u-boot.srec:	u-boot
 
 ifeq ($(ARCH),blackfin)
 u-boot.bin:	u-boot
-	 	./scr	
+		./scr
 
 u-boot.hex:	u-boot
 		$(OBJCOPY) ${OBJCFLAGS_HEX} -O ihex $< $@
