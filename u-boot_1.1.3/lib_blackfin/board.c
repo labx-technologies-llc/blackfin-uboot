@@ -35,6 +35,9 @@
 #include "blackfin_board.h"
 #include "../drivers/smc91111.h"
 
+extern flash_info_t flash_info[];
+
+
 static void mem_malloc_init(void)
 {
 	mem_malloc_start = CFG_MALLOC_BASE;
@@ -185,6 +188,7 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	/* configure available FLASH banks */
 	size = flash_init();
 	display_flash_config(size);
+	flash_protect(FLAG_PROTECT_SET, CFG_FLASH_BASE, CFG_FLASH_BASE + 0x1ffff, &flash_info[0]);
 	bd->bi_flashstart = CFG_FLASH_BASE;
 	bd->bi_flashsize = size;
 	bd->bi_flashoffset = 0;
