@@ -112,7 +112,7 @@
  */
 
 #define CONFIG_DRIVER_SMC91111		1
-#define CONFIG_SMC91111_BASE		0x20310300
+#define CONFIG_SMC91111_BASE		0x20300300
 /* To remove hardcoding and enable MAC storage in EEPROM */
 /* #define HARDCODE_MAC			1 */
 #if 0
