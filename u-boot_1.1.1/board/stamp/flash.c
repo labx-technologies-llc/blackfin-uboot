@@ -87,21 +87,24 @@ void flash_print_info(flash_info_t * info)
 int flash_erase(flash_info_t * info, int s_first, int s_last)
 {
 	int cnt = 0;
+	int rc = ERR_OK;
 
 	cnt = s_last - s_first + 1;
 
 	if (cnt == FLASH_TOT_SECT) {
-		printf("Erasing flash, Please Wait \n");
-		return EraseFlash(); 
+		printf(" Please Wait \n");
+		rc =  EraseFlash(); 
+		printf("done\n");
 	} else if (cnt > 0) {
 		printf("Sector erasing, Please Wait\n");
-		return FLASH_Block_Erase(s_first,s_last);
+		rc = FLASH_Block_Erase(s_first,s_last);
+		printf("done\n");
 	}
 	else {
 		printf("Invalid target address\n");
-		return ERR_INVAL;
+		rc = ERR_INVAL;
 	}
-	return ERR_OK;
+	return rc;
 }
 
 unsigned long GetOffset(int sec_num)
@@ -121,66 +124,66 @@ unsigned long GetOffset(int sec_num)
 
 int write_buff (flash_info_t *info, uchar *src, ulong addr, ulong cnt)
 {
-    ulong cp, wp, data;
-    int l;
-    int i, rc;
+	ulong cp, wp, data;
+	int l;
+	int i, rc;
 
-    wp = (addr & ~(FLASH_WIDTH-1));	/* get lower word aligned address */
+	wp = (addr & ~(FLASH_WIDTH-1));	/* get lower word aligned address */
 
-    /*
-     * handle unaligned start bytes
-     */
-    if ((l = addr - wp) != 0) {
+	/*
+	 * handle unaligned start bytes
+	 */
+	if ((l = addr - wp) != 0) {
+		data = 0;
+		for (i=0, cp=wp; i<l; ++i, ++cp) {
+			data = (data >> 8) | (*(uchar *)cp);
+		}
+		for (; i<FLASH_WIDTH && cnt>0; ++i) {
+			data = (data << 8) | *src++;
+			--cnt;
+			++cp;
+		}
+		for (; cnt==0 && i<FLASH_WIDTH; ++i, ++cp) {
+			data = (data << 8) | (*(uchar *)cp);
+		}
+
+		if ((rc = write_word(info, wp, data)) != 0) {
+			return (rc);
+		}
+		wp += FLASH_WIDTH;
+	}
+
+	/*
+	 * handle word aligned part
+	 */
+	while (cnt >= FLASH_WIDTH) {
+		data = 0;
+		for (i=0; i<FLASH_WIDTH; ++i) {
+			data = (data << 8) | *src++;
+		}
+		if ((rc = write_word(info, wp, data)) != 0) {
+			return (rc);
+		}
+		wp  += FLASH_WIDTH;
+		cnt -= FLASH_WIDTH;
+	}
+	if (cnt == 0) {
+		return ERR_OK;
+	}
+
+	/*
+	 * handle unaligned tail bytes
+	 */
 	data = 0;
-	for (i=0, cp=wp; i<l; ++i, ++cp) {
-	    data = (data >> 8) | (*(uchar *)cp);
+	for (i=0, cp=wp; i<FLASH_WIDTH && cnt>0; ++i, ++cp) {
+		data = (data << 8) | *src++;
+		--cnt;
 	}
-	for (; i<FLASH_WIDTH && cnt>0; ++i) {
-	    data = (data << 8) | *src++;
-	    --cnt;
-	    ++cp;
-	}
-	for (; cnt==0 && i<FLASH_WIDTH; ++i, ++cp) {
-	    data = (data << 8) | (*(uchar *)cp);
+	for (; i<FLASH_WIDTH; ++i, ++cp) {
+		data = (data << 8) | (*(uchar *)cp);
 	}
 
-	if ((rc = write_word(info, wp, data)) != 0) {
-	    return (rc);
-	}
-	wp += FLASH_WIDTH;
-    }
-
-    /*
-     * handle word aligned part
-     */
-    while (cnt >= FLASH_WIDTH) {
-	data = 0;
-	for (i=0; i<FLASH_WIDTH; ++i) {
-            data = (data << 8) | *src++;
-        }
-        if ((rc = write_word(info, wp, data)) != 0) {
-            return (rc);
-        }
-        wp  += FLASH_WIDTH;
-        cnt -= FLASH_WIDTH;
-    }
-    if (cnt == 0) {
-	return ERR_OK;
-    }
-
-    /*
-     * handle unaligned tail bytes
-     */
-    data = 0;
-    for (i=0, cp=wp; i<FLASH_WIDTH && cnt>0; ++i, ++cp) {
-	data = (data << 8) | *src++;
-	--cnt;
-    }
-    for (; i<FLASH_WIDTH; ++i, ++cp) {
-	data = (data << 8) | (*(uchar *)cp);
-    }
-
-    return write_word(info, wp, data);
+	return write_word(info, wp, data);
 }
 
 int write_word(flash_info_t *info, ulong addr, ulong data)
@@ -188,6 +191,7 @@ int write_word(flash_info_t *info, ulong addr, ulong data)
 	volatile unsigned short *dest = (volatile unsigned short *)addr;
 	ushort sdata = (ushort)data;
 	int rcode;
+	ulong flag;
 
 	sdata = ((sdata & 0xff00) >> 8) | ((sdata & 0xff) << 8 );
 
@@ -197,16 +201,19 @@ int write_word(flash_info_t *info, ulong addr, ulong data)
 	}
 
 	LED6_On();
+	flag = disable_interrupts();
 	FLASH_Base[WRITE_CMD1] = WRITE_DATA1;
 	FLASH_Base[WRITE_CMD2] = WRITE_DATA2;
-	FLASH_Base[WRITE_CMD3] = WRITE_DATA3;	
+	FLASH_Base[WRITE_CMD3] = WRITE_DATA3;
+	if(flag)
+		enable_interrupts();
     	*dest = sdata;
 	asm("ssync;");
-	rcode = FlashDataToggle();
+	rcode = FlashDataToggle(CFG_FLASH_WRITE_TOUT);
 	if (rcode != ERR_OK) {
 		ResetFlash();
 		return rcode;
-	}	
+	}
 	LED6_Off();
 	return rcode;
 }
@@ -232,32 +239,45 @@ int EraseFlash()
 	FLASH_Base[WRITE_CMD2] = ERASE_DATA5;
 	FLASH_Base[WRITE_CMD3] = ERASE_DATA6;
 
-	return FlashDataToggle();
+	return FlashDataToggle(CFG_FLASH_ERASE_TOUT);
 }
 
-int FlashDataToggle(void)
+int FlashDataToggle(unsigned long timeout)
 {
 	unsigned int u1,u2;
-	unsigned long timeout = 0xFFFFFFFF;
-	while(1) {
-		if(timeout < 0)
-			break;
+	unsigned long start,now,last;
+
+	start = get_timer(0);
+	last = get_timer(start);
+	do {
+		now = get_timer(start);
+
+		/* show that we're waiting */
+		if ((now - last) > 1000) {	/* every second */
+			putc ('.');
+			last = now;
+		}
+
 		u1 = FLASH_Base[ANY_OFF];
 		u2 = FLASH_Base[ANY_OFF];
-		if((u1 & 0x0040) == (u2 & 0x0040))
+		if((u1 & 0x0040) == (u2 & 0x0040)) {
 			return ERR_OK;
+		}
 		if((u2 & 0x0020) == 0x0000)
 			continue;
 		u1 = FLASH_Base[ANY_OFF];
-		if((u2 & 0x0040) == (u1 & 0x0040))
+		if((u2 & 0x0040) == (u1 & 0x0040)) {
 			return ERR_OK;
+		}
 		else {
+			printf("Data Toggle Error\n");
 			ResetFlash();
 			return ERR_PROG_ERROR;
 		}
-		timeout--;
-	}
-	if(timeout <0)	return ERR_TIMOUT;
+	}while(now < timeout);
+
+	printf("TimeOut - DataToggle\n");	
+	return ERR_TIMOUT;
 }
 
 int GetCodes()
@@ -279,29 +299,56 @@ int GetCodes()
 
 int FLASH_Block_Erase(unsigned long s_first,unsigned long s_last)
 {
-	int i;
-	unsigned long Off;
-	int flag_timeout = 0;
+	int i,rc,timeout_flag = 0;
+	unsigned long Off,flag;
+  	unsigned long start,now,timeout;
 
+	flag = disable_interrupts();
 	FLASH_Base[WRITE_CMD1] = ERASE_DATA1;
 	FLASH_Base[WRITE_CMD2] = ERASE_DATA2;
 	FLASH_Base[WRITE_CMD3] = ERASE_DATA3;
 	FLASH_Base[WRITE_CMD1] = ERASE_DATA4;
 	FLASH_Base[WRITE_CMD2] = ERASE_DATA5;
+
+	/* Timer critical section every block must be added in 50 ms*/
 	for (i = s_first; i <= s_last; i++) {
 		Off = (GetOffset(i) - CFG_FLASH0_BASE);
 		*(volatile unsigned short *) (CFG_FLASH0_BASE + Off) = 0x30;
-		if((FLASH_Base[0] & 0x0008) == 0x0008) {
-			flag_timeout = 1;
-			break;
+		asm("ssync;");
+
+		/* Check for Erase Timeout Period (is bit DQ3 set?) */
+                if((FLASH_Base[0] & 0x0008) == 0x0008) {
+			timeout_flag = 1;
+                        break; /* Cannot see any more blocks due to timeout */
 		}
 	}
-	if(flag_timeout == 1)
+
+	if(flag)
+		enable_interrupts();
+
+	if (timeout_flag) {
+		printf("Time out - All blocks couldn't be added\n");
 		return ERR_TIMOUT;
-	
-	if(FlashDataToggle() != ERR_OK) {
+	}
+
+	start = get_timer(0);
+	timeout = CFG_FLASH_ERASEBLOCK_TOUT * (s_last - s_first + 1);
+	/* Wait for the Erase Timer Bit (DQ3) to be set */
+	while(1) {
+		now = get_timer(start);
+		if((FLASH_Base[0] & 0x0008) == 0x0008) 
+			break; /* Break when device starts the erase cycle */
+		if (now > timeout) {
+			printf("Time out - Erase cycle is not started\n");
+			return ERR_TIMOUT;
+		}
+	}
+
+	rc = FlashDataToggle(timeout);
+
+	if(rc != ERR_OK) {
 		ResetFlash();
-		return ERR_NOT_ERASED;
+		return rc;
 	}
 	return ERR_OK;
 }
@@ -428,5 +475,4 @@ void cf_outsw(unsigned short *addr, unsigned short *sect_buf, int words)
         *(volatile unsigned short *) pFIO_FLAG_C = CF_PF1_PF0;
         asm("ssync;");
 }
-
 #endif

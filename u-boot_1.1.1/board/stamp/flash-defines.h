@@ -45,10 +45,11 @@ int ResetFlash(void);
 int EraseFlash(void);
 int write_buff (flash_info_t *info, uchar *src, ulong addr, ulong cnt);
 int write_word(flash_info_t *info, ulong addr, ulong data);
+
 unsigned long GetOffset(int sec_num);
 int FLASH_Block_Erase(unsigned long, unsigned long);
 void init_Flags(void);
-int FlashDataToggle(void);
+int FlashDataToggle(unsigned long);
 
 int AFP_SectorSize1 = 0x10000;
 
@@ -95,6 +96,7 @@ inline void init_Flags(void)
 
 volatile unsigned short *FLASH_Base = (unsigned short *) 0x20000000;
 unsigned volatile long *FB = (unsigned long *) 0x20000002;
+
 
 /* Definitions used in  Compact Flash Boot support */
 #define FIO_EDGE_CF_BITS 	0x0000
