@@ -1,5 +1,5 @@
 /*
- * asm/setup.h -- Definition of the Linux/Frio setup information
+ * asm/setup.h -- Definition of the Linux/Blackfin setup information
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file COPYING in the main directory of this archive
@@ -14,7 +14,7 @@
 #include <linux/config.h>
 
 /*
- * Linux/Frio Architectures
+ * Linux/Blackfin Architectures
  */
 
 #define MACH_BFIN	1
