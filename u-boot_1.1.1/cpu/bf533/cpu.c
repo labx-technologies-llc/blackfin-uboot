@@ -109,11 +109,11 @@ int get_clock(void)
 	val = *(volatile unsigned short *)pllctl;
 	val = (val >> 9) & 0x3F;
 	val = val * CONFIG_CRYSTAL_FREQ;
-	val = val * 1000000;
+	val = val / CONFIG_CORE_DIV;
 
 	return val;
 }
 
 void get_sclk(void)	{
-	sclk = get_clock()/PLL_DIV_FACTOR;
+	sclk = get_clock()/CONFIG_SCLK_DIV;
 }
