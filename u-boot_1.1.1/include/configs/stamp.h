@@ -15,14 +15,14 @@
 #define CONFIG_RTC_BF533	1
 
 #define CONFIG_CRYSTAL_FREQ	11
-#define PLL_DIV_FACTOR		5
-#define CONFIG_VCO		396
+#define PLL_DIV_FACTOR		4	
+#define CONFIG_VCO		520
 #define CONFIG_CCLK		CONFIG_VCO
 #define CONFIG_SCLK		(CONFIG_VCO/PLL_DIV_FACTOR)
 
 /* Clock settings for Compact Falsh */
 #define CF_CONFIG_CRYSTAL_FREQ	11
-#define CF_PLL_DIV_FACTOR	5	
+#define CF_PLL_DIV_FACTOR	5
 #define CF_CONFIG_VCO		396
 
 #define	CONFIG_EXTRA_ENV_SETTINGS					\
@@ -64,7 +64,7 @@
 #define CFG_MEMTEST_START	0x1000000	/* memtest works on */
 #define CFG_MEMTEST_END		0x12000000	/* 4 ... 12 MB in DRAM */
 #define	CFG_LOAD_ADDR		0x1000000	/* default load address */
-#define	CFG_HZ			100		/* decrementer freq: 10 ms ticks */
+#define	CFG_HZ			1000		/* 1ms time tick */ 
 #define CFG_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 #define	CFG_SDRAM_BASE		0x00000000
 #define CFG_MAX_RAM_SIZE	0x8000000
@@ -97,6 +97,17 @@
 #define FLASH_SIZE		0x400000
 #define CFG_FLASH_SIZE		0x400000
 #define RAM_DATA		0x20000228
+
+#define CFG_FLASH_ERASE_TOUT		2000000	/* Timeout for Chip Erase (in ms) */
+#define CFG_FLASH_ERASEBLOCK_TOUT	6000	/* Timeout for Block Erase (in ms) */
+#define CFG_FLASH_WRITE_TOUT		1	/* Timeout for Flash Write (in ms) */
+
+/* 
+ * following timeouts shall be used once the 
+ * Flash real protection is enabled
+ */
+#define CFG_FLASH_LOCK_TOUT		5	/* Timeout for Flash Set Lock Bit (in ms) */
+#define CFG_FLASH_UNLOCK_TOUT		10000	/* Timeout for Flash Clear Lock Bits (in ms) */
 
 /* network support */
 #define CONFIG_IPADDR		10.100.4.50
