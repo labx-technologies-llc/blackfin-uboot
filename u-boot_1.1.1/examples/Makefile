@@ -50,13 +50,18 @@ LOAD_ADDR = 0x80F00000
 endif
 
 ifeq ($(ARCH),blackfin)
-LOAD_ADDR = 0x1000000
+LOAD_ADDR = 0x1000
 endif
 
 include $(TOPDIR)/config.mk
 
 SREC	= hello_world.srec
 BIN	= hello_world.bin hello_world
+
+ifeq ($(ARCH),blackfin)
+SREC	+= smc91111_eeprom.srec
+BIN 	+= smc91111_eeprom.bin smc91111_eeprom
+endif
 
 ifeq ($(ARCH),i386)
 SREC   += 82559_eeprom.srec
