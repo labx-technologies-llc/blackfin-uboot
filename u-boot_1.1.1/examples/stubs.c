@@ -130,7 +130,11 @@ gd_t *global_data;
  * implementation. On the other hand, asm() statements with
  * arguments can be used only inside the functions (gcc limitation)
  */
+#if defined(CONFIG_blackfin)
+void dummy(void)
+#else
 static void __attribute__((unused)) dummy(void)
+#endif
 {
 #include <_exports.h>
 }
