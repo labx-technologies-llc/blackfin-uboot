@@ -70,7 +70,7 @@ void serial_setbrg(void)
 #ifdef CONFIG_STAMP
 	sclk = get_clock()/pll_div_fact;
 #else
-	sclk = get_clock()/CONFIG_SCLK_DIV;
+	sclk = get_clock()/PLL_DIV_FACTOR;
 #endif
 	calc_baud();
 
@@ -111,7 +111,7 @@ void serial_setbrg(void)
 int serial_init(void)
 {
 #ifdef CONFIG_STAMP
-	pll_div_fact = CONFIG_SCLK_DIV;
+	pll_div_fact = PLL_DIV_FACTOR;
 #endif
 	serial_setbrg();
 	return (0);

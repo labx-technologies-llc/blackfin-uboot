@@ -14,10 +14,6 @@
 /* Enabled below option for CF support */
 /* #define CONFIG_STAMP_CF         1 */	
 
-/* <Blackfin - Execute from RAM> UnComment following
-   ro configure u-boot that runs from RAM */
-/* #define CONFIG_EXEC_FROM_RAM	1 */
-
 
 /* To remove hardcoding and enable MAC storage in EEPROM */
 /* #define HARDCODE_MAC		1 */
@@ -25,24 +21,11 @@
 #define CONFIG_RTC_BF533	1
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
 
-#define CONFIG_CRYSTAL_FREQ     11059200        /* 11059200 Hz = 11.0592 */
-#define CONFIG_CRYSTAL_DIV      1               /* divide by 1 */
-
-/* CCLK - 519MHz, SCLK - 129Mhz */
-#if 0
-#define CONFIG_PLL              47              /* VCO runs 48x Crystal = 519.7824 MHz */
-#define CONFIG_CORE_DIV         1               /* CCLK runs @ VCO / 1  = 519.7824 MHz */
-#define CONFIG_SCLK_DIV         4               /* SCLK runs @ VCO / 4  = 129.9456 MHz */
-#endif
-
-#define CONFIG_PLL              34              /* VCO runs 34x Crystal = 376.013 MHz */
-#define CONFIG_CORE_DIV         1               /* CCLK runs @ VCO / 1  = 376.013 MHz */
-#define CONFIG_SCLK_DIV         5               /* SCLK runs @ VCO / 4  = 75.2026 MHz */
-
-#define VCO                     ((CONFIG_CRYSTAL_FREQ / CONFIG_CRYSTAL_DIV) * CONFIG_PLL)
-
-#define CCLK                    ((CONFIG_CRYSTAL_FREQ / CONFIG_CRYSTAL_DIV) * CONFIG_PLL) / CONFIG_CORE_DIV
-#define SCLK                    ((CONFIG_CRYSTAL_FREQ / CONFIG_CRYSTAL_DIV) * CONFIG_PLL) / CONFIG_SCLK_DIV
+#define CONFIG_CRYSTAL_FREQ	11
+#define PLL_DIV_FACTOR	 	5		
+#define CONFIG_VCO		396	
+#define CONFIG_CCLK		CONFIG_VCO
+#define CONFIG_SCLK		(CONFIG_VCO/PLL_DIV_FACTOR)
 
 /* Clock settings for Compact Falsh */
 #define CF_CONFIG_CRYSTAL_FREQ	11

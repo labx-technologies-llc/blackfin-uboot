@@ -41,7 +41,7 @@ Version
 Development Environment
 -----------------------
 
-	Tool chain: 3.3.x Blackfin Toolchain
+	Tool chain: 3.4.x Blackfin Toolchain
 	Host platform: Red hat Linux 9.0
 	Target board: STAMP Board/ EZKIT board
 
@@ -549,27 +549,6 @@ Different VCO frequency support:
 		b. Compile and form the u-boot.bin
 		c. This u-boot.bin would run at the VCO specified in 
 		   include/configs/ezkit533.h or include/configs/stamp.h
-
-u-boot from RAM support (through VDSP):
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	1. Build u-boot with the following changes
-
-		a. grep for the string "<Blackfin - Execute from RAM>" to find 
-		   places that needs to be changed in u-boot. Comment is given 
-		   along with the string.
-
-		b. make u-boot to generate u-boot following the BuildProcedure. 
-		   Note that u-boot.srec and u-boot.bin might not be generated 
-		   and not need.
-
-	2.  Open VDSP, and configure SDRAM contents depending on the board as 
-	    given in "VDSP executable support".
-
-	3. Change PC count to the following address and start executing through F5
-
-		STAMP : 0x7f80000
-		EZKIT533: 0x1f80000
 
 Precautions
 -----------

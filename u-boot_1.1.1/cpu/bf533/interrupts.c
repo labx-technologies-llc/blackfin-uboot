@@ -141,12 +141,12 @@ ulong get_timer(ulong base)
 	last_time = clocks;
 
 	/* Get the number of milliseconds */
-	milisec = (clocks/ VCO) * 1000;
+	milisec = clocks/(CONFIG_VCO * 1000);
 
 	/* Find the number of millisonds 
 	   that got elapsed before this TCOUNT
 	   cycle */
-	milisec += timestamp * (MAX_TIM_LOAD/VCO) * 1000;
+	milisec += timestamp * (MAX_TIM_LOAD/(CONFIG_VCO * 1000));
 
 	return (milisec - base);
 }

@@ -40,8 +40,6 @@
 
 .global pll_set;
 .global _pll_set;
-.global start1;
-.global _start1;
 
 .text
 _start1:
