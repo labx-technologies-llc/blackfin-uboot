@@ -303,6 +303,8 @@ int FLASH_Block_Erase(unsigned long s_first,unsigned long s_last)
 	unsigned long Off,flag;
   	unsigned long start,now,timeout;
 
+	printf("Erasing Blocks %i to %i\n", s_first, s_last);
+
 	flag = disable_interrupts();
 	FLASH_Base[WRITE_CMD1] = ERASE_DATA1;
 	FLASH_Base[WRITE_CMD2] = ERASE_DATA2;
@@ -316,20 +318,15 @@ int FLASH_Block_Erase(unsigned long s_first,unsigned long s_last)
 		*(volatile unsigned short *) (CFG_FLASH0_BASE + Off) = 0x30;
 		asm("ssync;");
 
-		/* Check for Erase Timeout Period (is bit DQ3 set?) */
+		/* May I give it another command? */
                 if((FLASH_Base[0] & 0x0008) == 0x0008) {
 			timeout_flag = 1;
-                        break; /* Cannot see any more blocks due to timeout */
-		}
+                        break; /* Cannot add more blocks due to timeout */
+		} 
 	}
 
 	if(flag)
 		enable_interrupts();
-
-	if (timeout_flag) {
-		printf("Time out - All blocks couldn't be added\n");
-		return ERR_TIMOUT;
-	}
 
 	start = get_timer(0);
 	timeout = CFG_FLASH_ERASEBLOCK_TOUT * (s_last - s_first + 1);
@@ -350,6 +347,13 @@ int FLASH_Block_Erase(unsigned long s_first,unsigned long s_last)
 		ResetFlash();
 		return rc;
 	}
+
+        if (timeout_flag) {
+		if ( i < s_last ) {
+			FLASH_Block_Erase ( i, s_last);
+		}
+        }
+
 	return ERR_OK;
 }
 
