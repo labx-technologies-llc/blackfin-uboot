@@ -242,10 +242,10 @@ bool FLASH_Write(long addr, int data)
 	FLASH_Base[0x555] = 0xAA;
 	FLASH_Base[0x2AA] = 0x55;
 	FLASH_Base[0x555] = 0xA0;
+	udelay(10000);	
 	*(volatile unsigned short *) (0x20000000 + addr) = data;
 	asm("ssync;");
-	for (t = 0; t < 5000; t++) {
-	}
+	udelay(10000);	
 	LED6_Off();
 	return TRUE;
 }

@@ -238,7 +238,6 @@ bool WriteFlash(long nOffset, int nValue)
 	asm("ssync;");
 	*(unsigned volatile short *) addr = nValue;
 	asm("ssync;");
-	printf("");	/* FIXME */
 	return TRUE;
 }
 
@@ -288,8 +287,6 @@ bool PollToggleBit(long lOffset)
 	
 	asm("DONE_TOGGLE_BIT:");
 	bError = TRUE;
-
-	ResetFlash();
 
 	return !bError;
 }
@@ -441,29 +438,6 @@ bool GetSectorNumber(long ulOffset, int *pnSector)
 		return 1;
 	} else
 		return -1;
-}
-
-
-int GetSectorProtectionStatus(flash_info_t * info, int nSector)
-{
-	int protect_sts = 0;
-
-	/* send the auto select command to the flash */
-	WriteFlash((info->start[nSector] + 0xaaa), 0xaa);
-	WriteFlash((info->start[nSector] + 0x554), 0x55);
-	WriteFlash((info->start[nSector] + 0xaaa), 0x90);
-
-	/* now we can read the codes */
-	ReadFlash((info->start[nSector] + 4), &protect_sts);
-	protect_sts &= 0x00FF;
-
-	/* we need to issue another command to get the part out
-	 * of auto select mode so issue a reset which just puts
-	 * the device back in read mode
-	 */
-	ResetFlash();
-
-	return protect_sts;
 }
 
 int GetOffset(int nBlock)

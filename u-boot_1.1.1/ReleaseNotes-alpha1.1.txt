@@ -15,13 +15,15 @@ Find these sections in this Release Notes,
 	Flashing the bootloader using VDSP
 	Using "serial boot" or "Network boot"
 	HOWTO's ( help on testing selected commands)
+	VDSP executable support
+	Different VCO frequency support
 	Precautions
 
 Version  
 -------
-	u-boot_1.1.1-alpha1
+	u-boot_1.1.1-alpha1.1
 
-	Date: 30 Jul 2004
+	Date: 17 Aug 2004
 
 Development Environment
 -----------------------
@@ -33,7 +35,7 @@ Target board	: STAMP Board/ EZKIT board
 Deliverables
 ------------
 
-1. u-boot_1.1.1-Images.tar.bz2.
+1. u-boot_1.1.1-Images-alpha1.1.1.tar.bz2.
 		this tar contains u-boot images and can be downloaded from
 		http://blackfin.uclinux.org/frs/?group_id=20
 2. Source can be checked out from following location
@@ -67,6 +69,7 @@ Commands supported in this release
 	23.	help    - print online help
 	24.	?       - alias for 'help'
 	25.	autoscr - running a script file, used for automated testing of commands
+	26.	sleep	- for delay.
 
 	Following options are suppored setenv command:
 
@@ -415,6 +418,68 @@ HOWTO's ( help on testing selected commands)
       In case of above example you can see the message "hi" on the screen.
 
 
+VDSP Executable Support
+-----------------------
+	Download the examples provided from
+		http://blackfin.uclinux.org/frs/?group_id=20
+
+	1. UART program . On both STAMP and EZKIT
+	2. BLINK program . On EZKIT only
+
+	1. Unzip the zip files . BLINK.zip and UART.zip in a folder say
+	   c:\VDSP-Support\ on the VDSP installed windows machine.
+	2. Open C-Kermit or HyperTerminal with baud rate 57600.
+	3. Launch VDSP. Manually configure the SDRAM.
+
+	For Ezkit:
+	EBIU_SDGCTL . 0x0091998D
+	EBIU_SDBCTL . 0x0013
+	EBIU_SDRRC . 0x0817
+
+	For Stamp:
+	EBIU_SDGCTL . 0x00911149
+	EBIU_SDBCTL . 0x0037
+	EBIU_SDRRC . 0x0305
+
+	4. Project->open->
+	Select the project c:\VDSP-Support\UART\UART RS-232 HyperTerminal
+	session\uart.dpj
+
+	5. Set the PC to 0x1000.
+
+	6. Build the Project and Run.
+
+	7. Check for the Output.
+
+	This will be the one, which will be expected when the same UART.dxe is
+	executed using bootelf command of u-boot.
+
+	Open the folder C:\VDSP-Support\UART\UART RS-232 HyperTerminal session\Debug. Copy the
+	uart.dxe to linux host /tftpboot.
+
+	1. Execute the Bootloader.
+	2. tftp 0x1000000 uart.dxe
+	3. bootelf 0x1000000
+
+	The same result as seen in step 7 should be seen even through
+	u-boot.
+
+
+Note:
+	Pre-Requisites:
+	The VDSP programs should be compiled with SDRAM address only. Currently it has
+	been chosen to compiled and execute at 0x1000.
+
+	
+Different VCO frequency support:
+--------------------------------
+
+Edit the files include/configs/ezkit533.h or include/configs/stamp.h
+Change the line CONFIG_VCO to any value between 250 - 590.
+Compile and form the u-boot.bin
+This u-boot.bin would run at the VCO specified in include/configs/ezkit533.h
+or include/configs/stamp.h.
+
 Precautions
 -----------
 
@@ -424,4 +489,3 @@ Precautions
 
    b) Please ensure nothing is downloaded to location 0x0 - 0x50. Some of these 
       locations are being used up by the bootloader.
-

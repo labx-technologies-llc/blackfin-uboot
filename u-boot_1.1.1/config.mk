@@ -83,7 +83,7 @@ HOSTCC		= cc
 else
 HOSTCC		= gcc
 endif
-HOSTCFLAGS	= -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer
+HOSTCFLAGS	= -Wall -Wstrict-prototypes -O0 -fomit-frame-pointer
 HOSTSTRIP	= strip
 
 #########################################################################
