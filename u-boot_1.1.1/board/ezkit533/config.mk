@@ -34,4 +34,4 @@ PLATFORM_CPPFLAGS += -I$(TOPDIR)
 #                  --adjust-section-vma=.data-($(CFG_MONITOR_BASE) - XIP code size)
 # where XIP code size is - size of instructions that got compiled to run from flash = .text code size
 #                  This is same as the .text size outputed in u-boot.map
-OBJCFLAGS = --set-start=0x00 --adjust-section-vma=.text-0x20000000 --adjust-section-vma=.text1-0x1f7fd6c --adjust-section-vma=.data-0x1f7fd6c
+OBJCFLAGS = --set-start=0x00 --adjust-section-vma=.text-0x20000000 --adjust-section-vma=.text1-0x1f7fd48 --adjust-section-vma=.data-0x1f7fd48
