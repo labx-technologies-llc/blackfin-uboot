@@ -115,7 +115,7 @@ static inline int strncmp(const char *cs, const char *ct, size_t count)
  * or memcpy_fromio() instead.
  */
 #define __HAVE_ARCH_MEMCPY
-static inline void * memcpy(void * dest,const void *src,size_t count)
+extern inline void * memcpy(void * dest,const void *src,size_t count)
 {
         char *tmp = (char *) dest, *s = (char *) src;
 
