@@ -13,9 +13,17 @@ extern ulong uboot_end;
 
 ulong monitor_flash_len;
 
-const char version_string[] =
-	U_BOOT_VERSION "\n" U_BOOT_BF533_RELEASE " - " __DATE__  "-" __TIME__
-	"\nBlackfin support by LG Soft India";
+#define U_BOOT_BF533_SUPPORT  "Blackfin support by LG Soft India"
+
+#define VERSION_STRING_SIZE  150 /* including 40 bytes buffer to change any string */ 
+#define VERSION_STRING_FORMAT "%s (gcc version : %d.%d.%d)\n%s - %s-%s\n%s"
+#define VERSION_STRING		U_BOOT_VERSION, \
+				__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__, \
+				U_BOOT_BF533_RELEASE, \
+				__DATE__, __TIME__ , \
+				U_BOOT_BF533_SUPPORT
+
+char version_string[VERSION_STRING_SIZE];
 const char moreinfo_string[] =
 	"For further information please check this link http://www.blackfin.uclinux.org";
 
