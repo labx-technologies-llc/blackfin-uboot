@@ -22,4 +22,5 @@
 # MA 02111-1307 USA
 #
 
-PLATFORM_RELFLAGS += -fno-strict-aliasing  -fno-common -ffixed-P5 
+#PLATFORM_RELFLAGS += -fno-strict-aliasing  -fno-common -ffixed-P5 
+PLATFORM_RELFLAGS += -ffixed-P5

@@ -35,21 +35,12 @@
 .global _ramend;
 .global _bf533_data_dest;
 .global _bf533_data_size;
+.global edata;
 .global _initialize;
-
-
-.data
-
-.align 4
-_rambase:
-.long   0
-_ramstart:
-.long   0
-_ramend:
-.long   0
+.global _exit;
+.global flashdataend;
 
 .text
-
 	
 _initialize:
 	nop;
@@ -259,14 +250,8 @@ _clear_bss_skip:	/* to skip bss clear */
 	[p1] = r0;
 
 	/* copy data section to RAM */
-#ifdef CONFIG_STAMP
-	p1.l = (RAM_DATA & 0xFFFF); /*_bf533_data_start; */
-	p1.h = (RAM_DATA >> 16);
-#endif
-#ifdef CONFIG_EZKIT533
-	p1.l = (RAM_DATA & 0xFFFF); /*_bf533_data_start; */
-	p1.h = (RAM_DATA >> 16);
-#endif
+	p1.l = flashdataend;
+	p1.h = flashdataend;
 	p2.l = _bf533_data_dest;
 	p2.h = _bf533_data_dest;
 	r0.l = _bf533_data_size;

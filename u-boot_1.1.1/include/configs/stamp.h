@@ -68,7 +68,7 @@
 #define CFG_MAX_RAM_SIZE    	0x2000000
 #define CFG_FLASH_BASE		0x20000000
 
-#define RAM_END			0x1800000
+#define RAM_END			0x7000000
 
 #define CFG_MONITOR_LEN	   	0x30000
 #define CFG_MONITOR_BASE    	RAM_END

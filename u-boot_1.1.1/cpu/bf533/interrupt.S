@@ -344,4 +344,3 @@ evt_system_call_exit:
 evt_soft_int1_exit:
 	rti;
 
-
