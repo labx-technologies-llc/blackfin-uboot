@@ -122,7 +122,7 @@
 #define ET_EXEC_VDSP		0x8
 #define SHT_STRTAB_VDSP		0x1
 #define ELFSHDRSIZE_VDSP	0x2C
-#define VDSP_RAM_ADDR		0x1000
+#define VDSP_ENTRY_ADDR		0xFFA00000
 #endif
 
 #define CONFIG_STAMP_CF	   	1

@@ -340,7 +340,7 @@ unsigned long load_elf_image (unsigned long addr)
 
 #ifdef CONFIG_VDSP
 	if(ehdr->e_type == ET_EXEC_VDSP)
-		ehdr->e_entry = VDSP_RAM_ADDR;
+		ehdr->e_entry = VDSP_ENTRY_ADDR;
 #endif
 	return ehdr->e_entry;
 }
