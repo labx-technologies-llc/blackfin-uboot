@@ -1,9 +1,10 @@
 /*
- * linux/arch/$(ARCH)/platform/$(PLATFORM)/irq.c
+ * U-boot - irq.h Interrupt related header file
  *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file COPYING in the main directory of this archive
- * for more details.
+ * Copyright (c) 2005 blackfin.uclinux.org
+ *
+ * This file was based on
+ * linux/arch/$(ARCH)/platform/$(PLATFORM)/irq.c
  *
  * Changed by HuTao Apr18, 2003
  *
@@ -14,6 +15,24 @@
  * Adapted for BlackFin (ADI) by Ted Ma <mated@sympatico.ca>
  * Copyright (c) 2002 Arcturus Networks Inc. (www.arcturusnetworks.com)
  * Copyright (c) 2002 Lineo, Inc. <mattw@lineo.com>
+ *
+ * See file CREDITS for list of people who contributed to this
+ * project.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307 USA
  */
 
 #ifndef _BLACKFIN_IRQ_H_
@@ -27,7 +46,7 @@
  *   levels.
  * - I'm going to assume that the H/W level is going to stay at the default
  *   settings. If someone wants to go through and abstart this out, feel free
- *   to mod the interrupt numbering scheme. 
+ *   to mod the interrupt numbering scheme.
  * - I'm abstracting the interrupts so that uClinux does not know anything
  *   about the H/W levels. If you want to change the H/W AND keep the abstracted
  *   levels that uClinux sees, you should be able to do most of it here.
@@ -59,15 +78,15 @@ static __inline__ int irq_cannonicalize(int irq)
  * All interrupt handling is actually machine specific so it is better
  * to use function pointers, as used by the Sparc port, and select the
  * interrupt handling functions when initializing the kernel. This way
- * we save some unnecessary overhead at run-time. 
+ * we save some unnecessary overhead at run-time.
  * 01/11/97 - Jes
  */
 
 extern void (*mach_enable_irq) (unsigned int);
 extern void (*mach_disable_irq) (unsigned int);
 extern int sys_request_irq(unsigned int,
-			   void (*)(int, void *, struct pt_regs *),
-			   unsigned long, const char *, void *);
+			void (*)(int, void *, struct pt_regs *),
+			unsigned long, const char *, void *);
 extern void sys_free_irq(unsigned int, void *);
 
 /*

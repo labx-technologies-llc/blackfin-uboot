@@ -1,3 +1,30 @@
+/*
+ * U-boot - flash-defines.h
+ *
+ * Copyright (c) 2005 blackfin.uclinux.org
+ *
+ * (C) Copyright 2000-2004
+ * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+ *
+ * See file CREDITS for list of people who contributed to this
+ * project.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307 USA
+ */
+
 #ifndef __FLASHDEFINES_H__
 #define __FLASHDEFINES_H__
 
@@ -47,7 +74,7 @@ int write_buff (flash_info_t *info, uchar *src, ulong addr, ulong cnt);
 int write_word(flash_info_t *info, ulong addr, ulong data);
 
 unsigned long GetOffset(int sec_num);
-int FLASH_Block_Erase(unsigned long, unsigned long);
+int FLASH_Block_Erase(flash_info_t *info, unsigned long, unsigned long);
 int FlashDataToggle(unsigned long);
 
 int AFP_SectorSize1 = 0x10000;

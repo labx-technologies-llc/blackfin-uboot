@@ -1,6 +1,10 @@
 /*
- * (C) Copyright 2003
- * Wolfgang Denk, DENX Software Engineering, <wd@denx.de>
+ * U-boot - u-boot.h Structure declarations for board specific data
+ *
+ * Copyright (c) 2005 blackfin.uclinux.org
+ *
+ * (C) Copyright 2000-2004
+ * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -19,13 +23,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	u-boot.h
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
 #ifndef _U_BOOT_H_

@@ -1,6 +1,9 @@
+# U-boot - config.mk
 #
-# (C) Copyright 2004
-# Josh Huber <huber@mclx.com>, Mission Critical Linux, Inc.
+# Copyright (c) 2005 blackfin.uclinux.org
+#
+# (C) Copyright 2000-2004
+# Wolfgang Denk, DENX Software Engineering, wd@denx.de.
 #
 # See file CREDITS for list of people who contributed to this
 # project.

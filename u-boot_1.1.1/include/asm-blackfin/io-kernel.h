@@ -1,3 +1,30 @@
+/*
+ * U-boot - io-kernel.h
+ *
+ * Copyright (c) 2005 blackfin.uclinux.org
+ *
+ * (C) Copyright 2000-2004
+ * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+ *
+ * See file CREDITS for list of people who contributed to this
+ * project.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307 USA
+ */
+
 #ifndef _BLACKFIN_IO_H
 #define _BLACKFIN_IO_H
 
@@ -59,7 +86,7 @@
 #define IOMAP_NOCACHE_NONSER		2
 #define IOMAP_WRITETHROUGH		3
 
-#ifndef __ASSEMBLY__	
+#ifndef __ASSEMBLY__
 extern void *__ioremap(unsigned long physaddr, unsigned long size, int cacheflag);
 extern void __iounmap(void *addr, unsigned long size);
 extern inline void *ioremap(unsigned long physaddr, unsigned long size)
@@ -83,7 +110,6 @@ extern void iounmap(void *addr);
 
 /* Nothing to do */
 
-
 extern void blkfin_inv_cache_all(void);
 
 #endif
@@ -92,10 +118,9 @@ extern void blkfin_inv_cache_all(void);
 #define dma_cache_wback(_start,_size) do { } while (0)
 #define dma_cache_wback_inv(_start,_size) do { blkfin_inv_cache_all();} while (0)
 
-/* Pages to physical address... */ 
+/* Pages to physical address... */
 #define page_to_phys(page)      ((page - mem_map) << PAGE_SHIFT)
 #define page_to_bus(page)       ((page - mem_map) << PAGE_SHIFT)
-
 
 #define mm_ptov(vaddr)		((void *) (vaddr))
 #define mm_vtop(vaddr)		((unsigned long) (vaddr))

@@ -1,3 +1,27 @@
+/*
+ * U-boot - entry.h Routines for context saving and restoring
+ *
+ * Copyright (c) 2005 blackfin.uclinux.org
+ *
+ * See file CREDITS for list of people who contributed to this
+ * project.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307 USA
+ */
+
 #ifndef __BLACKFIN_ENTRY_H
 #define __BLACKFIN_ENTRY_H
 
@@ -202,8 +226,6 @@
 	i1 = [sp++];
 	i0 = [sp++];
 
-	/* Don't mess with USP unless we have to. Things break if we do. */
-	/* usp = [sp++]; */
 	sp += 4;
 	fp = [sp++];
 
@@ -256,18 +278,12 @@
 	i1 = [sp++];
 	i0 = [sp++];
 
-	/* Don't mess with USP unless we have to. Things break if we do. */
-	/* usp = [sp++]; */
 	sp += 4;
 	fp = [sp++];
 
 	( R7 : 0, P5 : 0) = [ SP ++ ];
 	sp += 4;
 .endm
-/*
- * regs a3-a6 and d6-d7 are preserved by C code
- * the kernel doesn't mess with usp unless it needs to
- */
 
 #if !defined(NEW_PT_REGS)
 /*
@@ -283,16 +299,11 @@
 	r0 = [sp++];
 	[--sp] = syscfg;	/* store SYSCFG */
 
-/* Added by HuTao, May 26 2003 3:31PM */
-	[--sp] = r0;	/* Reserved for IPEND */	
+	[--sp] = r0;	/* Reserved for IPEND */
 	[--sp] = fp;
 	[--sp] = usp;
 	[--sp] = r0;
 
-#if 0
-	/* HuTao, May 21, 2003 4:48 */
-	r0 = -1;
-#endif
 	[--sp] = r0;
 	r0 = [sp + 8];
 	[--sp] = a0.x;
@@ -345,7 +356,6 @@
 	sp += 4;	/* orig r0 */
 	r0 = [sp++];
 
-	/* usp = [sp++]; */
 	sp += 4;
 	fp = [sp++];
 	sp +=4;		/* Skip the IPEND */

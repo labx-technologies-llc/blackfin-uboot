@@ -1,5 +1,9 @@
 #
-# (C) Copyright 2001
+# U-boot - Makefile
+#
+# Copyright (c) 2005 blackfin.uclinux.org
+#
+# (C) Copyright 2000-2004
 # Wolfgang Denk, DENX Software Engineering, wd@denx.de.
 #
 # See file CREDITS for list of people who contributed to this

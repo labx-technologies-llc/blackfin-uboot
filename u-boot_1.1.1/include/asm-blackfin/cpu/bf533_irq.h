@@ -1,10 +1,10 @@
 /*
+ * U-boot bf533_irq.h
+ *
+ * Copyright (c) 2005 blackfin.uclinux.org
+ *
+ * This file is based on
  * linux/arch/$(ARCH)/platform/$(PLATFORM)/irq.c
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file COPYING in the main directory of this archive
- * for more details.
- *
  * Changed by HuTao Apr18, 2003
  *
  * Copyright was missing when I got the code so took from MIPS arch ...MaTed---
@@ -17,6 +17,24 @@
  *
  * Adapted for BlackFin BF533 by Bas Vermeulen <bas@buyways.nl>
  * Copyright (c) 2003 BuyWays B.V. (www.buyways.nl)
+
+ * See file CREDITS for list of people who contributed to this
+ * project.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307 USA
  */
 
 #ifndef _BF533_IRQ_H_
@@ -101,9 +119,9 @@
 #define	IRQ_SW_INT1		31	/* Software Int 1 */
 #define	IRQ_SW_INT2		32	/* Software Int 2 (reserved for SYSCALL) */
 
-#define IRQ_UART_RX_BIT         0x4000
-#define IRQ_UART_TX_BIT         0x8000
-#define IRQ_UART_ERROR_BIT      0x40
+#define IRQ_UART_RX_BIT		0x4000
+#define IRQ_UART_TX_BIT		0x8000
+#define IRQ_UART_ERROR_BIT	0x40
 
 #define IVG7			7
 #define IVG8			8

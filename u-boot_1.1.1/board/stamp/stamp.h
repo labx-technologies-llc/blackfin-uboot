@@ -1,3 +1,30 @@
+/*
+ * U-boot - stamp.h
+ *
+ * Copyright (c) 2005 blackfin.uclinux.org
+ *
+ * (C) Copyright 2000-2004
+ * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+ *
+ * See file CREDITS for list of people who contributed to this
+ * project.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307 USA
+ */
+
 #ifndef __STAMP_H__
 #define __STAMP_H__
 
@@ -20,9 +47,9 @@ extern void pll_set(int vco, int crystal_frq, int pll_div);
 /* Compact flash status bits in status register */
 #define CF_STAT_BITS 		0x00000060
 
-/* CF Flags used to switch between expansion and external 
-** memory banks
-*/
+/* CF Flags used to switch between expansion and external
+ * memory banks
+ */
 #define CF_PF0			0x0001
 #define CF_PF1			0x0002
 #define CF_PF1_PF0		0x0003

@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2002
- * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+ * U-boot - cpu.c CPU specific functions
  *
- * (C) Copyright 2002
- * Sysgo Real-Time Solutions, GmbH <www.elinos.com>
- * Marius Groeger <mgroeger@sysgo.de>
+ * Copyright (c) 2005 blackfin.uclinux.org
+ *
+ * (C) Copyright 2000-2004
+ * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -32,15 +32,15 @@
 
 int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 {
-        __asm__ __volatile__
+	__asm__ __volatile__
 	("cli r3;"
 	"P0 = %0;"
-        "JUMP (P0);"
+	"JUMP (P0);"
 	:
 	: "r" (L1_ISRAM)
 	);
 
-        return 0;
+	return 0;
 }
 
 /* These functions are just used to satisfy the linker */

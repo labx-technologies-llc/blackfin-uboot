@@ -1,5 +1,31 @@
 /*
- * (C) Copyright 2001
+ * U-boot - bf533.c Real Time Clock routines
+ *
+ * Copyright (c) 2005 blackfin.uclinux.org
+ *
+ * This file is based on bf533_rtc.c
+ * Real Time Clock interface of ADI21535 (Blackfin) for uCLinux
+ * Copyright (C) 2003 Motorola Corporation.  All rights reserved.
+ * 				Richard Xiao (A2590C@email.mot.com)
+ *
+ * Copyright (C) 1996 Paul Gortmaker
+ *	Based on other minimal char device drivers, like Alan's
+ *	watchdog, Ted's random, etc. etc.
+ *
+ *	1.07	Paul Gortmaker.
+ *	1.08	Miquel van Smoorenburg: disallow certain things on the
+ *		DEC Alpha as the CMOS clock is also used for other things.
+ *	1.09	Nikita Schmidt: epoch support and some Alpha cleanup.
+ *	1.09a	Pete Zaitcev: Sun SPARC
+ *	1.09b	Jeff Garzik: Modularize, init cleanup
+ *	1.09c	Jeff Garzik: SMP cleanup
+ *	1.10    Paul Barton-Davis: add support for async I/O
+ *	1.10a	Andrea Arcangeli: Alpha updates
+ *	1.10b	Andrew Morton: SMP lock fix
+ *	1.10c	Cesar Barros: SMP locking fixes and cleanup
+ *	1.10d	Paul Gortmaker: delete paranoia check in rtc_exit
+ *
+ * (C) Copyright 2000-2004
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
  * See file CREDITS for list of people who contributed to this
@@ -19,30 +45,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
- * Real Time Clock interface of ADI21535 (Blackfin) for uCLinux 
- *
- * Copyright (C) 2003 Motorola Corporation.  All rights reserved.
- * 				Richard Xiao (A2590C@email.mot.com)
- *
- * Copyright (C) 1996 Paul Gortmaker
- *
- *
- *	Based on other minimal char device drivers, like Alan's
- *	watchdog, Ted's random, etc. etc.
- *
- *	1.07	Paul Gortmaker.
- *	1.08	Miquel van Smoorenburg: disallow certain things on the
- *		DEC Alpha as the CMOS clock is also used for other things.
- *	1.09	Nikita Schmidt: epoch support and some Alpha cleanup.
- *	1.09a	Pete Zaitcev: Sun SPARC
- *	1.09b	Jeff Garzik: Modularize, init cleanup
- *	1.09c	Jeff Garzik: SMP cleanup
- *	1.10    Paul Barton-Davis: add support for async I/O
- *	1.10a	Andrea Arcangeli: Alpha updates
- *	1.10b	Andrew Morton: SMP lock fix
- *	1.10c	Cesar Barros: SMP locking fixes and cleanup
- *	1.10d	Paul Gortmaker: delete paranoia check in rtc_exit
- *	1.10e   LG Soft India: Register access is different in BF533. 	
  */
 
 #include <common.h>
@@ -80,7 +82,6 @@ void rtc_init()
  */
 void rtc_set (struct rtc_time *tmp)
 {
-	unsigned long num_sec;
 	unsigned long n_days_1970 = 0;
 	unsigned long n_secs_rem  = 0;
 	unsigned long n_hrs	  = 0;
@@ -118,7 +119,7 @@ void rtc_get (struct rtc_time *tmp)
 {
 	unsigned long cur_rtc_stat = 0;
 	unsigned long time_in_sec;
-	unsigned long tm_sec = 0, tm_min = 0, tm_hour = 0, tm_day = 0; 
+	unsigned long tm_sec = 0, tm_min = 0, tm_hour = 0, tm_day = 0;
 
 	if(tmp == NULL) {
 		printf("Error getting the date/time \n");
@@ -135,10 +136,10 @@ void rtc_get (struct rtc_time *tmp)
 	tm_day = (cur_rtc_stat >> DAY_BITS_OFF) & 0x7fff;
 
 	/* Calculate the total number of seconds since Jan 1970 */
-	time_in_sec 	= 	(tm_sec) + 
-					MIN_TO_SECS(tm_min) + 
-						HRS_TO_SECS(tm_hour) + 
+	time_in_sec 	= 	(tm_sec) +
+					MIN_TO_SECS(tm_min) +
+						HRS_TO_SECS(tm_hour) +
 							DAYS_TO_SECS(tm_day);
-	to_tm(time_in_sec,tmp);	
+	to_tm(time_in_sec,tmp);
 }
 #endif	/* CONFIG_RTC_BF533 && CFG_CMD_DATE */

@@ -1,5 +1,9 @@
 /*
- * (C) Copyright 2002-2003
+ * U-boot - global_data.h Declarations for global data of u-boot
+ *
+ * Copyright (c) 2005 blackfin.uclinux.org
+ *
+ * (C) Copyright 2000-2004
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
  * See file CREDITS for list of people who contributed to this

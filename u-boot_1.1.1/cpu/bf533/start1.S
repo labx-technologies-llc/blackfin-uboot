@@ -1,10 +1,7 @@
 /*
- * (C) Copyright 2002
- * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+ * U-boot - start1.S Code running out of RAM after relocation
  *
- * (C) Copyright 2002
- * Sysgo Real-Time Solutions, GmbH <www.elinos.com>
- * Marius Groeger <mgroeger@sysgo.de>
+ * Copyright (c) 2005 blackfin.uclinux.org
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -23,14 +20,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
- *
- * cpu/bf535/start.s:  A startup file for the Blackfin u-boot *
- * Copyright (c) 2003  Metrowerks/Motorola
- * Copyright (C) 1998  D. Jeff Dionne <jeff@ryeham.ee.ryerson.ca>,
- *                     Kenneth Albanowski <kjahds@kjahds.com>,
- *                     The Silver Hammer Group, Ltd.
- * (c) 1995, Dionne & Associates
- * (c) 1995, DKG Display Tech.
  */
 
 #define ASSEMBLY

@@ -1,11 +1,20 @@
 /*
- * (C) Copyright 2002
+ * U-boot - interrupts.c Interrupt related routines
+ *
+ * Copyright (c) 2005 blackfin.uclinux.org
+ *
+ * This file is based on interrupts.c
+ * Copyright 1996 Roman Zippel
+ * Copyright 1999 D. Jeff Dionne <jeff@uclinux.org>
+ * Copyright 2000-2001 Lineo, Inc. D. Jefff Dionne <jeff@lineo.ca>
+ * Copyright 2002 Arcturus Networks Inc. MaTed <mated@sympatico.ca>
+ * Copyright 2003 Metrowerks/Motorola
+ * Copyright 2003 Bas Vermeulen <bas@buyways.nl>,
+ * 			BuyWays B.V. (www.buyways.nl)
+ *
+ * (C) Copyright 2000-2004
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
- *
- * (C) Copyright 2002
- * Sysgo Real-Time Solutions, GmbH <www.elinos.com>
- * Marius Groeger <mgroeger@sysgo.de>
- *
+
  * See file CREDITS for list of people who contributed to this
  * project.
  *
@@ -20,7 +29,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along  with this program; if not, write to the Free Software
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
  */
@@ -78,31 +87,30 @@ int interrupt_init(void)
 
 void udelay(unsigned long usec)
 {
-        unsigned long delay, start, stop;
+	unsigned long delay, start, stop;
 	unsigned long cclk;
 	cclk = (CONFIG_CCLK_HZ);
 
 	while ( usec > 1 ) {
 	       /*
-       	 	* how many clock ticks to delay?
-       		*  - request(in useconds) * clock_ticks(Hz) / useconds/second
-       		*/
+		* how many clock ticks to delay?
+		*  - request(in useconds) * clock_ticks(Hz) / useconds/second
+		*/
 		if (usec < 1000) {
-        		delay = (usec * (cclk/244)) >> 12 ;
+			delay = (usec * (cclk/244)) >> 12 ;
 			usec = 0;
 		} else {
 			delay = (1000 * (cclk/244)) >> 12 ;
 			usec -= 1000;
 		}
 
-	        asm volatile (" %0 = CYCLES;": "=g"(start));
-       		do {
-               		asm volatile (" %0 = CYCLES; ": "=g"(stop));
-       		} while (stop - start < delay);
-
+		asm volatile (" %0 = CYCLES;": "=g"(start));
+		do {
+			asm volatile (" %0 = CYCLES; ": "=g"(stop));
+		} while (stop - start < delay);
 	}
 
-        return;
+	return;
 }
 
 void timer_init(void)
@@ -119,16 +127,16 @@ void timer_init(void)
 }
 
 /* Any network command or flash
- * command is started get_timer shall  
+ * command is started get_timer shall
  * be called before TCOUNT gets reset,
- * to implement the accurate timeouts. 
+ * to implement the accurate timeouts.
  *
  * How ever milliconds doesn't return
  * the number that has been elapsed from
  * the last reset.
  *
  *  As get_timer is used in the u-boot
- *  only for timeouts this should be 
+ *  only for timeouts this should be
  *  sufficient
  */
 ulong get_timer(ulong base)
@@ -139,18 +147,18 @@ ulong get_timer(ulong base)
 	ulong clocks = (MAX_TIM_LOAD - (*pTCOUNT));
 
 	/* Find if the TCOUNT is reset
-	   timestamp gives the number of times
-	   TCOUNT got reset */
-        if(clocks < last_time)
+	timestamp gives the number of times
+	TCOUNT got reset */
+	if(clocks < last_time)
 		timestamp++;
 	last_time = clocks;
 
 	/* Get the number of milliseconds */
 	milisec = clocks/(CONFIG_CCLK_HZ / 1000);
 
-	/* Find the number of millisonds 
-	   that got elapsed before this TCOUNT
-	   cycle */
+	/* Find the number of millisonds
+	that got elapsed before this TCOUNT
+	cycle */
 	milisec += timestamp * (MAX_TIM_LOAD/(CONFIG_CCLK_HZ / 1000));
 
 	return (milisec - base);

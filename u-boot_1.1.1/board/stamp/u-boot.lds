@@ -1,5 +1,9 @@
 /*
- * (C) Copyright 2000
+ * U-boot - u-boot.lds
+ *
+ * Copyright (c) 2005 blackfin.uclinux.org
+ *
+ * (C) Copyright 2000-2004
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
  * See file CREDITS for list of people who contributed to this
@@ -23,7 +27,7 @@
 
 OUTPUT_FORMAT("elf32-bfin")
 ENTRY(start)
-MEMORY 
+MEMORY
 	{
 	ram		: ORIGIN = 0x7f80000,  	LENGTH = 0x80000
 	flash		: ORIGIN = 0x20000000, 	LENGTH = 0x80000
@@ -45,7 +49,7 @@ SECTIONS
 		*(.rodata)
 		*(.rodata1)
 		*(.rodata.str1.4)
-	} > ram 
+	} > ram
 
 	.data :	{
 		_sdata = . ;

@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2002
- * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+ * U-boot - ezkit533.c
  *
- * (C) Copyright 2002
- * Sysgo Real-Time Solutions, GmbH <www.elinos.com>
- * Marius Groeger <mgroeger@sysgo.de>
+ * Copyright (c) 2005 blackfin.uclinux.org
+ *
+ * (C) Copyright 2000-2004
+ * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -39,12 +39,14 @@ long int initdram(int board_type)
 	char *tmp = getenv("baudrate");
 	brate = simple_strtoul(tmp, NULL, 16);
 	printf("Serial Port initialized with Baud rate = %x\n",brate);
+#ifdef DEBUG
 	printf("SDRAM attributes:\n");
 	printf("tRCD %d SCLK Cycles,tRP %d SCLK Cycles,tRAS %d SCLK Cycles"
 	       "tWR %d SCLK Cycles,CAS Latency %d SCLK cycles \n",
 	       3, 3, 6, 2, 3);
 	printf("SDRAM Begin: 0x%x\n", CFG_SDRAM_BASE);
 	printf("Bank size = %d MB\n", 32);
+#endif
 	gd->bd->bi_memstart = CFG_SDRAM_BASE;
 	gd->bd->bi_memsize = CFG_MAX_RAM_SIZE;
 	return 0;

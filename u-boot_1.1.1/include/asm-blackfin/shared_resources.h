@@ -1,4 +1,8 @@
 /*
+ * U-boot - setup.h
+ *
+ * Copyright (c) 2005 blackfin.uclinux.org
+ *
  * See file CREDITS for list of people who contributed to this
  * project.
  *

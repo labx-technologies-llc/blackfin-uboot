@@ -58,17 +58,16 @@ int smc91111_eeprom (int argc, char *argv[])
 		return(0);
 	}
 
-        asm("p2.h = 0xFFC0;");
-        asm("p2.l = 0x0730;");
-        asm("r0 = 0x01;");
-        asm("w[p2] = r0;");
-        asm("ssync;");
-
-        asm("p2.h = 0xffc0;");
-        asm("p2.l = 0x0708;");
-        asm("r0 = 0x01;");
-        asm("w[p2] = r0;");
-        asm("ssync;");
+	asm("p2.h = 0xFFC0;");
+	asm("p2.l = 0x0730;");
+	asm("r0 = 0x01;");
+	asm("w[p2] = r0;");
+	asm("ssync;");
+	asm("p2.h = 0xffc0;");
+	asm("p2.l = 0x0708;");
+	asm("r0 = 0x01;");
+	asm("w[p2] = r0;");
+	asm("ssync;");
 
 	if ( (SMC_inw(BANK_SELECT) & 0xFF00) != 0x3300) {
 		printf("Can't find SMSC91111\n");
@@ -84,59 +83,59 @@ int smc91111_eeprom (int argc, char *argv[])
 		line = 0;
 		i = 0;
 		start = 1;
-		while (!line) {	
-			/* Wait for a keystroke */	
-			while (!tstc()) 
+		while (!line) {
+			/* Wait for a keystroke */
+			while (!tstc())
 				;
 
 			c = getc();
-                        /* Make Uppercase */
-                        if ( c >= 'Z' )
-	                        c -= ('a' - 'A');
-			//printf(" |%02x| ",c);
-	
-        	        switch (c) {
-	                case '\r':                              /* Enter                */
-        	        case '\n':
+			/* Make Uppercase */
+			if ( c >= 'Z' )
+				c -= ('a' - 'A');
+
+			switch (c) {
+			case '\r':	/* Enter */
+			case '\n':
 				input[i]=0;
-                        	puts ("\r\n");
+				puts ("\r\n");
 				line = 1;
 				break;
-                	case '\0':                              /* nul                  */
-                        	continue;
 
-       		        case 0x03:                              /* ^C - break           */
+			case '\0':	/* nul */
+				continue;
+
+       		        case 0x03:
 				input[0]=0;
 				i = 0;
 				line= 1;
 				done= 1;
-				break;	
+				break;
 
 			case 0x5F:
-        	        case 0x08:                              /* ^H  - backspace      */
-                	case 0x7F:                              /* DEL - backspace      */
+			case 0x08:	/* ^H  - backspace      */
+			case 0x7F:	/* DEL - backspace      */
 				if ( i > 0 ) {
 					puts("\b \b");
 					i--;
 				}
 				break;
-        	        default:
+			default:
 				if (start) {
 					if ( ( c == 'W' ) || ( c == 'D' ) || ( c == 'M') ||
-					     ( c == 'C' ) || ( c == 'P' ) ){
-		                                putc (c);
-                		                input[i] = c;
-                                		if ( i <= 45 )
-                                        		i++;
-						start = 0;
+						( c == 'C' ) || ( c == 'P' ) ){
+						putc (c);
+	 					input[i] = c;
+						if ( i <= 45 )
+							i++;
+							start = 0;
 					}
 				} else {
 					if( ( c >= '0' && c <= '9' ) ||  ( c >= 'A' && c <= 'F' ) ||
-			        	    ( c == 'E' ) || ( c == 'M' ) || ( c == ' ') ) {
+					( c == 'E' ) || ( c == 'M' ) || ( c == ' ') ) {
 						putc (c);
 						input[i] = c;
 						if ( i <= 45 )
-							i++;	
+							i++;
 						break;
 					}
 				}
@@ -154,10 +153,10 @@ int smc91111_eeprom (int argc, char *argv[])
 				reg = 0;
 				value = 0;
 				/* Skip to the next space or end) */
-				while ( (input[i] != ' ') && (input[i] != 0 )  ) 
+				while ( (input[i] != ' ') && (input[i] != 0 )  )
 					i++;
 
-				if (input[i] !=0 ) 
+				if (input[i] !=0 )
 					i++;
 
 				/* Are we writing to EEPROM or MAC */
@@ -174,10 +173,10 @@ int smc91111_eeprom (int argc, char *argv[])
 				}
 
 				/* skip to the next space or end */
-                                while ( (input[i] != ' ') && (input[i] != 0 )  )
-                                        i++;
-                                if (input[i] !=0 )
-                                        i++;
+				while ( (input[i] != ' ') && (input[i] != 0 )  )
+					i++;
+				if (input[i] !=0 )
+					i++;
 
 				/* Find register to write into */
 				j = 0;
@@ -190,24 +189,24 @@ int smc91111_eeprom (int argc, char *argv[])
 					i++;
 				}
 
-                                while ( (input[i] != ' ') && (input[i] != 0 )  )
-                                        i++;
+				while ( (input[i] != ' ') && (input[i] != 0 )  )
+					i++;
 
-                                if (input[i] !=0 )
-                                        i++;
+				if (input[i] !=0 )
+					i++;
 				else
 					what = UNKNOWN;
 
 				/* Get the value to write */
-                                j = 0;
-                                while ( (input[i] != ' ' ) && ( input[i] != 0)  ) {
-                                        j = input[i] - 0x30;
-                                        if ( j >= 0xA ) {
-                                                j-=0x07;
-                                        }
-                                        value = (value * 0x10) + j;
-                                        i++;
-                                }
+				j = 0;
+				while ( (input[i] != ' ' ) && ( input[i] != 0)  ) {
+					j = input[i] - 0x30;
+					if ( j >= 0xA ) {
+						j-=0x07;
+					}
+					value = (value * 0x10) + j;
+					i++;
+				}
 
 				switch(what) {
 					case 1:	
@@ -217,8 +216,8 @@ int smc91111_eeprom (int argc, char *argv[])
 					case 2:
 						printf("Writing MAC register bank %i, reg %02x with %04x\n", 
 							reg >> 4 , reg & 0xE , value);
-        					SMC_SELECT_BANK (reg >> 4);
-        					SMC_outw(value, reg & 0xE);
+						SMC_SELECT_BANK (reg >> 4);
+						SMC_outw(value, reg & 0xE);
 						break;
 					default:
 						printf("Wrong\n");
@@ -240,7 +239,6 @@ int smc91111_eeprom (int argc, char *argv[])
 			default:
 				break;
 		}
-
 	}
 
 	return (0);
@@ -250,58 +248,57 @@ void copy_from_eeprom(void)
 {
 	int i;
 
-        SMC_SELECT_BANK (1);
-        SMC_outw((SMC_inw(CTL_REG) & !CTL_EEPROM_SELECT) | CTL_RELOAD, CTL_REG);
-        i = 100;
-        while ( (SMC_inw(CTL_REG) & CTL_RELOAD) && --i)
-                udelay(100);
-        if ( i == 0) {
-                printf("Timeout Refreshing EEPROM registers\n");
-        } else {
+	SMC_SELECT_BANK (1);
+	SMC_outw((SMC_inw(CTL_REG) & !CTL_EEPROM_SELECT) | CTL_RELOAD, CTL_REG);
+	i = 100;
+	while ( (SMC_inw(CTL_REG) & CTL_RELOAD) && --i)
+		udelay(100);
+	if ( i == 0) {
+		printf("Timeout Refreshing EEPROM registers\n");
+	} else {
 		printf("EEPROM contents copied to MAC\n");
 	}
-
 }
 
 void print_macaddr(void)
 {
 	int i, j, k, mac[6];
 
-        printf("Current MAC Address in SMSC91111 ");
-        SMC_SELECT_BANK (1);
-        for (i=0; i<5; i++)
-        {
-                printf("%02x:", SMC_inb (ADDR0_REG + i));
-        }
+	printf("Current MAC Address in SMSC91111 ");
+	SMC_SELECT_BANK (1);
+	for (i=0; i<5; i++)
+	{
+		printf("%02x:", SMC_inb (ADDR0_REG + i));
+	}
 
-        printf("%02x\n", SMC_inb (ADDR0_REG + 5));
+	printf("%02x\n", SMC_inb (ADDR0_REG + 5));
 
-        i = 0;
-        for(j=0x20; j < 0x23 ; j++ ) {
-                k = read_eeprom_reg(j);
-                mac[i]= k & 0xFF;
-                i++;
-                mac[i] = k >> 8;
-                i++;
-        }
+	i = 0;
+	for(j=0x20; j < 0x23 ; j++ ) {
+		k = read_eeprom_reg(j);
+		mac[i]= k & 0xFF;
+		i++;
+		mac[i] = k >> 8;
+		i++;
+	}
 
-        printf("Current MAC Address in EEPROM    ");
-        for (i = 0; i < 5 ; i++ )
-                printf("%02x:",mac[i]);
-        printf("%02x\n",mac[5]);
-	
+	printf("Current MAC Address in EEPROM    ");
+	for (i = 0; i < 5 ; i++ )
+		printf("%02x:",mac[i]);
+	printf("%02x\n",mac[5]);
 }
+
 void dump_eeprom(void)
 {
 	int j, k ;
 
 	printf("IOS2-0    ");
-	for(j=0; j<8 ; j++ ){
+	for(j=0; j<8 ; j++ ) {
 		printf("%03x     " , j);
 	}
 	printf("\n");
 
-	for(k=0; k < 4; k++ ){
+	for(k=0; k < 4; k++ ) {
 		if ( k == 0 )
 			printf("CONFIG ");
 		if ( k == 1 )
@@ -315,71 +312,67 @@ void dump_eeprom(void)
 	}
 
 	for(j=0x20; j < 0x40 ; j++) {
-		if( ( j & 0x07 ) == 0  )
+		if( ( j & 0x07 ) == 0 )
 			printf("\n");
-                printf("%02x:%04x ",j, read_eeprom_reg(j));
+		printf("%02x:%04x ",j, read_eeprom_reg(j));
 	}
 	printf("\n");
-
 }
 
-int read_eeprom_reg(int reg){
+int read_eeprom_reg(int reg)
+{
 	int timeout;
 
 	SMC_SELECT_BANK (2);
-        SMC_outw(reg, PTR_REG);
+	SMC_outw(reg, PTR_REG);
 
-        SMC_SELECT_BANK (1);
-        SMC_outw(SMC_inw(CTL_REG) | CTL_EEPROM_SELECT | CTL_RELOAD, CTL_REG);
-        timeout = 100;
-	while ( (SMC_inw(CTL_REG) & CTL_RELOAD) && --timeout)
+	SMC_SELECT_BANK (1);
+	SMC_outw(SMC_inw(CTL_REG) | CTL_EEPROM_SELECT | CTL_RELOAD, CTL_REG);
+	timeout = 100;
+	while ((SMC_inw(CTL_REG) & CTL_RELOAD) && --timeout)
 		udelay(100);
-	if ( timeout == 0) {
+	if (timeout == 0) {
 		printf("Timeout Reading EEPROM register %02x\n",reg);
 		return 0;
 	}
-
-        return SMC_inw(GP_REG);
-
+	return SMC_inw(GP_REG);
 }
 
-int write_eeprom_reg(int value, int reg){
+int write_eeprom_reg(int value, int reg)
+{
         int timeout;
 
-        SMC_SELECT_BANK (2);
-        SMC_outw(reg, PTR_REG);
+	SMC_SELECT_BANK (2);
+	SMC_outw(reg, PTR_REG);
 
         SMC_SELECT_BANK (1);
 	SMC_outw(value, GP_REG);
-        SMC_outw(SMC_inw(CTL_REG) | CTL_EEPROM_SELECT | CTL_STORE, CTL_REG);
-        timeout = 100;
-        while ( (SMC_inw(CTL_REG) & CTL_STORE) && --timeout)
-                udelay(100);
-        if ( timeout == 0) {
-                printf("Timeout Writing EEPROM register %02x\n",reg);
-                return 0;
-        }
-
-        return 1;
-
+	SMC_outw(SMC_inw(CTL_REG) | CTL_EEPROM_SELECT | CTL_STORE, CTL_REG);
+	timeout = 100;
+	while ( (SMC_inw(CTL_REG) & CTL_STORE) && --timeout)
+		udelay(100);
+	if ( timeout == 0) {
+		printf("Timeout Writing EEPROM register %02x\n",reg);
+		return 0;
+	}
+	return 1;
 }
 
 void dump_reg(void)
 {
 	int i,j;
 
-        printf("    ");
-        for (j=0; j < 4; j++){
-                printf("Bank%i ",j);
-        }
-        printf("\n");
-        for (i=0; i<0xF; i+=2) {
-                printf("%02x  ",i);
-                for(j=0; j<4; j++ ) {
-                        SMC_SELECT_BANK(j);
-                        printf("%04x  ",SMC_inw(i));
-                }
-                printf("\n");
-        }
-
+	printf("    ");
+	for (j=0; j < 4; j++) {
+		printf("Bank%i ",j);
+	}
+	printf("\n");
+	for (i=0; i<0xF; i+=2) {
+		printf("%02x  ",i);
+		for(j=0; j<4; j++ ) {
+			SMC_SELECT_BANK(j);
+			printf("%04x  ",SMC_inw(i));
+		}
+		printf("\n");
+	}
 }

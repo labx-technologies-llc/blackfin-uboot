@@ -1,3 +1,31 @@
+/*
+ * U-boot - stamp.h  Configuration file for STAMP board
+ *			having BF533 processor
+ *
+ * Copyright (c) 2005 blackfin.uclinux.org
+ *
+ * (C) Copyright 2000-2004
+ * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+ *
+ * See file CREDITS for list of people who contributed to this
+ * project.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307 USA
+ */
+
 #ifndef __CONFIG_STAMP_H__
 #define __CONFIG_STAMP_H__
 
@@ -24,45 +52,45 @@
 #ifndef CONFIG_STAMP_CF
 
 /* CONFIG_CLKIN_HZ is any value in Hz                            */
-#define CONFIG_CLKIN_HZ          11059200
+#define CONFIG_CLKIN_HZ			11059200
 /* CONFIG_CLKIN_HALF controls what is passed to PLL 0=CLKIN      */
 /*                                                  1=CLKIN/2    */
-#define CONFIG_CLKIN_HALF       	0
+#define CONFIG_CLKIN_HALF		0
 /* CONFIG_PLL_BYPASS controls if the PLL is used 0=don't bypass  */
 /*                                               1=bypass PLL    */
-#define CONFIG_PLL_BYPASS       	0
+#define CONFIG_PLL_BYPASS		0
 /* CONFIG_VCO_MULT controls what the multiplier of the PLL is.   */
 /* Values can range from 1-64                                    */
-#define CONFIG_VCO_MULT                36
+#define CONFIG_VCO_MULT			36
 /* CONFIG_CCLK_DIV controls what the core clock divider is       */
 /* Values can be 1, 2, 4, or 8 ONLY                              */
-#define CONFIG_CCLK_DIV                 1
+#define CONFIG_CCLK_DIV			1
 /* CONFIG_SCLK_DIV controls what the peripheral clock divider is */
 /* Values can range from 1-15                                    */
-#define CONFIG_SCLK_DIV                 5
+#define CONFIG_SCLK_DIV			5
 
 #else
 /* For Compact Flash support Sclk must be less than 79MHz 	 */
-#define CONFIG_CLKIN_HALF       	0
-#define CONFIG_PLL_BYPASS       	0
-#define CONFIG_VCO_MULT                36
-#define CONFIG_CCLK_DIV                 1
-#define CONFIG_SCLK_DIV                 5
+#define CONFIG_CLKIN_HALF		0
+#define CONFIG_PLL_BYPASS		0
+#define CONFIG_VCO_MULT			36
+#define CONFIG_CCLK_DIV			1
+#define CONFIG_SCLK_DIV			5
 
 #endif
 
 #if ( CONFIG_CLKIN_HALF == 0 )
-  #define CONFIG_VCO_HZ           ( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT )
+	#define CONFIG_VCO_HZ		( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT )
 #else
-  #define CONFIG_VCO_HZ           (( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT ) / 2 )
+	#define CONFIG_VCO_HZ		(( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT ) / 2 )
 #endif
 
 #if (CONFIG_PLL_BYPASS == 0)
-  #define CONFIG_CCLK_HZ          ( CONFIG_VCO_HZ / CONFIG_CCLK_DIV )
-  #define CONFIG_SCLK_HZ          ( CONFIG_VCO_HZ / CONFIG_SCLK_DIV )
+	#define CONFIG_CCLK_HZ	( CONFIG_VCO_HZ / CONFIG_CCLK_DIV )
+	#define CONFIG_SCLK_HZ	( CONFIG_VCO_HZ / CONFIG_SCLK_DIV )
 #else
-  #define CONFIG_CCLK_HZ          CONFIG_CLKIN_HZ
-  #define CONFIG_SCLK_HZ          CONFIG_CLKIN_HZ
+	#define CONFIG_CCLK_HZ	CONFIG_CLKIN_HZ
+	#define CONFIG_SCLK_HZ	CONFIG_CLKIN_HZ
 #endif
 
 #define CONFIG_MEM_SIZE                128             /* 128, 64, 32, 16 */
@@ -85,7 +113,7 @@
 #define CONFIG_LOADS_ECHO	1
 #undef	CFG_LOADS_BAUD_CHANGE
 
-#ifdef CONFIG_STAMP_CF         
+#ifdef CONFIG_STAMP_CF
 #define CONFIG_COMMANDS		(CFG_CMD_BDI | CFG_CMD_LOADB | CFG_CMD_IMI | CFG_CMD_MEMORY | CFG_CMD_NET | \
 				CFG_CMD_ELF | CFG_CMD_PING | CFG_CMD_DHCP | CFG_CMD_RUN | \
 				CFG_CMD_ENV | CFG_CMD_FLASH | CFG_CMD_DATE | CFG_CMD_AUTOSCRIPT | CFG_CMD_MISC | \
@@ -114,7 +142,7 @@
 #define CFG_MEMTEST_START	0x1000000	/* memtest works on */
 #define CFG_MEMTEST_END		0x12000000	/* 4 ... 12 MB in DRAM */
 #define	CFG_LOAD_ADDR		0x1000000	/* default load address */
-#define	CFG_HZ			1000		/* 1ms time tick */ 
+#define	CFG_HZ			1000	/* 1ms time tick */ 
 #define CFG_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 #define	CFG_SDRAM_BASE		0x00000000
 #define CFG_MAX_RAM_SIZE	0x8000000
@@ -130,7 +158,7 @@
 /*
  * Stack sizes
  */
-#define CONFIG_STACKSIZE        (128*1024)      /* regular stack */
+#define CONFIG_STACKSIZE	(128*1024)      /* regular stack */
 
 #define CFG_ENV_IS_IN_FLASH	1
 
@@ -143,7 +171,7 @@
 #define CFG_MAX_FLASH_SECT	67	/* max number of sectors on one chip */
 #define CFG_ENV_ADDR		0x20020000
 
-#define CFG_ENV_SECT_SIZE 	0x10000	/* Total Size of Environment Sector */
+#define CFG_ENV_SECT_SIZE	0x10000	/* Total Size of Environment Sector */
 
 /* General definitions */
 #define STATUS_LED_BOOT		1
@@ -183,25 +211,18 @@
 
 #undef	CONFIG_STATUS_LED
 
-#define CONFIG_VDSP		1
+#define CONFIG_VDSP	1
 
 /* FLASH/ETHERNET uses the same address range */
-#define SHARED_RESOURCES 	1
+#define SHARED_RESOURCES	1
 
 #define __ADSPLPBLACKFIN__	1
 #define __ADSPBF533__		1
 
-/* 0xFF, 0xBBC3BBc3, 0x99B39983 */
-/*#define AMGCTLVAL             (AMBEN_P0 | AMBEN_P1 | AMBEN_P2 | AMCKEN)
-#define AMBCTL0VAL              (B1WAT_11 | B1RAT_11 | B1HT_3 | B1ST_4 | B1TT_4 | B1RDYPOL |    \
-                                B1RDYEN | B0WAT_11 | B0RAT_11 | B0HT_3 | B0ST_4 | B0TT_4 | B0RDYPOL | B0RDYEN)
-#define AMBCTL1VAL              (B3WAT_9 | B3RAT_9 | B3HT_2 | B3ST_3 | B3TT_4 | B3RDYPOL |      \
-                                B3RDYEN | B2WAT_9 | B2RAT_9 | B2HT_2 | B2ST_4 | B2TT_4 | B2RDYPOL | B2RDYEN)
-*/
-#define AMGCTLVAL               0xFF
-#define AMBCTL0VAL              0xBBC3BBC3
-#define AMBCTL1VAL              0x99B39983
-#define CF_AMBCTL1VAL           0x99B3ffc2
+#define AMGCTLVAL		0xFF
+#define AMBCTL0VAL		0xBBC3BBC3
+#define AMBCTL1VAL		0x99B39983
+#define CF_AMBCTL1VAL		0x99B3ffc2
 
 #ifdef CONFIG_VDSP
 #define ET_EXEC_VDSP		0x8
@@ -212,8 +233,8 @@
 
 #ifdef CONFIG_STAMP_CF
 
-#define CONFIG_MISC_INIT_R 	1
-#define CONFIG_DOS_PARTITION 	1
+#define CONFIG_MISC_INIT_R	1
+#define CONFIG_DOS_PARTITION	1
 
 /*
  * IDE/ATA stuff
@@ -232,7 +253,7 @@
 #define CFG_ATA_REG_OFFSET	0x0020  /* Offset for normal register accesses */
 #define CFG_ATA_ALT_OFFSET	0x0007  /* Offset for alternate registers */
 
-#define CFG_ATA_STRIDE		2
+#define CFG_ATA_STRIDE	2
 
 #endif
 

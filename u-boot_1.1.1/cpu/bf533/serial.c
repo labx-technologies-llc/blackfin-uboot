@@ -1,10 +1,27 @@
 /*
- * (C) Copyright 2002
- * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+ * U-boot - serial.c Serial driver for BF533
  *
- * (C) Copyright 2002
- * Sysgo Real-Time Solutions, GmbH <www.elinos.com>
- * Marius Groeger <mgroeger@sysgo.de>
+ * Copyright (c) 2005 blackfin.uclinux.org
+ *
+ * This file is based on
+ * bf533_serial.c: Serial driver for BlackFin BF533 DSP internal UART.
+ * Copyright (c) 2003	Bas Vermeulen <bas@buyways.nl>,
+ * 			BuyWays B.V. (www.buyways.nl)
+ *
+ * Based heavily on blkfinserial.c
+ * blkfinserial.c: Serial driver for BlackFin DSP internal USRTs.
+ * Copyright(c) 2003	Metrowerks	<mwaddel@metrowerks.com>
+ * Copyright(c)	2001	Tony Z. Kou	<tonyko@arcturusnetworks.com>
+ * Copyright(c)	2001-2002 Arcturus Networks Inc. <www.arcturusnetworks.com>
+ * 
+ * Based on code from 68328 version serial driver imlpementation which was:
+ * Copyright (C) 1995       David S. Miller    <davem@caip.rutgers.edu>
+ * Copyright (C) 1998       Kenneth Albanowski <kjahds@kjahds.com>
+ * Copyright (C) 1998, 1999 D. Jeff Dionne     <jeff@uclinux.org>
+ * Copyright (C) 1999       Vladimir Gurevich  <vgurevic@cisco.com> 
+ *
+ * (C) Copyright 2000-2004
+ * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -23,22 +40,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
- *
- * bf533_serial.c: Serial driver for BlackFin BF533 DSP internal UART.
- * Copyright (c) 2003	Bas Vermeulen <bas@buyways.nl>,
- * 			BuyWays B.V. (www.buyways.nl)
- *
- * Based heavily on blkfinserial.c
- * blkfinserial.c: Serial driver for BlackFin DSP internal USRTs.
- * Copyright(c) 2003	Metrowerks	<mwaddel@metrowerks.com>
- * Copyright(c)	2001	Tony Z. Kou	<tonyko@arcturusnetworks.com>
- * Copyright(c)	2001-2002 Arcturus Networks Inc. <www.arcturusnetworks.com>
- * 
- * Based on code from 68328 version serial driver imlpementation which was:
- * Copyright (C) 1995       David S. Miller    <davem@caip.rutgers.edu>
- * Copyright (C) 1998       Kenneth Albanowski <kjahds@kjahds.com>
- * Copyright (C) 1998, 1999 D. Jeff Dionne     <jeff@uclinux.org>
- * Copyright (C) 1999       Vladimir Gurevich  <vgurevic@cisco.com> 
  */
 
 #include <common.h>
@@ -74,13 +75,13 @@ void serial_setbrg(void)
 			break;
 	}
 
-        /* Enable UART */
-        *pUART_GCTL |= UART_GCTL_UCEN;
-        asm("ssync;");
+	/* Enable UART */
+	*pUART_GCTL |= UART_GCTL_UCEN;
+	asm("ssync;");
 
-        /* Set DLAB in LCR to Access DLL and DLH */
-        ACCESS_LATCH;
-        asm("ssync;");
+	/* Set DLAB in LCR to Access DLL and DLH */
+	ACCESS_LATCH;
+	asm("ssync;");
 
 	*pUART_DLL = hw_baud_table[i].dl_low;
 	asm("ssync;");
@@ -91,10 +92,10 @@ void serial_setbrg(void)
 	ACCESS_PORT_IER;
 	asm("ssync;");
 
-        /* Enable  ERBFI and ELSI interrupts
-         * to poll SIC_ISR register*/
-        *pUART_IER = UART_IER_ELSI | UART_IER_ERBFI | UART_IER_ETBEI;
-        asm("ssync;");
+	/* Enable  ERBFI and ELSI interrupts
+	* to poll SIC_ISR register*/
+	*pUART_IER = UART_IER_ELSI | UART_IER_ERBFI | UART_IER_ETBEI;
+	asm("ssync;");
 
 	/* Set LCR to Word Lengh 8-bit word select */
 	*pUART_LCR = UART_LCR_WLS8;
@@ -142,14 +143,14 @@ int serial_getc(void)
 	int ret;
 
 	/* Poll for RX Interrupt */
-	while (!((isr_val = *(volatile unsigned long *)SIC_ISR) & IRQ_UART_RX_BIT)); 
+	while (!((isr_val = *(volatile unsigned long *)SIC_ISR) & IRQ_UART_RX_BIT));
 	asm("csync;");
 
 	uart_lsr_val = *pUART_LSR;	/* Clear status bit */
 	uart_rbr_val = *pUART_RBR;	/* getc() */
 
 	if (isr_val & IRQ_UART_ERROR_BIT) {
-		ret =  -1; 
+		ret =  -1;
 	}
 	else
 	{
@@ -169,22 +170,21 @@ void serial_puts(const char *s)
 static void local_put_char(char ch)
 {
 	int flags = 0;
-	unsigned short uart_lsr_val;
-        unsigned long isr_val;
+	unsigned long isr_val;
 
 	save_and_cli(flags);
 
-        /* Poll for TX Interruput */
-        while (!((isr_val = *pSIC_ISR) & IRQ_UART_TX_BIT));
-        asm("csync;");
+	/* Poll for TX Interruput */
+	while (!((isr_val = *pSIC_ISR) & IRQ_UART_TX_BIT));
+		asm("csync;");
 
 	*pUART_THR = ch;			/* putc() */
 
-        if (isr_val & IRQ_UART_ERROR_BIT) {
-                printf("?");
-        }
+	if (isr_val & IRQ_UART_ERROR_BIT) {
+		printf("?");
+	}
 
 	restore_flags(flags);
 
-        return ;
+	return ;
 }

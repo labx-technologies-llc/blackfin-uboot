@@ -1,7 +1,13 @@
-/* 
- *	 H/W interrupts
- *	 - assumes default interrupt configuration for the interrupts
- * 
+/*
+ * U-boot - interrupt.S Processing of interrupts and exception handling
+ *
+ * Copyright (c) 2005 blackfin.uclinux.org
+ *
+ * (C) Copyright 2000-2004
+ * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+ *
+ * This file is based on interrupt.S
+ *
  * Copyright (C) 2003  Metrowerks, Inc. <mwaddel@metrowerks.com>
  * Copyright (C) 2002  Arcturus Networks Ltd. Ted Ma <mated@sympatico.ca>
  * Copyright (C) 1998  D. Jeff Dionne <jeff@ryeham.ee.ryerson.ca>,
@@ -11,17 +17,26 @@
  * (c) 1995, Dionne & Associates
  * (c) 1995, DKG Display Tech.
  *
- * (C) Copyright 2001 - Analog Devices, Inc.  All rights reserved.
+ * This file is also based on exception.asm
+ * (C) Copyright 2001-2005 - Analog Devices, Inc.  All rights reserved.
  *
- * File Name:		exception.asm
+ * See file CREDITS for list of people who contributed to this
+ * project.
  *
- * Purpose:		Example which generates 2 exception handlers and 
- *			shows the basic concepts of user and supervisor mode.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
  *
- *		 	The two exceptions are generated intentionally.  
- *		 	Upon each exception, the exception handler identifies 
- *			the cause and takes corrective action accordingly.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307 USA
  */
 
 #define ASSEMBLY

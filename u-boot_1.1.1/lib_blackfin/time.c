@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2002
- * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+ * U-boot - time.c File contains Timer functions
  *
- * (C) Copyright 2002
- * Sysgo Real-Time Solutions, GmbH <www.elinos.com>
- * Marius Groeger <mgroeger@sysgo.de>
+ * Copyright (c) 2005 blackfin.uclinux.org
+ *
+ * (C) Copyright 2000-2004
+ * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -23,13 +23,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
- *
- *	PROJECT				:	BFIN
- *	VERSION				:	2.0
- *	FILE				:	time.c
- *	MODIFIED DATE			:	29 jun 2004
- *	AUTHOR				:	BFin Project-ADI
- *	LOCATION			:	LG Soft India,Bangalore
  */
 
 /* Currently simulated a software timer */

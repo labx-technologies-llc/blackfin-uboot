@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2004
- * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+ * U-boot - board.c First C file to be called contains init routines
  *
- * (C) Copyright 2004
- * Sysgo Real-Time Solutions, GmbH <www.elinos.com>
- * Marius Groeger <mgroeger@sysgo.de>
+ * Copyright (c) 2005 blackfin.uclinux.org
+ *
+ * (C) Copyright 2000-2004
+ * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -41,7 +41,7 @@ static void mem_malloc_init(void)
 	mem_malloc_end = (CFG_MALLOC_BASE + CFG_MALLOC_LEN);
 	mem_malloc_brk = mem_malloc_start;
 	memset((void *) mem_malloc_start, 0,
-	       mem_malloc_end - mem_malloc_start);
+	mem_malloc_end - mem_malloc_start);
 }
 
 void *sbrk(ptrdiff_t increment)
@@ -61,8 +61,9 @@ static int display_banner(void)
 {
 	sprintf(version_string, VERSION_STRING_FORMAT, VERSION_STRING);
 	printf("%s\n", version_string);
+#if DEBUG
 	printf("%s\n", moreinfo_string);
-
+#endif
 	return (0);
 }
 
@@ -80,8 +81,8 @@ static int init_baudrate(void)
 	uchar tmp[64];
 	int i = getenv_r("baudrate", tmp, sizeof(tmp));
 	gd->bd->bi_baudrate = gd->baudrate = (i > 0)
-	    ? (int) simple_strtoul(tmp, NULL, 10)
-	    : CONFIG_BAUDRATE;
+		? (int) simple_strtoul(tmp, NULL, 10)
+		: CONFIG_BAUDRATE;
 	return (0);
 }
 
@@ -102,7 +103,7 @@ static void display_global_data(void)
 	printf("--bd:%x %x\n", gd->bd, bd);
 	printf("---bi_baudrate:%x\n", bd->bi_baudrate);
 	printf("---bi_ip_addr:%x\n", bd->bi_ip_addr);
-	printf("---bi_enetaddr:%x %x %x %x %x %x\n", 
+	printf("---bi_enetaddr:%x %x %x %x %x %x\n",
 				bd->bi_enetaddr[0],
 				bd->bi_enetaddr[1],
 				bd->bi_enetaddr[2],
@@ -142,14 +143,14 @@ void board_init_f(ulong bootflag)
 	gd = (gd_t *) (CFG_GBL_DATA_ADDR);
 	memset((void *) gd, 0, sizeof(gd_t));
 
-        /* Board data initialization */
-        addr = (CFG_GBL_DATA_ADDR + sizeof(gd_t));
+	/* Board data initialization */
+	addr = (CFG_GBL_DATA_ADDR + sizeof(gd_t));
 
-        /* Align to 4 byte boundary */
+	/* Align to 4 byte boundary */
         addr &= ~(4 - 1);
-        bd = (bd_t*)addr;
-        gd->bd = bd;
-        memset((void *) bd, 0, sizeof(bd_t));
+	bd = (bd_t*)addr;
+	gd->bd = bd;
+	memset((void *) bd, 0, sizeof(bd_t));
 
 	/* Initialize */
 	init_IRQ();
@@ -162,8 +163,8 @@ void board_init_f(ulong bootflag)
 	rtc_init();
 	initdram(0);
 	timer_init();
-	printf("VCO Clock \t=%lu.%03lu MHz\n",   CONFIG_VCO_HZ/1000000, CONFIG_VCO_HZ%1000000);
-	printf("Core Clock \t=%lu.%03lu MHz\n",  CONFIG_CCLK_HZ/1000000,CONFIG_CCLK_HZ%1000000);
+	printf("VCO Clock \t=%lu.%03lu MHz\n",CONFIG_VCO_HZ/1000000, CONFIG_VCO_HZ%1000000);
+	printf("Core Clock \t=%lu.%03lu MHz\n",CONFIG_CCLK_HZ/1000000,CONFIG_CCLK_HZ%1000000);
 	printf("System Clock \t=%lu.%03lu MHz\n",CONFIG_SCLK_HZ/1000000,CONFIG_SCLK_HZ%1000000);
 	board_init_r((gd_t *) gd, 0x20000010);
 }
@@ -171,7 +172,6 @@ void board_init_f(ulong bootflag)
 void board_init_r(gd_t * id, ulong dest_addr)
 {
 	DECLARE_GLOBAL_DATA_PTR;
-	cmd_tbl_t *cmdtp;
 	ulong size;
 	extern void malloc_bin_reloc(void);
 	char *s, *e;

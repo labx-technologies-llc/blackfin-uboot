@@ -1,10 +1,21 @@
 /*
- * (C) Copyright 2002
- * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+ * U-boot - ints.c Interrupt related routines
  *
- * (C) Copyright 2002
- * Sysgo Real-Time Solutions, GmbH <www.elinos.com>
- * Marius Groeger <mgroeger@sysgo.de>
+ * Copyright (c) 2005 blackfin.uclinux.org
+ *
+ * This file is based on ints.c
+ *
+ * Apr18 2003, Changed by HuTao to support interrupt cascading for Blackfin
+ *             drivers
+ *
+ * Copyright 1996 Roman Zippel
+ * Copyright 1999 D. Jeff Dionne <jeff@uclinux.org>
+ * Copyright 2000-2001 Lineo, Inc. D. Jefff Dionne <jeff@lineo.ca>
+ * Copyright 2002 Arcturus Networks Inc. MaTed <mated@sympatico.ca>
+ * Copyright 2003 Metrowerks/Motorola
+ *
+ * (C) Copyright 2000-2004
+ * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -23,20 +34,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
- *
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file COPYING in the main directory of this archive
- * for more details.
- *
- * Apr18 2003, Changed by HuTao to support interrupt cascading for Blackfin 
- *             drivers
- *
- * Copyright 1996 Roman Zippel
- * Copyright 1999 D. Jeff Dionne <jeff@uclinux.org>
- * Copyright 2000-2001 Lineo, Inc. D. Jefff Dionne <jeff@lineo.ca>
- * Copyright 2002 Arcturus Networks Inc. MaTed <mated@sympatico.ca>
- * Copyright 2003 Metrowerks/Motorola
  */
 
 #include <common.h>
