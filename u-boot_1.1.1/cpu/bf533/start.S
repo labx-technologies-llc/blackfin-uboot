@@ -408,7 +408,7 @@ copy_data:
 	r2=0x4;	
 	r0=r0-r2;
 	cc=r0==0x0;
-	if !cc copy_data;	
+	if !cc jump copy_data;	
 	p0.l = (CFG_MONITOR_BASE & 0xFFFF);
 	p0.h = (CFG_MONITOR_BASE >> 16);
 	jump (p0);
