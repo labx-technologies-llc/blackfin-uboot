@@ -11,6 +11,9 @@
 #undef	CONFIG_BOOTARGS
 #define CONFIG_DRIVER_SMC91111	1
 #define CONFIG_SMC91111_BASE	0x20300300
+/* Enabled below option for CF support */
+/* #define CONFIG_STAMP_CF         1 */	
+
 
 /* To remove hardcoding and enable MAC storage in EEPROM */
 /* #define HARDCODE_MAC		1 */
@@ -45,11 +48,17 @@
 #define CONFIG_LOADS_ECHO	1
 #undef	CFG_LOADS_BAUD_CHANGE
 
+#ifdef CONFIG_STAMP_CF         
 #define CONFIG_COMMANDS		(CFG_CMD_BDI | CFG_CMD_LOADB | CFG_CMD_IMI | CFG_CMD_MEMORY | CFG_CMD_NET | \
 				CFG_CMD_ELF | CFG_CMD_PING | CFG_CMD_DHCP | CFG_CMD_RUN | \
 				CFG_CMD_ENV | CFG_CMD_FLASH | CFG_CMD_DATE | CFG_CMD_AUTOSCRIPT | CFG_CMD_MISC | \
 				CFG_CMD_IDE | CFG_CMD_FAT)
 
+#else
+#define CONFIG_COMMANDS		(CFG_CMD_BDI | CFG_CMD_LOADB | CFG_CMD_IMI | CFG_CMD_MEMORY | CFG_CMD_NET | \
+				CFG_CMD_ELF | CFG_CMD_PING | CFG_CMD_DHCP | CFG_CMD_RUN | \
+				CFG_CMD_ENV | CFG_CMD_FLASH | CFG_CMD_DATE | CFG_CMD_AUTOSCRIPT | CFG_CMD_MISC)
+#endif
 /* This must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
 
@@ -95,7 +104,12 @@
 #define CFG_FLASH0_BASE		0x20000000
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	67	/* max number of sectors on one chip */
-#define CFG_ENV_ADDR		0x20070000
+#ifdef CONFIG_STAMP_CF
+#define CFG_ENV_ADDR		0x20050000
+#else
+#define CFG_ENV_ADDR		0x20020000
+#endif
+
 #define CFG_ENV_SECT_SIZE 	0x10000	/* Total Size of Environment Sector */
 
 /* General definitions */
@@ -144,8 +158,6 @@
 #define ELFSHDRSIZE_VDSP	0x2C
 #define VDSP_ENTRY_ADDR		0xFFA00000
 #endif
-
-#define CONFIG_STAMP_CF	   	1
 
 #ifdef CONFIG_STAMP_CF
 
