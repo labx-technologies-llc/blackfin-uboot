@@ -150,7 +150,7 @@ u-boot.srec:	u-boot
 
 ifeq ($(ARCH),blackfin)
 u-boot.bin:	u-boot
-		$(OBJCOPY) ${OBJCFLAGS_BIN} -O binary $< $@
+	 	./scr	
 
 u-boot.hex:	u-boot
 		$(OBJCOPY) ${OBJCFLAGS_HEX} -O ihex $< $@
