@@ -37,10 +37,12 @@ static ulong last_time;
 /* Functions just to satisfy the linker */
 void enable_interrupts(void)
 {
+	cli();
 }
 
 int disable_interrupts(void)
 {
+	sti();
 	return 0;
 }
 
@@ -121,5 +123,5 @@ ulong get_timer(ulong base)
 	   cycle */
 	milisec += timestamp * (MAX_TIM_LOAD/(CONFIG_VCO * 1000));
 
-	return milisec;
+	return (milisec - base);
 }
