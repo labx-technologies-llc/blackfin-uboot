@@ -287,8 +287,11 @@ loop:
 	r0=r0-r2;
 	cc=r0==0x0;
 	if !cc jump loop;	
-	p0.l = (CFG_MONITOR_BASE & 0xFFFF);
-	p0.h = (CFG_MONITOR_BASE >> 16);
+	r4.l = (CFG_MONITOR_BASE & 0xFFFF);
+	r4.h = (CFG_MONITOR_BASE >> 16);
+	r6 = _sram_inst_size;
+	r6 = r4 + r6;
+	p0 = r6;
 	jump (p0);
 
 _pll_set_system_clocks:
