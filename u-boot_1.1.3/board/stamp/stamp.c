@@ -31,9 +31,10 @@
 
 int checkboard(void)
 {
-	printf("CPU:   ADSP BF533-SBBC500 0.3\n");
+	printf("CPU:   ADSP BF533 Rev.: 0.%d\n", *pDSPID & 0x0000ffff);
 	printf("Board: ADI BF533 Stamp board\n");
-	printf("       cleanup by Richard Klingler <richard@uclinux.net>\n");
+	printf("       Support: http://blackfin.uclinux.org/\n");
+	printf("       Richard Klingler <richard@uclinux.net>\n");
 	return 0;
 }
 
