@@ -112,7 +112,7 @@
  */
 
 #define CONFIG_DRIVER_SMC91111		1
-#define CONFIG_SMC91111_BASE		0x20300300
+#define CONFIG_SMC91111_BASE		0x20310300
 /* To remove hardcoding and enable MAC storage in EEPROM */
 /* #define HARDCODE_MAC			1 */
 #if 0
@@ -229,7 +229,7 @@
 #define CONFIG_MEM_MT48LC64M4A2FB_7E	1
 
 #define CFG_MEMTEST_START		0x00100000	/* memtest works on */
-#define CFG_MEMTEST_END			0x07F7FFFF	/* 4 ... 12 MB in DRAM */
+#define CFG_MEMTEST_END			0x07F7FFFF	/* 1 ... 127.5 MB in DRAM */
 #define	CFG_LOAD_ADDR			0x00100000	/* default load address */
 
 #define	CFG_SDRAM_BASE			0x00000000
