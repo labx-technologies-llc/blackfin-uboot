@@ -75,8 +75,50 @@ no_soft_reset:
 	r0 = 0x30;
 	syscfg = r0;
 
-	/* Clear EVT registers */
+	
+	/* As per HW reference manual DAG registers,
+	 * DATA and Address resgister shall be zero'd 
+	 * in initialization, after a reset state
+	 */
+	r1 = 0;	/* Data registers zero'd */
+	r2 = 0;
+	r3 = 0;
+	r4 = 0;
+	r5 = 0;
+	r6 = 0
 	r7 = 0;
+
+	p0 = r7; /* Address registers zero'd */
+	p1 = r7;
+	p2 = r7;
+	p3 = r7;
+	p4 = r7;
+	p5 = r7;
+	
+	i0 = r7; /* DAG Registers zero'd */
+	i1 = r7;
+	i2 = r7;
+	i3 = r7;
+	m0 = r7;
+	m1 = r7;
+	m3 = r7;
+	m3 = r7;
+	l0 = r7;
+	l1 = r7;
+	l2 = r7;
+	l3 = r7
+	b0 = r7;
+	b1 = r7;
+	b2 = r7;
+	b3 = r7;
+
+	/* Set loop counters to zero, to make sure that
+	 * hw loops are disabled. 
+	 */
+	lc0 = r7;
+	lc1 = r7;
+	
+	/* Clear EVT registers */
 	p0.h = (EVT_EMULATION_ADDR >> 16);
 	p0.l = (EVT_EMULATION_ADDR & 0xFFFF);
 	p0 += 8;
@@ -304,7 +346,7 @@ DMA_DATA:
 	IDLE;                                   //Wait for DMA to Complete
 
 	R0 = 0x1;
-`	W[P1+OFFSET_(MDMA_D0_IRQ_STATUS)] = R0; //Write 1 to clear DMA interrupt
+	W[P1+OFFSET_(MDMA_D0_IRQ_STATUS)] = R0; //Write 1 to clear DMA interrupt
 
 copy_end: nop;
 
