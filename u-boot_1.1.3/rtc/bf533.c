@@ -80,7 +80,6 @@ void rtc_init()
  */
 void rtc_set (struct rtc_time *tmp)
 {
-	unsigned long num_sec;
 	unsigned long n_days_1970 = 0;
 	unsigned long n_secs_rem  = 0;
 	unsigned long n_hrs	  = 0;
