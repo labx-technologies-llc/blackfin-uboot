@@ -640,13 +640,18 @@ U-Boot Memory MAP
                 0x0000 0000     --------------------CFG_SDRAM_BASE
                       :
                       :
-                0x06fb c000     --------------------CFG_GLOBAL_DATA_OFFSET
+		0x07f1 c000     --------------------STACK END
+		      :		+ U-boot stack		^
+		      :					|
+		      :					|
+                0x07f3 bffc     --------------------STACK START
+                0x07f3 c000     --------------------CFG_GLOBAL_DATA_ADDR
                       :         + U-Boot Global Data storage
                       :
-                0x06fc 0000     --------------------CFG_MALLC_BASE
+                0x07f4 0000     --------------------CFG_MALLC_BASE
                       :         + U-Boot Heap
                       :
-                0x0700 0000
+                0x07f8 0000
                       :         + U-Boot in SDRAM
                       :
                 0x0800 0000     --------------------SDRAM End
@@ -671,13 +676,18 @@ U-Boot Memory MAP
                 0x0000 0000     --------------------CFG_SDRAM_BASE
                       :
                       :
-                0x017d c000     --------------------CFG_GLOBAL_DATA_OFFSET
+		0x01f1 c000     --------------------STACK END
+		      :		+ U-boot stack		^
+		      :					|
+		      :					|
+                0x01f3 bffc     --------------------STACK START
+                0x01f3 c000     --------------------CFG_GLOBAL_DATA_ADDR
                       :         + U-Boot Global Data storage
                       :
-                0x017e 0000     --------------------CFG_MALLC_BASE
+                0x01f4 0000     --------------------CFG_MALLC_BASE
                       :         + U-Boot Heap
                       :
-                0x0180 0000
+                0x01f8 0000
                       :         + U-Boot in SDRAM 
                       :
                 0x0200 0000     --------------------SDRAM End
