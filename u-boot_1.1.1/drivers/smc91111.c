@@ -66,7 +66,6 @@
 
 #ifdef CONFIG_DRIVER_SMC91111
 
-
 /* Use power-down feature of the chip */
 #define POWER_DOWN	0
 
@@ -74,21 +73,10 @@
 
 #define SMC_DEBUG 0
 
-#if !defined(CONFIG_EZKIT533) && !defined(CONFIG_STAMP)
 #if SMC_DEBUG > 1
 static const char version[] =
 	"smc91111.c:v1.0 04/25/01 by Daris A Nevil (dnevil@snmc.com)\n";
 #endif
-#else
-static const char version[] =
-	"smc91111.c:v1.0 04/25/01 by Daris A Nevil (dnevil@snmc.com)\n";
-#endif
-
-#ifdef CONFIG_STAMP
-#define F_DIR		0xFFC00730
-#define F_FLAG_S	0xFFC00708
-#endif
-
 
 /*------------------------------------------------------------------------
  .
@@ -450,12 +438,6 @@ static void smc_enable()
  .	the manual says that it will wake up in response to any I/O requests
  .	in the register space.	 Empirical results do not show this working.
 */
-
-#ifdef CONFIG_STAMP
-extern void init_EBIU(void);
-extern void init_Flags(void);
-#endif
-
 static void smc_shutdown()
 {
 	PRINTK2(CARDNAME ":smc_shutdown\n");
@@ -468,11 +450,6 @@ static void smc_shutdown()
 	SMC_SELECT_BANK( 0 );
 	SMC_outb( RCR_CLEAR, RCR_REG );
 	SMC_outb( TCR_CLEAR, TCR_REG );
-	
-#ifdef CONFIG_STAMP
-	init_EBIU();
-	init_Flags();	
-#endif
 }
 
 
@@ -564,10 +541,8 @@ again:
 			 SMC_DEV_NAME, try);
 		if (try < SMC_ALLOC_MAX_TRY)
 			goto again;
-#ifndef CONFIG_STAMP
 		else
 			return 0;
-#endif
 	}
 
 	PRINTK2 ("%s: memory allocation, try %d succeeded ...\n",
@@ -584,9 +559,7 @@ again:
 	if (packet_no & AR_FAILED) {
 		/* or isn't there?  BAD CHIP! */
 		printf ("%s: Memory allocation failed. \n", SMC_DEV_NAME);
-#ifndef CONFIG_STAMP
 		return 0;
-#endif
 	}
 
 	/* we have a packet address, so tell the card to use it */
@@ -1004,9 +977,6 @@ static word smc_read_phy_register (byte phyreg)
 {
 	int oldBank;
 	int i;
-#if defined(CONFIG_blackfin)
-	int j;
-#endif
 	byte mask;
 	word mii_reg;
 	byte bits[64];
@@ -1107,17 +1077,14 @@ static word smc_read_phy_register (byte phyreg)
 			phydata |= 0x0001;
 	}
 
-#if (SMC_DEBUG > 2)
+#if (SMC_DEBUG > 2 )
 	printf ("smc_read_phy_register(): phyaddr=%x,phyreg=%x,phydata=%x\n",
 		phyaddr, phyreg, phydata);
 	smc_dump_mii_stream (bits, sizeof bits);
 #endif
 
-#ifdef CONFIG_EZKIT533
-	for(j=0;j<200000;j++);	/* Delay required for EZLAN of Blackfin */
-#endif
-#ifdef CONFIG_STAMP
-	for(j=0;j<300000;j++);	/* Delay required for EZLAN of Blackfin */
+#ifdef CONFIG_blackfin
+	udelay(1000000);
 #endif
 
 	return (phydata);
@@ -1372,12 +1339,11 @@ static void smc_phy_configure ()
 		failed = 1;
 	}
 
-	return 0;	//Vidya
-
 	/* Re-Configure the Receive/Phy Control register */
 	SMC_outw (RPC_DEFAULT, RPC_REG);
 
       smc_phy_configure_exit:
+
 }
 #endif /* !CONFIG_SMC91111_EXT_PHY */
 
@@ -1420,24 +1386,6 @@ static void print_packet( byte * buf, int length )
 #endif
 
 int eth_init(bd_t *bd) {
-
-#ifdef CONFIG_STAMP
-	asm("p2.h = 0xFFC0;");
-	asm("p2.l = 0x0730;");
-	asm("r0 = 0x01;");
-	asm("w[p2] = r0;");
-	asm("ssync;");	
-
-	asm("p2.h = 0xffc0;");
-	asm("p2.l = 0x0708;");
-	asm("r0 = 0x01;");
-	asm("w[p2] = r0;");
-	asm("ssync;");
-#endif
-#if defined(CONFIG_STAMP) || defined(CONFIG_EZKIT533)
-	printf("Initializing driver for Standard Microsystems Corporation 91C111 single-chip Ethernet device \n");
-	printf("%s",version);
-#endif
 	return (smc_open(bd));
 }
 

@@ -245,7 +245,7 @@ int do_bootm (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 #elif defined(__microblaze__)
 	if (hdr->ih_arch != IH_CPU_MICROBLAZE)
 #elif defined(__blackfin__)
-        if (hdr->ih_arch != IH_CPU_BLACKFIN)
+	if (hdr->ih_arch != IH_CPU_BLACKFIN)
 #else
 # error Unknown CPU type
 #endif
@@ -395,14 +395,6 @@ int do_bootm (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 
 	switch (hdr->ih_os) {
 	default:			/* handled by (original) Linux case */
-
-#if defined(__blackfin__)               /* BFIN-LG Added for BF533,uClinux support */
-	case IH_OS_UCLINUX:
-        	appl = (int (*)(int, char *[]))ntohl(hdr->ih_ep);
-        	(*appl)(argc-1, &argv[1]);
-	break;
-#endif
-
 	case IH_OS_LINUX:
 #ifdef CONFIG_SILENT_CONSOLE
 	    fixup_silent_linux();
@@ -442,6 +434,12 @@ int do_bootm (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	    do_bootm_artos  (cmdtp, flag, argc, argv,
 			     addr, len_ptr, verify);
 	    break;
+#endif
+#ifdef CONFIG_blackfin
+	case IH_OS_UCLINUX:
+		appl = (int (*)(int, char *[]))ntohl(hdr->ih_ep);
+		(*appl)(argc-1, &argv[1]);
+		break;
 #endif
 	}
 
@@ -1180,8 +1178,8 @@ print_type (image_header_t *hdr)
 #ifdef CONFIG_LYNXKDI
 	case IH_OS_LYNXOS:	os = "LynxOS";			break;
 #endif
-#if defined(__blackfin__)
-	case IH_OS_UCLINUX:     os = "uClinux";         	break;          /* BFIN-LG for uClinux */
+#ifdef CONFIG_blackfin
+	case IH_OS_UCLINUX:	os = "uClinux";			break;
 #endif
 	default:		os = "Unknown OS";		break;
 	}
@@ -1201,7 +1199,6 @@ print_type (image_header_t *hdr)
 	case IH_CPU_SPARC64:	arch = "SPARC 64 Bit";		break;
 	case IH_CPU_M68K:	arch = "M68K"; 			break;
 	case IH_CPU_MICROBLAZE:	arch = "Microblaze"; 		break;
-	case IH_CPU_BLACKFIN:   arch = "BLACKFIN";              break;
 	default:		arch = "Unknown Architecture";	break;
 	}
 

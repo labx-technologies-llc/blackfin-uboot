@@ -23,9 +23,11 @@
 
 include $(TOPDIR)/config.mk
 
-LIB	= libcommon.a
-
+ifdef CONFIG_blackfin
 CFLAGS += -O0
+endif
+
+LIB	= libcommon.a
 
 AOBJS	=
 
@@ -60,17 +62,10 @@ all:	$(LIB) $(AOBJS)
 $(LIB): .depend $(OBJS)
 	$(AR) crv $@ $(OBJS)
 
-ifeq ($(ARCH),blackfin)
-environment.o: environment.c ../tools/envcrc
-	$(CC) $(AFLAGS) -Wa,-W \
-		-DENV_CRC=$(shell ../tools/envcrc) \
-		-c -o $@ environment.c
-else
 environment.o: environment.c ../tools/envcrc
 	$(CC) $(AFLAGS) -Wa,--no-warn \
 		-DENV_CRC=$(shell ../tools/envcrc) \
 		-c -o $@ environment.c
-endif
 
 ../tools/envcrc:
 	$(MAKE) -C ../tools

@@ -100,37 +100,24 @@ flash_protect (int flag, ulong from, ulong to, flash_info_t *info)
 flash_info_t *
 addr2info (ulong addr)
 {
-#ifndef CONFIG_SPD823TS 
+#ifndef CONFIG_SPD823TS
 	flash_info_t *info;
 	int i;
-	
+
 	for (i=0, info=&flash_info[0]; i<CFG_MAX_FLASH_BANKS; ++i, ++info) {
-#ifdef CONFIG_EZKIT533
-		if (info->flash_id != FLASH_UNKNOWN)	{
-			if((addr >= 0x20210000) && (addr < 0x20280000))	{
-				printf("Invalid locations \n");
-				return NULL;
-			}
-			if(((addr >= 0x20000000) && (addr < 0x20210000)) ||
-				 ((addr >=0x20280000) && (addr <= 0x20290000))) {
-				return (info);			
-			}	
-		}
-#else
-		if (info->flash_id != FLASH_UNKNOWN && 
-			addr >= info->start[0] &&
+		if (info->flash_id != FLASH_UNKNOWN &&
+		    addr >= info->start[0] &&
 		    /* WARNING - The '- 1' is needed if the flash
 		     * is at the end of the address space, since
 		     * info->start[0] + info->size wraps back to 0.
 		     * Please don't change this unless you understand this.
-		     */	
-			addr <= info->start[0] + info->size - 1) {
-			return (info);			
-			
+		     */
+		    addr <= info->start[0] + info->size - 1) {
+			return (info);
 		}
-#endif
 	}
 #endif /* CONFIG_SPD823TS */
+
 	return (NULL);
 }
 
@@ -187,7 +174,6 @@ flash_write (uchar *src, ulong addr, ulong cnt)
 		len = info->start[0] + info->size - addr;
 		if (len > cnt)
 			len = cnt;
-
 		if ((i = write_buff(info, src, addr, len)) != 0) {
 			return (i);
 		}

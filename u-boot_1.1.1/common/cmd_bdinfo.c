@@ -137,17 +137,15 @@ int do_bdinfo ( cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 
 	int i;
 	bd_t *bd = gd->bd;
-#if !defined(CONFIG_EZKIT533) && !defined(CONFIG_STAMP)
+
+#if !defined(CONFIG_blackfin)
 	print_num ("boot_params",	(ulong)bd->bi_boot_params);
 #endif
 	print_num ("memstart",		(ulong)bd->bi_memstart);
 	print_num ("memsize",		(ulong)bd->bi_memsize);
 	print_num ("flashstart",	(ulong)bd->bi_flashstart);
 	print_num ("flashsize",		(ulong)bd->bi_flashsize);
-
-#if !defined(CONFIG_EZKIT533) && !defined(CONFIG_STAMP)
 	print_num ("flashoffset",	(ulong)bd->bi_flashoffset);
-#endif
 
 	puts ("ethaddr     =");
 	for (i=0; i<6; ++i) {

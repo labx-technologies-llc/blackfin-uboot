@@ -131,12 +131,7 @@ flash_fill_sect_ranges (ulong addr_first, ulong addr_last,
 			ulong end;	/* last address in current sect	*/
 
 			end = (sect == s_end) ? b_end : info->start[sect + 1] - 1;
-#ifdef CONFIG_EZKIT533
-			if(addr_last == 0x2020ffff)
-				end = 0x2020ffff;
-			else if(addr_last == 0x2028ffff)
-				end = 0x2028ffff;
-#endif
+
 			if (addr_first > end)
 				continue;
 			if (addr_last < info->start[sect])
@@ -148,17 +143,6 @@ flash_fill_sect_ranges (ulong addr_first, ulong addr_last,
 			if (addr_last  == end) {
 				s_last[bank]  = sect;
 			}
-#ifdef CONFIG_EZKIT533
-			if(addr_last == 0x2020ffff)	{
-				printf(" ");
-				s_last[bank] = 35;
-				end = 0x2020ffff;
-			}
-			if(addr_last == 0x2028ffff)	{
-				s_last[bank] = 39;
-				end = 0x2028ffff;
-			}
-#endif
 		}
 		if (s_first[bank] >= 0) {
 			if (s_last[bank] < 0) {
@@ -187,7 +171,7 @@ flash_fill_sect_ranges (ulong addr_first, ulong addr_last,
 			break;
 		}
 	}
-	
+
 	return rcode;
 }
 
@@ -323,11 +307,6 @@ int do_protect (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	ulong bank, addr_first, addr_last;
 	int i, p, n, sect_first, sect_last;
 	int rcode = 0;
-#if defined(CONFIG_EZKIT533) || defined(CONFIG_STAMP)
-	printf("Flash Protection Not Enabled \n");
-	return 0;
-#endif
-
 #ifdef CONFIG_HAS_DATAFLASH
 	int status;
 #endif
@@ -472,11 +451,6 @@ int flash_sect_protect (int p, ulong addr_first, ulong addr_last)
 	int protected, i;
 	int planned;
 	int rcode;
-
-#if defined(CONFIG_EZKIT533) || (CONFIG_STAMP)
-	printf("Flash protection not enabled \n");
-	return 0;
-#endif
 
 	rcode = flash_fill_sect_ranges( addr_first, addr_last, s_first, s_last, &planned );
 
