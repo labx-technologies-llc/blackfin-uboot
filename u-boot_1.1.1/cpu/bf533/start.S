@@ -385,8 +385,7 @@ loop:
 	if !cc jump loop;	
 	r4.l = (CFG_MONITOR_BASE & 0xFFFF);
 	r4.h = (CFG_MONITOR_BASE >> 16);
-	r6 = _sram_inst_size;
-	r6 = r4 + r6;
+	r6 = r4;
 	p0 = r6;
 	jump (p0);
 
