@@ -1,19 +1,29 @@
 /*
- * (C) Copyright 2001 - Analog Devices, Inc.  All rights reserved.
- *	BF533EzFlash.c
- *	Analog Devices, Inc. - 2001
+ * U-boot - flash.c Flash driver for PSD4256GV
  *
+ * Copyright (c) 2005 blackfin.uclinux.org
+ * This file is based on BF533EzFlash.c originally written by Analog Devices, Inc.
  *
- *	Change Log
- *	1.00.1
- *	- made changes so that the driver will work with
- *		  the revised GUI
- *	1.00.0
- *	- initial release
+ * (C) Copyright 2000-2004
+ * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
- * VisualDSP++ "Flash Programmer" flash driver for use with the
- * ADSP-BF533 EZ-KIT Lite containing the STMicroelectronics PSD4256G
- * flash device.
+ * See file CREDITS for list of people who contributed to this
+ * project.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307 USA
  */
 
 #include "flash-defines.h"
@@ -69,6 +79,7 @@ unsigned long flash_init(void)
 	int i;
 
 	size_b0 = size_b1 = size_b2 = 0;
+#ifdef DEBUG
 	printf("Flash Memory Start 0x%x\n", CFG_FLASH_BASE);
 	printf("Memory Map for the Flash\n");
 	printf("0x20000000 - 0x200FFFFF Flash A Primary (1MB)\n");
@@ -76,7 +87,7 @@ unsigned long flash_init(void)
 	printf("0x20200000 - 0x2020FFFF Flash A Secondary (64KB)\n");
 	printf("0x20280000 - 0x2028FFFF Flash B Secondary (64KB)\n");
 	printf("Please type command flinfo for information on Sectors \n");
-
+#endif
 	for (i = 0; i < CFG_MAX_FLASH_BANKS; ++i) {
 		flash_info[i].flash_id = FLASH_UNKNOWN;
 	}
@@ -87,8 +98,11 @@ unsigned long flash_init(void)
 
 	if (flash_info[0].flash_id == FLASH_UNKNOWN || size_b0 == 0) {
 		printf("## Unknown FLASH on Bank 0 - Size = 0x%08lx = %ld MB\n",
-		       size_b0, size_b0 >> 20);
+			size_b0, size_b0 >> 20);
 	}
+
+	(void)flash_protect(FLAG_PROTECT_SET,CFG_FLASH0_BASE,(flash_info[0].start[2] - 1),&flash_info[0]);
+
 	return (size_b0 + size_b1 + size_b2);
 }
 
@@ -113,8 +127,8 @@ void flash_print_info(flash_info_t * info)
 		if ((i % 5) == 0)
 			printf("\n   ");
 		printf(" %08lX%s",
-		       info->start[i],
-		       info->protect[i] ? " (RO)" : "     ");
+			info->start[i],
+			info->protect[i] ? " (RO)" : "     ");
 	}
 	printf("\n");
 	return;
@@ -122,7 +136,19 @@ void flash_print_info(flash_info_t * info)
 
 int flash_erase(flash_info_t * info, int s_first, int s_last)
 {
-	int cnt = 0,i,j;
+	int cnt = 0,i;
+	int prot,sect;
+
+	prot = 0;
+        for (sect = s_first; sect <= s_last; ++sect) {
+                if (info->protect[sect])
+                        prot++;
+        }
+
+	if (prot)
+                printf ("- Warning: %d protected sectors will not be erased!\n", prot);
+        else
+                printf ("\n");	
 
 	cnt = s_last - s_first + 1;
 
@@ -135,16 +161,11 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 	} else {
 		printf("Erasing Flash locations, Please Wait\n");
 		for (i = s_first; i <= s_last; i++) {
-			if (info->start[i] >= CFG_FLASH_BASE + PriFlashBOff) {
-			/* FIXME */
-				for (j = 0; j < 500000; j++);
-				for (j = 0; j < 500000; j++);
-				for (j = 0; j < 500000; j++);
-				for (j = 0; j < 500000; j++);
-			}
-			if(erase_block_flash(i, info->start[i]) < 0) {
-				printf("Error Sector erasing \n");
-				return FLASH_FAIL;
+			if (info->protect[i] == 0) {	/* not protected */
+				if(erase_block_flash(i, info->start[i]) < 0) {
+					printf("Error Sector erasing \n");
+					return FLASH_FAIL;
+				}
 			}
 		}
 	}
@@ -175,9 +196,9 @@ int write_data(long lStart, long lCount, long lStride, int *pnData)
 
 	for (i = 0; (i < lCount / 4) && (i < BUFFER_SIZE); i++) {
 		for (iShift = 0, j = 0; (j < iNumWords);
-		     j++, ulOffset += (lStride * 2)) {
+			j++, ulOffset += (lStride * 2)) {
 			if ((ulOffset >= INVALIDLOCNSTART)
-			    && (ulOffset < INVALIDLOCNEND)) {
+			&& (ulOffset < INVALIDLOCNEND)) {
 				printf("Invalid locations, Try writing to another location \n");
 				return FLASH_FAIL;
 			}
@@ -197,8 +218,8 @@ int write_data(long lStart, long lCount, long lStride, int *pnData)
 	}
 	if (nLeftover > 0) {
 		if ((ulOffset >= INVALIDLOCNSTART)
-		    && (ulOffset < INVALIDLOCNEND))
-			return FLASH_FAIL;
+			&& (ulOffset < INVALIDLOCNEND))
+				return FLASH_FAIL;
 		get_sector_number(ulOffset, &nSector);
 		read_flash(ulOffset,&d);
 		if(d != 0xffff) {
@@ -229,8 +250,8 @@ int read_data(long ulStart, long lCount, long lStride, int *pnData)
 	for (i = 0; (i < lCount / 4) && (i < BUFFER_SIZE); i++) {
 		for (iShift = 0, j = 0; j < iNumWords; j += 2) {
 			if ((ulOffset >= INVALIDLOCNSTART)
-			    && (ulOffset < INVALIDLOCNEND))
-				return FLASH_FAIL;
+				&& (ulOffset < INVALIDLOCNEND))
+					return FLASH_FAIL;
 
 			get_sector_number(ulOffset, &nSector);
 			read_flash(ulOffset, &nLow);
@@ -242,8 +263,8 @@ int read_data(long ulStart, long lCount, long lStride, int *pnData)
 	}
 	if (nLeftover > 0) {
 		if ((ulOffset >= INVALIDLOCNSTART)
-		    && (ulOffset < INVALIDLOCNEND))
-			return FLASH_FAIL;
+			&& (ulOffset < INVALIDLOCNEND))
+				return FLASH_FAIL;
 
 		get_sector_number(ulOffset, &nSector);
 		read_flash(ulOffset, &pnData[i]);
@@ -279,7 +300,7 @@ int read_flash(long nOffset, int *pnValue)
 }
 
 int poll_toggle_bit(long lOffset)
-{		
+{
 	unsigned int u1,u2;
 	unsigned long timeout = 0xFFFFFFFF;
 	volatile unsigned long *FB = (volatile unsigned long *)(0x20000000 + lOffset);
@@ -359,7 +380,6 @@ int erase_flash(void)
 
 int erase_block_flash(int nBlock, unsigned long address)
 {
-
 	long ulSectorOff = 0x0;
 
 	if ((nBlock < 0) || (nBlock > AFP_NumSectors))
@@ -375,7 +395,7 @@ int erase_block_flash(int nBlock, unsigned long address)
 
 	write_flash(ulSectorOff, BlockEraseVal);
 
-	if(poll_toggle_bit(ulSectorOff) < 0)		
+	if(poll_toggle_bit(ulSectorOff) < 0)
 		return FLASH_FAIL;
 
 	return FLASH_SUCCESS;
@@ -413,34 +433,34 @@ void get_sector_number(long ulOffset, int *pnSector)
 
 	if (ulOffset >= SecFlashAOff) {
 		if ((ulOffset < SecFlashASec1Off)
-		    && (ulOffset < SecFlashASec2Off)) {
-			nSector = SECT32;
+			&& (ulOffset < SecFlashASec2Off)) {
+				nSector = SECT32;
 		} else if ((ulOffset >= SecFlashASec2Off)
-			   && (ulOffset < SecFlashASec3Off)) {
-			nSector = SECT33;
+			&& (ulOffset < SecFlashASec3Off)) {
+				nSector = SECT33;
 		} else if ((ulOffset >= SecFlashASec3Off)
-			   && (ulOffset < SecFlashASec4Off)) {
-			nSector = SECT34;
+			&& (ulOffset < SecFlashASec4Off)) {
+				nSector = SECT34;
 		} else if ((ulOffset >= SecFlashASec4Off)
-			   && (ulOffset < SecFlashAEndOff)) {
-			nSector = SECT35;
+			&& (ulOffset < SecFlashAEndOff)) {
+				nSector = SECT35;
 		}
 	} else if (ulOffset >= SecFlashBOff) {
 		if ((ulOffset < SecFlashBSec1Off)
-		    && (ulOffset < SecFlashBSec2Off)) {
-			nSector = SECT36;
+			&& (ulOffset < SecFlashBSec2Off)) {
+				nSector = SECT36;
 		}
 		if ((ulOffset < SecFlashBSec2Off)
-		    && (ulOffset < SecFlashBSec3Off)) {
-			nSector = SECT37;
+			&& (ulOffset < SecFlashBSec3Off)) {
+				nSector = SECT37;
 		}
 		if ((ulOffset < SecFlashBSec3Off)
-		    && (ulOffset < SecFlashBSec4Off)) {
-			nSector = SECT38;
+			&& (ulOffset < SecFlashBSec4Off)) {
+				nSector = SECT38;
 		}
 		if ((ulOffset < SecFlashBSec4Off)
-		    && (ulOffset < SecFlashBEndOff)) {
-			nSector = SECT39;
+			&& (ulOffset < SecFlashBEndOff)) {
+				nSector = SECT39;
 		}
 	} else if ((ulOffset >= PriFlashAOff) && (ulOffset < SecFlashAOff)) {
 		nSector = ulOffset & 0xffff0000;
