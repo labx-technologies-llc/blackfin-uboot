@@ -1264,6 +1264,18 @@ ezkit533_config	:	unconfig
 
 stamp_config	:	unconfig
 	@./mkconfig $(@:_config=) blackfin bf533 stamp
+	@echo -n "VCO CLK (MHz)        "
+	@awk '/(#define CONFIG_CLKIN_HZ|#define CONFIG_VCO_MULT)/ {print $$3}'\
+		 include/configs/stamp.h | awk 'BEGIN {FS="\n"; RS=""}; \
+		 {print ($$1 * $$2)/1000000}'
+	@echo -n "Core CLK (MHz)       "
+	@awk '/(#define CONFIG_CLKIN_HZ|#define CONFIG_VCO_MULT|#define CONFIG_CCLK_DIV)/\
+		 {print $$3}' include/configs/stamp.h | awk 'BEGIN {FS="\n"; RS=""}; \
+		 {print ($$1 * $$2)/($$3 * 1000000)}'
+	@echo -n "Peripheral CLK (MHz) "
+	@awk '/(#define CONFIG_CLKIN_HZ|#define CONFIG_VCO_MULT|#define CONFIG_SCLK_DIV)/\
+		{print $$3}' include/configs/stamp.h | awk 'BEGIN {FS="\n"; RS=""}; \
+		{print ($$1 * $$2)/($$3 * 1000000)}'
 
 #########################################################################
 #########################################################################
