@@ -25,7 +25,7 @@ OUTPUT_FORMAT("elf32-bfin")
 ENTRY(start)
 MEMORY 
 	{
-	ram		: ORIGIN = 0x1800000,  	LENGTH = 0x1000000
+	ram		: ORIGIN = 0x1f80000,  	LENGTH = 0x80000
 	flash		: ORIGIN = 0x20000000, 	LENGTH = 0x80000
 	}
 
@@ -72,7 +72,7 @@ SECTIONS
 		edata = . ;
 	} > ram
 
-	. = 0x1800000;	/* Ram data segment to use */
+	. = 0x1f80000;	/* Ram data segment to use */
 	_bf533_data_dest = ABSOLUTE(.);
 	_bf533_data_start = LOADADDR(.data);
 
@@ -93,7 +93,6 @@ SECTIONS
 		_end = . ;
 	} > ram
  
-	. = 0x1F00000;
 	.eram :	{
 		__ramend = . ;
 	} > ram
