@@ -36,14 +36,11 @@
 
 static void mem_malloc_init(void)
 {
-	ulong dest_addr = CFG_MALLOC_BASE;
-
-	mem_malloc_end = dest_addr;
-	mem_malloc_start = dest_addr - CFG_MALLOC_LEN;
+	mem_malloc_start = CFG_MALLOC_BASE;
+	mem_malloc_end = (CFG_MALLOC_BASE + CFG_MALLOC_LEN);
 	mem_malloc_brk = mem_malloc_start;
 	memset((void *) mem_malloc_start, 0,
 	       mem_malloc_end - mem_malloc_start);
-
 }
 
 void *sbrk(ptrdiff_t increment)
@@ -74,7 +71,6 @@ static void display_flash_config(ulong size)
 	return;
 }
 
-
 static int init_baudrate(void)
 {
 	DECLARE_GLOBAL_DATA_PTR;
@@ -87,14 +83,40 @@ static int init_baudrate(void)
 	return (0);
 }
 
-
-/*
- * Breath some life into the board...
- *
- * The first part of initialization is running from Flash memory;
- * its main purpose is to initialize the RAM so that we
- * can relocate the monitor code to RAM.
- */
+#ifdef DEBUG
+static void display_global_data(void)
+{
+	DECLARE_GLOBAL_DATA_PTR;
+	bd_t *bd;
+	bd = gd->bd;
+	printf("--flags:%x\n", gd->flags);
+	printf("--board_type:%x\n", gd->board_type);
+	printf("--baudrate:%x\n", gd->baudrate);
+	printf("--have_console:%x\n", gd->have_console);
+	printf("--ram_size:%x\n", gd->ram_size);
+	printf("--reloc_off:%x\n", gd->reloc_off);
+	printf("--env_addr:%x\n", gd->env_addr);
+	printf("--env_valid:%x\n", gd->env_valid);
+	printf("--bd:%x %x\n", gd->bd, bd);
+	printf("---bi_baudrate:%x\n", bd->bi_baudrate);
+	printf("---bi_ip_addr:%x\n", bd->bi_ip_addr);
+	printf("---bi_enetaddr:%x %x %x %x %x %x\n", 
+				bd->bi_enetaddr[0],
+				bd->bi_enetaddr[1],
+				bd->bi_enetaddr[2],
+				bd->bi_enetaddr[3],
+				bd->bi_enetaddr[4],
+				bd->bi_enetaddr[5]);
+	printf("---bi_arch_number:%x\n", bd->bi_arch_number);
+	printf("---bi_boot_params:%x\n", bd->bi_boot_params);
+	printf("---bi_memstart:%x\n", bd->bi_memstart);
+	printf("---bi_memsize:%x\n", bd->bi_memsize);
+	printf("---bi_flashstart:%x\n", bd->bi_flashstart);
+	printf("---bi_flashsize:%x\n", bd->bi_flashsize);
+	printf("---bi_flashoffset:%x\n", bd->bi_flashoffset);
+	printf("--jt:%x *:%x\n", gd->jt, *(gd->jt));
+}
+#endif
 
 /*
  * All attempts to come up with a "common" initialization sequence
@@ -112,11 +134,21 @@ static int init_baudrate(void)
 void board_init_f(ulong bootflag)
 {
 	DECLARE_GLOBAL_DATA_PTR;
-	gd_t gd_data;
+	ulong addr;
+	bd_t *bd;
 	unsigned long cck;
 
-	gd = &gd_data;
+	gd = (gd_t *) (CFG_GBL_DATA_ADDR);
 	memset((void *) gd, 0, sizeof(gd_t));
+
+        /* Board data initialization */
+        addr = (CFG_GBL_DATA_ADDR + sizeof(gd_t));
+
+        /* Align to 4 byte boundary */
+        addr &= ~(4 - 1);
+        bd = (bd_t*)addr;
+        gd->bd = bd;
+        memset((void *) bd, 0, sizeof(bd_t));
 
 	/* Initialize */
 	init_IRQ();
@@ -141,47 +173,18 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	DECLARE_GLOBAL_DATA_PTR;
 	cmd_tbl_t *cmdtp;
 	ulong size;
-	ulong addr;
 	extern void malloc_bin_reloc(void);
-#ifndef CFG_ENV_IS_NOWHERE
-	extern char *env_name_spec;
-#endif
 	char *s, *e;
 	bd_t *bd;
 	int i;
 	gd = id;
 	gd->flags |= GD_FLG_RELOC;	/* tell others: relocation done */
+	bd = gd->bd;
 
-	monitor_flash_len = (ulong) &uboot_end_data - dest_addr;
-	/*
-	 * We have to relocate the command table manually
-	 */
-	for (cmdtp = &__u_boot_cmd_start; cmdtp != &__u_boot_cmd_end;
-	     cmdtp++) {
-		addr = (ulong) (cmdtp->cmd) + gd->reloc_off;
-		cmdtp->cmd =
-			(int (*)(struct cmd_tbl_s *, int, int, char *[])) addr;
-		addr = (ulong) (cmdtp->name) + gd->reloc_off;
-		cmdtp->name = (char *) addr;
-		if (cmdtp->usage) {
-			addr = (ulong) (cmdtp->usage) + gd->reloc_off;
-			cmdtp->usage = (char *) addr;
-		}
-#ifdef CFG_LONGHELP
-		if (cmdtp->help) {
-			addr = (ulong) (cmdtp->help) + gd->reloc_off;
-			cmdtp->help = (char *) addr;
-		}
-#endif
-	}
 	/* There are some other pointer constants we must deal with */
-#ifndef CFG_ENV_IS_NOWHERE
-	env_name_spec += gd->reloc_off;
-#endif
 	/* configure available FLASH banks */
 	size = flash_init();
 	display_flash_config(size);
-	bd = gd->bd;
 	bd->bi_flashstart = CFG_FLASH_BASE;
 	bd->bi_flashsize = size;
 	bd->bi_flashoffset = 0;
@@ -228,12 +231,16 @@ void board_init_r(gd_t * id, ulong dest_addr)
 #ifdef CONFIG_DRIVER_SMC91111
 	printf("Compiled with SMC91111 support\n");
 #endif
+
+#ifdef DEBUG
+	display_global_data(void);
+#endif
+
 	/* main_loop() can return to retry autoboot, if so just run it again. */
 	for (;;) {
 		main_loop();
 	}
 }
-
 
 void hang(void)
 {

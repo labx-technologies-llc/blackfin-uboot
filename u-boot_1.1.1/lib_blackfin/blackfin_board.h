@@ -25,5 +25,6 @@ static ulong mem_malloc_brk;
 extern unsigned long sclk;
 extern char _sram_in_sdram_start[];
 extern char _sram_inst_size[];
+static void display_global_data(void);
 
 #endif
