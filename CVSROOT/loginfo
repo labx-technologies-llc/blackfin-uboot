@@ -24,3 +24,4 @@
 #DEFAULT (echo ""; id; echo %s; date; cat) >> $CVSROOT/CVSROOT/commitlog
 # or
 #DEFAULT (echo ""; id; echo %{sVv}; date; cat) >> $CVSROOT/CVSROOT/commitlog
+DEFAULT /usr/local/lib/cvsspam/collect_diffs.rb --to uboot533-cvs-notify@lists.blackfin.uclinux.org %{sVv}
