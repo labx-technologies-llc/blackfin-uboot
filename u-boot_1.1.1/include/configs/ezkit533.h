@@ -15,11 +15,41 @@
 #define CONFIG_RTC_BF533	1
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
 
-#define CONFIG_CRYSTAL_FREQ	27
-#define PLL_DIV_FACTOR		5
-#define CONFIG_VCO		450
-#define CONFIG_CCLK		CONFIG_VCO
-#define CONFIG_SCLK		(CONFIG_VCO/PLL_DIV_FACTOR)
+/* CONFIG_CLKIN_HZ is any value in Hz                            */
+#define CONFIG_CLKIN_HZ          27000000
+/* CONFIG_CLKIN_HALF controls what is passed to PLL 0=CLKIN      */
+/*                                                  1=CLKIN/2    */
+#define CONFIG_CLKIN_HALF               0
+/* CONFIG_PLL_BYPASS controls if the PLL is used 0=don't bypass  */
+/*                                               1=bypass PLL    */
+#define CONFIG_PLL_BYPASS               0
+/* CONFIG_VCO_MULT controls what the multiplier of the PLL is.   */
+/* Values can range from 1-64                                    */
+#define CONFIG_VCO_MULT                22
+/* CONFIG_CCLK_DIV controls what the core clock divider is       */
+/* Values can be 1, 2, 4, or 8 ONLY                              */
+#define CONFIG_CCLK_DIV                 1
+/* CONFIG_SCLK_DIV controls what the peripheral clock divider is */
+/* Values can range from 1-15                                    */
+#define CONFIG_SCLK_DIV                 5
+
+#if ( CONFIG_CLKIN_HALF == 0 )
+  #define CONFIG_VCO_HZ           ( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT )
+#else
+  #define CONFIG_VCO_HZ           (( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT ) / 2 )
+#endif
+
+#if (CONFIG_PLL_BYPASS == 0)
+  #define CONFIG_CCLK_HZ          ( CONFIG_VCO_HZ / CONFIG_CCLK_DIV )
+  #define CONFIG_SCLK_HZ          ( CONFIG_VCO_HZ / CONFIG_SCLK_DIV )
+#else
+  #define CONFIG_CCLK_HZ          CONFIG_CLKIN_HZ
+  #define CONFIG_SCLK_HZ          CONFIG_CLKIN_HZ
+#endif
+
+#define CONFIG_MEM_SIZE                 32             /* 128, 64, 32, 16 */
+#define CONFIG_MEM_ADD_WDTH              9             /* 8, 9, 10, 11    */
+#define CONFIG_MEM_MT48LC16M16A2TG_75    1
 
 #define	CONFIG_EXTRA_ENV_SETTINGS					\
 	"netdev=eth0\0"							\
