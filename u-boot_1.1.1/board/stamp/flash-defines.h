@@ -48,7 +48,6 @@ int write_word(flash_info_t *info, ulong addr, ulong data);
 
 unsigned long GetOffset(int sec_num);
 int FLASH_Block_Erase(unsigned long, unsigned long);
-void init_Flags(void);
 int FlashDataToggle(unsigned long);
 
 int AFP_SectorSize1 = 0x10000;
@@ -56,15 +55,6 @@ int AFP_SectorSize1 = 0x10000;
 volatile unsigned long *ambctl0 = (volatile unsigned long *) 0xffc00a04;
 volatile unsigned long *ambctl1 = (volatile unsigned long *) 0xffc00a08;
 volatile unsigned long *amgctl = (volatile unsigned long *) 0xffc00a00;
-volatile unsigned long *pFIO_DIR = (volatile unsigned long *) 0xffc00730;
-volatile unsigned long *pFIO_FLAG_S = (volatile unsigned long *) 0xffc00708;
-volatile unsigned long *pFIO_FLAG_C = (volatile unsigned long *) 0xffc00704;
-volatile unsigned long *pFIO_MASKA_D = (volatile unsigned long *) 0xffc00710;
-volatile unsigned long *pFIO_MASKB_D = (volatile unsigned long *) 0xffc00720;
-volatile unsigned long *pFIO_POLAR = (volatile unsigned long *) 0xffc00734;
-volatile unsigned long *pFIO_EDGE = (volatile unsigned long *) 0xffc00738;
-volatile unsigned long *pFIO_INEN = (volatile unsigned long *) 0xffc00740;
-volatile unsigned long *pFIO_FLAG_D = (volatile unsigned long *) 0xffc00700;
 
 inline void LED6_On(void)
 {
@@ -74,19 +64,6 @@ inline void LED6_On(void)
 inline void LED6_Off(void)
 {
 	*(volatile unsigned short *) pFIO_FLAG_S = 0x0004;
-	asm("ssync;");
-}
-
-inline void init_Flags(void)
-{
-	*(volatile unsigned short *) pFIO_DIR = 0x1F;
-	*(volatile unsigned short *) pFIO_FLAG_S = 0x1C;
-	*(volatile unsigned short *) pFIO_MASKA_D = 0x160;
-	*(volatile unsigned short *) pFIO_MASKB_D = 0x80;
-	*(volatile unsigned short *) pFIO_POLAR = 0x160;
-	*(volatile unsigned short *) pFIO_EDGE = 0x1E0;
-	*(volatile unsigned short *) pFIO_INEN = 0x1e0;
-	*(volatile unsigned short *) pFIO_FLAG_D = 0x1C;
 	asm("ssync;");
 }
 
