@@ -1,7 +1,7 @@
 	  	Release Notes for u-boot_1.1.1-Beta_1 Release + Bug Fixes
                 ---------------------------------------------------------
 
-IMP NOTE:
+IMP NOTE :
 --------
         Current cvs version is not completely tested and may not be stable.
         Testing is in progress.
