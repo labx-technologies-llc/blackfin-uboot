@@ -207,10 +207,10 @@ skip_sdram_enable:
 	 * configure STACK
 	 */
       
-	sp.h = (STACKBASE >> 16);
-	sp.l = (STACKBASE & 0xFFFF);
-
-#if 0
+	sp.h = (CONFIG_STACKBASE >> 16);
+	sp.l = (CONFIG_STACKBASE & 0xFFFF);
+	fp.h = (CONFIG_STACKBASE >> 16);
+	fp.l = (CONFIG_STACKBASE & 0xFFFF);
 
 	/*
 	 * This next section keeps the processor in supervisor mode
@@ -242,7 +242,6 @@ WAIT_HERE:
 .global _real_start;
 _real_start:
 	[ -- sp ] = reti;
-#endif
 	
 #ifdef CONFIG_EZKIT533
 	p0.l = (WDOG_CTL & 0xFFFF);

@@ -33,6 +33,7 @@
 
 static ulong timestamp;
 static ulong last_time;
+static int int_flag;
 
 /* Functions just to satisfy the linker */
 
@@ -59,13 +60,13 @@ ulong get_tbclk (void)
 
 void enable_interrupts(void)
 {
-	cli();
+	restore_flags(int_flag);
 }
 
 int disable_interrupts(void)
 {
-	sti();
-	return 0;
+	save_and_cli(int_flag);
+	return 1;
 }
 
 int interrupt_init(void)

@@ -37,8 +37,9 @@ int get_clock(void);
 int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 {
         __asm__ __volatile__
-	("P0 = %0;"
-        "CALL (P0);"
+	("cli r3;"
+	"P0 = %0;"
+        "JUMP (P0);"
 	:
 	: "r" (L1_ISRAM)
 	);
