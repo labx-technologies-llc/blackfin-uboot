@@ -50,6 +50,8 @@
 #include <asm/uaccess.h>
 #include "bf533_serial.h"
 
+unsigned long pll_div_fact;
+
 void calc_baud(void)
 {
 	unsigned char i;
@@ -97,7 +99,7 @@ void serial_setbrg(void)
 
 	ACCESS_PORT_IER;
 	asm("ssync;");
-
+	
 	return;
 }
 
