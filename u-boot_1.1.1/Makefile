@@ -141,19 +141,13 @@ ALL = u-boot.srec u-boot.bin System.map
 all:		$(ALL)
 
 u-boot.srec:	u-boot
-ifeq ($(ARCH),blackfin)
-		chmod 777 scr
-		./scr
-else
 		$(OBJCOPY) ${OBJCFLAGS} -O srec $< $@
-endif
 
 u-boot.bin:	u-boot
+		$(OBJCOPY) ${OBJCFLAGS} -O binary $< $@
 ifeq ($(ARCH),blackfin)
 		chmod 777 scr
 		./scr
-else
-		$(OBJCOPY) ${OBJCFLAGS} -O binary $< $@
 endif
 
 u-boot.img:	u-boot.bin
