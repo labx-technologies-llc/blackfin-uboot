@@ -16,6 +16,13 @@
 
 #include <config.h>
 
+#define LO(con32) ((con32) & 0xFFFF)
+#define lo(con32) ((con32) & 0xFFFF)
+#define HI(con32) (((con32) >> 16) & 0xFFFF)
+#define hi(con32) (((con32) >> 16) & 0xFFFF)
+
+#define OFFSET_( x ) ((x) & 0x0000FFFF) /* define macro for offset */
+
 /* Event Vector Table Address */
 #define EVT_EMULATION_ADDR	0xffe02000
 #define EVT_RESET_ADDR		0xffe02004
@@ -528,6 +535,98 @@
 #define TCOUNT_ADDR		0xffe0300c /*  register 32 bit */
 #define TCOUNT			WORD_REF(TCOUNT_ADDR)
 
+#define MDMA_D1_CONFIG		0xFFC00E88	/* MemDMA Stream 1 Destination Configuration Register */
+#define MDMA_D1_NEXT_DESC_PTR	0xFFC00E80	/* MemDMA Stream 1 Destination Next Descriptor Pointer Register */
+#define MDMA_D1_START_ADDR	0xFFC00E84	/* MemDMA Stream 1 Destination Start Address Register */
+#define MDMA_D1_X_COUNT		0xFFC00E90	/* MemDMA Stream 1 Destination X Count Register */
+#define MDMA_D1_Y_COUNT		0xFFC00E98	/* MemDMA Stream 1 Destination Y Count Register */
+#define MDMA_D1_X_MODIFY	0xFFC00E94	/* MemDMA Stream 1 Destination X Modify Register */
+#define MDMA_D1_Y_MODIFY	0xFFC00E9C	/* MemDMA Stream 1 Destination Y Modify Register */
+#define MDMA_D1_CURR_DESC_PTR	0xFFC00EA0	/* MemDMA Stream 1 Destination Current Descriptor Pointer Register */
+#define MDMA_D1_CURR_ADDR	0xFFC00EA4	/* MemDMA Stream 1 Destination Current Address Register */
+#define MDMA_D1_CURR_X_COUNT	0xFFC00EB0	/* MemDMA Stream 1 Destination Current X Count Register */
+#define MDMA_D1_CURR_Y_COUNT	0xFFC00EB8	/* MemDMA Stream 1 Destination Current Y Count Register */
+#define MDMA_D1_IRQ_STATUS	0xFFC00EA8	/* MemDMA Stream 1 Destination Interrupt/Status Register */
+#define MDMA_D1_PERIPHERAL_MAP	0xFFC00EAC	/* MemDMA Stream 1 Destination Peripheral Map Register */
+
+#define MDMA_S1_CONFIG		0xFFC00EC8	/* MemDMA Stream 1 Source Configuration Register */
+#define MDMA_S1_NEXT_DESC_PTR	0xFFC00EC0	/* MemDMA Stream 1 Source Next Descriptor Pointer Register */
+#define MDMA_S1_START_ADDR	0xFFC00EC4	/* MemDMA Stream 1 Source Start Address Register */
+#define MDMA_S1_X_COUNT		0xFFC00ED0	/* MemDMA Stream 1 Source X Count Register */
+#define MDMA_S1_Y_COUNT		0xFFC00ED8	/* MemDMA Stream 1 Source Y Count Register */
+#define MDMA_S1_X_MODIFY	0xFFC00ED4	/* MemDMA Stream 1 Source X Modify Register */
+#define MDMA_S1_Y_MODIFY	0xFFC00EDC	/* MemDMA Stream 1 Source Y Modify Register */
+#define MDMA_S1_CURR_DESC_PTR	0xFFC00EE0	/* MemDMA Stream 1 Source Current Descriptor Pointer Register */
+#define MDMA_S1_CURR_ADDR	0xFFC00EE4	/* MemDMA Stream 1 Source Current Address Register */
+#define MDMA_S1_CURR_X_COUNT	0xFFC00EF0	/* MemDMA Stream 1 Source Current X Count Register */
+#define MDMA_S1_CURR_Y_COUNT	0xFFC00EF8	/* MemDMA Stream 1 Source Current Y Count Register */
+#define MDMA_S1_IRQ_STATUS	0xFFC00EE8	/* MemDMA Stream 1 Source Interrupt/Status Register */
+#define MDMA_S1_PERIPHERAL_MAP	0xFFC00EEC	/* MemDMA Stream 1 Source Peripheral Map Register */
+                                          
+#define MDMA_D0_CONFIG		0xFFC00E08	/* MemDMA Stream 0 Destination Configuration Register */
+#define MDMA_D0_NEXT_DESC_PTR	0xFFC00E00	/* MemDMA Stream 0 Destination Next Descriptor Pointer Register */
+#define MDMA_D0_START_ADDR	0xFFC00E04	/* MemDMA Stream 0 Destination Start Address Register */
+#define MDMA_D0_X_COUNT		0xFFC00E10	/* MemDMA Stream 0 Destination X Count Register */
+#define MDMA_D0_Y_COUNT		0xFFC00E18	/* MemDMA Stream 0 Destination Y Count Register */
+#define MDMA_D0_X_MODIFY	0xFFC00E14	/* MemDMA Stream 0 Destination X Modify Register */
+#define MDMA_D0_Y_MODIFY	0xFFC00E1C	/* MemDMA Stream 0 Destination Y Modify Register */
+#define MDMA_D0_CURR_DESC_PTR	0xFFC00E20	/* MemDMA Stream 0 Destination Current Descriptor Pointer Register */
+#define MDMA_D0_CURR_ADDR	0xFFC00E24	/* MemDMA Stream 0 Destination Current Address Register */
+#define MDMA_D0_CURR_X_COUNT	0xFFC00E30	/* MemDMA Stream 0 Destination Current X Count Register */
+#define MDMA_D0_CURR_Y_COUNT	0xFFC00E38	/* MemDMA Stream 0 Destination Current Y Count Register */
+#define MDMA_D0_IRQ_STATUS	0xFFC00E28	/* MemDMA Stream 0 Destination Interrupt/Status Register */
+#define MDMA_D0_PERIPHERAL_MAP	0xFFC00E2C	/* MemDMA Stream 0 Destination Peripheral Map Register */
+                                          
+#define MDMA_S0_CONFIG		0xFFC00E48	/* MemDMA Stream 0 Source Configuration Register */
+#define MDMA_S0_NEXT_DESC_PTR	0xFFC00E40	/* MemDMA Stream 0 Source Next Descriptor Pointer Register */
+#define MDMA_S0_START_ADDR	0xFFC00E44	/* MemDMA Stream 0 Source Start Address Register */
+#define MDMA_S0_X_COUNT		0xFFC00E50	/* MemDMA Stream 0 Source X Count Register */
+#define MDMA_S0_Y_COUNT		0xFFC00E58	/* MemDMA Stream 0 Source Y Count Register */
+#define MDMA_S0_X_MODIFY	0xFFC00E54	/* MemDMA Stream 0 Source X Modify Register */
+#define MDMA_S0_Y_MODIFY	0xFFC00E5C	/* MemDMA Stream 0 Source Y Modify Register */
+#define MDMA_S0_CURR_DESC_PTR	0xFFC00E60	/* MemDMA Stream 0 Source Current Descriptor Pointer Register */
+#define MDMA_S0_CURR_ADDR	0xFFC00E64	/* MemDMA Stream 0 Source Current Address Register */
+#define MDMA_S0_CURR_X_COUNT	0xFFC00E70	/* MemDMA Stream 0 Source Current X Count Register */
+#define MDMA_S0_CURR_Y_COUNT	0xFFC00E78	/* MemDMA Stream 0 Source Current Y Count Register */
+#define MDMA_S0_IRQ_STATUS	0xFFC00E68	/* MemDMA Stream 0 Source Interrupt/Status Register */
+#define MDMA_S0_PERIPHERAL_MAP	0xFFC00E6C	/* MemDMA Stream 0 Source Peripheral Map Register */
+
+/* **********  DMA CONTROLLER MASKS  ********************* */
+
+/* DMAx_CONFIG, MDMA_yy_CONFIG Masks */
+#define DMAEN           0x00000001  /* Channel Enable */
+#define WNR             0x00000002  /* Channel Direction (W/R*) */
+#define WDSIZE_8        0x00000000  /* Word Size 8 bits */
+#define WDSIZE_16       0x00000004  /* Word Size 16 bits */
+#define WDSIZE_32       0x00000008  // Word Size 32 bits
+#define DMA2D           0x00000010  /* 2D/1D* Mode */
+#define RESTART         0x00000020  /* Restart */
+#define DI_SEL          0x00000040  /* Data Interrupt Select */
+#define DI_EN           0x00000080  /* Data Interrupt Enable */
+#define NDSIZE          0x00000900  /* Next Descriptor Size */
+#define FLOW            0x00007000  /* Flow Control */
+
+
+#define DMAEN_P                 0  /* Channel Enable */
+#define WNR_P                   1  /* Channel Direction (W/R*) */
+#define DMA2D_P                 4  /* 2D/1D* Mode */
+#define RESTART_P               5  /* Restart */
+#define DI_SEL_P                6  /* Data Interrupt Select */
+#define DI_EN_P                 7  /* Data Interrupt Enable */
+
+/* DMAx_IRQ_STATUS, MDMA_yy_IRQ_STATUS Masks */
+
+#define DMA_DONE                0x00000001  /* DMA Done Indicator */
+#define DMA_ERR                 0x00000002  /* DMA Error Indicator */
+#define DFETCH                  0x00000004  /* Descriptor Fetch Indicator */
+#define DMA_RUN                 0x00000008  /* DMA Running Indicator */
+
+#define DMA_DONE_P              0  /* DMA Done Indicator */
+#define DMA_ERR_P               1 /* DMA Error Indicator */
+#define DFETCH_P                2  /* Descriptor Fetch Indicator */
+#define DMA_RUN_P               3  /* DMA Running Indicator */
+
+
 /* L1 Memory */
 #define DATASRAM_A		0xFF800000
 #define DATASRAM_CACHE_A	0xFF804000
@@ -615,5 +714,9 @@
 
 /* Misc Values */
 #define TEMP_STACK		0xFF902000
+
+#define L1_ISRAM		0xFFA00000
+#define SYSMMR_BASE		0xFFC00000
+#define WDSIZE16		0x00000004
 
 #endif
