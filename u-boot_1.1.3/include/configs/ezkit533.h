@@ -7,7 +7,7 @@
 #define CONFIG_BOOTDELAY	5
 
 #define CONFIG_DRIVER_SMC91111	1
-#define CONFIG_SMC91111_BASE	0x20300300
+#define CONFIG_SMC91111_BASE	0x20310300
 #if 0
 #define	CONFIG_MII
 #define CFG_DISCOVER_PHY
@@ -72,9 +72,9 @@
 #define	CFG_PBSIZE		(CFG_CBSIZE+sizeof(CFG_PROMPT)+16)	/* Print Buffer Size */
 #define	CFG_MAXARGS		16	/* max number of command args */
 #define CFG_BARGSIZE		CFG_CBSIZE	/* Boot Argument Buffer Size */
-#define CFG_MEMTEST_START	0x01000000	/* memtest works on */
-#define CFG_MEMTEST_END		0x12000000	/* 4 ... 12 MB in DRAM */
-#define	CFG_LOAD_ADDR		0x1000000	/* default load address */
+#define CFG_MEMTEST_START	0x00100000	/* memtest works on */
+#define CFG_MEMTEST_END		0x01F00000	/* 1 ... 31 MB in DRAM */
+#define	CFG_LOAD_ADDR		0x01000000	/* default load address */
 #define	CFG_HZ			1000	/* decrementer freq: 10 ms ticks */
 #define CFG_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 #define	CFG_SDRAM_BASE		0x00000000
@@ -97,7 +97,7 @@
 #define CFG_MAX_FLASH_SECT	40	/* max number of sectors on one chip */
 
 #define	CFG_ENV_IS_IN_FLASH	1
-#define CFG_ENV_ADDR		0x20040000
+#define CFG_ENV_ADDR		0x20020000
 #define	CFG_ENV_SECT_SIZE	0x10000	/* Total Size of Environment Sector */
 
 /*
