@@ -14,7 +14,7 @@
 #define CFG_LONGHELP		1
 #define CONFIG_BAUDRATE		57600
 #define CONFIG_EZKIT533		1
-#define U_BOOT_BF533_RELEASE	"Release Version 2.0.2"
+#define U_BOOT_BF533_RELEASE	"Release Version alpha1"
 #define CFG_ENV_IS_NOWHERE	1
 #define CONFIG_BOOTDELAY	30
 #define CONFIG_BOARD_TYPES	1

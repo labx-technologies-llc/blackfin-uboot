@@ -225,7 +225,10 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	/* miscellaneous platform dependent initialisations */
 	misc_init_r();
 #endif
-	asyncbank_init();
+
+#ifdef CONFIG_DRIVER_SMC91111
+	printf("EZ-LAN Network card probed\n");
+#endif
 	/* main_loop() can return to retry autoboot, if so just run it again. */
 	for (;;) {
 		main_loop();
