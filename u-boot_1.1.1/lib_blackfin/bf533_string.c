@@ -133,14 +133,14 @@ void * memcpy(void * dest,const void *src,size_t count)
 
 		/* Copy sram functions from sdram to sram */
 		/* Setup destination start address */
-		*pMDMA_D0_START_ADDR = dest;
+		*pMDMA_D0_START_ADDR = (volatile void **)dest;
 		/* Setup destination xcount */
 		*pMDMA_D0_X_COUNT = count ;
 		/* Setup destination xmodify */
 		*pMDMA_D0_X_MODIFY = 1;
 
 		/* Setup Source start address */
-		*pMDMA_S0_START_ADDR = src;
+		*pMDMA_S0_START_ADDR = (volatile void **)src;
 		/* Setup Source xcount */
 		*pMDMA_S0_X_COUNT = count;
 		/* Setup Source xmodify */
@@ -161,6 +161,40 @@ void * memcpy(void * dest,const void *src,size_t count)
 
 		/* Clear interrupt */
 		*pMDMA_D0_IRQ_STATUS = 0x1;
+		
+		*pMDMA_D0_IRQ_STATUS = DMA_DONE | DMA_ERR;
+
+		/* Perform a data DMA */
+		*pMDMA_D0_START_ADDR = (volatile void **)DATA_BANKA_SRAM;
+		/* Setup destination xcount */
+		*pMDMA_D0_X_COUNT = count ;
+		/* Setup destination xmodify */
+		*pMDMA_D0_X_MODIFY = 1;
+
+		/* Setup Source start address */
+		*pMDMA_S0_START_ADDR = (volatile void **)src;
+		/* Setup Source xcount */
+		*pMDMA_S0_X_COUNT = count;
+		/* Setup Source xmodify */
+		*pMDMA_S0_X_MODIFY = 1;
+
+		/* Enable source DMA */
+		*pMDMA_S0_CONFIG = (DMAEN);
+		asm("ssync;");
+
+		/* set to read, enable interrupt for wakeup */
+		/* Enable Destination DMA */
+		*pMDMA_D0_CONFIG = (DI_EN | WNR | DMAEN);
+
+		while(!((status = (*pMDMA_D0_IRQ_STATUS)) & (DMA_DONE | DMA_ERR)));
+
+		if(status & (DMA_ERR))
+			fprintf(stderr, "DMA Error \n");
+
+		/* Clear interrupt */
+		*pMDMA_D0_IRQ_STATUS = 0x1;
+
+	
 	} else {
 		while (count--)
 			*tmp++ = *s++;
