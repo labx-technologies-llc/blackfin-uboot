@@ -1093,10 +1093,6 @@ static word smc_read_phy_register (byte phyreg)
 	smc_dump_mii_stream (bits, sizeof bits);
 #endif
 
-#ifdef CONFIG_blackfin
-	udelay(1000000);
-#endif
-
 	return (phydata);
 }
 
