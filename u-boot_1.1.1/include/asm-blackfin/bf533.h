@@ -645,10 +645,7 @@
 #define EZKIT_RDIV		0x817
 #define STAMP_RDIV		0x305
 
-/* Stack Pointer setup */
-#define STACKBASE		0x1900000	
-
-/* Watch Dog timer values setup */
+/* Watch Dog timer values setup */ 
 #define WATCHDOG_DISABLE	WDOG_TMR_DISABLE | ICTL_DISABLE
 
 /* SDRAM Settings for Ezkit and Stamp */
@@ -711,9 +708,6 @@
 
 /* System Interrupt Controller Values */
 #define SIC_MASK_ALL		0x00000000
-
-/* Misc Values */
-#define TEMP_STACK		0xFF902000
 
 #define L1_ISRAM		0xFFA00000
 #define L1_ISRAM_END		0xFFA10000
