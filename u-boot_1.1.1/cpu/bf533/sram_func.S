@@ -30,20 +30,30 @@
 
 reset_board:
 _reset_board:
-        /*Issue soft reset*/
-	p0.h = SWRST >> 16;
-	p0.l = SWRST & 0xFFFF;
-	r0 = 0x0007;
-	w[p0] = r0;
-        ssync;
-
+        /* As SWRST still has 0x0007 reset to 0 */
         p0.h = SWRST >> 16;
         p0.l = SWRST & 0xFFFF;
         r0 = 0x0000;
         w[p0] = r0;
         ssync;
 
-        /*Clear soft reset*/
+        /* Issue soft reset */
+	p0.h = SWRST >> 16;
+	p0.l = SWRST & 0xFFFF;
+	r0 = 0x0007;
+	w[p0] = r0;
+        ssync;
+	
+
+	/* Clear soft reset */
+        p0.h = SWRST >> 16;
+        p0.l = SWRST & 0xFFFF;
+        r0 = 0x0000;
+        w[p0] = r0;
+        w[p0] = r0;
+        ssync;
+
+        /* Core reset */
         raise 1;
         rts;
 
