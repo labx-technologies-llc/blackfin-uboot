@@ -217,6 +217,7 @@ bool WriteData( long lStart, long lCount, long lStride, int *pnData )	{
 		iShift = 0;
 		iShift = 0;
 		iShift = 0;
+		iShift = 0;
 		}
 	}
 	ResetFlash();
