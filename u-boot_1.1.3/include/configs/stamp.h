@@ -80,6 +80,7 @@
 #define CONFIG_COMMANDS			(CONFIG_CMD_DFL	| \
 					 CFG_CMD_PING	| \
 					 CFG_CMD_ELF	| \
+					 CFG_CMD_I2C	| \
 					 CFG_CMD_DATE)
 
 /* This must be included AFTER the definition of CONFIG_COMMANDS (if any) */
@@ -123,6 +124,10 @@
  *
  */
 
+#define CFG_FLASH_CFI				/* The flash is CFI compatible  */
+#define CFG_FLASH_CFI_DRIVER			/* Use common CFI driver        */
+#define	CFG_FLASH_CFI_AMD_RESET
+
 #define CFG_ENV_IS_IN_FLASH		1
 
 #define CFG_FLASH_BASE			0x20000000
@@ -145,6 +150,42 @@
  */
 #define CFG_FLASH_LOCK_TOUT		5	/* Timeout for Flash Set Lock Bit (in ms) */
 #define CFG_FLASH_UNLOCK_TOUT		10000	/* Timeout for Flash Clear Lock Bits (in ms) */
+
+/*
+ * I2C settings
+ * By default PF2 is used as SDA and PF3 as SCL on the Stamp board
+ */
+#define CONFIG_SOFT_I2C			1	/* I2C bit-banged		*/
+/*
+ * Software (bit-bang) I2C driver configuration
+ */
+#define PF_SCL				PF3
+#define PF_SDA				PF2
+
+#define I2C_INIT			(*pFIO_DIR |=  PF_SCL); asm("ssync;")
+#define I2C_ACTIVE			(*pFIO_DIR |=  PF_SDA); *pFIO_INEN &= ~PF_SDA; asm("ssync;")
+#define I2C_TRISTATE			(*pFIO_DIR &= ~PF_SDA); *pFIO_INEN |= PF_SDA; asm("ssync;")
+#define I2C_READ			((volatile)(*pFIO_FLAG_D & PF_SDA) != 0); asm("ssync;")
+#define I2C_SDA(bit)			if(bit) { \
+							*pFIO_FLAG_S = PF_SDA; \
+							asm("ssync;"); \
+						} \
+					else    { \
+							*pFIO_FLAG_C = PF_SDA; \
+							asm("ssync;"); \
+						}
+#define I2C_SCL(bit)			if(bit) { \
+							*pFIO_FLAG_S = PF_SCL; \
+							asm("ssync;"); \
+						} \
+					else    { \
+							*pFIO_FLAG_C = PF_SCL; \
+							asm("ssync;"); \
+						}
+#define I2C_DELAY			udelay(5)	/* 1/4 I2C clock duration */
+
+#define CFG_I2C_SPEED			50000
+#define CFG_I2C_SLAVE			0xFE
 
 /*
  * Compact Flash settings
