@@ -67,14 +67,6 @@ void serial_setbrg(void)
 	int i;
 	DECLARE_GLOBAL_DATA_PTR;
 
-	UART_GCTL |= UART_GCTL_UCEN;
-	asm("ssync;");
-	ACCESS_PORT_IER;
-	asm("ssync;");
-	UART_IER &= ~UART_IER_ETBEI;
-	asm("ssync;");
-	ACCESS_LATCH;
-	asm("ssync;");
 #ifdef CONFIG_STAMP
 	sclk = get_clock()/pll_div_fact;
 #else
@@ -87,19 +79,32 @@ void serial_setbrg(void)
 			break;
 	}
 
+        /* Enable UART */
+        UART_GCTL |= UART_GCTL_UCEN;
+        asm("ssync;");
+
+        /* Set DLAB in LCR to Access DLL and DLH */
+        ACCESS_LATCH;
+        asm("ssync;");
+
 	UART_DLL = hw_baud_table[i].dl_low;
 	asm("ssync;");
 	UART_DLH = hw_baud_table[i].dl_high;
 	asm("ssync;");
 
-	UART_LCR |= UART_LCR_WLS8;
-	asm("ssync;");
-	UART_LCR &= ~UART_LCR_PEN;
-	asm("ssync;");
-
+	/* Clear DLAB in LCR to Access THR RBR IER */
 	ACCESS_PORT_IER;
 	asm("ssync;");
-	
+
+        /* Enable  ERBFI and ELSI interrupts
+         * to poll SIC_ISR register*/
+        UART_IER = UART_IER_ELSI | UART_IER_ERBFI | UART_IER_ETBEI;
+        asm("ssync;");
+
+	/* Set LCR to Word Lengh 8-bit word select */
+	UART_LCR = UART_LCR_WLS8;
+	asm("ssync;");
+
 	return;
 }
 
@@ -139,8 +144,26 @@ int serial_tstc(void)
 
 int serial_getc(void)
 {
-	while (!(UART_LSR & UART_LSR_DR));
-	return (UART_RBR & 0xff);
+	unsigned short uart_lsr_val, uart_rbr_val;
+	unsigned long isr_val;
+	int ret;
+
+	/* Poll for RX Interrupt */
+	while (!((isr_val = *(volatile unsigned long *)SIC_ISR) & IRQ_UART_RX_BIT)); 
+	asm("csync;");
+
+	uart_lsr_val = UART_LSR;	/* Clear status bit */
+	uart_rbr_val = UART_RBR;	/* getc() */
+
+	if (isr_val & IRQ_UART_ERROR_BIT) {
+		ret =  -1; 
+	}
+	else
+	{
+		ret = uart_rbr_val & 0xff;
+	}
+
+	return ret;
 }
 
 void serial_puts(const char *s)
@@ -153,13 +176,22 @@ void serial_puts(const char *s)
 static void local_put_char(char ch)
 {
 	int flags = 0;
-	save_flags(flags);
-	cli();
-	while (!(UART_LSR & UART_LSR_THRE)) {
-		SYNC_ALL;
-	}
-	ACCESS_PORT_IER
-	UART_THR = ch;
-	SYNC_ALL;
+	unsigned short uart_lsr_val;
+        unsigned long isr_val;
+
+	save_and_cli(flags);
+
+        /* Poll for TX Interruput */
+        while (!((isr_val = *(volatile unsigned long *)SIC_ISR) & IRQ_UART_TX_BIT));
+        asm("csync;");
+
+	UART_THR = ch;			/* putc() */
+
+        if (isr_val & IRQ_UART_ERROR_BIT) {
+                printf("?");
+        }
+
 	restore_flags(flags);
+
+        return ;
 }
