@@ -25,8 +25,9 @@ OUTPUT_FORMAT("elf32-bfin")
 ENTRY(start)
 MEMORY 
 	{
-	ram		: ORIGIN = 0x1800000,  	LENGTH = 0x1000000
+	ram		: ORIGIN = 0x1800020,  	LENGTH = 0x1000000
 	flash		: ORIGIN = 0x20000000, 	LENGTH = 0x80000
+	sram		: ORIGIN = 0xFFA00000, 	LENGTH = 0xC000
 	}
 
 SECTIONS
@@ -36,7 +37,11 @@ SECTIONS
 		flashdataend = ABSOLUTE(.);
 	} > flash
 
-	.text1 : {
+        .text1 : {
+                cpu/bf533/sram_func.o (.text)
+        } > sram
+
+	.text2 : {
 		cpu/bf533/start1.o (.text)
 		*(.text)
 		*(.fixup)
@@ -72,12 +77,14 @@ SECTIONS
 	} > ram
 
 	. = 0x1800000;	/* Ram data segment to use */
+	_sram_in_sdram_start = ABSOLUTE(.);
 	_bf533_data_dest = ABSOLUTE(.);
 	_bf533_data_start = LOADADDR(.data);
 
 	. = ALIGN(4);
 	.got : AT ( LOADADDR(.data) + SIZEOF(.data) ) { *(.got) }
-	_bf533_data_size = SIZEOF(.text1) + SIZEOF(.data) + SIZEOF(.got);
+	_bf533_data_size = SIZEOF(.text1) + SIZEOF (.text2) + SIZEOF(.data) + SIZEOF(.got);
+	_sram_inst_size = SIZEOF(.text1);
 
 	.bss :	{
 		. = ALIGN(16) ;
