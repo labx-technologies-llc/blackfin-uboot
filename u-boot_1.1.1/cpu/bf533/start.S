@@ -54,65 +54,38 @@
 .global flashdataend;
 
 .text
-_initialize:
-	/* Force SWRST to 0 Again */
+_start:
+start:
+_stext:
+        /* Check soft reset status */
         p0.h = SWRST >> 16;
         p0.l = SWRST & 0xFFFF;
+        r0.l = w[p0];
+
+        cc = bittst(r0, 15);
+        if !cc jump no_soft_reset;
+
+        /* Clear Soft reset */
         r0 = 0x0000;
         w[p0] = r0;
         ssync;
 
+no_soft_reset:
 	nop;
 	r0 = 0x30;
 	syscfg = r0;
+
+	/* Clear EVT registers */
 	r7 = 0;
-	lc0 = r7;
-	lc1 = r7;
-	l0 = r7;
-	l1 = r7;
-	l2 = r7;
-	l3 = r7;
 	p0.h = (EVT_EMULATION_ADDR >> 16);
 	p0.l = (EVT_EMULATION_ADDR & 0xFFFF);
 	p0 += 8;
-	p1 = 13;
+	p1 = 14;
 	r1 = 0;
 	LSETUP(4,4) lc0 = p1;
 	[ p0 ++ ] = r1;
-	sp.l = (TEMP_STACK & 0xFFFF);
-	sp.h = (TEMP_STACK >> 16);
-	usp = sp;
-	fp = sp;
-	call delay;
-	sp += -12;
-	r0 = 0x32;
-	syscfg = r0;
-	ssync;
-	p0.L = 0x4;
-	p0.H = 0xffe0;
-	r0 = [ p0 ];
-	BITCLR ( r0 , 0xc );
-	BITSET ( r0 , 0xd );
-	[ p0 ] = r0;
-	CSYNC;
 
-#ifdef CONFIG_STAMP
-	r0 = 0x16 ( Z );
-	r1 = 0x0 ( Z );
-	r2 = 0x300 ( Z );
-	CALL _pll_set_system_vco;
-	r0 = 0x0 ( Z );
-	r1 = 0x5 ( Z );
-	CALL _pll_set_system_clocks;
-#endif
-
-initend:
-	call delay;
-	call delay;
-	sti r4;
-_start:
-start:
-_stext:
+	/* Configure PLL */
 	r0 = CONFIG_VCO;
 	r1 = CONFIG_CRYSTAL_FREQ;
 	r2 = 0;
@@ -143,6 +116,7 @@ dp_skip:
         sti r2;
         ssync;
 
+	/* Configure SCLK */
         r0 = PLL_DIV_FACTOR; 
 	p0.h = (PLL_DIV >> 16);
 	p0.l = (PLL_DIV & 0xFFFF);
@@ -153,8 +127,28 @@ dp_skip:
 	p1.h = 0x0;
 	lsetup ( del_start,del_end ) lc0 = p1;
 del_start:
-	nop;
-del_end:
+del_end: nop;
+
+	/* Configure SDRAM if SDRAM is already
+	   not enabled */
+	p0.l = (EBIU_SDSTAT & 0xFFFF);
+	p0.h = (EBIU_SDSTAT >> 16);
+	r0.l = w[p0];
+	cc = bittst(r0, 3);
+	if !cc jump skip_sdram_enable;
+
+        p0.l = (EBIU_SDRRC & 0xFFFF);
+        p0.h = (EBIU_SDRRC >> 16);      /* SDRAM Refresh Rate Control Register */
+        r0 = SDRRCVAL(Z);
+        w[p0] = r0.l;
+        ssync;
+
+        p0.l = (EBIU_SDBCTL & 0xFFFF);
+        p0.h = (EBIU_SDBCTL >> 16);     /* SDRAM Memory Bank Control Register */
+        r0 = SDBCTL(Z);
+        w[p0] = r0.l;
+        ssync;
+
 
 	/* SDRAM initialization */
 	p0.l = (EBIU_SDGCTL & 0xFFFF);
@@ -164,31 +158,23 @@ del_end:
 	[p0] = r0;
 	ssync;
 	
-	p0.l = (EBIU_SDBCTL & 0xFFFF);
-	p0.h = (EBIU_SDBCTL >> 16);	/* SDRAM Memory Bank Control Register */
-	r0 = SDBCTL(Z);
-	[p0] = r0;
-	ssync;	
+skip_sdram_enable:
+	nop;
 
-	p0.l = (EBIU_SDRRC & 0xFFFF);
-	p0.h = (EBIU_SDRRC >> 16);	/* SDRAM Refresh Rate Control Register */
-	r0 = SDRRCVAL(Z);
-	w[p0] = r0;
-	ssync;
-	                                                                               
 	/*
-	 * It seems that the value of SP reg is unpredicable after reset.
-	 * We'd better set SP before using "reti" and "[--sp] = reti" 
+	 * configure STACK
 	 */
       
 	sp.h = (STACKBASE >> 16);
 	sp.l = (STACKBASE & 0xFFFF);
 
+#if 0
+
 	/*
 	 * This next section keeps the processor in supervisor mode
 	 * during kernel boot.  Switches to user mode at end of boot.
 	 * See page 3-9 of Hardware Reference manual for documentation.
-	*/
+	 */
 
 	/* To keep ourselves in the supervisor mode */
 	p0.l = (EVT_IVG15_ADDR & 0xFFFF);
@@ -214,6 +200,7 @@ WAIT_HERE:
 .global _real_start;
 _real_start:
 	[ -- sp ] = reti;
+#endif
 	
 #ifdef CONFIG_EZKIT533
 	p0.l = (WDOG_CTL & 0xFFFF);
@@ -243,39 +230,62 @@ _real_start:
 	w[p2] = r0;
 	ssync;
 
-	/* Code update for BSS size == 0
-	 * Zero out the bss region.
-	 */
-	p1.l = _sbss;
-	p1.h = _sbss;
-	p2.l = _ebss;
-	p2.h = _ebss;
-	lsetup (_clear_bss, _clear_bss_end ) lc1 = p2 - p1;
-	CC = p2<=p1;
-	if CC jump _clear_bss_skip;
-	r0 = 0;
+	/* DMA reset code to Hi of L1 SRAM */
+copy:
+	P1.H = hi(SYSMMR_BASE);		/* P1 Points to the beginning of SYSTEM MMR Space */
+	P1.L = lo(SYSMMR_BASE);
+
+	R0.H = reset_start;		/* Source Address (high) */
+	R0.L = reset_start;		/* Source Address (low) */
+	R1.H = reset_end;
+	R1.L = reset_end;
+	R2 = R1 - R0;			/* Count */
+	R1.H = hi(L1_ISRAM);		/* Destination Address (high) */
+	R1.L = lo(L1_ISRAM);		/* Destination Address (low) */
+	R3.L = DMAEN;			/* Source DMAConfig Value (8-bit words) */
+	R4.L = (DI_EN | WNR | DMAEN);	/* Destination DMAConfig Value (8-bit words) */
+
+DMA:
+	R6 = 0x1 (Z);
+	W[P1+OFFSET_(MDMA_S0_X_MODIFY)] = R6;	/* Source Modify = 1 */
+	W[P1+OFFSET_(MDMA_D0_X_MODIFY)] = R6;	/* Destination Modify = 1 */
+
+	[P1+OFFSET_(MDMA_S0_START_ADDR)] = R0;	/* Set Source Base Address */
+	W[P1+OFFSET_(MDMA_S0_X_COUNT)] = R2;	/* Set Source Count */
+	/* Set Source      DMAConfig = DMA Enable, 
+	Memory Read,  8-Bit Transfers, 1-D DMA, Flow - Stop */
+	W[P1+OFFSET_(MDMA_S0_CONFIG)] = R3;	
+
+	[P1+OFFSET_(MDMA_D0_START_ADDR)] = R1;	/* Set Destination Base Address */
+	W[P1+OFFSET_(MDMA_D0_X_COUNT)] = R2;	/* Set Destination Count */
+	/* Set Destination DMAConfig = DMA Enable, 
+	Memory Write, 8-Bit Transfers, 1-D DMA, Flow - Stop, IOC */
+	W[P1+OFFSET_(MDMA_D0_CONFIG)] = R4;	
+
+	IDLE;					//Wait for DMA to Complete
+
+	R0 = 0x1;
+	W[P1+OFFSET_(MDMA_D0_IRQ_STATUS)] = R0;	//Write 1 to clear DMA interrupt
+
+copy_end: nop;
+
+        /* Initialize BSS Section with 0 s */
+        p1.l = _sbss;
+        p1.h = _sbss;
+        p2.l = _ebss;
+        p2.h = _ebss;
+	r1 = p1;
+	r2 = p2;
+	r3 = r2 - r1;
+	p3 = r3;
+        lsetup (_clear_bss, _clear_bss_end ) lc1 = p3;
+        CC = p2<=p1;
+        if CC jump _clear_bss_skip;
+        r0 = 0;
 _clear_bss:
 _clear_bss_end:
-	[p1++] = r0;
-_clear_bss_skip:	/* to skip bss clear */
-
-	p1.l = _rambase;
-	p1.h = _rambase;
-	r0.l = _sdata ;
-	r0.h = _sdata ;
-	[p1] = r0;
-
-	p1.l = _ramstart;
-	p1.h = _ramstart;
-	r0.l = _end;
-	r0.h = _end;
-	[p1] = r0;
-
-	r0.l = (CFG_MAX_RAM_SIZE & 0xFFFF);
-	r0.h = (CFG_MAX_RAM_SIZE >> 16);	
-	p1.l = _ramend;
-	p1.h = _ramend;
-	[p1] = r0;
+        [p1++] = r0;
+_clear_bss_skip:
 
 	/* copy data section to RAM */
 	p1.l = flashdataend;
@@ -301,35 +311,17 @@ loop:
 	p0 = r6;
 	jump (p0);
 
-_pll_set_system_clocks:
-	p0.h = (PLL_DIV >> 16);
-	p0.l = (PLL_DIV & 0xFFFF);
-	r2 = 0x5;
-	w[p0] = r2;
-	ssync;
-	rts;
+reset_start:
+        /* Soft Reset */
+        p0.h = SWRST >> 16;
+        p0.l = SWRST & 0xFFFF;
+        r0 = 0x0007;
+        w[p0] = r0;
+        ssync;
 
-_pll_set_system_vco:
-	p0.h = (PLL_CTL >> 16);
-	p0.l = (PLL_CTL & 0xFFFF);
-	r3 = 0x2C00;
-	p2.h = (PLL_LOCKCNT >> 16);
-	p2.l = (PLL_LOCKCNT & 0xFFFF);
-	r2 = 0x300;
-	w [ p2 ] = r2 ;
-	p2.h = (SIC_IWR >> 16);
-	p2.l = (SIC_IWR & 0xFFFF);
-	r2 = [ p2 ];
-	BITSET(r2,0x0);
-	[ p2 ] = r2;
-	w [ p0 ] = r3;
-	ssync;
-	cli r2;
-	idle;
-	sti r2;
-	rts;
-	nop;
-	nop;
+        /* Core reset - forces reboot */
+        RAISE 1 ;
+reset_end: nop;
 
 delay:
 	rts;
