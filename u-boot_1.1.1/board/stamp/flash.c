@@ -299,60 +299,55 @@ int GetCodes()
 
 int FLASH_Block_Erase(unsigned long s_first,unsigned long s_last)
 {
-	int i,rc,timeout_flag = 0;
-	unsigned long Off,flag;
+	int rc;
+	unsigned long Off;
   	unsigned long start,now,timeout;
 
 	printf("Erasing Blocks %i to %i\n", s_first, s_last);
 
-	flag = disable_interrupts();
-	FLASH_Base[WRITE_CMD1] = ERASE_DATA1;
-	FLASH_Base[WRITE_CMD2] = ERASE_DATA2;
-	FLASH_Base[WRITE_CMD3] = ERASE_DATA3;
-	FLASH_Base[WRITE_CMD1] = ERASE_DATA4;
-	FLASH_Base[WRITE_CMD2] = ERASE_DATA5;
-
-	/* Timer critical section every block must be added in 50 ms*/
-	for (i = s_first; i <= s_last; i++) {
-		Off = (GetOffset(i) - CFG_FLASH0_BASE);
-		*(volatile unsigned short *) (CFG_FLASH0_BASE + Off) = 0x30;
-		asm("ssync;");
-
-		/* May I give it another command? */
-                if((FLASH_Base[0] & 0x0008) == 0x0008) {
-			timeout_flag = 1;
-                        break; /* Cannot add more blocks due to timeout */
-		} 
-	}
-
-	if(flag)
-		enable_interrupts();
+        /* Timer critical section every block must be added in 50 us*/
+        /* Since we can not ensure that the 50us is met each time   */
+        /* due to not knowing the SCLK, or the wait states, We need */
+        /* to add one Block at a time                               */
+	/* Tried adding more than one block at a time, but it does  */
+ 	/* not work in all cases, on all boards			    */
 
 	start = get_timer(0);
-	timeout = CFG_FLASH_ERASEBLOCK_TOUT * (s_last - s_first + 1);
-	/* Wait for the Erase Timer Bit (DQ3) to be set */
-	while(1) {
-		now = get_timer(start);
-		if((FLASH_Base[0] & 0x0008) == 0x0008) 
-			break; /* Break when device starts the erase cycle */
-		if (now > timeout) {
-			printf("Time out - Erase cycle is not started\n");
-			return ERR_TIMOUT;
+	timeout = CFG_FLASH_ERASEBLOCK_TOUT * 2;
+
+	for (; s_first <= s_last; s_first++) {
+		putc ('.');
+		/* Determine offset */
+		Off = GetOffset(s_first);
+	
+		FLASH_Base[WRITE_CMD1] = ERASE_DATA1;
+		FLASH_Base[WRITE_CMD2] = ERASE_DATA2;
+		FLASH_Base[WRITE_CMD3] = ERASE_DATA3;
+		FLASH_Base[WRITE_CMD1] = ERASE_DATA4;
+		FLASH_Base[WRITE_CMD2] = ERASE_DATA5;
+
+		*(volatile unsigned short *) (Off) = 0x30;
+		asm("ssync;");
+
+		start = get_timer(0);
+		/* Wait for the Erase Timer Bit (DQ3) to be set */
+		while(1) {
+			now = get_timer(start);
+			if((FLASH_Base[0] & 0x0008) == 0x0008) 
+				break; /* Break when device starts the erase cycle */
+			if (now > timeout) {
+				printf("Time out - Erase cycle is not started\n");
+				return ERR_TIMOUT;
+			}
 		}
-	}
 
-	rc = FlashDataToggle(timeout);
-
-	if(rc != ERR_OK) {
-		ResetFlash();
-		return rc;
-	}
-
-        if (timeout_flag) {
-		if ( i < s_last ) {
-			FLASH_Block_Erase ( i, s_last);
+		/* Now wait for things to be done */
+		if ( (rc = FlashDataToggle(timeout)) != ERR_OK ) {
+	                ResetFlash();
+                	return rc;
 		}
-        }
+
+	} 
 
 	return ERR_OK;
 }
