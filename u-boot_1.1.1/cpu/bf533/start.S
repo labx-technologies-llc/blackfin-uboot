@@ -55,6 +55,13 @@
 
 .text
 _initialize:
+	/* Force SWRST to 0 Again */
+        p0.h = SWRST >> 16;
+        p0.l = SWRST & 0xFFFF;
+        r0 = 0x0000;
+        w[p0] = r0;
+        ssync;
+
 	nop;
 	r0 = 0x30;
 	syscfg = r0;
