@@ -37,13 +37,14 @@
 #define ERASE_DATA6	0x10
 
 #define GETCODE_DATA	0x90
+#define FLASH_WIDTH	2
 
 flash_info_t flash_info[CFG_MAX_FLASH_BANKS];
 int GetCodes(void);
 int ResetFlash(void);
 int EraseFlash(void);
-int WriteData(long lStart, long lCount, long lStride, int *pnData);
-int FLASH_Write(long addr, int data);
+int write_buff (flash_info_t *info, uchar *src, ulong addr, ulong cnt);
+int write_word(flash_info_t *info, ulong addr, ulong data);
 unsigned long GetOffset(int sec_num);
 int FLASH_Block_Erase(unsigned long, unsigned long);
 void init_Flags(void);
