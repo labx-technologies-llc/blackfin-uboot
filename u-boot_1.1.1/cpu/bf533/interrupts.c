@@ -48,7 +48,7 @@ int interrupt_init(void)
 {
 	return (0);
 }
-
+#if 0
 void udelay(unsigned long usec)
 {
 	unsigned long i=0;
@@ -57,6 +57,31 @@ void udelay(unsigned long usec)
 		i++;
 		i--;
 	}
+}
+#endif
+
+void udelay(unsigned long usec)
+{
+        unsigned long delay;
+
+        /* system clk  in MHZ*/
+        delay = get_clock();
+
+        /* system clk is 1 uSec */
+        delay = delay /1000000;
+
+        /* delay = ssytem clk * usecs *
+         * delay is the number of sclk's
+         */
+        delay = delay * usec;
+
+        asm("lsetup(cp_s,cp_e) LC0 = %0;\n"
+           "cp_s: \n "
+           "cp_e: nop; \n"
+           :
+           : "a" (delay)
+           );
+        return;
 }
 
 void timer_int(void)
