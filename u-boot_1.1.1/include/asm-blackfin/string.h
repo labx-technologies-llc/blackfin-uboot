@@ -20,6 +20,7 @@
 
 #include <asm/setup.h>
 #include <asm/page.h>
+#include <asm/bf533.h>
 
 #define __HAVE_ARCH_STRCPY
 static inline char *strcpy(char *dest, const char *src)
@@ -104,8 +105,61 @@ static inline int strncmp(const char *cs, const char *ct, size_t count)
 	return __res1;
 }
 
+/**
+ * memcpy - Copy one area of memory to another
+ * @dest: Where to copy to
+ * @src: Where to copy from
+ * @count: The size of the area.
+ *
+ * You should not use this function to access IO space, use memcpy_toio()
+ * or memcpy_fromio() instead.
+ */
+#define __HAVE_ARCH_MEMCPY
+static inline void * memcpy(void * dest,const void *src,size_t count)
+{
+        char *tmp = (char *) dest, *s = (char *) src;
+
+	if ((tmp >= (char*)L1_ISRAM) && (tmp < (char*)L1_ISRAM_END))
+	{
+		/* Copy sram functions from sdram to sram */
+
+		/* Setup destination start address */
+		*(volatile unsigned long *)MDMA_D0_START_ADDR = (unsigned long)dest;
+		/* Setup destination xcount */
+		*(volatile unsigned short *)MDMA_D0_X_COUNT = count / 2 ;
+		/* Setup destination xmodify */
+		*(volatile unsigned short *)MDMA_D0_X_MODIFY = 2;
+
+		/* Setup Source start address */
+		*(volatile unsigned long *)MDMA_S0_START_ADDR = (unsigned long)src;
+		/* Setup Source xcount */
+		*(volatile unsigned short *)MDMA_S0_X_COUNT = count /2 ;
+		/* Setup Source xmodify */
+		*(volatile unsigned short *)MDMA_S0_X_MODIFY = 2;
+
+		/* Set word size to 16, set to read, enable interrupt for wakeup */
+		/* Enable source DMA */
+		*(volatile unsigned short *)MDMA_S0_CONFIG = (WDSIZE16 | DMAEN);
+		asm("ssync;");
+		/* Enable Destination DMA */
+		*(volatile unsigned short *)MDMA_D0_CONFIG = (DI_EN | WDSIZE16 | WNR | DMAEN);
+	
+		/* Go into idle and wait for wakeup that indicates DMA is done */
+		asm("idle;");
+		/* Clear interrupt */
+		*(volatile unsigned short *)MDMA_D0_IRQ_STATUS = 0x1;
+	}
+	else
+	{
+        	while (count--)
+                	*tmp++ = *s++;
+
+	}
+
+        return dest;
+}
+
 extern void *memset(void *s, int c, size_t count);
-extern void *memcpy(void *d, const void *s, size_t count);
 extern int memcmp(const void *, const void *, __kernel_size_t);
 
 #else				/* KERNEL */
