@@ -58,7 +58,9 @@ SECTIONS
   .text      :
   {
     /* WARNING - the following is hand-optimized to fit within	*/
-    /* the sector layout of our flash chips!	XXX FIXME XXX	*/
+    /* the sector before the environment sector. If it throws 	*/
+    /* an error during compilation remove an object here to get	*/
+    /* it linked after the configuration sector.		*/
 
     cpu/bf533/start.o		(.text)
     cpu/bf533/start1.o		(.text)
