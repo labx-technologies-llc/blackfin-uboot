@@ -290,6 +290,18 @@ unsigned long load_elf_image (unsigned long addr)
 	shdr = (Elf32_Shdr *) (addr + ehdr->e_shoff +
 			       (ehdr->e_shstrndx * sizeof (Elf32_Shdr)));
 
+#ifdef CONFIG_VDSP
+	if(ehdr->e_type == ET_EXEC_VDSP) {
+		shdr = (Elf32_Shdr *) (addr + ehdr->e_shoff +
+			(ehdr->e_shstrndx * ehdr->e_shentsize));
+	}else {
+#endif
+	shdr = (Elf32_Shdr *) (addr + ehdr->e_shoff +
+			       (ehdr->e_shstrndx * sizeof (Elf32_Shdr)));
+
+#ifdef CONFIG_VDSP
+	}
+#endif
 	if (shdr->sh_type == SHT_STRTAB)
 		strtab = (unsigned char *) (addr + shdr->sh_offset);
 
@@ -300,23 +312,22 @@ unsigned long load_elf_image (unsigned long addr)
 
 	/* Load each appropriate section */
 	for (i = 0; i < ehdr->e_shnum; ++i) {
-		shdr = (Elf32_Shdr *) (addr + ehdr->e_shoff +
-				       (i * sizeof (Elf32_Shdr)));
 #ifdef CONFIG_VDSP
-		if(ehdr->e_type == ET_EXEC_VDSP)
+		if(ehdr->e_type == ET_EXEC_VDSP) {
 			shdr = (Elf32_Shdr *) (addr + ehdr->e_shoff +
-					       (i * ELFSHDRSIZE_VDSP));
+					       (i * ehdr->e_shentsize));
+		}
+		else {
 #endif
+		shdr = (Elf32_Shdr *) (addr + ehdr->e_shoff +
+				(i * sizeof (Elf32_Shdr)));
 #ifdef CONFIG_VDSP
-		if(ehdr->e_type != ET_EXEC_VDSP) {
+		}
 #endif
 		if (!(shdr->sh_flags & SHF_ALLOC)
 		   || shdr->sh_addr == 0 || shdr->sh_size == 0) {
 			continue;
 		}
-#ifdef CONFIG_VDSP
-		}
-#endif
 
 		if (strtab) {
 			printf ("%sing %s @ 0x%08lx (%ld bytes)\n",
