@@ -66,10 +66,6 @@ volatile unsigned long *pFIO_EDGE = (volatile unsigned long *) 0xffc00738;
 volatile unsigned long *pFIO_INEN = (volatile unsigned long *) 0xffc00740;
 volatile unsigned long *pFIO_FLAG_D = (volatile unsigned long *) 0xffc00700;
 
-extern unsigned long pll_div_fact;
-extern void serial_setbrg(void);
-extern void pll_set(int vco, int crystal_frq, int pll_div);
-
 inline void LED6_On(void)
 {
 	*(volatile unsigned short *) pFIO_FLAG_C = 0x0004;
@@ -96,22 +92,5 @@ inline void init_Flags(void)
 
 volatile unsigned short *FLASH_Base = (unsigned short *) 0x20000000;
 unsigned volatile long *FB = (unsigned long *) 0x20000002;
-
-
-/* Definitions used in  Compact Flash Boot support */
-#define FIO_EDGE_CF_BITS 	0x0000
-#define FIO_POLAR_CF_BITS 	0x0000
-#define	FIO_EDGE_BITS  		0x1E0
-#define	FIO_POLAR_BITS  	0x160
-
-/* Compact flash status bits in status register */
-#define CF_STAT_BITS 		0x00000060
-
-/* CF Flags used to switch between expansion and external 
-** memory banks
-*/
-#define CF_PF0			0x0001
-#define CF_PF1			0x0002
-#define CF_PF1_PF0		0x0003
 
 #endif
