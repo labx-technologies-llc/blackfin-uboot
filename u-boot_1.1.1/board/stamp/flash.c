@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2004 - Analog Devices, Inc.  All rights reserved. 
+ * (C) Copyright 2004 -  Analog Devices, Inc.  All rights reserved. 
  */
 
 #include "flash-defines.h"
