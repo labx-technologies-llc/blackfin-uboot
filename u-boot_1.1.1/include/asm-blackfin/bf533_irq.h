@@ -101,6 +101,10 @@
 #define	IRQ_SW_INT1		31	/* Software Int 1 */
 #define	IRQ_SW_INT2		32	/* Software Int 2 (reserved for SYSCALL) */
 
+#define IRQ_UART_RX_BIT         0x4000
+#define IRQ_UART_TX_BIT         0x8000
+#define IRQ_UART_ERROR_BIT      0x40
+
 #define IVG7			7
 #define IVG8			8
 #define IVG9			9
