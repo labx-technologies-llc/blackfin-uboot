@@ -38,6 +38,23 @@
 #include <linux/config.h>
 #include <asm/blackfin.h>
 #include <config.h>
+#include <asm/mem_init.h>
+
+#if (CONFIG_CCLK_DIV == 1)
+  #define CONFIG_CCLK_ACT_DIV   CCLK_DIV1
+#endif
+#if (CONFIG_CCLK_DIV == 2)
+  #define CONFIG_CCLK_ACT_DIV   CCLK_DIV2
+#endif
+#if (CONFIG_CCLK_DIV == 4)
+  #define CONFIG_CCLK_ACT_DIV   CCLK_DIV4
+#endif
+#if (CONFIG_CCLK_DIV == 8)
+  #define CONFIG_CCLK_ACT_DIV   CCLK_DIV8
+#endif
+#ifndef CONFIG_CCLK_ACT_DIV
+  #define CONFIG_CCLK_ACT_DIV   CONFIG_CCLK_DIV_not_defined_properly
+#endif
 
 .global _stext;
 .global __bss_start;
@@ -127,39 +144,44 @@ no_soft_reset:
 	LSETUP(4,4) lc0 = p1;
 	[ p0 ++ ] = r1;
 
-	/* Configure PLL */
-	r0 = CONFIG_VCO;
-	r1 = CONFIG_CRYSTAL_FREQ;
-	r2 = 0;
-	r3 = 1;
-	r4 = -1;
-dp_begin:
-	r0 = r0 - r1;
-	CC = r0 <= r4;
-	if CC jump dp_skip;
-	r2 = r2 + r3;
-	jump dp_begin;
-dp_skip:
-	r0 = r2;
-	r3 = r0;
+	/*
+         *  Set PLL_CTL
+         *   - [14:09] = MSEL[5:0] : CLKIN / VCO multiplication factors
+         *   - [8]     = BYPASS    : BYPASS the PLL, run CLKIN into CCLK/SCLK
+         *   - [7]     = output delay (add 200ps of delay to mem signals)
+         *   - [6]     = input delay (add 200ps of input delay to mem signals)
+         *   - [5]     = PDWN      : 1=All Clocks off
+         *   - [3]     = STOPCK    : 1=Core Clock off
+         *   - [1]     = PLL_OFF   : 1=Disable Power to PLL
+         *   - [0]     = DF        : 1=Pass CLKIN/2 to PLL / 0=Pass CLKIN to PLL
+         *   all other bits set to zero
+         */
 
-	r1 = 0x3F;
-	r0 = r0 & r1;
-	r0 = r0 << 9;
+        r0 = CONFIG_VCO_MULT;           /* Load the VCO multiplier         */
+        r0 = r0 << 9;                   /* Shift it over,                  */
+        r1 =  CONFIG_CLKIN_HALF;        /* Do we need to divide CLKIN by 2?*/
+        r0 = r1 | r0;
+        r1 = CONFIG_PLL_BYPASS;         /* Bypass the PLL?                 */
+        r1 = r1 << 8;                   /* Shift it over                   */
+        r0 = r1 | r0;                   /* add them all together           */
+
 	p0.h = (PLL_CTL >> 16);
-        p0.l = (PLL_CTL & 0xFFFF);
-	r1 = w[p0](z);
-	r5 = 0x8E;
-	r1 = r1 & r5;
-	r1 = r1 | r0;
-	cli r2;
-	w[p0] = r1;
-        idle;
-        sti r2;
-        ssync;
+        p0.l = (PLL_CTL & 0xFFFF);	/* Load the address                */
+	cli r2;				/* Disable interrupts              */
+	w[p0] = r0;			/* Set the value		   */
+        idle;				/* Wait for the PLL to stablize    */
+        sti r2;				/* Enable interrupts	 	   */
+        ssync;	
 
-	/* Configure SCLK */
-        r0 = PLL_DIV_FACTOR; 
+        /*
+         * Turn on the CYCLES COUNTER
+         */
+        r2 = SYSCFG;
+        BITSET (r2,1);
+        SYSCFG = r2;
+
+	/* Configure SCLK & CCLK Dividers */
+	r0 = CONFIG_CCLK_ACT_DIV | CONFIG_SCLK_DIV;
 	p0.h = (PLL_DIV >> 16);
 	p0.l = (PLL_DIV & 0xFFFF);
 	w[p0] = r0;
@@ -181,22 +203,21 @@ del_end: nop;
 
         p0.l = (EBIU_SDRRC & 0xFFFF);
         p0.h = (EBIU_SDRRC >> 16);      /* SDRAM Refresh Rate Control Register */
-        r0 = SDRRCVAL(Z);
+        r0 = mem_SDRRC;
         w[p0] = r0.l;
         ssync;
 
         p0.l = (EBIU_SDBCTL & 0xFFFF);
         p0.h = (EBIU_SDBCTL >> 16);     /* SDRAM Memory Bank Control Register */
-        r0 = SDBCTL(Z);
+        r0 = mem_SDBCTL;
         w[p0] = r0.l;
         ssync;
-
 
 	/* SDRAM initialization */
 	p0.l = (EBIU_SDGCTL & 0xFFFF);
 	p0.h = (EBIU_SDGCTL >> 16);	/* SDRAM Memory Global Control Register */
-	r0.h = (SDGCTL >> 16);
-	r0.l = (SDGCTL & 0xFFFF);
+	r0.h = (mem_SDGCTL >> 16);
+	r0.l = (mem_SDGCTL & 0xFFFF);
 	[p0] = r0;
 	ssync;
 	
