@@ -118,6 +118,35 @@ void board_init_f(ulong bootflag)
 	gd = &gd_data;
 	memset((void *) gd, 0, sizeof(gd_t));
 
+	/* Copy sram functions from sdram to sram */
+
+	/* Setup destination start address */
+	*(volatile unsigned long *)MDMA_D0_START_ADDR = L1_ISRAM;
+	/* Setup destination xcount */
+	*(volatile unsigned short *)MDMA_D0_X_COUNT = (unsigned short)&_sram_inst_size;
+	/* Setup destination xmodify */
+	*(volatile unsigned short *)MDMA_D0_X_MODIFY = 2;
+
+	/* Setup Source start address */
+	*(volatile unsigned long *)MDMA_S0_START_ADDR = (unsigned long)&_sram_in_sdram_start;
+	/* Setup Source xcount */
+	*(volatile unsigned short *)MDMA_S0_X_COUNT = (unsigned short)&_sram_inst_size;
+	/* Setup Source xmodify */
+	*(volatile unsigned short *)MDMA_S0_X_MODIFY = 2;
+
+	/* Set word size to 16, set to read, enable interrupt for wakeup */
+	/* Enable source DMA */
+	*(volatile unsigned short *)MDMA_S0_CONFIG = (WDSIZE16 | DMAEN);
+	asm("ssync;");
+	/* Enable Destination DMA */
+	*(volatile unsigned short *)MDMA_D0_CONFIG = (DI_EN | WDSIZE16 | WNR | DMAEN);
+	
+	/* Go into idle and wait for wakeup that indicates DMA is done */
+	asm("idle;");
+	/* Clear interrupt */
+	*(volatile unsigned short *)MDMA_D0_IRQ_STATUS = 0x1;
+  
+	/* Initialize */
 	init_IRQ();
 	env_init();		/* initialize environment */
 	cck = get_clock();
