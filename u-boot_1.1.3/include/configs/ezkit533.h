@@ -58,6 +58,7 @@
 #define CONFIG_COMMANDS			(CONFIG_CMD_DFL	| \
 					 CFG_CMD_PING	| \
 					 CFG_CMD_ELF	| \
+					 CFG_CMD_I2C	| \
 					 CFG_CMD_DATE)
 
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
@@ -109,6 +110,47 @@
 #define FLASH_TOT_SECT		40
 #define FLASH_SIZE		0x220000
 #define CFG_FLASH_SIZE		0x220000
+
+/*
+ * Initialize PSD4256 registers for using I2C
+ */
+#define	CONFIG_MISC_INIT_R
+
+/*
+ * I2C settings
+ * By default PF1 is used as SDA and PF0 as SCL on the Stamp board
+ */
+#define CONFIG_SOFT_I2C			1	/* I2C bit-banged		*/
+/*
+ * Software (bit-bang) I2C driver configuration
+ */
+#define PF_SCL				PF0
+#define PF_SDA				PF1
+
+#define I2C_INIT			(*pFIO_DIR |=  PF_SCL); asm("ssync;")
+#define I2C_ACTIVE			(*pFIO_DIR |=  PF_SDA); *pFIO_INEN &= ~PF_SDA; asm("ssync;")
+#define I2C_TRISTATE			(*pFIO_DIR &= ~PF_SDA); *pFIO_INEN |= PF_SDA; asm("ssync;")
+#define I2C_READ			((volatile)(*pFIO_FLAG_D & PF_SDA) != 0); asm("ssync;")
+#define I2C_SDA(bit)			if(bit) { \
+							*pFIO_FLAG_S = PF_SDA; \
+							asm("ssync;"); \
+						} \
+					else    { \
+							*pFIO_FLAG_C = PF_SDA; \
+							asm("ssync;"); \
+						}
+#define I2C_SCL(bit)			if(bit) { \
+							*pFIO_FLAG_S = PF_SCL; \
+							asm("ssync;"); \
+						} \
+					else    { \
+							*pFIO_FLAG_C = PF_SCL; \
+							asm("ssync;"); \
+						}
+#define I2C_DELAY			udelay(5)	/* 1/4 I2C clock duration */
+
+#define CFG_I2C_SPEED			50000
+#define CFG_I2C_SLAVE			0xFE
 
 
 #define __ADSPLPBLACKFIN__	1
