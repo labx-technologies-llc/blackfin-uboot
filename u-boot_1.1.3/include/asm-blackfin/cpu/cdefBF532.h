@@ -35,6 +35,7 @@
 #define pPLL_CTL ((volatile unsigned short *)PLL_CTL)
 #define pPLL_STAT ((volatile unsigned short *)PLL_STAT)
 #define pPLL_LOCKCNT ((volatile unsigned short *)PLL_LOCKCNT)
+#define pCHIPID ((volatile unsigned long *)CHIPID)
 #define pSWRST ((volatile unsigned short *)SWRST)
 #define pSYSCR ((volatile unsigned short *)SYSCR)
 #define pPLL_DIV ((volatile unsigned short *)PLL_DIV)

@@ -51,6 +51,7 @@
 #define VR_CTL			0xFFC00008	/* Voltage Regulator Control Register (16-bit) */
 #define PLL_STAT		0xFFC0000C	/* PLL Status register (16-bit) */
 #define PLL_LOCKCNT		0xFFC00010	/* PLL Lock Count register (16-bit) */
+#define	CHIPID			0xFFC00014	/* Chip ID register (32-bit)	*/
 #define SWRST			0xFFC00100	/* Software Reset Register (16-bit) */
 #define SYSCR			0xFFC00104	/* System Configuration register */
 
