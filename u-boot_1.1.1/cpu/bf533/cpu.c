@@ -30,10 +30,6 @@
 #include <command.h>
 #include <asm/entry.h>
 
-unsigned long sclk;
-void get_sclk(void);
-int get_clock(void);
-
 int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 {
         __asm__ __volatile__
@@ -99,21 +95,4 @@ void asyncbank_init(void)
 	asm("w[p2] = r0;");
 	asm("ssync;");
 #endif
-}
-
-int get_clock(void)
-{
-	unsigned long val;
-	volatile unsigned long *pllctl = (volatile unsigned long *)0xFFC00000;
-
-	val = *(volatile unsigned short *)pllctl;
-	val = (val >> 9) & 0x3F;
-	val = val * CONFIG_CRYSTAL_FREQ;
-	val = val * 1000000;
-
-	return val;
-}
-
-void get_sclk(void)	{
-	sclk = get_clock()/PLL_DIV_FACTOR;
 }

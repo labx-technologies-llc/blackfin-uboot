@@ -57,8 +57,8 @@ void calc_baud(void)
 	unsigned char i;
 
 	for(i = 0; i < sizeof(baud_table)/sizeof(int); i++) {
-		hw_baud_table[i].dl_high = ((sclk/(baud_table[i]*16)) >> 8)& 0xFF;
-		hw_baud_table[i].dl_low = (sclk/(baud_table[i]*16)) & 0xFF;
+		hw_baud_table[i].dl_high = ((CONFIG_SCLK_HZ/(baud_table[i]*16)) >> 8)& 0xFF;
+		hw_baud_table[i].dl_low = (CONFIG_SCLK_HZ/(baud_table[i]*16)) & 0xFF;
 	}
 }
 
@@ -67,11 +67,6 @@ void serial_setbrg(void)
 	int i;
 	DECLARE_GLOBAL_DATA_PTR;
 
-#ifdef CONFIG_STAMP
-	sclk = get_clock()/pll_div_fact;
-#else
-	sclk = get_clock()/PLL_DIV_FACTOR;
-#endif
 	calc_baud();
 
 	for (i = 0; i < sizeof(baud_table) / sizeof(int); i++) {
@@ -110,9 +105,6 @@ void serial_setbrg(void)
 
 int serial_init(void)
 {
-#ifdef CONFIG_STAMP
-	pll_div_fact = PLL_DIV_FACTOR;
-#endif
 	serial_setbrg();
 	return (0);
 }

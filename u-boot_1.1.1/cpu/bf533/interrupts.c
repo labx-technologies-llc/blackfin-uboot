@@ -78,25 +78,32 @@ int interrupt_init(void)
 
 void udelay(unsigned long usec)
 {
-        unsigned long delay;
+        unsigned long delay, start, stop;
 
-        /* system clk  in MHZ*/
-        delay = get_clock();
+	unsigned long cclk;
 
-        /* system clk is 1 uSec */
-        delay = delay /1000000;
+	cclk = (CONFIG_CCLK_HZ);
 
-        /* delay = ssytem clk * usecs *
-         * delay is the number of sclk's
-         */
-        delay = delay * usec;
+	while ( usec > 1 ) {
+	       /*
+       	 	* how many clock ticks to delay?
+       		*  - request(in useconds) * clock_ticks(Hz) / useconds/second
+       		*/
+		if (usec < 1000) {
+        		delay = (usec * (cclk/244)) >> 12 ;
+			usec = 0;
+		} else {
+			delay = (1000 * (cclk/244)) >> 12 ;
+			usec -= 1000;
+		}
 
-        asm("lsetup(cp_s,cp_e) LC0 = %0;\n"
-           "cp_s: \n "
-           "cp_e: nop; \n"
-           :
-           : "a" (delay)
-           );
+	        asm volatile (" %0 = CYCLES;": "=g"(start));
+       		do {
+               		asm volatile (" %0 = CYCLES; ": "=g"(stop));
+       		} while (stop - start < delay);
+
+	}
+
         return;
 }
 
@@ -141,12 +148,12 @@ ulong get_timer(ulong base)
 	last_time = clocks;
 
 	/* Get the number of milliseconds */
-	milisec = clocks/(CONFIG_VCO * 1000);
+	milisec = clocks/(CONFIG_CCLK_HZ / 1000);
 
 	/* Find the number of millisonds 
 	   that got elapsed before this TCOUNT
 	   cycle */
-	milisec += timestamp * (MAX_TIM_LOAD/(CONFIG_VCO * 1000));
+	milisec += timestamp * (MAX_TIM_LOAD/(CONFIG_CCLK_HZ / 1000));
 
 	return (milisec - base);
 }
