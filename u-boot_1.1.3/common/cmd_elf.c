@@ -267,9 +267,11 @@ unsigned long load_elf_image (unsigned long addr)
 {
 	Elf32_Ehdr *ehdr;		/* Elf header structure pointer     */
 	Elf32_Shdr *shdr;		/* Section header structure pointer */
+	Elf32_Phdr *phdr;		/* Program header structure pointer */
 	unsigned char *strtab = 0;	/* String table pointer             */
 	unsigned char *image;		/* Binary image pointer             */
-	int i;				/* Loop counter                     */
+	int i, j;			/* Loop counter                     */
+	unsigned char match;
 
 	/* -------------------------------------------------- */
 
@@ -282,6 +284,17 @@ unsigned long load_elf_image (unsigned long addr)
 	if (shdr->sh_type == SHT_STRTAB)
 		strtab = (unsigned char *) (addr + shdr->sh_offset);
 
+#if 0
+	printf("Number of phdr: %d, size: %d\n", ehdr->e_phnum, ehdr->e_phentsize);
+	printf("Number of shdr: %d, size: %d\n", ehdr->e_shnum, ehdr->e_shentsize);
+	
+	for (i = 0; i < ehdr->e_phnum; i++)
+	{
+		phdr = addr + ehdr->e_phoff + (i * sizeof (Elf32_Phdr));
+		printf("p_paddr: %08X, p_vaddr: %08X\n",
+			phdr->p_paddr, phdr->p_vaddr);
+	}
+#endif
 	/* Load each appropriate section */
 	for (i = 0; i < ehdr->e_shnum; ++i) {
 		shdr = (Elf32_Shdr *) (addr + ehdr->e_shoff +
@@ -304,10 +317,28 @@ unsigned long load_elf_image (unsigned long addr)
 		if (shdr->sh_type == SHT_NOBITS) {
 			memset ((void *)shdr->sh_addr, 0, shdr->sh_size);
 		} else {
+			for (j = 0, match = 0; j < ehdr->e_phnum; j++) {
+				phdr = addr + ehdr->e_phoff + (j * sizeof (Elf32_Phdr));
+				if ((phdr->p_vaddr == shdr->sh_addr) && (phdr->p_paddr != phdr->p_vaddr)) {
+					printf("sh_addr: %08X, p_paddr: %08X\n",
+						shdr->sh_addr, phdr->p_paddr);
+					match = 1;
+					break;
+				} else
+					match = 0;
+			}
 			image = (unsigned char *) addr + shdr->sh_offset;
-			memcpy ((void *) shdr->sh_addr,
-				(const void *) image,
-				shdr->sh_size);
+			if (match) {
+				printf("Loading from: %08X to %08X, size: %d\n",
+					image, phdr->p_paddr, shdr->sh_size);
+				memcpy ((void *) phdr->p_paddr,
+					(const void *) image,
+					shdr->sh_size);
+			} else {
+				memcpy ((void *) shdr->sh_addr,
+					(const void *) image,
+					shdr->sh_size);
+			}
 		}
 		flush_cache (shdr->sh_addr, shdr->sh_size);
 	}
