@@ -97,8 +97,6 @@ void blackfin_init_IRQ(void)
 		(unsigned volatile long) evt_system_call;
 	*(unsigned volatile long *) (EVT_IVG15_ADDR) =
 		(unsigned volatile long) evt_soft_int1;
-	*(volatile unsigned long *) IMASK = 0xffbf;
-	asm("csync;");
 	*(volatile unsigned long *) ILAT = 0;
 	asm("csync;");
 	sti();
