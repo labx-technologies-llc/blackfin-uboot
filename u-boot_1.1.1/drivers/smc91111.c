@@ -154,8 +154,8 @@ extern void eth_halt(void);
 extern int eth_rx(void);
 extern int eth_send(volatile void *packet, int length);
 
-#ifdef CONFIG_STAMP
-	extern void asyncbank_init(void);
+#ifdef SHARED_RESOURCES
+	extern void swap_to(int device_id);
 #endif
 
 /*
@@ -208,10 +208,6 @@ static int smc_rcv(void);
 */
 int smc_get_ethaddr(bd_t *bd);
 int get_rom_mac(char *v_rom_mac);
-
-#ifdef CONFIG_STAMP
-extern void init_Flags(void);
-#endif
 
 /*
  ------------------------------------------------------------
@@ -457,8 +453,8 @@ static void smc_shutdown()
 	SMC_SELECT_BANK( 0 );
 	SMC_outb( RCR_CLEAR, RCR_REG );
 	SMC_outb( TCR_CLEAR, TCR_REG );
-#ifdef CONFIG_STAMP
-	init_Flags();	
+#ifdef SHARED_RESOURCES
+	swap_to(FLASH);
 #endif
 }
 
@@ -1395,8 +1391,8 @@ static void print_packet( byte * buf, int length )
 #endif
 
 int eth_init(bd_t *bd) {
-#ifdef CONFIG_STAMP
-	asyncbank_init();
+#ifdef SHARED_RESOURCES
+	swap_to(ETHERNET);
 #endif
 	return (smc_open(bd));
 }
