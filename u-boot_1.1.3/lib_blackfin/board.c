@@ -247,6 +247,9 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	swap_to(FLASH);
 #endif
 #endif
+#ifdef CONFIG_SOFT_I2C
+	init_func_i2c();
+#endif
 
 #ifdef DEBUG
 	display_global_data(void);
@@ -257,6 +260,16 @@ void board_init_r(gd_t * id, ulong dest_addr)
 		main_loop();
 	}
 }
+
+#ifdef CONFIG_SOFT_I2C
+static int init_func_i2c (void)
+{
+	puts ("I2C:   ");
+	i2c_init (CFG_I2C_SPEED, CFG_I2C_SLAVE);
+	puts ("ready\n");
+	return (0);
+}
+#endif
 
 void hang(void)
 {
