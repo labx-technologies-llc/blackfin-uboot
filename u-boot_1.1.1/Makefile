@@ -145,10 +145,6 @@ u-boot.srec:	u-boot
 
 u-boot.bin:	u-boot
 		$(OBJCOPY) ${OBJCFLAGS} -O binary $< $@
-ifeq ($(ARCH),blackfin)
-		chmod 777 scr
-		./scr
-endif
 
 u-boot.img:	u-boot.bin
 		./tools/mkimage -A $(ARCH) -T firmware -C none \
