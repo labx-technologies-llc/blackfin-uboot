@@ -206,11 +206,10 @@ skip_sdram_enable:
 	/*
 	 * configure STACK
 	 */
-      
-	sp.h = (CONFIG_STACKBASE >> 16);
-	sp.l = (CONFIG_STACKBASE & 0xFFFF);
-	fp.h = (CONFIG_STACKBASE >> 16);
-	fp.l = (CONFIG_STACKBASE & 0xFFFF);
+	r0.h = (CONFIG_STACKBASE >> 16);
+	r0.l = (CONFIG_STACKBASE & 0xFFFF);
+	sp = r0;
+	fp = sp;
 
 	/*
 	 * This next section keeps the processor in supervisor mode
