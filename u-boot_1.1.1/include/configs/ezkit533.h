@@ -5,13 +5,13 @@
 #define CONFIG_BAUDRATE		57600
 #define CONFIG_EZKIT533		1
 #define U_BOOT_BF533_RELEASE	"Release Version Beta"
-#define CFG_ENV_IS_NOWHERE	1
+
 #define CONFIG_BOOTDELAY	30
 #define CONFIG_BOARD_TYPES	1
 #undef	CONFIG_BOOTARGS
 #define CONFIG_DRIVER_SMC91111	1
 #define CONFIG_SMC91111_BASE	0x20300300
-#define HARDCODE_MAC		1
+/* #define HARDCODE_MAC		1 */
 #define CONFIG_RTC_BF533	1
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
 
@@ -60,24 +60,30 @@
 #define	CFG_SDRAM_BASE		0x00000000
 #define CFG_MAX_RAM_SIZE	0x2000000
 #define CFG_FLASH_BASE		0x20000000
-#define RAM_END			0x1800000
-#define CFG_MONITOR_LEN		0x30000
-#define CFG_MONITOR_BASE	RAM_END
-#define CFG_MALLOC_LEN		0x20000
+
+#define CFG_MONITOR_BASE	0x1f80000
+#define CFG_MONITOR_LEN		0x80000
+#define CFG_MALLOC_LEN		0x40000
 #define CFG_MALLOC_BASE		(CFG_MONITOR_BASE - CFG_MALLOC_LEN)
 #define CFG_GBL_DATA_SIZE	0x4000
-#define CFG_GBL_DATA_OFFSET	(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
+#define CFG_GBL_DATA_ADDR	(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
+#define CONFIG_STACKBASE	(CFG_GBL_DATA_ADDR  - 4)
+
 #define	CFG_BOOTMAPSZ		(8 << 20)	/* Initial Memory map for Linux */
 #define CFG_FLASH0_BASE		0x20000000
 #define CFG_FLASH1_BASE		0x20200000
 #define CFG_FLASH2_BASE		0x20280000
 #define CFG_MAX_FLASH_BANKS	3	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	40	/* max number of sectors on one chip */
+
 #define	CFG_ENV_IS_IN_FLASH	1
 #define CFG_ENV_ADDR		0x20040000
-#define	CFG_ENV_OFFSET		0x0	/* Offset of Environment Sector */
-#define	CFG_ENV_SIZE		0x10000	/* Total Size of Environment Sector */
-#define RAM_DATA		0x200001e8
+#define	CFG_ENV_SECT_SIZE	0x10000	/* Total Size of Environment Sector */
+
+/*
+ * Stack sizes
+ */
+#define CONFIG_STACKSIZE        (128*1024)      /* regular stack */
 
 /* General definitions */
 #define STATUS_LED_BOOT		1
@@ -93,7 +99,7 @@
 #define CONFIG_GATEWAYIP	10.10.13.9
 #define CONFIG_SERVERIP		10.100.4.174
 #define CONFIG_HOSTNAME		EZKIT533
-#define CONFIG_ETHADDR		02:80:ad:20:31:b8
+/* #define CONFIG_ETHADDR		02:80:ad:20:31:b8 */
 
 #undef CONFIG_AUTOBOOT_KEYED
 #ifdef CONFIG_AUTOBOOT_KEYED

@@ -5,13 +5,16 @@
 #define CONFIG_BAUDRATE		57600
 #define CONFIG_STAMP		1
 #define U_BOOT_BF533_RELEASE	"Release Version Beta"
-#define CFG_ENV_IS_NOWHERE	1
+/* #define CFG_ENV_IS_NOWHERE	1 */
 #define CONFIG_BOOTDELAY	30
 #define CONFIG_BOARD_TYPES	1
 #undef	CONFIG_BOOTARGS
 #define CONFIG_DRIVER_SMC91111	1
 #define CONFIG_SMC91111_BASE	0x20300300
-#define HARDCODE_MAC		1
+
+/* To remove hardcoding and enable MAC storage in EEPROM */
+/* #define HARDCODE_MAC		1 */
+
 #define CONFIG_RTC_BF533	1
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
 
@@ -71,16 +74,19 @@
 #define CFG_MAX_RAM_SIZE	0x8000000
 #define CFG_FLASH_BASE		0x20000000
 
-#define RAM_END			0x7000000
-#define CFG_MONITOR_LEN		0x30000
-#define CFG_MONITOR_BASE	RAM_END
+#define CFG_MONITOR_BASE	0x7f80000
+#define CFG_MONITOR_LEN		0x80000
 #define CFG_MALLOC_LEN		0x40000
 #define CFG_MALLOC_BASE		(CFG_MONITOR_BASE - CFG_MALLOC_LEN)
 #define CFG_GBL_DATA_SIZE	0x4000
-#define CFG_GBL_DATA_OFFSET	(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
+#define CFG_GBL_DATA_ADDR	(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
+#define CONFIG_STACKBASE	(CFG_GBL_DATA_ADDR  - 4)
+/*
+ * Stack sizes
+ */
+#define CONFIG_STACKSIZE        (128*1024)      /* regular stack */
+
 #define CFG_ENV_IS_IN_FLASH	1
-
-
 
 /*
  * FLASH organization and environment definitions
@@ -90,8 +96,7 @@
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	67	/* max number of sectors on one chip */
 #define CFG_ENV_ADDR		0x20070000
-#define	CFG_ENV_OFFSET		0x0	/* Offset of Environment Sector */
-#define	CFG_ENV_SIZE		0x10000	/* Total Size of Environment Sector */
+#define CFG_ENV_SECT_SIZE 	0x10000	/* Total Size of Environment Sector */
 
 /* General definitions */
 #define STATUS_LED_BOOT		1
@@ -99,7 +104,6 @@
 #define FLASH_TOT_SECT		67
 #define FLASH_SIZE		0x400000
 #define CFG_FLASH_SIZE		0x400000
-#define RAM_DATA		0x20000228
 
 #define CFG_FLASH_ERASE_TOUT		2000000	/* Timeout for Chip Erase (in ms) */
 #define CFG_FLASH_ERASEBLOCK_TOUT	6000	/* Timeout for Block Erase (in ms) */
@@ -118,7 +122,9 @@
 #define CONFIG_GATEWAYIP	10.10.13.9
 #define CONFIG_SERVERIP		10.100.4.174
 #define CONFIG_HOSTNAME		STAMP
-#define CONFIG_ETHADDR		02:80:ad:20:31:b8
+
+/* To remove hardcoding and enable MAC storage in EEPROM */
+/* #define CONFIG_ETHADDR		02:80:ad:20:31:b8 */
 
 #undef CONFIG_AUTOBOOT_KEYED
 #ifdef CONFIG_AUTOBOOT_KEYED
