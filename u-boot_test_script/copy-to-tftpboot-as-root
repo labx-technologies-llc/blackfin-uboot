@@ -1,0 +1,61 @@
+#!/usr/bin/expect
+#
+# Copyright (C) 2004 Bruce Giese
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2, or (at your option) any
+# later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.
+#
+# This is a suboptimal method of doing a tftp as root since this
+# file would end up containing the root password. But it works.
+#
+# Revision history
+# 07/7/2004    Bruce Giese      created
+#
+
+
+set timeout 15
+cd /home/bfarm/bin
+
+set argc [llength $argv]
+if { $argc < 1} {
+   puts "Usage:  $argv0  file"
+   puts "   where file is the file to be copied to /tftpboot"
+   exit 1
+}
+
+# grab the user selections.
+set file_to_copy       [lindex $argv 0]
+
+
+spawn /bin/su -c "cp $file_to_copy /tftpboot"
+while 1 {
+   expect {
+
+      "ssword" {
+            sleep 1
+            send "put-your-root-password-here-if-you-dare\r"
+      }
+
+      eof {
+            puts "done with copying to /tftpboot"
+            break
+      }
+
+      timeout {
+            puts "ERROR: timed out attempting to issue command"
+            exit 2
+      }
+   }
+}
+exit 0

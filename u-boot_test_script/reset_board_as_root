@@ -1,0 +1,63 @@
+#!/usr/bin/expect
+#
+# Copyright (C) 2004 Bruce Giese
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2, or (at your option) any
+# later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.
+#
+# This is a suboptimal way of doing this since it puts the root
+# password directly into the file.  But it works.
+#
+# Revision history
+# 07/7/2004    Bruce Giese      created
+#
+
+
+set timeout 15
+cd /home/bfarm/bin
+
+set argc [llength $argv]
+if { $argc < 1} {
+   puts "Usage:  $argv0  pin"
+   puts "   where pin is the parallel port pin used to reset this board"
+   puts " "
+   puts "   This program calls ./reset_board as root"
+   exit 1
+}
+
+# grab the user selections.
+set output_pin       [lindex $argv 0]
+
+
+spawn /bin/su -c "./reset_board $output_pin"
+while 1 {
+   expect {
+
+      "ssword" {
+            sleep 1
+            send "put-your-root-password-here-if-you-dare\r"
+      }
+
+      eof {
+            puts "done resetting board"
+            break
+      }
+
+      timeout {
+            puts "ERROR: timed out attempting to issue command"
+            exit 2
+      }
+   }
+}
+exit 0
