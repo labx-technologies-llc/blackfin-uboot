@@ -83,6 +83,12 @@ uint	mm_last_addr, mm_last_size;
 
 static	ulong	base_address = 0;
 
+#ifdef CONFIG_STAMP
+extern void init_EBIU(void);
+extern void init_Flags(void);
+extern void asyncbank_init(void);
+#endif
+
 /* Memory Display
  *
  * Syntax:
@@ -97,6 +103,10 @@ int do_mem_md ( cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	int	size;
 	int rc = 0;
 
+#ifdef CONFIG_STAMP
+	init_EBIU();
+	init_Flags();
+#endif
 	/* We use the last specified parameters, unless new ones are
 	 * entered.
 	 */
@@ -113,8 +123,15 @@ int do_mem_md ( cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		/* New command specified.  Check for a size specification.
 		 * Defaults to long if no or incorrect specification.
 		 */
+#ifdef CONFIG_STAMP
+		if ((size = cmd_get_data_size(argv[0], 4)) < 0)	{
+			asyncbank_init();
+			return 1;
+		}
+#else
 		if ((size = cmd_get_data_size(argv[0], 4)) < 0)
 			return 1;
+#endif
 
 		/* Address is specified since argc > 1
 		*/
@@ -198,6 +215,9 @@ int do_mem_md ( cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	dp_last_addr = addr;
 	dp_last_length = length;
 	dp_last_size = size;
+#ifdef CONFIG_STAMP
+	asyncbank_init();
+#endif
 	return (rc);
 }
 
@@ -358,7 +378,7 @@ int do_mem_cp ( cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		puts ("Zero length ???\n");
 		return 1;
 	}
-	
+
 #ifndef CFG_NO_FLASH
 	/* check if we are copying to Flash */
 	if ( (addr2info(dest) != NULL)

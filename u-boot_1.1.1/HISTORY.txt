@@ -21,6 +21,11 @@ Current Release contains:
 4. Ezkit Flash implemented as 3 flash banks (To avoid touching arch
 independent files).
 
+Next Release will contain:
+------------------------------
+1. Booting from other BMODE pins.(01,10,11)
+2. Booting VDSP executables through u-boot
+
 Features not supported
 ------------------------
 1. Srec file download
