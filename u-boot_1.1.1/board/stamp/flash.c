@@ -115,13 +115,19 @@ void flash_print_info(flash_info_t * info)
 
 int flash_erase(flash_info_t * info, int s_first, int s_last)
 {
-	int cnt = 0;
+	int sect, prot, cnt = 0;
 	int rc = ERR_OK;
 
 	cnt = s_last - s_first + 1;
 
-	if (cnt == FLASH_TOT_SECT) {
-		printf(" Please Wait \n");
+        prot = 0;
+        for (sect = s_first; sect <= s_last; ++sect) {
+                if (info->protect[sect])
+                        prot++;
+        }
+
+	if ( (cnt == FLASH_TOT_SECT) && (prot == 0) ) {
+		printf("Please Wait \n");
 		rc =  EraseFlash();
 		printf("done\n");
 	} else if (cnt > 0) {
