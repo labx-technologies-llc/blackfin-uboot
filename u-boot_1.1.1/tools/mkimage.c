@@ -90,7 +90,7 @@ table_entry_t arch_name[] = {
     {	IH_CPU_SPARC,	"sparc",	"SPARC",		},
     {	IH_CPU_SPARC64,	"sparc64",	"SPARC 64 Bit",		},
     {	IH_CPU_M68K,	"m68k",		"MC68000",		},
-    {   IH_CPU_BLACKFIN,"blackfin",     "blackfin",             },	 /* BFIN-LG */
+    {	IH_CPU_BLACKFIN,"blackfin",	"blackfin",		},
     {	-1,		"",		"",			},
 };
 
@@ -115,7 +115,7 @@ table_entry_t os_name[] = {
     {	IH_OS_U_BOOT,	"u-boot",	"U-Boot",		},
     {	IH_OS_RTEMS,	"rtems",	"RTEMS",		},
     {	IH_OS_ARTOS,	"artos",	"ARTOS",		},
-    {   IH_OS_UCLINUX,  "uClinux",      "UCLINUX",              },	/* BFIN-LG */
+    {	IH_OS_UCLINUX,	"uCLinux",	"UCLINUX",		},
     {	-1,		"",		"",			},
 };
 

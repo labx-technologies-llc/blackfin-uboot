@@ -50,7 +50,7 @@ LOAD_ADDR = 0x80F00000
 endif
 
 ifeq ($(ARCH),blackfin)
-LOAD_ADDR = 0x42000
+LOAD_ADDR = 0x1000000
 endif
 
 include $(TOPDIR)/config.mk

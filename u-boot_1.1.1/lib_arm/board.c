@@ -31,7 +31,6 @@
 #include <devices.h>
 #include <version.h>
 #include <net.h>
-#include <environment.h>
 
 #if (CONFIG_COMMANDS & CFG_CMD_NAND)
 void nand_init (void);

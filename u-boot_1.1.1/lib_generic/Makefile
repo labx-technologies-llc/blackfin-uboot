@@ -23,7 +23,9 @@
 
 include $(TOPDIR)/config.mk
 
+ifdef CONFIG_blackfin
 CFLAGS += -O0
+endif
 
 LIB	= libgeneric.a
 

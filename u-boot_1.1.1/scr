@@ -26,3 +26,4 @@ rm u-boot.stabstr
 rm u-boot.got
 rm u-boot.eram
 rm u-boot.bss
+
