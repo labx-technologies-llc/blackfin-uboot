@@ -29,10 +29,10 @@
 #include <asm/machdep.h>
 #include <asm/irq.h>
 #include <asm/bf533.h>
+#include "cpu.h"
 
-static unsigned long timer_count;
-void timer_int(void);
-void timer_init(void);
+static ulong timestamp;
+static ulong last_time;
 
 /* Functions just to satisfy the linker */
 void enable_interrupts(void)
@@ -48,17 +48,6 @@ int interrupt_init(void)
 {
 	return (0);
 }
-#if 0
-void udelay(unsigned long usec)
-{
-	unsigned long i=0;
-	
-	for(i=0;i<usec;i++) {
-		i++;
-		i--;
-	}
-}
-#endif
 
 void udelay(unsigned long usec)
 {
@@ -84,25 +73,53 @@ void udelay(unsigned long usec)
         return;
 }
 
-void timer_int(void)
-{
-#if 0
-	timer_count++;
-#endif
-}
-
 void timer_init(void)
 {
-#if 0
 	TCNTL = 0x1;
-	TSCALE = 0x95;
-	TCOUNT  = 0x105E;
-	TPERIOD = 0x105E;
+	TSCALE = 0x0;
+	TCOUNT  = MAX_TIM_LOAD;
+	TPERIOD = MAX_TIM_LOAD;
 	TCNTL = 0x7;
-#endif
+	asm("CSYNC;");
+
+	timestamp = 0;
+	last_time = 0;
 }
 
+/* Any network command or flash
+ * command is started get_timer shall  
+ * be called before TCOUNT gets reset,
+ * to implement the accurate timeouts. 
+ *
+ * How ever milliconds doesn't return
+ * the number that has been elapsed from
+ * the last reset.
+ *
+ *  As get_timer is used in the u-boot
+ *  only for timeouts this should be 
+ *  sufficient
+ */
 ulong get_timer(ulong base)
 {
-	return timer_count;
+	ulong milisec;
+
+	/* Number of clocks elapsed */
+	ulong clocks = (MAX_TIM_LOAD - TCOUNT);
+
+	/* Find if the TCOUNT is reset
+	   timestamp gives the number of times
+	   TCOUNT got reset */
+        if(clocks < last_time)
+		timestamp++;
+	last_time = clocks;
+
+	/* Get the number of milliseconds */
+	milisec = clocks/(CONFIG_VCO * 1000);
+
+	/* Find the number of millisonds 
+	   that got elapsed before this TCOUNT
+	   cycle */
+	milisec += timestamp * (MAX_TIM_LOAD/(CONFIG_VCO * 1000));
+
+	return milisec;
 }
