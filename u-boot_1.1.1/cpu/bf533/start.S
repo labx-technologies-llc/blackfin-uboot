@@ -32,6 +32,10 @@
  * (c) 1995, Dionne & Associates
  * (c) 1995, DKG Display Tech.
  */
+/*
+ * Note: A change in this file subsequently requires a change in
+ *       board/$(board_name)/config.mk for a valid u-boot.bin 
+ */
 
 #define ASSEMBLY
 
@@ -377,6 +381,7 @@ copy_end: nop;
 	r1 = p1;
 	r2 = p2;
 	r3 = r2 - r1;
+	r3 = r3 >> 2;
 	p3 = r3;
         lsetup (_clear_bss, _clear_bss_end ) lc1 = p3;
         CC = p2<=p1;
@@ -404,10 +409,8 @@ loop:
 	r0=r0-r2;
 	cc=r0==0x0;
 	if !cc jump loop;	
-	r4.l = (CFG_MONITOR_BASE & 0xFFFF);
-	r4.h = (CFG_MONITOR_BASE >> 16);
-	r6 = r4;
-	p0 = r6;
+	p0.l = (CFG_MONITOR_BASE & 0xFFFF);
+	p0.h = (CFG_MONITOR_BASE >> 16);
 	jump (p0);
 
 reset_start:
