@@ -43,10 +43,42 @@
 #define SHOW_BOOT_PROGRESS(arg)
 #endif
 
+#define CMD_LINE_ADDR 0xFF900000  /* L1 scratchpad */
+
+#ifdef SHARED_RESOURCES
+        extern void swap_to(int device_id);
+#endif
+
+static char *make_command_line(void);
+
 extern image_header_t header;
 extern int do_reset(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[]);
 void do_bootm_linux(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[],
 		    ulong addr, ulong * len_ptr, int verify)
 {
+	printf("Got here %x\n", addr);
 
+	int (*appl)(char *cmdline);
+	char *cmdline;
+
+	swap_to(FLASH);
+
+	appl = (int (*)(char *))ntohl(header.ih_ep);
+	printf("appl = %x\n", appl);
+	cmdline = make_command_line();
+
+	(*appl)(cmdline);
+}
+
+char *make_command_line(void)
+{
+    char *dest = (char *) CMD_LINE_ADDR;
+    char *bootargs;
+
+    if ( (bootargs = getenv("bootargs")) == NULL )
+	return NULL;
+
+    strncpy(dest, bootargs, 0x1000);
+    dest[0xfff] = 0;
+    return dest;
 }
