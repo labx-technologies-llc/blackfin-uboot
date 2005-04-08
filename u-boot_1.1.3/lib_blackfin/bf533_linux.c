@@ -56,15 +56,15 @@ extern int do_reset(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[]);
 void do_bootm_linux(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[],
 		    ulong addr, ulong * len_ptr, int verify)
 {
-	printf("Got here %x\n", addr);
-
 	int (*appl)(char *cmdline);
 	char *cmdline;
 
+#ifdef SHARED_RESOURCES
 	swap_to(FLASH);
+#endif
 
 	appl = (int (*)(char *))ntohl(header.ih_ep);
-	printf("appl = %x\n", appl);
+	printf("Starting Kernel at = %x\n", appl);
 	cmdline = make_command_line();
 
 	(*appl)(cmdline);
