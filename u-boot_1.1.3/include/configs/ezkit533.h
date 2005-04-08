@@ -165,7 +165,7 @@
 */
 #define AMGCTLVAL               0xFF
 #define AMBCTL0VAL              0x7BB07BB0
-#define AMBCTL1VAL              0x22547BB0
+#define AMBCTL1VAL              0xFFC27BB0
 
 #define CONFIG_VDSP		1
 
