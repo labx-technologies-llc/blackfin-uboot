@@ -68,6 +68,18 @@
 #define CONFIG_SCLK_DIV			4
 
 /*
+ * Network Settings
+ */
+/* network support */
+#define CONFIG_IPADDR           192.168.0.15
+#define CONFIG_NETMASK          255.255.255.0
+#define CONFIG_GATEWAYIP        192.168.0.1
+#define CONFIG_SERVERIP         192.168.0.2
+#define CONFIG_HOSTNAME         STAMP
+/* To remove hardcoding and enable MAC storage in EEPROM  */
+/* #define CONFIG_ETHADDR               02:80:ad:20:31:b8 */
+
+/*
  * Command settings
  *
  */
@@ -76,6 +88,8 @@
 
 #define CONFIG_BOOTDELAY		5
 #define CONFIG_BOOT_RETRY_TIME		-1	/* Enable this if bootretry required, currently its disabled */
+#define CONFIG_BOOTCOMMAND 		"bootm 0x20100000"
+#define CONFIG_AUTOBOOT_PROMPT		"autoboot in %d seconds\n"
 
 #define CONFIG_COMMANDS			(CONFIG_CMD_DFL	| \
 					 CFG_CMD_PING	| \
