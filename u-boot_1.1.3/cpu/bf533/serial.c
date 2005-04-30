@@ -56,10 +56,16 @@ unsigned long pll_div_fact;
 void calc_baud(void)
 {
 	unsigned char i;
+	int	temp;
 
 	for(i = 0; i < sizeof(baud_table)/sizeof(int); i++) {
-		hw_baud_table[i].dl_high = ((CONFIG_SCLK_HZ/(baud_table[i]*16)) >> 8)& 0xFF;
-		hw_baud_table[i].dl_low = (CONFIG_SCLK_HZ/(baud_table[i]*16)) & 0xFF;
+		temp =  CONFIG_SCLK_HZ/(baud_table[i]*8);
+		if ( temp && 0x1 == 1 ) {
+			temp++;
+		}
+		temp = temp/2;
+		hw_baud_table[i].dl_high = (temp >> 8)& 0xFF;
+		hw_baud_table[i].dl_low = (temp) & 0xFF;
 	}
 }
 
