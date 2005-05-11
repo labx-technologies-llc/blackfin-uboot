@@ -106,6 +106,10 @@ endif
 ifeq ($(CPU),bf533)
 OBJS += cpu/$(CPU)/start1.o
 OBJS += cpu/$(CPU)/interrupt.o
+OBJS += cpu/$(CPU)/cache.o
+OBJS += cpu/$(CPU)/cplbhdlr.o
+OBJS += cpu/$(CPU)/cplbmgr.o
+OBJS += cpu/$(CPU)/flush.o
 endif
 
 LIBS  = lib_generic/libgeneric.a

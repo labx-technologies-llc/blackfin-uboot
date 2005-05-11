@@ -66,7 +66,14 @@ void do_bootm_linux(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[],
 	appl = (int (*)(char *))ntohl(header.ih_ep);
 	printf("Starting Kernel at = %x\n", appl);
 	cmdline = make_command_line();
-
+	if(icache_status){
+		flush_instruction_cache();
+		icache_disable();
+		}
+	if(dcache_status){
+		flush_data_cache();
+		dcache_disable();
+		}
 	(*appl)(cmdline);
 }
 

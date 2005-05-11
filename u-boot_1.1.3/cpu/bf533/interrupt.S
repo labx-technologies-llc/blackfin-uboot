@@ -160,7 +160,8 @@ _EVENT13:
 
 .global _EVENT14
 _EVENT14:
-	RAISE 14;
+/*	RAISE 14;	*/
+	CALL	_cplb_hdr;
 	JUMP.S _EXIT;
 
 .global _EVENT19
