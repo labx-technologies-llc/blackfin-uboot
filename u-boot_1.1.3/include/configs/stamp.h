@@ -65,7 +65,7 @@
 #define CONFIG_CCLK_DIV			1
 /* CONFIG_SCLK_DIV controls what the peripheral clock divider is */
 /* Values can range from 1-15                                    */
-#define CONFIG_SCLK_DIV			4
+#define CONFIG_SCLK_DIV			5
 
 /*
  * Network Settings
