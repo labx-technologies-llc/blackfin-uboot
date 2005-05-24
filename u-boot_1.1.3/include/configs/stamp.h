@@ -96,6 +96,7 @@
 					 CFG_CMD_ELF	| \
 					 CFG_CMD_I2C	| \
 					 CFG_CMD_CACHE	| \
+					 CFG_CMD_JFFS2  | \
 					 CFG_CMD_DATE)
 
 /* This must be included AFTER the definition of CONFIG_COMMANDS (if any) */
@@ -158,6 +159,12 @@
 #define CFG_FLASH_ERASE_TOUT		30000	/* Timeout for Chip Erase (in ms) */
 #define CFG_FLASH_ERASEBLOCK_TOUT	5000	/* Timeout for Block Erase (in ms) */
 #define CFG_FLASH_WRITE_TOUT		1	/* Timeout for Flash Write (in ms) */
+
+/* JFFS Partition offset set  */
+#define CFG_JFFS2_FIRST_BANK 0
+#define CFG_JFFS2_NUM_BANKS  1
+/* 512k reserved for u-boot */
+#define CFG_JFFS2_FIRST_SECTOR 		11
 
 /* 
  * following timeouts shall be used once the 
