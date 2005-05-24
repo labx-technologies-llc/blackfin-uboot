@@ -59,6 +59,7 @@
 					 CFG_CMD_PING	| \
 					 CFG_CMD_ELF	| \
 					 CFG_CMD_I2C	| \
+					 CFG_CMD_JFFS2	| \
 					 CFG_CMD_DATE)
 
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
@@ -100,6 +101,13 @@
 #define	CFG_ENV_IS_IN_FLASH	1
 #define CFG_ENV_ADDR		0x20020000
 #define	CFG_ENV_SECT_SIZE	0x10000	/* Total Size of Environment Sector */
+
+/* JFFS Partition offset set  */
+#define CFG_JFFS2_FIRST_BANK 0
+#define CFG_JFFS2_NUM_BANKS  1
+/* 512k reserved for u-boot */
+#define CFG_JFFS2_FIRST_SECTOR                 11
+
 
 /*
  * Stack sizes
