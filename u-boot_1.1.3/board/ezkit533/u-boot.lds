@@ -68,7 +68,7 @@ SECTIONS
     cpu/bf533/interrupt.o	(.text)
     cpu/bf533/serial.o		(.text)
     common/dlmalloc.o		(.text)
-    lib_blackfin/bf533_string.o	(.text)
+/*  lib_blackfin/bf533_string.o	(.text) */
     lib_generic/vsprintf.o	(.text)
     lib_generic/crc32.o		(.text)
     lib_generic/zlib.o		(.text)
