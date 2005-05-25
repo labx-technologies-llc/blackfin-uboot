@@ -30,6 +30,8 @@
 #include <asm/page.h>
 #include <asm/cpu/defBF533.h>
 
+void *dma_memcpy(void *,const void *,size_t);
+
 char *strcpy(char *dest, const char *src)
 {
 	char *xdest = dest;
@@ -125,10 +127,30 @@ int strncmp(const char *cs, const char *ct, size_t count)
 void * memcpy(void * dest,const void *src,size_t count)
 {
 	char *tmp = (char *) dest, *s = (char *) src;
-	int status;
+	
+/* Turn off the cache, if destination in the L1 memory */
+	if ( (tmp >= (char *)L1_ISRAM) && (tmp < (char *)L1_ISRAM_END)
+		|| (tmp >= (char *)DATA_BANKA_SRAM) && (tmp < DATA_BANKA_SRAM_END)
+	    || (tmp >= (char *)DATA_BANKB_SRAM) && (tmp < DATA_BANKB_SRAM_END) ){
+			if(icache_status()){
+					blackfin_icache_flush_range(src, src+count);
+					icache_disable();
+			}
+			if(dcache_status()){
+					blackfin_dcache_flush_range(src, src+count);
+					dcache_disable();
+			}
+			dma_memcpy(dest,src,count);
+	}else{
+		while(count--)
+			*tmp++ = *s++;
+	}
+	return dest;
+}
 
-	if ((tmp >= (char*)L1_ISRAM) && (tmp < (char*)L1_ISRAM_END)) {
-
+void *dma_memcpy(void * dest,const void *src,size_t count)
+{
+	
 		*pMDMA_D0_IRQ_STATUS = DMA_DONE | DMA_ERR;
 
 		/* Copy sram functions from sdram to sram */
@@ -150,55 +172,14 @@ void * memcpy(void * dest,const void *src,size_t count)
 		*pMDMA_S0_CONFIG = (DMAEN);
 		asm("ssync;");
 
-		/* set to read, enable interrupt for wakeup */
-		/* Enable Destination DMA */
-		*pMDMA_D0_CONFIG = (DI_EN | WNR | DMAEN);
-
-		while(!((status = (*pMDMA_D0_IRQ_STATUS)) & (DMA_DONE | DMA_ERR)));
-
-		if(status & (DMA_ERR))
-			fprintf(stderr, "DMA Error \n");
-
-		/* Clear interrupt */
-		*pMDMA_D0_IRQ_STATUS = 0x1;
+		*pMDMA_D0_CONFIG = ( WNR | DMAEN);
 		
-		*pMDMA_D0_IRQ_STATUS = DMA_DONE | DMA_ERR;
+		while(*pMDMA_D0_IRQ_STATUS & DMA_RUN){
+			*pMDMA_D0_IRQ_STATUS |= (DMA_DONE | DMA_ERR);
+		}
+		*pMDMA_D0_IRQ_STATUS |= (DMA_DONE | DMA_ERR);
 
-		/* Perform a data DMA */
-		*pMDMA_D0_START_ADDR = (volatile void **)DATA_BANKA_SRAM;
-		/* Setup destination xcount */
-		*pMDMA_D0_X_COUNT = count ;
-		/* Setup destination xmodify */
-		*pMDMA_D0_X_MODIFY = 1;
-
-		/* Setup Source start address */
-		*pMDMA_S0_START_ADDR = (volatile void **)src;
-		/* Setup Source xcount */
-		*pMDMA_S0_X_COUNT = count;
-		/* Setup Source xmodify */
-		*pMDMA_S0_X_MODIFY = 1;
-
-		/* Enable source DMA */
-		*pMDMA_S0_CONFIG = (DMAEN);
-		asm("ssync;");
-
-		/* set to read, enable interrupt for wakeup */
-		/* Enable Destination DMA */
-		*pMDMA_D0_CONFIG = (DI_EN | WNR | DMAEN);
-
-		while(!((status = (*pMDMA_D0_IRQ_STATUS)) & (DMA_DONE | DMA_ERR)));
-
-		if(status & (DMA_ERR))
-			fprintf(stderr, "DMA Error \n");
-
-		/* Clear interrupt */
-		*pMDMA_D0_IRQ_STATUS = 0x1;
-
-	
-	} else {
-		while (count--)
-			*tmp++ = *s++;
-	}
-
-	return dest;
+		dest += count;
+		src  += count;
+		return dest;
 }
