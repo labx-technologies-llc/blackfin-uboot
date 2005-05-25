@@ -19,6 +19,8 @@
 #include <net.h>
 #include <elf.h>
 
+#define CMD_LINE_ADDR 0xFF900000  /* L1 scratchpad */
+static char *make_command_line(void);
 
 #if (CONFIG_COMMANDS & CFG_CMD_ELF)
 
@@ -36,6 +38,7 @@ int do_bootelf (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 {
 	unsigned long addr;		/* Address of the ELF image     */
 	unsigned long rc;		/* Return value from user code  */
+	char *cmdline;
 
 	/* -------------------------------------------------- */
 	int rcode = 0;
@@ -59,16 +62,27 @@ int do_bootelf (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	if (dcache_status ())
 		dcache_disable ();
 
-	/*
-	 * pass address parameter as argv[0] (aka command name),
-	 * and all remaining args
-	 */
-	rc = ((ulong (*)(int, char *[])) addr) (--argc, &argv[1]);
+	/* pass cmdline to the kernel. */
+	cmdline = make_command_line();
+	rc = ((ulong (*)(char *)) addr) (cmdline);
 	if (rc != 0)
 		rcode = 1;
 
 	printf ("## Application terminated, rc = 0x%lx\n", rc);
 	return rcode;
+}
+
+static char *make_command_line(void)
+{
+    char *dest = (char *) CMD_LINE_ADDR;
+    char *bootargs;
+
+    if ( (bootargs = getenv("bootargs")) == NULL )
+	return NULL;
+
+    strncpy(dest, bootargs, 0x1000);
+    dest[0xfff] = 0;
+    return dest;
 }
 
 /* ======================================================================

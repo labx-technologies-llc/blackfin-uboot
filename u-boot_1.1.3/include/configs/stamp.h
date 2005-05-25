@@ -98,6 +98,7 @@
 					 CFG_CMD_CACHE	| \
 					 CFG_CMD_JFFS2  | \
 					 CFG_CMD_DATE)
+#define CONFIG_BOOTARGS "root=/dev/mtdblock0 ip=192.168.0.15:192.168.0.2:192.168.0.1:255.255.255.0:stamp:eth0:off"	
 
 /* This must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
