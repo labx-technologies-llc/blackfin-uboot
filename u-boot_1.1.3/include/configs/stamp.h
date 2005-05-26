@@ -307,6 +307,8 @@
 #define CFG_GBL_DATA_ADDR		(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
 #define CONFIG_STACKBASE		(CFG_GBL_DATA_ADDR  - 4)
 
+#undef  CFG_LARGE_IMAGE_LEN		/* Large Image Length */
+
 /*
  * Stack sizes
  */

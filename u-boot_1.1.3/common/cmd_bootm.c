@@ -146,7 +146,11 @@ int do_bootm (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	ulong	addr;
 	ulong	data, len, checksum;
 	ulong  *len_ptr;
+#ifdef CFG_LARGE_IMAGE_LEN
+	uint	unc_len = CFG_LARGE_IMAGE_LEN;
+#else
 	uint	unc_len = 0x400000;
+#endif
 	int	i, verify;
 	char	*name, *s;
 	int	(*appl)(int, char *[]);
