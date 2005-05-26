@@ -76,6 +76,8 @@
 #define CONFIG_GATEWAYIP        192.168.0.1
 #define CONFIG_SERVERIP         192.168.0.2
 #define CONFIG_HOSTNAME         STAMP
+#define CONFIG_ROOTPATH			/checkout/uClinux-dist/romfs
+
 /* To remove hardcoding and enable MAC storage in EEPROM  */
 /* #define CONFIG_ETHADDR               02:80:ad:20:31:b8 */
 
@@ -88,7 +90,7 @@
 
 #define CONFIG_BOOTDELAY		5
 #define CONFIG_BOOT_RETRY_TIME		-1	/* Enable this if bootretry required, currently its disabled */
-#define CONFIG_BOOTCOMMAND 		"bootm 0x20100000"
+#define CONFIG_BOOTCOMMAND 		"run ramboot"
 #define CONFIG_AUTOBOOT_PROMPT		"autoboot in %d seconds\n"
 
 #define CONFIG_COMMANDS			(CONFIG_CMD_DFL	| \
@@ -98,7 +100,21 @@
 					 CFG_CMD_CACHE	| \
 					 CFG_CMD_JFFS2  | \
 					 CFG_CMD_DATE)
-#define CONFIG_BOOTARGS "root=/dev/mtdblock0 ip=192.168.0.15:192.168.0.2:192.168.0.1:255.255.255.0:stamp:eth0:off"	
+#define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"	
+
+#define CONFIG_EXTRA_ENV_SETTINGS												\
+	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"							\
+	"nfsargs=setenv bootargs root=/dev/nfs rw "									\
+	"nfsroot=$(serverip):$(rootpath)\0"											\
+	"addip=setenv bootargs $(bootargs) "										\
+	"ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask)"							\
+	":$(hostname):eth0:off\0"													\
+    "ramboot=tftpboot 0x1000000 linux;"											\
+	"run ramargs;run addip;bootelf\0"											\
+	"nfsboot=tftpboot 0x1000000 linux;"											\
+	"run nfsargs;run addip;bootelf\0"											\
+	"flashboot=bootm 0x20100000\0"												\
+	""
 
 /* This must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
