@@ -29,6 +29,15 @@
 #include <asm/mem_init.h>
 #include "stamp.h"
 
+#define STATUS_LED_OFF 0
+#define STATUS_LED_ON  1 	
+
+#ifdef CONFIG_SHOW_BOOT_PROGRESS
+# define SHOW_BOOT_PROGRESS(arg)	show_boot_progress(arg)
+#else
+# define SHOW_BOOT_PROGRESS(arg)	
+#endif
+
 int checkboard(void)
 {
 	printf("CPU:   ADSP BF533 Rev.: 0.%d\n", *pCHIPID >> 28);
@@ -208,3 +217,62 @@ void cf_outsw(unsigned short *addr, unsigned short *sect_buf, int words)
 	asm("ssync;");
 }
 #endif
+
+void stamp_led_set(int LED1, int LED2, int LED3)
+{
+	*pFIO_INEN  &= ~( PF2 | PF3 | PF4);
+	*pFIO_DIR   |=  ( PF2 | PF3 | PF4);
+	
+	if(LED1 == STATUS_LED_OFF)
+		*pFIO_FLAG_S = PF2;
+	else
+		*pFIO_FLAG_C = PF2;
+	if(LED2 == STATUS_LED_OFF)
+		*pFIO_FLAG_S = PF3;
+	else
+		*pFIO_FLAG_C = PF3;
+	if(LED3 == STATUS_LED_OFF)
+		*pFIO_FLAG_S = PF4;
+	else
+		*pFIO_FLAG_C = PF4;
+	asm("ssync;");
+}
+
+void show_boot_progress(int status)
+{
+	switch(status){
+		case 1:	
+			stamp_led_set(STATUS_LED_OFF,STATUS_LED_OFF,STATUS_LED_ON);
+			break;
+		case 2:
+			stamp_led_set(STATUS_LED_OFF,STATUS_LED_ON,STATUS_LED_OFF);
+			break;
+		case 3:
+			stamp_led_set(STATUS_LED_OFF,STATUS_LED_ON,STATUS_LED_ON);
+			break;	
+		case 4:
+			stamp_led_set(STATUS_LED_ON,STATUS_LED_OFF,STATUS_LED_OFF);			
+			break;
+		case 5:
+		case 6:
+			stamp_led_set(STATUS_LED_ON,STATUS_LED_OFF,STATUS_LED_ON);			
+			break;
+		case 7:
+		case 8:
+			stamp_led_set(STATUS_LED_ON,STATUS_LED_ON,STATUS_LED_OFF);			
+			break;
+		case 9:
+		case 10:
+		case 11:
+		case 12:
+		case 13:
+		case 14:
+		case 15:
+			stamp_led_set(STATUS_LED_OFF,STATUS_LED_OFF,STATUS_LED_OFF);			
+			break;
+		default:
+			stamp_led_set(STATUS_LED_ON,STATUS_LED_ON,STATUS_LED_ON);			
+			break;
+	}
+}
+

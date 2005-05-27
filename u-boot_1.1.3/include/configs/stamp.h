@@ -309,6 +309,8 @@
 
 #define CFG_LARGE_IMAGE_LEN	0x4000000	/* Large Image Length, set to 64 Meg */
 
+#define CONFIG_SHOW_BOOT_PROGRESS	1	/* Show boot progress on LEDs */
+
 /*
  * Stack sizes
  */
