@@ -11,6 +11,8 @@
 #ifndef _CPLB_H
 #define _CPLB_H
 
+#define CONFIG_BLKFIN_WT
+
 #define CPLB_ENABLE_ICACHE_P	0
 #define CPLB_ENABLE_DCACHE_P	1
 #define CPLB_ENABLE_DCACHE2_P	2

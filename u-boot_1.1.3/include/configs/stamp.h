@@ -99,6 +99,7 @@
 					 CFG_CMD_I2C	| \
 					 CFG_CMD_CACHE	| \
 					 CFG_CMD_JFFS2  | \
+					 CFG_CMD_EEPROM | \
 					 CFG_CMD_DATE)
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"	
 
@@ -114,6 +115,9 @@
 	"nfsboot=tftpboot 0x1000000 linux;"											\
 	"run nfsargs;run addip;bootelf\0"											\
 	"flashboot=bootm 0x20100000\0"												\
+	"update=tftpboot 0x1000000 u-boot.bin;"											\
+	"protect off 0x20000000 0x2007FFFF;"											\
+	"erase 0x20000000 0x2007FFFF;cp.b 0x1000000 0x20000000 $(filesize)\0"							\
 	""
 
 /* This must be included AFTER the definition of CONFIG_COMMANDS (if any) */
@@ -310,6 +314,8 @@
 #define CFG_LARGE_IMAGE_LEN	0x4000000	/* Large Image Length, set to 64 Meg */
 
 #define CONFIG_SHOW_BOOT_PROGRESS	1	/* Show boot progress on LEDs */
+
+#define CONFIG_SPI
 
 /*
  * Stack sizes
