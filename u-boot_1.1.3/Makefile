@@ -110,6 +110,7 @@ OBJS += cpu/$(CPU)/cache.o
 OBJS += cpu/$(CPU)/cplbhdlr.o
 OBJS += cpu/$(CPU)/cplbmgr.o
 OBJS += cpu/$(CPU)/flush.o
+OBJS += cpu/$(CPU)/init_sdram.o
 endif
 
 LIBS  = lib_generic/libgeneric.a

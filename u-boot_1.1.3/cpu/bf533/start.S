@@ -71,6 +71,8 @@
 .global _initialize;
 .global _exit;
 .global flashdataend;
+.global init_sdram;
+
 
 .text
 _start:
@@ -206,34 +208,22 @@ wait_for_pll_stab:
 	r0.l = w[p0];
 	cc = bittst(r0, 3);
 	if !cc jump skip_sdram_enable;
-
-	/* SDRAM initialization */
-	p0.l = (EBIU_SDGCTL & 0xFFFF);
-	p0.h = (EBIU_SDGCTL >> 16);	/* SDRAM Memory Global Control Register */
-	r0.h = (mem_SDGCTL >> 16);
-	r0.l = (mem_SDGCTL & 0xFFFF);
-	[p0] = r0;
-	ssync;
-
-	p0.l = (EBIU_SDBCTL & 0xFFFF);
-	p0.h = (EBIU_SDBCTL >> 16);	/* SDRAM Memory Bank Control Register */
-	r0 = mem_SDBCTL;
-	w[p0] = r0.l;
-	ssync;
-
-	p0.l = (EBIU_SDRRC & 0xFFFF);
-	p0.h = (EBIU_SDRRC >> 16);	/* SDRAM Refresh Rate Control Register */
-	r0 = mem_SDRRC;
-	w[p0] = r0.l;
-	ssync;
-
+	
+	sp.l = (0xffb01000 & 0xFFFF);
+	sp.h = (0xffb01000 >> 16);
+	call init_sdram;
+	
 skip_sdram_enable:
 	nop;
 
 #ifndef	CFG_NO_FLASH
 	/* relocate into to RAM */
-	p1.l = (CFG_FLASH_BASE & 0xffff);
-	p1.h = (CFG_FLASH_BASE >> 16);
+	call get_pc;
+offset:
+	r1.l = ((offset -start) & 0xffff);
+	r1.h = ((offset -start) >> 16);
+	r0 = r0 - r1;
+	p1 = r0;
 	p2.l = (CFG_MONITOR_BASE & 0xffff);
 	p2.h = (CFG_MONITOR_BASE >> 16);
 	r0.l = (CFG_MONITOR_LEN & 0xffff);
@@ -433,3 +423,6 @@ reset_end: nop;
 
 _exit:
 	jump.s	_exit;
+get_pc:
+	r0 = rets;
+	rts;
