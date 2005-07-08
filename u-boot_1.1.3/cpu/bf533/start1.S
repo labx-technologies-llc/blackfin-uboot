@@ -24,8 +24,8 @@
 
 #define ASSEMBLY
 #include <linux/config.h>
-#include <asm/blackfin.h>
 #include <config.h>
+#include <asm/blackfin.h>
 
 .global	start1;
 .global	_start1;

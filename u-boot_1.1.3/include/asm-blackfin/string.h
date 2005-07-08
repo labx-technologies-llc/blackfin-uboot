@@ -31,7 +31,8 @@
 
 #include <asm/setup.h>
 #include <asm/page.h>
-#include <asm/cpu/defBF533.h>
+#include <config.h>
+#include <asm/blackfin.h>
 
 #define __HAVE_ARCH_STRCPY
 #define __HAVE_ARCH_STRNCPY

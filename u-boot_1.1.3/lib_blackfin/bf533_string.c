@@ -28,7 +28,8 @@
 #include <common.h>
 #include <asm/setup.h>
 #include <asm/page.h>
-#include <asm/cpu/defBF533.h>
+#include <config.h>
+#include <asm/blackfin.h>
 
 void *dma_memcpy(void *,const void *,size_t);
 

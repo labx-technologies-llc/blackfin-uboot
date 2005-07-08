@@ -80,7 +80,7 @@ void serial_setbrg(void)
 		if (gd->baudrate == baud_table[i])
 			break;
 	}
-
+	
 	/* Enable UART */
 	*pUART_GCTL |= UART_GCTL_UCEN;
 	asm("ssync;");

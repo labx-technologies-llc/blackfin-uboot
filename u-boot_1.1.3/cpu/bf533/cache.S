@@ -2,7 +2,9 @@
 
 #define ASSEMBLY
 #include <asm/linkage.h>
-#include <asm/cpu/def_LPBlackfin.h>
+/*#include <asm/cpu/def_LPBlackfin.h>*/
+#include <config.h>
+#include <asm/blackfin.h>
 
 .text
 .align 2

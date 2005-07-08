@@ -37,7 +37,8 @@
 #include <common.h>
 #include <asm/machdep.h>
 #include <asm/irq.h>
-#include <asm/cpu/defBF533.h>
+#include <config.h>
+#include <asm/blackfin.h>
 #include "cpu.h"
 
 static ulong timestamp;

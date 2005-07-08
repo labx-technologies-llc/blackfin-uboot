@@ -10,6 +10,7 @@
 
 #include <asm/linkage.h>
 #include <asm/cplb.h>
+#include <config.h>
 #include <asm/blackfin.h>
 
 .text

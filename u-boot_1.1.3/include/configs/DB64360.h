@@ -38,9 +38,12 @@
  * History:
  *
  *	$Log$
- *	Revision 1.1  2005/03/13 21:30:40  klingler
- *	Initial revision
+ *	Revision 1.2  2005/07/08 05:09:08  aubrey
+ *	Add basic support for bf537 in uboot
  *
+ *	Revision 1.1.1.1  2005/03/13 21:30:40  klingler
+ *	Initial u-boot-1.1.3 import
+ *	
  *	Revision 1.1.1.1  2005/03/06 14:46:32  klingler
  *	Initial u-boot import from sourceforge CVS 1.1.3 version Marh 6th 2005
  *	

@@ -1,8 +1,8 @@
 #define ASSEMBLY
 
 #include <linux/config.h>
-#include <asm/blackfin.h>
 #include <config.h>
+#include <asm/blackfin.h>
 #include <asm/mem_init.h>
 .global init_sdram;
 

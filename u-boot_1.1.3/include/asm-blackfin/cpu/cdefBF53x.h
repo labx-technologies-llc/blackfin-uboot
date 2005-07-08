@@ -15,12 +15,18 @@
 	#include <asm/cpu/cdefBF532.h>
 #elif defined(__ADSPBF533__)
 	#include <asm/cpu/cdefBF533.h>
+	#include <asm/cpu/defBF533_extn.h>
+	#include <asm/cpu/bf533_serial.h>
+#elif defined(__ADSPBF537__)
+	#include <asm/cpu/cdefBF537.h>
+	#include <asm/cpu/defBF533_extn.h>
+	#include <asm/cpu/bf533_serial.h>
 #elif defined(__ADSPBF561__)
 	#include <asm/cpu/cdefBF561.h>
 #elif defined(__ADSPBF535__)
-	#include <asm/cpu/cdefBF535.h>
+	#include <asm/cpu/cdefBF5d35.h>
 #elif defined(__AD6532__)
-	#include <sam/cpu/cdefAD6532.h>
+	#include <asm/cpu/cdefAD6532.h>
 #else
 	#if defined(__ADSPLPBLACKFIN__)
 		#include <asm/cpu/cdefBF532.h>

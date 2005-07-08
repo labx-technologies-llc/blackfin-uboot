@@ -38,8 +38,8 @@
 #define ASSEMBLY
 
 #include <linux/config.h>
-#include <asm/blackfin.h>
 #include <config.h>
+#include <asm/blackfin.h>
 #include <asm/mem_init.h>
 
 #if (CONFIG_CCLK_DIV == 1)
@@ -283,6 +283,30 @@ _real_start:
 	p0.h = (WDOG_CTL >> 16);
 	r0 = WATCHDOG_DISABLE(z);
 	w[p0] = r0;
+#endif
+
+#ifdef CONFIG_BF537
+/* Initialise General-Purpose I/O Modules on BF537 */
+/* Rev 0.0 Anomaly 05000212 - PORTx_FER, PORT_MUX Registers Do Not accept "writes" correctly: */
+        p0.h = hi(PORTF_FER);
+        p0.l = lo(PORTF_FER);
+        R0.L = W[P0]; //Read
+	nop;
+	nop;
+	nop;
+        ssync;
+        R0 = 0x000F(Z);
+        W[P0] = R0.L; //Write
+	nop;
+	nop;
+	nop;
+        ssync;
+        W[P0] = R0.L; /* Enable peripheral function of PORTF for UART0 and UART1 */
+	nop;
+	nop;
+	nop;
+        ssync;
+                                                                                                                                                             
 #endif
 
 	/* Code for initializing Async mem banks */
