@@ -27,12 +27,11 @@
 
 #include <common.h>
 #if defined(CONFIG_MISC_INIT_R)
-#include "psd4256.h"
 #endif
 
 int checkboard(void)
 {
-	printf("CPU:   ADSP BF537 Rev.: 0.%d\n", 3);
+	printf("CPU:   ADSP BF537 Rev.: 1.0.1\n");
 	printf("Board: ADI BF537 stamp board\n");
 	printf("       Support: http://blackfin.uclinux.org/\n");
 	printf("       Richard Klingler <richard@uclinux.net>\n");
@@ -63,9 +62,5 @@ long int initdram(int board_type)
 /* miscellaneous platform dependent initialisations */
 int misc_init_r(void)
 {
-	/* Set direction bits for Video en/decoder reset as output	*/
-	*(volatile unsigned char *)(CFG_FLASH1_BASE + PSD_PORTA_DIR) = PSDA_VDEC_RST | PSDA_VENC_RST;
-	/* Deactivate Video en/decoder reset lines			*/
-	*(volatile unsigned char *)(CFG_FLASH1_BASE + PSD_PORTA_DOUT) = PSDA_VDEC_RST | PSDA_VENC_RST;
 }
 #endif

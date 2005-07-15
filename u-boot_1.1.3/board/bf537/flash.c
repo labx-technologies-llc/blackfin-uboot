@@ -41,19 +41,15 @@ unsigned long flash_get_size(ulong baseaddr, flash_info_t * info,
 
 	id = get_codes();
 	if(FlagDev)	{
-#ifdef DEBUG
-		printf("Device ID of the Flash is %x\n", id);
-#endif
 		FlagDev = 0;
 	}
 	info->flash_id = id;
-
 	switch (bank_flag) {
 	case 0:
 		for (i = PriFlashABegin; i < SecFlashABegin; i++)
 			info->start[i] = (baseaddr + (i * AFP_SectorSize1));
-		info->size = 0x200000;
-		info->sector_count = 32;
+		info->size = 0x400000;
+		info->sector_count = 67;
 		break;
 	case 1:
 		info->start[0] = baseaddr + SecFlashASec1Off;
@@ -77,35 +73,24 @@ unsigned long flash_get_size(ulong baseaddr, flash_info_t * info,
 
 unsigned long flash_init(void)
 {
-	unsigned long size_b0, size_b1, size_b2;
+	unsigned long size_b;
 	int i;
 
-	size_b0 = size_b1 = size_b2 = 0;
-#ifdef DEBUG
-	printf("Flash Memory Start 0x%x\n", CFG_FLASH_BASE);
-	printf("Memory Map for the Flash\n");
-	printf("0x20000000 - 0x200FFFFF Flash A Primary (1MB)\n");
-	printf("0x20100000 - 0x201FFFFF Flash B Primary (1MB)\n");
-	printf("0x20200000 - 0x2020FFFF Flash A Secondary (64KB)\n");
-	printf("0x20280000 - 0x2028FFFF Flash B Secondary (64KB)\n");
-	printf("Please type command flinfo for information on Sectors \n");
-#endif
+	size_b = 0;
 	for (i = 0; i < CFG_MAX_FLASH_BANKS; ++i) {
 		flash_info[i].flash_id = FLASH_UNKNOWN;
 	}
 
-	size_b0 = flash_get_size(CFG_FLASH0_BASE, &flash_info[0], 0);
-	size_b1 = flash_get_size(CFG_FLASH0_BASE, &flash_info[1], 1);
-	size_b2 = flash_get_size(CFG_FLASH0_BASE, &flash_info[2], 2);
+	size_b = flash_get_size(CFG_FLASH_BASE, &flash_info[0], 0);
 
-	if (flash_info[0].flash_id == FLASH_UNKNOWN || size_b0 == 0) {
+	if (flash_info[0].flash_id == FLASH_UNKNOWN || size_b == 0) {
 		printf("## Unknown FLASH on Bank 0 - Size = 0x%08lx = %ld MB\n",
-			size_b0, size_b0 >> 20);
+			size_b, size_b >> 20);
 	}
 
-	(void)flash_protect(FLAG_PROTECT_SET,CFG_FLASH0_BASE,(flash_info[0].start[2] - 1),&flash_info[0]);
+	(void)flash_protect(FLAG_PROTECT_SET,CFG_FLASH_BASE,(flash_info[0].start[2] - 1),&flash_info[0]);
 
-	return (size_b0 + size_b1 + size_b2);
+	return (size_b);
 }
 
 void flash_print_info(flash_info_t * info)
@@ -292,8 +277,6 @@ int read_flash(long nOffset, int *pnValue)
 	int nValue = 0x0;
 	long addr = (CFG_FLASH_BASE + nOffset);
 
-	if (nOffset != 0x2)
-		reset_flash();
 	asm("ssync;");
 	nValue = *(volatile unsigned short *) addr;
 	asm("ssync;");
@@ -421,7 +404,7 @@ int get_codes()
 	write_flash(WRITESEQ2, GETCODEDATA2);
 	write_flash(WRITESEQ3, GETCODEDATA3);
 
-	read_flash(0x0002, &dev_id);
+	read_flash(0x0400, &dev_id);
 	dev_id &= 0x00FF;
 
 	reset_flash();

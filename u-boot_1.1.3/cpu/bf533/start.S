@@ -306,7 +306,26 @@ _real_start:
 	nop;
 	nop;
         ssync;
-                                                                                                                                                             
+
+ 	p0.h = hi(PORTH_FER);
+        p0.l = lo(PORTH_FER);
+        R0.L = W[P0]; //Read
+        nop;
+        nop;
+        nop;
+        ssync;
+        R0 = 0xFFFF(Z);
+        W[P0] = R0.L; //Write
+        nop;
+        nop;
+        nop;
+        ssync;
+        W[P0] = R0.L; /* Enable peripheral function of PORTH for MAC */
+        nop;
+        nop;
+        nop;
+        ssync;
+
 #endif
 
 	/* Code for initializing Async mem banks */

@@ -73,8 +73,10 @@ BIN    += sched.bin sched
 endif
 
 ifeq ($(ARCH),blackfin)
+ifneq ($(BOARD),bf537)
 SREC	+= smc91111_eeprom.srec
 BIN 	+= smc91111_eeprom.bin smc91111_eeprom
+endif
 endif
 
 # The following example is pretty 8xx specific...

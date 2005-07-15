@@ -183,7 +183,7 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	gd->flags |= GD_FLG_RELOC;	/* tell others: relocation done */
 	bd = gd->bd;
 
-#if	CONFIG_STAMP
+#if	CONFIG_STAMP || CONFIG_BF537
 	/* There are some other pointer constants we must deal with */
 	/* configure available FLASH banks */
 	size = flash_init();
@@ -242,6 +242,10 @@ void board_init_r(gd_t * id, ulong dest_addr)
 #if defined(CONFIG_MISC_INIT_R)
 	/* miscellaneous platform dependent initialisations */
 	misc_init_r();
+#endif
+
+#ifdef CONFIG_BF537
+	printf("Net:	ADI BF537 EMAC\n");
 #endif
 
 #ifdef CONFIG_DRIVER_SMC91111
