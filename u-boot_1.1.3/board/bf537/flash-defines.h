@@ -59,7 +59,7 @@ int get_codes(void);
 int poll_toggle_bit(long lOffset);
 void reset_flash(void);
 int erase_flash(void);
-int erase_block_flash(int,unsigned long);
+int erase_block_flash(int);
 void unlock_flash(long lOffset);
 int write_data(long lStart, long lCount, long lStride, int *pnData);
 int FillData(long lStart, long lCount, long lStride, int *pnData);
@@ -69,9 +69,12 @@ int write_flash(long nOffset, int nValue);
 void get_sector_number(long lOffset, int *pnSector);
 int GetSectorProtectionStatus(flash_info_t * info, int nSector);
 int GetOffset(int nBlock);
-int AFP_NumSectors = 40;
-long AFP_SectorSize1 = 0x10000;
-int AFP_SectorSize2 = 0x4000;
+int AFP_NumSectors = 71;
+long AFP_SectorSize2 = 0x10000;
+int AFP_SectorSize1 = 0x2000;
+
+
+#define NUM_SECTORS		71
 
 #define WRITESEQ1		0x0AAA
 #define WRITESEQ2		0x0554
@@ -86,11 +89,11 @@ int AFP_SectorSize2 = 0x4000;
 #define WRITEDATA5		0x55
 #define WRITEDATA6		0x10
 #define PriFlashABegin		0
-#define SecFlashABegin		32
+#define SecFlashABegin		8
 #define SecFlashBBegin		36
 #define PriFlashAOff		0x0
 #define PriFlashBOff		0x100000
-#define SecFlashAOff		0x200000
+#define SecFlashAOff		0x10000
 #define SecFlashBOff		0x280000
 #define INVALIDLOCNSTART	0x20270000
 #define INVALIDLOCNEND		0x20280000

@@ -66,6 +66,26 @@
 					 CFG_CMD_JFFS2	| \
 					 CFG_CMD_DATE)
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"	
+#define CONFIG_EXTRA_ENV_SETTINGS                                                                                               \
+        "ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"                                                      \
+        "nfsargs=setenv bootargs root=/dev/nfs rw "                                                                     \
+        "nfsroot=$(serverip):$(rootpath)\0"                                                                                     \
+        "addip=setenv bootargs $(bootargs) "                                                                            \
+        "ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask)"                                                      \
+        ":$(hostname):eth0:off\0"                                                                                                       \
+    "ramboot=tftpboot 0x1000000 linux;"                                                                                 \
+        "run ramargs;run addip;bootelf\0"                                                                                       \
+        "nfsboot=tftpboot 0x1000000 linux;"                                                                                     \
+        "run nfsargs;run addip;bootelf\0"                                                                                       \
+        "flashboot=bootm 0x20100000\0"                                                                                          \
+        "update=tftpboot 0x1000000 u-boot.bin;"                                                                                 \
+        "protect off 0x20000000 0x2007FFFF;"                                                                                    \
+        "erase 0x20000000 0x2007FFFF;cp.b 0x1000000 0x20000000 $(filesize)\0"                                                   \
+        ""
+
+
+
+
 
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
@@ -99,7 +119,7 @@
 
 #define	CFG_BOOTMAPSZ		(8 << 20)	/* Initial Memory map for Linux */
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
-#define CFG_MAX_FLASH_SECT	67	/* max number of sectors on one chip */
+#define CFG_MAX_FLASH_SECT	71	/* max number of sectors on one chip */
 
 #define	CFG_ENV_IS_IN_FLASH	1
 #define CFG_ENV_ADDR		0x20004000
@@ -109,7 +129,7 @@
 #define CFG_JFFS2_FIRST_BANK 0
 #define CFG_JFFS2_NUM_BANKS  1
 /* 512k reserved for u-boot */
-#define CFG_JFFS2_FIRST_SECTOR                 11
+#define CFG_JFFS2_FIRST_SECTOR                 15
 
 
 /*
@@ -118,7 +138,7 @@
 #define CONFIG_STACKSIZE        (128*1024)      /* regular stack */
 
 #define POLL_MODE		1
-#define FLASH_TOT_SECT		67
+#define FLASH_TOT_SECT		71
 #define FLASH_SIZE		0x400000
 #define CFG_FLASH_SIZE		0x400000
 
