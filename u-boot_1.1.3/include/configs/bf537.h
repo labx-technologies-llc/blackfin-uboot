@@ -59,6 +59,12 @@
 #define CONFIG_ROOTPATH		/romfs
 #define CONFIG_ETHADDR          02:80:ad:20:31:b8
 
+#define CFG_LONGHELP			1
+#define CONFIG_BOOTDELAY		5
+#define CONFIG_BOOT_RETRY_TIME		-1	/* Enable this if bootretry required, currently its disabled */
+#define CONFIG_BOOTCOMMAND 		"run ramboot"
+#define CONFIG_AUTOBOOT_PROMPT		"autoboot in %d seconds\n"
+
 #define CONFIG_COMMANDS			(CONFIG_CMD_DFL	| \
 					 CFG_CMD_PING	| \
 					 CFG_CMD_ELF	| \
@@ -123,7 +129,10 @@
 
 #define	CFG_ENV_IS_IN_FLASH	1
 #define CFG_ENV_ADDR		0x20004000
-#define	CFG_ENV_SECT_SIZE	0x20000	/* Total Size of Environment Sector */
+#define CFG_ENV_OFFSET		(CFG_ENV_ADDR - CFG_FLASH_BASE)
+#define CFG_ENV_SIZE		0x2000
+#define	CFG_ENV_SECT_SIZE	0x2000	/* Total Size of Environment Sector */
+#define ENV_IS_EMBEDDED
 
 /* JFFS Partition offset set  */
 #define CFG_JFFS2_FIRST_BANK 0
