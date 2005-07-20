@@ -30,7 +30,7 @@
 #include <command.h>
 #include <asm/entry.h>
 
-#define SSYNC() asm("ssync;")
+#define SSYNC() asm("nop;nop;nop;ssync;")
 #define CACHE_ON 1
 #define CACHE_OFF 0
 
@@ -128,6 +128,7 @@ void icache_enable(void)
 		}
 	cli();
 	SSYNC();
+	asm(" .align 8; ");
 	*(unsigned int *)IMEM_CONTROL = IMC | ENICPLB;
 	SSYNC();
 	sti();
@@ -137,6 +138,7 @@ void icache_disable(void)
 {
 	cli();
 	SSYNC();
+	asm(" .align 8; ");
 	*(unsigned int *)IMEM_CONTROL &= ~(IMC | ENICPLB);
 	SSYNC();
 	sti();
@@ -168,6 +170,7 @@ void dcache_enable(void)
 	cli();
 	temp = *(unsigned int *)DMEM_CONTROL; 
 	SSYNC();
+	asm(" .align 8; ");
 	*(unsigned int *)DMEM_CONTROL = ACACHE_BCACHE |ENDCPLB |PORT_PREF0|temp;
 	SSYNC();
 	sti();
@@ -178,6 +181,7 @@ void dcache_disable(void)
 {
 	cli();
 	SSYNC();
+	asm(" .align 8; ");
 	*(unsigned int *)DMEM_CONTROL &= ~(ACACHE_BCACHE |ENDCPLB |PORT_PREF0);
 	SSYNC();
 	sti();
