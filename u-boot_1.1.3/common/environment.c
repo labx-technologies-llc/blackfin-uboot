@@ -197,7 +197,7 @@ env_t redundand_environment __PPCENV__ = {
  *
  */
 
-#ifndef CONFIG_STAMP
+#if !defined(CONFIG_STAMP)&&!defined(CONFIG_BF537)
 unsigned long env_size __PPCTEXT__ = sizeof(env_t);
 #endif
 
