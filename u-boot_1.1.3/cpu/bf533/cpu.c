@@ -127,20 +127,20 @@ void icache_enable(void)
 		*I1++ = icplb_table[i][1];
 		}
 	cli();
-	SSYNC();
+	__builtin_bfin_ssync();
 	asm(" .align 8; ");
 	*(unsigned int *)IMEM_CONTROL = IMC | ENICPLB;
-	SSYNC();
+	__builtin_bfin_ssync();
 	sti();
 }
 
 void icache_disable(void)
 {
 	cli();
-	SSYNC();
+	__builtin_bfin_ssync();
 	asm(" .align 8; ");
 	*(unsigned int *)IMEM_CONTROL &= ~(IMC | ENICPLB);
-	SSYNC();
+	__builtin_bfin_ssync();
 	sti();
 }
 
@@ -169,10 +169,10 @@ void dcache_enable(void)
 		}
 	cli();
 	temp = *(unsigned int *)DMEM_CONTROL; 
-	SSYNC();
+	__builtin_bfin_ssync();
 	asm(" .align 8; ");
 	*(unsigned int *)DMEM_CONTROL = ACACHE_BCACHE |ENDCPLB |PORT_PREF0|temp;
-	SSYNC();
+	__builtin_bfin_ssync();
 	sti();
 }
 		
@@ -180,10 +180,10 @@ void dcache_enable(void)
 void dcache_disable(void)
 {
 	cli();
-	SSYNC();
+	__builtin_bfin_ssync();
 	asm(" .align 8; ");
 	*(unsigned int *)DMEM_CONTROL &= ~(ACACHE_BCACHE |ENDCPLB |PORT_PREF0);
-	SSYNC();
+	__builtin_bfin_ssync();
 	sti();
 }
 
