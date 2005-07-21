@@ -69,6 +69,7 @@
 					 CFG_CMD_PING	| \
 					 CFG_CMD_ELF	| \
 					 CFG_CMD_I2C	| \
+					 CFG_CMD_CACHE  | \
 					 CFG_CMD_JFFS2	| \
 					 CFG_CMD_DATE)
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"	

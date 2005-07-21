@@ -52,7 +52,12 @@ static unsigned int icplb_table[16][2]={
 			{0xFFA00000, L1_IMEMORY},
 			{0x00000000, SDRAM_IKERNEL},	/*SDRAM_Page1*/
 			{0x00400000, SDRAM_IKERNEL},	/*SDRAM_Page1*/
+#ifdef CONFIG_STAMP
 			{0x07C00000, SDRAM_IKERNEL},    /*SDRAM_Page14*/
+#endif
+#ifdef CONFIG_BF537
+			{0x03C00000, SDRAM_IKERNEL},	/*SDRAM_Page14*/
+#endif
 			{0x00800000, SDRAM_IGENERIC},	/*SDRAM_Page2*/
 			{0x00C00000, SDRAM_IGENERIC},	/*SDRAM_Page2*/
 			{0x01000000, SDRAM_IGENERIC},	/*SDRAM_Page4*/
@@ -71,7 +76,12 @@ static unsigned int dcplb_table[16][2]={
 			{0xFFA00000,L1_DMEMORY},	
 			{0x00000000,SDRAM_DKERNEL},	/*SDRAM_Page1*/
 			{0x00400000,SDRAM_DKERNEL},	/*SDRAM_Page1*/
+#ifdef CONFIG_STAMP
 			{0x07C00000,SDRAM_DKERNEL},	/*SDRAM_Page15*/
+#endif
+#ifdef CONFIG_BF537
+			{0x03C00000,SDRAM_DKERNEL},	/*SDRAM_Page15 */
+#endif
 			{0x00800000,SDRAM_DGENERIC},	/*SDRAM_Page2*/
 			{0x00C00000,SDRAM_DGENERIC},	/*SDRAM_Page3*/
 			{0x01000000,SDRAM_DGENERIC},	/*SDRAM_Page4*/
@@ -119,6 +129,7 @@ void icache_enable(void)
 	unsigned int *I0,*I1;
 	int i;
 
+#ifdef __ADSPBF533__
 	I0 = (unsigned int *)ICPLB_ADDR0;
 	I1 = (unsigned int *)ICPLB_DATA0;
 	
@@ -132,16 +143,19 @@ void icache_enable(void)
 	*(unsigned int *)IMEM_CONTROL = IMC | ENICPLB;
 	__builtin_bfin_ssync();
 	sti();
+#endif 
 }
 
 void icache_disable(void)
 {
+#ifdef __ADSPBF533__
 	cli();
 	__builtin_bfin_ssync();
 	asm(" .align 8; ");
 	*(unsigned int *)IMEM_CONTROL &= ~(IMC | ENICPLB);
 	__builtin_bfin_ssync();
 	sti();
+#endif
 }
 
 int icache_status(void)
@@ -171,7 +185,12 @@ void dcache_enable(void)
 	temp = *(unsigned int *)DMEM_CONTROL; 
 	__builtin_bfin_ssync();
 	asm(" .align 8; ");
+#ifdef __ADSPBF533__
 	*(unsigned int *)DMEM_CONTROL = ACACHE_BCACHE |ENDCPLB |PORT_PREF0|temp;
+#endif
+#ifdef __ADSPBF537__
+	*(unsigned int *)DMEM_CONTROL = ACACHE_BSRAM | ENDCPLB;
+#endif
 	__builtin_bfin_ssync();
 	sti();
 }
@@ -182,7 +201,12 @@ void dcache_disable(void)
 	cli();
 	__builtin_bfin_ssync();
 	asm(" .align 8; ");
+#ifdef __ADSPBF533__
 	*(unsigned int *)DMEM_CONTROL &= ~(ACACHE_BCACHE |ENDCPLB |PORT_PREF0);
+#endif
+#ifdef __ADSPBF537__
+	*(unsigned int *)DMEM_CONTROL &= ~(ACACHE_BSRAM | ENDCPLB);
+#endif
 	__builtin_bfin_ssync();
 	sti();
 }
