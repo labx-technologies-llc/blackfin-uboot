@@ -1,5 +1,5 @@
 /*
- * U-boot - ezkit533.c
+ * U-boot - bf534.c
  *
  * Copyright (c) 2005 blackfin.uclinux.org
  *
@@ -31,8 +31,8 @@
 
 int checkboard(void)
 {
-	printf("CPU:   ADSP BF537 Rev.: 1.0.1\n");
-	printf("Board: ADI BF537 stamp board\n");
+	printf("CPU:   ADSP BF534 Rev.: 1.0.1\n");
+	printf("Board: ADI BF534 stamp board\n");
 	printf("       Support: http://blackfin.uclinux.org/\n");
 	return 0;
 }
