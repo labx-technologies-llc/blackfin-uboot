@@ -317,6 +317,17 @@
 
 #define CONFIG_SPI
 
+#if 1
+# undef  CONFIG_VIDEO				/* define the macro if need VIDEO support */
+#else
+# define CONFIG_VIDEO			1
+#endif
+
+#ifdef  CONFIG_VIDEO
+#define CONFIG_SPLASH_SCREEN		1
+#define CONFIG_SILENT_CONSOLE		1
+#endif
+
 /*
  * Stack sizes
  */
