@@ -1,0 +1,1 @@
+#define APP_ENTRY 0x00001000
