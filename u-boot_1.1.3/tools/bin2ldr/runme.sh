@@ -1,3 +1,4 @@
+# strongly recommend to run this script to convert u-boot.bin to LDR format file
 #!/bin/sh
 if [ -e ../../u-boot.bin ];then
 	make clean

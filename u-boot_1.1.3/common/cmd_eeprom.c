@@ -148,8 +148,10 @@ int eeprom_read (unsigned dev_addr, unsigned offset, uchar *buffer, unsigned cnt
 		if (maxlen > I2C_RXTX_LEN)
 			maxlen = I2C_RXTX_LEN;
 		len    = end - offset;
+#ifndef CONFIG_SPI
 		if (len > maxlen)
 			len = maxlen;
+#endif
 #ifdef CONFIG_SPI
 		spi_read (addr, alen, buffer, len);
 #else
@@ -226,8 +228,10 @@ int eeprom_write (unsigned dev_addr, unsigned offset, uchar *buffer, unsigned cn
 			maxlen = I2C_RXTX_LEN;
 
 		len = end - offset;
+#ifndef CONFIG_SPI
 		if (len > maxlen)
 			len = maxlen;
+#endif
 #ifdef CONFIG_SPI
 		spi_write (addr, alen, buffer, len);
 #else
