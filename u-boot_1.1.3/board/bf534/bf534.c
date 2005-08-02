@@ -26,8 +26,8 @@
  */
 
 #include <common.h>
-#if defined(CONFIG_MISC_INIT_R)
-#endif
+#include <config.h>
+#include <asm/blackfin.h>
 
 int checkboard(void)
 {

@@ -25,6 +25,8 @@
 /* Include core specific register pointer definitions 								*/
 #include <asm/cpu/cdef_LPBlackfin.h>
 
+#define pCHIPID ((volatile unsigned long *)CHIPID)
+
 
 /* Clock and System Control	(0xFFC00000 - 0xFFC000FF)								*/
 #define pPLL_CTL 			((volatile unsigned short *)PLL_CTL)

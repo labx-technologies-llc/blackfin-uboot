@@ -26,6 +26,8 @@
  */
 
 #include <common.h>
+#include <config.h>
+#include <asm/blackfin.h>
 #if defined(CONFIG_MISC_INIT_R)
 #endif
 
