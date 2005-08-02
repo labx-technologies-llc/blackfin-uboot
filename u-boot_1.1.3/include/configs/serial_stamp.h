@@ -37,6 +37,7 @@
 #define __ADSPLPBLACKFIN__		1
 #define __ADSPBF533__			1
 #define CONFIG_STAMP			1
+#define CONFIG_SERIAL_STAMP		1
 #define CONFIG_RTC_BF533		1
 
 /* FLASH/ETHERNET uses the same address range */
@@ -170,6 +171,7 @@
 
 #define CFG_ENV_IS_IN_EEPROM		1
 #define CFG_ENV_OFFSET			0x4000
+#define CFG_ENV_HEADER			(CFG_ENV_OFFSET + 0xE2)	/* 0xE2 is the length of LDR file header */
 #define	CFG_ENV_SIZE			0x2000
 #define CFG_ENV_SECT_SIZE 		0x2000	/* Total Size of Environment Sector */
 #define	ENV_IS_EMBEDDED
