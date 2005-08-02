@@ -87,6 +87,9 @@
  */
 
 #define CFG_LONGHELP			1
+#define CFG_AUTOLOAD			"no"	/*rarpb, bootp or dhcp commands will perform only a */
+						/* configuration lookup from the BOOTP/DHCP server, */
+						/* but not try to load any image using TFTP 	    */
 
 #define CONFIG_BOOTDELAY		5
 #define CONFIG_BOOT_RETRY_TIME		-1	/* Enable this if bootretry required, currently its disabled */
@@ -100,6 +103,7 @@
 					 CFG_CMD_CACHE	| \
 					 CFG_CMD_JFFS2  | \
 					 CFG_CMD_EEPROM | \
+					 CFG_CMD_DHCP   | \
 					 CFG_CMD_DATE)
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"	
 

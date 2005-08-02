@@ -82,7 +82,7 @@ ifeq ($(ARCH),microblaze)
 CROSS_COMPILE = mb-
 endif
 ifeq ($(ARCH),blackfin)
-CROSS_COMPILE = bfin-elf-
+CROSS_COMPILE = bfin-uclinux-
 endif
 endif
 endif
@@ -1625,7 +1625,7 @@ clean:
 	rm -f examples/hello_world examples/timer \
 	      examples/eepro100_eeprom examples/sched \
 	      examples/mem_to_mem_idma2intr examples/82559_eeprom \
-	      example/smc91111_eeprom
+	      examples/smc91111_eeprom
 	rm -f tools/img2srec tools/mkimage tools/envcrc tools/gen_eth_addr
 	rm -f tools/mpc86x_clk tools/ncb
 	rm -f tools/easylogo/easylogo tools/bmp_logo
