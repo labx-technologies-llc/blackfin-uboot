@@ -455,6 +455,8 @@ unsigned long ShiftValue;
 		*cnData = ReadValue;	// Store the value received in the buffer.
 
 		cnData++;				// Increment the pointer of the buffer to store the next value
+		if((i>=SECTOR_SIZE)&&(i%SECTOR_SIZE == 0))
+			printf(".");
 	}
 	
 	SPI_OFF();					// Turn off the SPI
