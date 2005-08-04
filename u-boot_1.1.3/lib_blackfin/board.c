@@ -35,6 +35,10 @@
 #include "blackfin_board.h"
 #include "../drivers/smc91111.h"
 
+#if defined(CONFIG_BF537)&&defined(CONFIG_POST)
+#include <post.h>
+#endif
+
 extern flash_info_t flash_info[];
 
 
@@ -168,6 +172,11 @@ void board_init_f(ulong bootflag)
 	CONFIG_VCO_HZ/1000000, CONFIG_CCLK_HZ/1000000, CONFIG_SCLK_HZ/1000000);
 	printf("SDRAM: ");
 	print_size(initdram(0), "\n");
+#if defined(CONFIG_BF537)&&defined(CONFIG_POST)
+        post_init_f();
+        post_bootmode_init();
+        post_run(NULL, POST_ROM | post_bootmode_get(0));
+#endif
 	board_init_r((gd_t *) gd, 0x20000010);
 }
 
@@ -182,6 +191,11 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	gd = id;
 	gd->flags |= GD_FLG_RELOC;	/* tell others: relocation done */
 	bd = gd->bd;
+
+#if    defined(CONFIG_BF537) && defined(CONFIG_POST)
+        post_output_backlog();
+        post_reloc();
+#endif
 
 #if	CONFIG_STAMP || CONFIG_BF537
 	/* There are some other pointer constants we must deal with */
@@ -243,7 +257,7 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	/* miscellaneous platform dependent initialisations */
 	misc_init_r();
 #endif
-
+	
 #ifdef CONFIG_BF537
 	printf("Net:	ADI BF537 EMAC\n");
 #endif
@@ -269,6 +283,10 @@ void board_init_r(gd_t * id, ulong dest_addr)
 
 #ifdef DEBUG
 	display_global_data(void);
+#endif
+
+#if defined(CONFIG_BF537) && defined(CONFIG_POST)
+	post_run(NULL, POST_RAM | post_bootmode_get(0));
 #endif
 
 	/* main_loop() can return to retry autoboot, if so just run it again. */

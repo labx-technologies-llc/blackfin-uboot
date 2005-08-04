@@ -128,7 +128,11 @@ LIBS += rtc/librtc.a
 LIBS += dtt/libdtt.a
 LIBS += drivers/libdrivers.a
 LIBS += drivers/sk98lin/libsk98lin.a
+
+ifneq ($(BOARD), bf537)
 LIBS += post/libpost.a post/cpu/libcpu.a
+endif
+
 LIBS += common/libcommon.a
 .PHONY : $(LIBS)
 
@@ -139,9 +143,11 @@ PLATFORM_LIBS += -L $(shell dirname `$(CC) $(CFLAGS) -print-libgcc-file-name`) -
 # The "tools" are needed early, so put this first
 # Don't include stuff already done in $(LIBS)
 SUBDIRS	= tools \
-	  examples \
-	  post \
+	  examples 
+ifneq ($(BOARD), bf537)
+SUBDIRS += post \
 	  post/cpu
+endif
 .PHONY : $(SUBDIRS)
 
 #########################################################################

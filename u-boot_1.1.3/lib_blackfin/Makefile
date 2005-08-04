@@ -31,7 +31,7 @@ LIB	= lib$(ARCH).a
 
 AOBJS	=
 
-COBJS	= board.o bf533_linux.o bf533_string.o cache.o muldi3.o
+COBJS	= post.o tests.o board.o bf533_linux.o bf533_string.o cache.o muldi3.o
 OBJS	= $(AOBJS) $(COBJS)
 
 $(LIB):	.depend $(OBJS)

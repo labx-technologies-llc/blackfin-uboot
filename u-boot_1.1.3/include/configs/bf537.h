@@ -65,12 +65,28 @@
 #define CONFIG_BOOTCOMMAND 		"run ramboot"
 #define CONFIG_AUTOBOOT_PROMPT		"autoboot in %d seconds\n"
 
+/* POST support */
+#define CONFIG_POST 		( CFG_POST_MEMORY | \
+				  CFG_POST_UART	  | \
+				  CFG_POST_FLASH  | \
+				  CFG_POST_ETHER  | \
+				  CFG_POST_BLINK)
+#undef CONFIG_POST
+
+#ifdef CONFIG_POST
+#define CFG_CMD_POST_DIAG	CFG_CMD_DIAG
+#else
+#define CFG_CMD_POST_DIAG	0
+#endif
+
+
 #define CONFIG_COMMANDS			(CONFIG_CMD_DFL	| \
 					 CFG_CMD_PING	| \
 					 CFG_CMD_ELF	| \
 					 CFG_CMD_I2C	| \
 					 CFG_CMD_CACHE  | \
 					 CFG_CMD_JFFS2	| \
+					 CFG_CMD_POST_DIAG | \
 					 CFG_CMD_DATE)
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"	
 #define CONFIG_EXTRA_ENV_SETTINGS                                                                                               \
@@ -89,10 +105,6 @@
         "protect off 0x20000000 0x2007FFFF;"                                                                                    \
         "erase 0x20000000 0x2007FFFF;cp.b 0x1000000 0x20000000 $(filesize)\0"                                                   \
         ""
-
-
-
-
 
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
