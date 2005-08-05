@@ -128,8 +128,10 @@ void icache_enable(void)
 {
 	unsigned int *I0,*I1;
 	int i;
-
-#ifdef __ADSPBF533__
+#ifdef __ADSPBF537__
+	if((*pCHIPID >>28)<2)
+		return;
+#endif 
 	I0 = (unsigned int *)ICPLB_ADDR0;
 	I1 = (unsigned int *)ICPLB_DATA0;
 	
@@ -143,19 +145,20 @@ void icache_enable(void)
 	*(unsigned int *)IMEM_CONTROL = IMC | ENICPLB;
 	__builtin_bfin_ssync();
 	sti();
-#endif 
 }
 
 void icache_disable(void)
 {
-#ifdef __ADSPBF533__
+#ifdef __ADSPBF537__
+	if((*pCHIPID >> 28)<2)
+		return;
+#endif
 	cli();
 	__builtin_bfin_ssync();
 	asm(" .align 8; ");
 	*(unsigned int *)IMEM_CONTROL &= ~(IMC | ENICPLB);
 	__builtin_bfin_ssync();
 	sti();
-#endif
 }
 
 int icache_status(void)
