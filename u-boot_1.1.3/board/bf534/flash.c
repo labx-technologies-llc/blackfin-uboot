@@ -222,6 +222,8 @@ int write_data(long lStart, long lCount, long lStride, int *pnData)
 			}
 			iShift += 16;
 		}
+	if(!(i%0x4000))
+                printf(".");
 	}
 	
 	if (nLeftover > 0) {
