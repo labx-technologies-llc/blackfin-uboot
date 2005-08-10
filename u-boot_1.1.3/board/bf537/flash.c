@@ -26,6 +26,7 @@
  * MA 02111-1307 USA
  */
 
+#include <malloc.h>
 #include "flash-defines.h"
 
 void flash_reset(void)
@@ -162,11 +163,31 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 
 int write_buff(flash_info_t * info, uchar * src, ulong addr, ulong cnt)
 {
-	int ret;
-
-	ret = write_data(addr, cnt, 1, (int *) src);
-	if(ret == FLASH_FAIL)
-		return ERR_NOT_ERASED;
+	int d;
+	int *temp;
+	if(addr%2){
+		if(cnt % 2){
+			read_flash(addr-1 - CFG_FLASH_BASE,&d);
+			d = (int)((d&0x00FF)|(*src++ <<8));	
+			write_data(addr-1,2,1,&d);
+			temp = (int *)malloc( (cnt-1/2));
+			memcpy(temp,src,cnt-1);
+			write_data(addr+1,cnt-1,1,temp);
+			}
+		else{
+			read_flash(addr-1 - CFG_FLASH_BASE,&d);
+			d = (int)((d&0x00FF)|(*src++ <<8));
+			write_data(addr-1,2,1,&d);
+			temp = (int *)malloc( (cnt-2/2));
+			memcpy(temp,src,cnt-2);
+			write_data(addr+1,cnt-2,1,temp);
+			read_flash(addr+cnt-1 - CFG_FLASH_BASE,&d);
+			d = (int)((d&0xFF00)|*(src+cnt-1));
+			write_data(addr+cnt-1,2,1,&d);
+			} 
+		  }
+	else
+		write_data(addr, cnt, 1, (int *) src);
 	return FLASH_SUCCESS;
 }
 
