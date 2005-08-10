@@ -129,6 +129,7 @@ void icache_enable(void)
 	unsigned int *I0,*I1;
 	int i;
 #ifdef __ADSPBF537__
+	if((*pCHIPID >> 28)<2)
 		return;
 #endif 
 	I0 = (unsigned int *)ICPLB_ADDR0;

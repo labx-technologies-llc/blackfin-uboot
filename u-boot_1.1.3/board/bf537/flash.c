@@ -281,6 +281,8 @@ int write_flash(long nOffset, int nValue)
 
 	addr = (CFG_FLASH_BASE + nOffset);
 	*(unsigned volatile short *) addr = nValue;
+	if(icache_status())
+		udelay(CONFIG_CCLK_HZ/1000000);
 	return FLASH_SUCCESS;
 }
 
@@ -296,28 +298,28 @@ int read_flash(long nOffset, int *pnValue)
 int poll_toggle_bit(long lOffset)
 {
 	unsigned int u1,u2;
-	unsigned long timeout = 0xFFFFFFFF;
-	volatile unsigned long *FB = (volatile unsigned long *)(0x20000000 + lOffset);
+	volatile unsigned long *FB = (volatile unsigned long *)(CFG_FLASH_BASE + lOffset);
 	while(1) {
-		if(timeout < 0)
-			break;
 		u1 = *(volatile unsigned short *)FB;
 		u2 = *(volatile unsigned short *)FB;
-		if((u1 & 0x0040) == (u2 & 0x0040))
-			return FLASH_SUCCESS;
-		if((u2 & 0x0020) == 0x0000)
+		u1^= u2;
+		if( !(u1 & 0x0040))
+			break;
+		if( !(u2 & 0x0020))
 			continue;
-		u1 = *(volatile unsigned short *)FB;
-		if((u2 & 0x0040) == (u1 & 0x0040))
-			return FLASH_SUCCESS;
-		else {
-			reset_flash();
-			return FLASH_FAIL;
+		else{
+			 u1 = *(volatile unsigned short *)FB;
+	                 u2 = *(volatile unsigned short *)FB;
+			 u1^= u2;
+			 if( !(u1 & 0x0040))
+                        	break;
+			 else{
+				reset_flash();
+				return FLASH_FAIL;
+				}
+			}
 		}
-		timeout--;
-	}
-	printf("Time out occured \n");
-	if(timeout <0)	return FLASH_FAIL;
+	return FLASH_SUCCESS;
 }
 
 void reset_flash(void)
