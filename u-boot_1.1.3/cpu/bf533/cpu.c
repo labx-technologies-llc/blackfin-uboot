@@ -187,12 +187,7 @@ void dcache_enable(void)
 	temp = *(unsigned int *)DMEM_CONTROL; 
 	__builtin_bfin_ssync();
 	asm(" .align 8; ");
-#ifdef __ADSPBF533__
 	*(unsigned int *)DMEM_CONTROL = ACACHE_BCACHE |ENDCPLB |PORT_PREF0|temp;
-#endif
-#ifdef __ADSPBF537__
-	*(unsigned int *)DMEM_CONTROL = ACACHE_BSRAM | ENDCPLB;
-#endif
 	__builtin_bfin_ssync();
 	sti();
 }
@@ -203,12 +198,7 @@ void dcache_disable(void)
 	cli();
 	__builtin_bfin_ssync();
 	asm(" .align 8; ");
-#ifdef __ADSPBF533__
 	*(unsigned int *)DMEM_CONTROL &= ~(ACACHE_BCACHE |ENDCPLB |PORT_PREF0);
-#endif
-#ifdef __ADSPBF537__
-	*(unsigned int *)DMEM_CONTROL &= ~(ACACHE_BSRAM | ENDCPLB);
-#endif
 	__builtin_bfin_ssync();
 	sti();
 }
