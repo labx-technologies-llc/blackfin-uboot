@@ -164,116 +164,63 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 int write_buff(flash_info_t * info, uchar * src, ulong addr, ulong cnt)
 {
 	int d;
-	int *temp;
 	if(addr%2){
-		if(cnt % 2){
-			read_flash(addr-1 - CFG_FLASH_BASE,&d);
-			d = (int)((d&0x00FF)|(*src++ <<8));	
-			write_data(addr-1,2,1,&d);
-			temp = (int *)malloc( (cnt-1/2));
-			memcpy(temp,src,cnt-1);
-			write_data(addr+1,cnt-1,1,temp);
-			}
-		else{
-			read_flash(addr-1 - CFG_FLASH_BASE,&d);
-			d = (int)((d&0x00FF)|(*src++ <<8));
-			write_data(addr-1,2,1,&d);
-			temp = (int *)malloc( (cnt-2/2));
-			memcpy(temp,src,cnt-2);
-			write_data(addr+1,cnt-2,1,temp);
-			read_flash(addr+cnt-1 - CFG_FLASH_BASE,&d);
-			d = (int)((d&0xFF00)|*(src+cnt-1));
-			write_data(addr+cnt-1,2,1,&d);
-			} 
-		  }
+		read_flash(addr-1-CFG_FLASH_BASE,&d);
+		d = (int)((d&0x00FF)|(*src++<<8));
+		write_data(addr-1,2,&d);
+		write_data(addr+1,cnt-1,src);
+		}
 	else
-		write_data(addr, cnt, 1, (int *) src);
+		write_data(addr, cnt, src);
 	return FLASH_SUCCESS;
 }
 
 
-int write_data(long lStart, long lCount, long lStride, int *pnData)
+int write_data(long lStart, long lCount, uchar *pnData)
 {
 	long i = 0;
-	int j = 0;
 	unsigned long ulOffset = lStart - CFG_FLASH_BASE;
 	int d;
-	int iShift = 0;
-	int iNumWords = 2;
-	int nLeftover = lCount % 4;
 	int nSector = 0;
+	int flag = 0;
 
-	for (i = 0; (i < lCount / 4) && (i < BUFFER_SIZE); i++) {
-		for (iShift = 0, j = 0; (j < iNumWords);
-			j++, ulOffset += (lStride * 2)) {
-			
-			/* unlock the flash, do the write, increase shift, and wait for completion */
-			get_sector_number(ulOffset, &nSector);
-			read_flash(ulOffset,&d);
-			if(d != 0xffff) {
-				printf("Flash not erased at offset 0x%x Please erase to reprogram \n",ulOffset);
-				return FLASH_FAIL;
-			}
-			unlock_flash(ulOffset);
-			write_flash(ulOffset, (pnData[i] >>iShift));
-			if(poll_toggle_bit(ulOffset) < 0){
-				printf("Error programming the flash \n");
-				return FLASH_FAIL;
-			}
-			iShift += 16;
+	if(lCount%2){
+		flag = 1;	
+		lCount = lCount -1;
 		}
-	if(!(i%0x4000))
-                printf(".");
-	}
 	
-	if (nLeftover > 0) {
+	for(i = 0; i< lCount-1;i+=2,ulOffset+=2){
 		get_sector_number(ulOffset, &nSector);
-		read_flash(ulOffset,&d);
+		read_flash(ulOffset, &d);
 		if(d != 0xffff) {
-			printf("Flash already programmed. Please erase to reprogram \n");
-			printf("uloffset = 0x%x \t d = 0x%x\n",ulOffset,d);
-			return FLASH_FAIL;
-		}
+                                printf("Flash not erased at offset 0x%x Please erase to reprogram \n",ulOffset);
+                	        return FLASH_FAIL;
+                        	}
 		unlock_flash(ulOffset);
-		write_flash(ulOffset, pnData[i] );
-		if(poll_toggle_bit(ulOffset) < 0) {
-			printf("Error programming the flash \n");
-			return FLASH_FAIL;
+		d = (int)(pnData[i]|pnData[i+1]<<8);
+		write_flash(ulOffset,d); 
+		if(poll_toggle_bit(ulOffset) < 0){
+                                printf("Error programming the flash \n");
+                                return FLASH_FAIL;
+                        	}
+	if((i>0)&&(!(i%AFP_SectorSize2)))
+		printf(".");
+	}
+	if(flag){
+		get_sector_number(ulOffset, &nSector);
+                read_flash(ulOffset, &d);
+                if(d != 0xffff) {
+                                printf("Flash not erased at offset 0x%x Please erase to reprogram \n",ulOffset);
+                                return FLASH_FAIL;
+                                }
+                unlock_flash(ulOffset);
+                d = (int)(pnData[i]|(d&0xFF00));
+                write_flash(ulOffset,d);
+                if(poll_toggle_bit(ulOffset) < 0){
+                                printf("Error programming the flash \n");
+                                return FLASH_FAIL;
+                                }
 		}
-	}
-	return FLASH_SUCCESS;
-}
-
-int read_data(long ulStart, long lCount, long lStride, int *pnData)
-{
-	long i = 0;						// loop counter
-	int j = 0;						// inner loop counter
-	unsigned long ulOffset = ulStart;			// current offset to write
-	int iShift = 0;					// shift value by iShift bits
-	int iNumWords = 2;				// number of words in a long
-	int nLeftover = lCount % 4;		// how much if any do we have leftover to write
-	int nHi,nLow;
-	
-	// read the buffer up to BUFFER_SIZE items
-	for (i = 0; (i < lCount/4) && (i < BUFFER_SIZE); i++)
-	{
-		for ( iShift = 0, j = 0; j < iNumWords ; j+=2 )
-		{
-			// Read flash
-			read_flash( ulOffset, &nLow );
-			ulOffset += (lStride*2);
-			read_flash( ulOffset, &nHi );
-			ulOffset += (lStride*2);
-			pnData[i] = (nHi << 16) | nLow;
-		}
-	}
-	// because of the way our ldr file is built, we will always have
-	// 2 bytes leftover if there is leftover, because the flash is 16 bit
-	// that will mean that there is only one read left to do.
-	if( nLeftover > 0 )
-	{
-		read_flash( ulOffset, &pnData[i] );
-	}
 	return FLASH_SUCCESS;
 }
 
