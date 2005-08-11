@@ -1,3 +1,6 @@
+/****************************************************************************
+ *  SPI flash driver for M25P64 
+ ****************************************************************************/
 #include <common.h>
 #include <linux/ctype.h>
 
@@ -25,7 +28,7 @@
 #define WIP					(0x1)	//Check the write in progress bit of the SPI status register
 #define WEL					(0x2)	//Check the write enable bit of the SPI status register
 
-#define TIMEOUT 35000
+#define TIMEOUT 350000000
 
 typedef enum
 {
@@ -107,7 +110,6 @@ ssize_t spi_write (uchar *addr, int alen, uchar *buffer, int len)
 	GetSectorNumber(offset + len, &end_block);
 	
 	for(num = start_block;num <= end_block;num ++){
-		flush_cache((ulong)temp,SECTOR_SIZE);
 		ReadData(num*SECTOR_SIZE,SECTOR_SIZE,(int *)temp);
 		start_byte = num*SECTOR_SIZE;
 		end_byte   = (num+1) * SECTOR_SIZE -1;
@@ -137,9 +139,6 @@ ssize_t spi_read (uchar *addr, int alen, uchar *buffer, int len)
 
 void SendSingleCommand( const int iCommand )
 {
-#if 0
-	int n;
-#endif
 	unsigned short dummy;
 
 	/*turns on the SPI in single write mode*/
@@ -147,6 +146,7 @@ void SendSingleCommand( const int iCommand )
 
 	/*sends the actual command to the SPI TX register*/
 	*pSPI_TDBR = iCommand;
+	 __builtin_bfin_ssync();
 
 	/*The SPI status register will be polled to check the SPIF bit*/
 	Wait_For_SPIF();
@@ -156,13 +156,6 @@ void SendSingleCommand( const int iCommand )
 	/*The SPI will be turned off*/
 	SPI_OFF();
 
-#if 0	
-	/*Pause before continuing*/
-	for(n=0; n<NOP_NUM; n++)
-	{
-		asm("nop;");
-	}
-#endif
 }
 
 void SetupSPI( const int spi_setting )
@@ -172,52 +165,38 @@ void SetupSPI( const int spi_setting )
 	*pSPI_FLG = 0xFB04;
 	*pSPI_BAUD = BAUD_RATE_DIVISOR;
 	*pSPI_CTL = spi_setting;
-	*pSPI_STAT |= TXE|RBSY;
-	__builtin_bfin_ssync();
-
+	 __builtin_bfin_ssync();
 }
 
 void SPI_OFF(void)
 {
-	int i;
 	
 	*pSPI_CTL = 0x0400;	/* disable SPI*/
 	*pSPI_FLG = 0;
 	*pSPI_BAUD = 0;
-	__builtin_bfin_ssync();
+	 __builtin_bfin_ssync();
+	if(icache_status()||dcache_status())
+		udelay(CONFIG_CCLK_HZ/1000000);
+	else
+		udelay(CONFIG_CCLK_HZ/50000000);
 	
-	for(i=0; i<NOP_NUM; i++)
-	{
-		asm("nop;");
-	}
-
-
 }
 
 void Wait_For_SPIF(void)
 {
-	int n;
 	unsigned short dummyread;
+	 if(icache_status()||dcache_status())
+                udelay(CONFIG_CCLK_HZ/1000000);
+        else
+                udelay(CONFIG_CCLK_HZ/50000000);
+	while(!(*pSPI_STAT&SPIF));
+	dummyread = *pSPI_RDBR;			// Read dummy to empty the receive register	
 	
-	for(n=0; n<NOP_NUM; n++)
-	{
-		asm("nop;");
-	}
-	
-	while(1)
-	{
-		unsigned short iTest = *pSPI_STAT;
-		if(iTest & SPIF)
-		{
-			break;
-		}
-	}
-	dummyread = *pSPI_RDBR; /* read dummy to empty the receive register*/
 }
 
 ERROR_CODE Wait_For_WEL(void)
 {
-	int n, i;
+	int i;
 	char status_register = 0;
 	ERROR_CODE ErrorCode = NO_ERR;	/* tells us if there was an error erasing flash*/
 	
@@ -229,9 +208,6 @@ ERROR_CODE Wait_For_WEL(void)
 				ErrorCode = NO_ERR;	/* tells us if there was an error erasing flash*/
 				break;
 			}
-			
-			for(n=0; n<NOP_NUM; n++)
-				asm("nop;");
 			ErrorCode = POLL_TIMEOUT;	/* Time out error*/
 		};
 		
@@ -240,7 +216,7 @@ ERROR_CODE Wait_For_WEL(void)
 
 ERROR_CODE Wait_For_Status( char Statusbit )
 {
-	int n, i;
+	int i;
 	char status_register = 0xFF;
 	ERROR_CODE ErrorCode = NO_ERR;	/* tells us if there was an error erasing flash */
 	
@@ -252,44 +228,30 @@ ERROR_CODE Wait_For_Status( char Statusbit )
 				ErrorCode = NO_ERR;	/* tells us if there was an error erasing flash */
 				break;
 			}
-			
-			for(n=0; n<NOP_NUM; n++)
-				asm("nop;");
 			ErrorCode = POLL_TIMEOUT;	/* Time out error */
 		};
 		
 	
 	return ErrorCode;
-	
 }
 
 
 char ReadStatusRegister(void)
 {
-	char dummyread, status_register = 0;
-#if 0
-	int n;
-#endif
+	char status_register = 0;
 
 	SetupSPI( (COMMON_SPI_SETTINGS|TIMOD01) ); /* Turn on the SPI */
 
 	*pSPI_TDBR = SPI_RDSR;	/* send instruction to read status register */
-	__builtin_bfin_ssync();
+	 __builtin_bfin_ssync();
 	Wait_For_SPIF();		/*wait until the instruction has been sent*/
-	dummyread = *pSPI_RDBR;	/*read dummy to empty the receive register*/
 	*pSPI_TDBR = 0;			/*send dummy to receive the status register*/
-	__builtin_bfin_ssync();
+	 __builtin_bfin_ssync();
 	Wait_For_SPIF();		/*wait until the data has been sent*/
 	status_register = *pSPI_RDBR;	/*read the status register*/
 	
 	SPI_OFF();		/* Turn off the SPI */
 
-#if 0
-	for(n=0; n<NOP_NUM; n++)
-	{
-		asm("nop;");
-	}
-#endif
 	return status_register;
 }
 
@@ -355,23 +317,22 @@ ERROR_CODE EraseBlock( int nBlock )
 	// Send the erase block command to the flash followed by the 24 address 
 	// to point to the start of a sector.
 	*pSPI_TDBR = SPI_SE;
-	__builtin_bfin_ssync();
+	 __builtin_bfin_ssync();
+	Wait_For_SPIF();			
 	ShiftValue = (ulSectorOff >> 16);	// Send the highest byte of the 24 bit address at first
-	Wait_For_SPIF();					// Wait until the instruction has been sent
 	*pSPI_TDBR = ShiftValue;			
-	__builtin_bfin_ssync();
+	 __builtin_bfin_ssync();
 	Wait_For_SPIF();					// Wait until the instruction has been sent
 	ShiftValue = (ulSectorOff >> 8);	// Send the middle byte of the 24 bit address  at second
 	*pSPI_TDBR = ShiftValue;
-	__builtin_bfin_ssync();
+	 __builtin_bfin_ssync();
 	Wait_For_SPIF();					// Wait until the instruction has been sent
 	*pSPI_TDBR = ulSectorOff;			// Send the lowest byte of the 24 bit address finally
-	__builtin_bfin_ssync();
+	 __builtin_bfin_ssync();
 	Wait_For_SPIF();					// Wait until the instruction has been sent
 	
 	//Turns off the SPI
 	SPI_OFF();
-	Wait_For_SPIF();					// Wait until the instruction has been sent
 
 	// Poll the status register to check the Write in Progress bit
 	// Sector erase takes time
@@ -418,8 +379,8 @@ ERROR_CODE EraseFlash(void)
 ***************************************************************************** */
 ERROR_CODE ReadData(  unsigned long ulStart, long lCount,int *pnData  )
 {
-unsigned long ShiftValue;
-	char dummyread, *cnData,ReadValue;
+	unsigned long ShiftValue;
+	char *cnData,ReadValue;
 	int i;
 
 	cnData = (char *)pnData; /* Pointer cast to be able to increment byte wise */
@@ -428,28 +389,28 @@ unsigned long ShiftValue;
 	SetupSPI( (COMMON_SPI_SETTINGS|TIMOD01) );
 
 	*pSPI_TDBR = SPI_READ;			// Send the read command to SPI device
-	__builtin_bfin_ssync();
+	 __builtin_bfin_ssync();
 	Wait_For_SPIF();				// Wait until the instruction has been sent
 	ShiftValue = (ulStart >> 16);	// Send the highest byte of the 24 bit address at first
 	*pSPI_TDBR = ShiftValue;		// Send the byte to the SPI device
-	__builtin_bfin_ssync();
+	 __builtin_bfin_ssync();
 	Wait_For_SPIF();				// Wait until the instruction has been sent
 	ShiftValue = (ulStart >> 8);	// Send the middle byte of the 24 bit address  at second
 	*pSPI_TDBR = ShiftValue;		// Send the byte to the SPI device
-	__builtin_bfin_ssync();
+	 __builtin_bfin_ssync();
 	Wait_For_SPIF();				// Wait until the instruction has been sent
 	*pSPI_TDBR = ulStart;			// Send the lowest byte of the 24 bit address finally
-	__builtin_bfin_ssync();
+	 __builtin_bfin_ssync();
 	Wait_For_SPIF();				// Wait until the instruction has been sent
-	dummyread = *pSPI_RDBR;			// Read dummy to empty the receive register
+
 
 	// After the SPI device address has been placed on the MOSI pin the data can be
 	// received on the MISO pin.
 	for (i=0; i<lCount; i++)
 	{
 		*pSPI_TDBR = 0;			//send dummy
-		__builtin_bfin_ssync();
-		Wait_For_SPIF();		//wait until the data has been sent
+		 __builtin_bfin_ssync();
+		while(!(*pSPI_STAT&RXS));
 		ReadValue  = *pSPI_RDBR;	//read 
 		
 		*cnData = ReadValue;	// Store the value received in the buffer.
@@ -461,13 +422,6 @@ unsigned long ShiftValue;
 	
 	SPI_OFF();					// Turn off the SPI
 	
-
-#if 0
-	for(i=0; i<NOP_NUM; i++)
-	{
-		asm("nop;");
-	}
-#endif
 	return NO_ERR;
 }
 
@@ -479,7 +433,6 @@ ERROR_CODE WriteFlash ( unsigned long ulStartAddr, long lTransferCount, int *iDa
 	int i;
 	char iData;
 	char *temp = (char *)iDataSource;
-	int dummyread;
 	ERROR_CODE ErrorCode = NO_ERR;	// tells us if there was an error erasing flash
 
 	// First, a Write Enable Command must be sent to the SPI.
@@ -488,35 +441,29 @@ ERROR_CODE WriteFlash ( unsigned long ulStartAddr, long lTransferCount, int *iDa
 	// Second, the SPI Status Register will be tested whether the 
 	//         Write Enable Bit has been set. 
 	ErrorCode = Wait_For_WEL();
-	
 	if( POLL_TIMEOUT == ErrorCode )
 		{
 		printf("SPI Write Time Out\n");
 		return ErrorCode;
 		}
 	else
-	
 	// Third, the 24 bit address will be shifted out the SPI MOSI bytewise.
 	SetupSPI( (COMMON_SPI_SETTINGS|TIMOD01) ); // Turns the SPI on
-
 	*pSPI_TDBR = SPI_PP;
-	__builtin_bfin_ssync();
+	 __builtin_bfin_ssync();
 	Wait_For_SPIF();		//wait until the instruction has been sent
 	ulWAddr = (ulStartAddr >> 16);
 	*pSPI_TDBR = ulWAddr;
-	__builtin_bfin_ssync();
+	 __builtin_bfin_ssync();
 	Wait_For_SPIF();		//wait until the instruction has been sent
 	ulWAddr = (ulStartAddr >> 8);
 	*pSPI_TDBR = ulWAddr;
-	__builtin_bfin_ssync();
+	 __builtin_bfin_ssync();
 	Wait_For_SPIF();		//wait until the instruction has been sent
 	ulWAddr = ulStartAddr;
 	*pSPI_TDBR = ulWAddr;
-	__builtin_bfin_ssync();
+	 __builtin_bfin_ssync();
 	Wait_For_SPIF();		//wait until the instruction has been sent
-	dummyread = *pSPI_RDBR;	//read dummy to empty the receive register
-
-	
 	// Fourth, maximum number of 256 bytes will be taken from the Buffer
 	// and sent to the SPI device.
 	for (i=0; (i < lTransferCount) && (i < 256); i++, lWTransferCount++)
@@ -553,8 +500,6 @@ ERROR_CODE WriteData( unsigned long ulStart, long lCount, int *pnData )
 	unsigned long ulWStart = ulStart; 
 	long lWCount = lCount, lWriteCount;
 	long *pnWriteCount = &lWriteCount;
-	int i;
-	
 	
 	ERROR_CODE ErrorCode = NO_ERR;
 
@@ -570,12 +515,6 @@ ERROR_CODE WriteData( unsigned long ulStart, long lCount, int *pnData )
 		pnData += *pnWriteCount/4;
 	}
 
-	for(i=0; i<NOP_NUM; i++)
-	{
-		asm("nop;");
-	}
-
-	
 	// return the appropriate error code
 	return ErrorCode;
 }
