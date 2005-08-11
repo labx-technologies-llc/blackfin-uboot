@@ -91,7 +91,7 @@
 
 #define CONFIG_BOOTDELAY		5
 #define CONFIG_BOOT_RETRY_TIME		-1	/* Enable this if bootretry required, currently its disabled */
-#define CONFIG_BOOTCOMMAND 		"run ramboot"
+#define CONFIG_BOOTCOMMAND 		"eeprom read 0x1000000 0x100000 0x180000;icache on;dcache on;bootm 0x1000000"
 #define CONFIG_AUTOBOOT_PROMPT		"autoboot in %d seconds\n"
 
 #define CONFIG_COMMANDS			(CONFIG_CMD_DFL	| \
@@ -116,9 +116,8 @@
 	"nfsboot=tftpboot 0x1000000 linux;"											\
 	"run nfsargs;run addip;bootelf\0"											\
 	"flashboot=bootm 0x20100000\0"												\
-	"update=tftpboot 0x1000000 u-boot.bin;"											\
-	"protect off 0x20000000 0x2007FFFF;"											\
-	"erase 0x20000000 0x2007FFFF;cp.b 0x1000000 0x20000000 $(filesize)\0"							\
+	"update=tftpboot 0x1000000 app.ldr;"											\
+	"eeprom write 0x1000000 0x0 $(filesize);\0"											\
 	""
 
 /* This must be included AFTER the definition of CONFIG_COMMANDS (if any) */
