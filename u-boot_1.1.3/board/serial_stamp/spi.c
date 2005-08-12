@@ -160,6 +160,8 @@ void SendSingleCommand( const int iCommand )
 void SetupSPI( const int spi_setting )
 {
 	
+	if(icache_status()||dcache_status())
+                udelay(CONFIG_CCLK_HZ/50000000);
 	/*sets up the PF2 to be the slave select of the SPI */
 	*pSPI_FLG = 0xFB04;
 	*pSPI_BAUD = BAUD_RATE_DIVISOR;
@@ -174,10 +176,7 @@ void SPI_OFF(void)
 	*pSPI_FLG = 0;
 	*pSPI_BAUD = 0;
 	 __builtin_bfin_ssync();
-	if(icache_status()||dcache_status())
-		udelay(CONFIG_CCLK_HZ/1000000);
-	else
-		udelay(CONFIG_CCLK_HZ/50000000);
+	udelay(CONFIG_CCLK_HZ/50000000);
 	
 }
 
