@@ -411,11 +411,8 @@ ERROR_CODE ReadData(  unsigned long ulStart, long lCount,int *pnData  )
 		*pSPI_TDBR = 0;			//send dummy
 		 __builtin_bfin_ssync();
 		while(!(*pSPI_STAT&RXS));
-		ReadValue  = *pSPI_RDBR;	//read 
+		*cnData++  = *pSPI_RDBR;	//read 
 		
-		*cnData = ReadValue;	// Store the value received in the buffer.
-
-		cnData++;				// Increment the pointer of the buffer to store the next value
 		if((i>=SECTOR_SIZE)&&(i%SECTOR_SIZE == 0))
 			printf(".");
 	}
