@@ -52,7 +52,6 @@ void SendSingleCommand( const int iCommand );
 
 ERROR_CODE GetSectorNumber( unsigned long ulOffset, int *pnSector );
 ERROR_CODE EraseBlock( int nBlock );
-ERROR_CODE EraseFlash(void);
 ERROR_CODE ReadData(  unsigned long ulStart, long lCount,int *pnData  );
 ERROR_CODE WriteData( unsigned long ulStart, long lCount, int *pnData );
 ERROR_CODE Wait_For_Status( char Statusbit );
@@ -185,11 +184,9 @@ void SPI_OFF(void)
 void Wait_For_SPIF(void)
 {
 	unsigned short dummyread;
-	 if(icache_status()||dcache_status())
-                udelay(CONFIG_CCLK_HZ/1000000);
-        else
-                udelay(CONFIG_CCLK_HZ/50000000);
+	while( (*pSPI_STAT&TXS));
 	while(!(*pSPI_STAT&SPIF));
+	while(!(*pSPI_STAT&RXS));
 	dummyread = *pSPI_RDBR;			// Read dummy to empty the receive register	
 	
 }
@@ -339,32 +336,6 @@ ERROR_CODE EraseBlock( int nBlock )
 	ErrorCode = Wait_For_Status(WIP);
 	
 	// block erase should be complete
-	return ErrorCode;
-}
-
-ERROR_CODE EraseFlash(void)
-{
-	ERROR_CODE ErrorCode = NO_ERR;
-		
-	//A write enable instruction must previously have been executed
-	SendSingleCommand(SPI_WREN);
-	
-	//The status register will be polled to check the write enable latch "WREN"
-	ErrorCode = Wait_For_WEL();
-
-	if( POLL_TIMEOUT == ErrorCode )
-	{
-		return ErrorCode;
-	}
-	else
-
-	//The bulk erase instruction will erase the whole flash
-	SendSingleCommand(SPI_BE);
-	
-	// Erasing the whole flash will take time, so the following bit must be polled.
-	//The status register will be polled to check the write in progress bit "WIP"
-	ErrorCode = Wait_For_Status(WIP);
-	
 	return ErrorCode;
 }
 
