@@ -52,7 +52,7 @@ static	u16 txIdx;		/* index of the current RX buffer */
 static  u16 rxIdx;		/* index of the current TX buffer */
 
 u8  SrcAddr[6] = {0x02,0x80,0xAD,0x20,0x31,0xB8};
-u16 PHYregs[NO_PHY_REGS];//u16 PHYADDR;
+u16 PHYregs[NO_PHY_REGS];/* u16 PHYADDR; */
 
 // DMAx_CONFIG values at DMA Restart
 const ADI_DMA_CONFIG_REG rxdmacfg ={1, 1, 2, 0, 0, 0, 0, 5, 7};
@@ -229,18 +229,27 @@ void eth_halt(void)
 
 void SetupMacAddr(u8 *MACaddr)
 {
-	// this depends on a little-endian machine
+	char *tmp,*end;
+	int	i;
+	/* this depends on a little-endian machine */
+	tmp = getenv("ethaddr");
+	if(tmp){
+		for(i=0;i<6;i++){
+			MACaddr[i] = tmp?simple_strtoul(tmp, &end, 16):0;
+			if(tmp)
+				tmp = (*end)?end+1:end;
+		}
+	}
+	printf("Using MAC Address %02X:%02X:%02X:%02X:%02X:%02X\n",MACaddr[0],MACaddr[1],
+				MACaddr[2],MACaddr[3],MACaddr[4],MACaddr[5]);
 	*pEMAC_ADDRLO = *(u32 *)&MACaddr[0];
 	*pEMAC_ADDRHI = *(u16 *)&MACaddr[4];
 }
 
 void PollMdcDone(void)
 {
-	// poll the STABUSY bit
-	while(*pEMAC_STAADD & STABUSY) {
-		// wait for Station Management done IRQ
-//		idle();
-	}
+	/* poll the STABUSY bit */
+	while(*pEMAC_STAADD & STABUSY);
 }
 
 void WrPHYReg(u16 PHYAddr, u16 RegAddr, u16 Data)
@@ -251,13 +260,11 @@ void WrPHYReg(u16 PHYAddr, u16 RegAddr, u16 Data)
 
 	*pEMAC_STAADD = SET_PHYAD(PHYAddr) | SET_REGAD(RegAddr) |
 		STAOP | STAIE | STABUSY;
-
-//	INFO_PRINT("Wr PHY[%02X] = %04X\n", RegAddr, Data);
 }
 
-//
-//		Read an off-chip register in a PHY through the MDC/MDIO port
-//
+/*********************************************************************************
+ *		Read an off-chip register in a PHY through the MDC/MDIO port     *
+ *********************************************************************************/
 u16  RdPHYReg(u16 PHYAddr, u16 RegAddr)
 {
 	u16 Data;
@@ -271,7 +278,7 @@ u16  RdPHYReg(u16 PHYAddr, u16 RegAddr)
 	
 	Data = (u16)*pEMAC_STADAT;
 	
-	PHYregs[RegAddr] = Data;	// save shadow copy
+	PHYregs[RegAddr] = Data;	/* save shadow copy */
 
 	return Data;
 }
@@ -279,12 +286,12 @@ u16  RdPHYReg(u16 PHYAddr, u16 RegAddr)
 void SoftResetPHY(void)
 {
 	u16 phydat;
-	// set the reset bit
+	/* set the reset bit */
 	WrPHYReg(PHYADDR, PHY_MODECTL, PHY_RESET);
-	// and clear it again
+	/* and clear it again */
 	WrPHYReg(PHYADDR, PHY_MODECTL, 0x0000);
 	do {
-	// poll until reset is complete
+	/* poll until reset is complete */
 		phydat = RdPHYReg(PHYADDR, PHY_MODECTL);
 	} while ((phydat & PHY_RESET) != 0);
 }
@@ -338,21 +345,21 @@ ADI_ETHER_BUFFER *SetupRxBuffer(int no)
 	/* set up first desc to point to receive frame buffer */
 	buf->Dma[0].NEXT_DESC_PTR = &(buf->Dma[1]);
 	buf->Dma[0].START_ADDR    = (u32)buf->FrmData;
-	buf->Dma[0].CONFIG.b_DMA_EN = 1;	//enabled
-	buf->Dma[0].CONFIG.b_WNR    = 1;	//Write to memory
-	buf->Dma[0].CONFIG.b_WDSIZE = 2;	//wordsize is 32 bits
-	buf->Dma[0].CONFIG.b_NDSIZE = 5;	//5 half words is desc size.
-	buf->Dma[0].CONFIG.b_FLOW   = 7;	//large desc flow
+	buf->Dma[0].CONFIG.b_DMA_EN = 1;	/* enabled */
+	buf->Dma[0].CONFIG.b_WNR    = 1;	/* Write to memory */
+	buf->Dma[0].CONFIG.b_WDSIZE = 2;	/* wordsize is 32 bits */
+	buf->Dma[0].CONFIG.b_NDSIZE = 5;	/* 5 half words is desc size. */
+	buf->Dma[0].CONFIG.b_FLOW   = 7;	/* large desc flow */
 	
 	/* set up second desc to point to status word */
 	buf->Dma[1].NEXT_DESC_PTR = &(buf->Dma[0]);
 	buf->Dma[1].START_ADDR    = (u32)&buf->IPHdrChksum;
-	buf->Dma[1].CONFIG.b_DMA_EN = 1;	//enabled
-	buf->Dma[1].CONFIG.b_WNR    = 1;	//Write to memory
-	buf->Dma[1].CONFIG.b_WDSIZE = 2;	//wordsize is 32 bits
-	buf->Dma[1].CONFIG.b_DI_EN  = 1;	//enable interrupt
-	buf->Dma[1].CONFIG.b_NDSIZE = 0;	//must be 0 when FLOW is 0
-	buf->Dma[1].CONFIG.b_FLOW   = 0;	//stop
+	buf->Dma[1].CONFIG.b_DMA_EN = 1;	/* enabled */
+	buf->Dma[1].CONFIG.b_WNR    = 1;	/* Write to memory */
+	buf->Dma[1].CONFIG.b_WDSIZE = 2;	/* wordsize is 32 bits */
+	buf->Dma[1].CONFIG.b_DI_EN  = 1;	/* enable interrupt */
+	buf->Dma[1].CONFIG.b_NDSIZE = 0;	/* must be 0 when FLOW is 0 */ 
+	buf->Dma[1].CONFIG.b_FLOW   = 0;	/* stop */
 	
 	return buf;
 }	
@@ -374,21 +381,21 @@ ADI_ETHER_BUFFER *SetupTxBuffer(int no)
         /* set up first desc to point to receive frame buffer */
         buf->Dma[0].NEXT_DESC_PTR = &(buf->Dma[1]);
         buf->Dma[0].START_ADDR    = (u32)buf->FrmData;
-        buf->Dma[0].CONFIG.b_DMA_EN = 1;        //enabled
-        buf->Dma[0].CONFIG.b_WNR    = 0;        //Read to memory
-        buf->Dma[0].CONFIG.b_WDSIZE = 2;        //wordsize is 32 bits
-        buf->Dma[0].CONFIG.b_NDSIZE = 5;        //5 half words is desc size.
-        buf->Dma[0].CONFIG.b_FLOW   = 7;        //large desc flow
+        buf->Dma[0].CONFIG.b_DMA_EN = 1;        /* enabled */
+        buf->Dma[0].CONFIG.b_WNR    = 0;        /* Read to memory */
+        buf->Dma[0].CONFIG.b_WDSIZE = 2;        /* wordsize is 32 bits */
+        buf->Dma[0].CONFIG.b_NDSIZE = 5;        /* 5 half words is desc size. */
+        buf->Dma[0].CONFIG.b_FLOW   = 7;        /* large desc flow */
                                                                                                                                                              
         /* set up second desc to point to status word */
         buf->Dma[1].NEXT_DESC_PTR = &(buf->Dma[0]);
         buf->Dma[1].START_ADDR    = (u32)&buf->StatusWord;
-        buf->Dma[1].CONFIG.b_DMA_EN = 1;        //enabled
-        buf->Dma[1].CONFIG.b_WNR    = 1;        //Write to memory
-        buf->Dma[1].CONFIG.b_WDSIZE = 2;        //wordsize is 32 bits
-        buf->Dma[1].CONFIG.b_DI_EN  = 1;        //enable interrupt
-        buf->Dma[1].CONFIG.b_NDSIZE = 0;        //must be 0 when FLOW is 0
-        buf->Dma[1].CONFIG.b_FLOW   = 0;        //stop
+        buf->Dma[1].CONFIG.b_DMA_EN = 1;        /* enabled */
+        buf->Dma[1].CONFIG.b_WNR    = 1;        /* Write to memory */
+        buf->Dma[1].CONFIG.b_WDSIZE = 2;        /* wordsize is 32 bits */
+        buf->Dma[1].CONFIG.b_DI_EN  = 1;        /* enable interrupt */
+        buf->Dma[1].CONFIG.b_NDSIZE = 0;        /* must be 0 when FLOW is 0 */
+        buf->Dma[1].CONFIG.b_FLOW   = 0;        /* stop */
                                                                                                                                                              
         return buf;
 }
