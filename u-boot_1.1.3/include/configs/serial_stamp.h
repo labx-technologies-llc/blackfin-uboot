@@ -171,7 +171,7 @@
 
 #define CFG_ENV_IS_IN_EEPROM		1
 #define CFG_ENV_OFFSET			0x4000
-#define CFG_ENV_HEADER			(CFG_ENV_OFFSET + 0xE2)	/* 0xE2 is the length of LDR file header */
+#define CFG_ENV_HEADER			(CFG_ENV_OFFSET + 0x11E)	/* 0x11E is the length of LDR file header */
 #define	CFG_ENV_SIZE			0x2000
 #define CFG_ENV_SECT_SIZE 		0x2000	/* Total Size of Environment Sector */
 #define	ENV_IS_EMBEDDED
