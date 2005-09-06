@@ -62,7 +62,7 @@ _start:
 start:
 _stext:
 
-	R0 = 0x30;
+	R0 = 0x32;
 	SYSCFG = R0;
 	SSYNC;
 
