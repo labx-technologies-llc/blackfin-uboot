@@ -27,7 +27,14 @@ init_sdram:
 	[--SP] = RETS;
 	[--SP] = (R7:0);
 	[--SP] = (P5:0);
-	
+
+#ifdef CONFIG_SERIAL_STAMP
+	p0.h = hi(SPI_BAUD);
+	p0.l = lo(SPI_BAUD);
+	r0.l = CONFIG_SPI_BAUD;
+	w[p0] = r0.l;
+    SSYNC;
+#endif
 	/*
          *  Set PLL_CTL
          *   - [14:09] = MSEL[5:0] : CLKIN / VCO multiplication factors
@@ -40,7 +47,7 @@ init_sdram:
          *   - [0]     = DF        : 1=Pass CLKIN/2 to PLL / 0=Pass CLKIN to PLL
          *   all other bits set to zero
          */
-	
+
 	p0.h = hi(PLL_LOCKCNT);
 	p0.l = lo(PLL_LOCKCNT);
 	r0 = 0x300(Z);
@@ -61,7 +68,7 @@ init_sdram:
         r1 = CONFIG_PLL_BYPASS;         /* Bypass the PLL?                 */
         r1 = r1 << 8;                   /* Shift it over                   */
         r0 = r1 | r0;                   /* add them all together           */
-	
+
         p0.h = hi(PLL_CTL);
         p0.l = lo(PLL_CTL);      /* Load the address                */
         cli r2;                         /* Disable interrupts              */
@@ -89,7 +96,7 @@ check_again:
         r0 = mem_SDRRC;
         w[p0] = r0.l;
         ssync;
-	
+
 	p0.l = (EBIU_SDBCTL & 0xFFFF);
 	p0.h = (EBIU_SDBCTL >> 16);	/* SDRAM Memory Bank Control Register */
 	r0 = mem_SDBCTL;
@@ -118,10 +125,10 @@ skip:
 	[P2] = R1;
         SSYNC;
 	nop;
-	
+
 	(P5:0) = [SP++];
 	(R7:0) = [SP++];
 	RETS   = [SP++];
 	ASTAT  = [SP++];
 	RTS;
-	
+

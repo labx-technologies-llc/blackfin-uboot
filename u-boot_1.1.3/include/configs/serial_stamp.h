@@ -60,13 +60,19 @@
 #define CONFIG_PLL_BYPASS       	0
 /* CONFIG_VCO_MULT controls what the multiplier of the PLL is.   */
 /* Values can range from 1-64                                    */
-#define CONFIG_VCO_MULT			45
+#define CONFIG_VCO_MULT			36
 /* CONFIG_CCLK_DIV controls what the core clock divider is       */
 /* Values can be 1, 2, 4, or 8 ONLY                              */
 #define CONFIG_CCLK_DIV			1
 /* CONFIG_SCLK_DIV controls what the peripheral clock divider is */
 /* Values can range from 1-15                                    */
 #define CONFIG_SCLK_DIV			5
+
+/* CONFIG_SPI_BAUD controls the SPI peripheral clock divider     */
+/* Values can range from 2-65535                                 */ 
+/* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)                  */
+#define CONFIG_SPI_BAUD			2
+
 
 /*
  * Network Settings

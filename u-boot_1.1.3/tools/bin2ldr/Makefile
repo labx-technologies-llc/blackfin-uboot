@@ -10,18 +10,18 @@ bin2ldr.o: bin2ldr.c bin2ldr.h
 	$(CC) $(CFLAG) -c bin2ldr.c
 ###############################################################
 jump:   jump.o
-	bfin-elf-ld -o jump -e 0x00000000 jump.o
+	bfin-uclinux-ld -o jump -e 0x00000000 jump.o
 jump.o: jump.S bin2ldr.h
-	bfin-elf-gcc $(CFLAG) -c jump.S
+	bfin-uclinux-gcc $(CFLAG) -c jump.S
 jump.bin: jump
-	bfin-elf-objcopy -O binary jump jump.bin
+	bfin-uclinux-objcopy -O binary jump jump.bin
 ################################################################
 init_sdram: init_sdram.o
-	bfin-elf-ld -o init_sdram -e 0x00000000 init_sdram.o
+	bfin-uclinux-ld -o init_sdram -e 0x00000000 init_sdram.o
 init_sdram.o:
 	cp ../../cpu/bf533/init_sdram.o .
 init_sdram.bin: init_sdram
-	bfin-elf-objcopy -O binary init_sdram init_sdram.bin
+	bfin-uclinux-objcopy -O binary init_sdram init_sdram.bin
 ################################################################
 app.bin:
 	cp $(APP_FILE) app.bin

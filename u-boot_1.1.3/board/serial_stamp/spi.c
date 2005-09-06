@@ -14,7 +14,6 @@
 
 #define COMMON_SPI_SETTINGS (SPE|MSTR|CPHA|CPOL) //Settings to the SPI_CTL
 #define TIMOD01 (0x01)		//stes the SPI to work with core instructions
-#define BAUD_RATE_DIVISOR 2
 
 //Flash commands
 #define SPI_WREN            (0x06)  //Set Write Enable Latch
@@ -164,7 +163,7 @@ void SetupSPI( const int spi_setting )
                 udelay(CONFIG_CCLK_HZ/50000000);
 	/*sets up the PF2 to be the slave select of the SPI */
 	*pSPI_FLG = 0xFB04;
-	*pSPI_BAUD = BAUD_RATE_DIVISOR;
+	*pSPI_BAUD = CONFIG_SPI_BAUD;
 	*pSPI_CTL = spi_setting;
 	 __builtin_bfin_ssync();
 }
