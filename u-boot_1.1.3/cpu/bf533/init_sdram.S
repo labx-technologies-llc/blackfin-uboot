@@ -28,13 +28,6 @@ init_sdram:
 	[--SP] = (R7:0);
 	[--SP] = (P5:0);
 	
-	p0.h = hi(SIC_IWR);
-	p0.l = lo(SIC_IWR);
-	r0.h = 0x60
-	r0.l = 0x1;
-	[p0] = r0;
-	SSYNC;
-	
 	/*
          *  Set PLL_CTL
          *   - [14:09] = MSEL[5:0] : CLKIN / VCO multiplication factors
