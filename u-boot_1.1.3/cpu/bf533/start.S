@@ -55,6 +55,8 @@
 .global _exit;
 .global flashdataend;
 .global init_sdram;
+.global icache_enable;
+.global dcache_enable;
 
 
 .text
@@ -339,6 +341,9 @@ _clear_bss:
 _clear_bss_end:
  	[p1++] = r0;
 _clear_bss_skip:
+
+	call icache_enable;
+	call dcache_enable;
 
 	p0.l = _start1;
 	p0.h = _start1;

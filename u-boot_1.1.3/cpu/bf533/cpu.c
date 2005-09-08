@@ -132,6 +132,8 @@ void icache_enable(void)
 	if((*pCHIPID >> 28)<2)
 		return;
 #endif 
+	/* Before enable icache, disable it first */
+	icache_disable();
 	I0 = (unsigned int *)ICPLB_ADDR0;
 	I1 = (unsigned int *)ICPLB_DATA0;
 	
@@ -177,6 +179,8 @@ void dcache_enable(void)
 	unsigned int *I0,*I1;
 	unsigned int temp;
 	int i;
+	/* Before enable dcache, disable it first */
+
 	I0 = (unsigned int *)DCPLB_ADDR0;
 	I1 = (unsigned int *)DCPLB_DATA0;
 

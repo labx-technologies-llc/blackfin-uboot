@@ -34,8 +34,6 @@ int checkboard(void)
 	printf("CPU:   ADSP BF537 Rev.: 0.%d\n", *pCHIPID >>28);
 	printf("Board: ADI BF537 stamp board\n");
 	printf("       Support: http://blackfin.uclinux.org/\n");
-	icache_enable();
-	dcache_enable();
 	return 0;
 }
 
