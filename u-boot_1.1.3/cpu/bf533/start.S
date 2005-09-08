@@ -146,13 +146,6 @@ no_soft_reset:
 
 	call init_sdram;
 
-        /*
-         * Turn on the CYCLES COUNTER
-         */
-        r2 = SYSCFG;
-        BITSET (r2,1);
-        SYSCFG = r2;
-	
 #ifndef	CFG_NO_FLASH
 	/* relocate into to RAM */
 	call get_pc;
