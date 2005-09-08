@@ -180,7 +180,7 @@ void dcache_enable(void)
 	unsigned int temp;
 	int i;
 	/* Before enable dcache, disable it first */
-
+	dcache_disable();
 	I0 = (unsigned int *)DCPLB_ADDR0;
 	I1 = (unsigned int *)DCPLB_DATA0;
 
