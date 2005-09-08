@@ -48,10 +48,6 @@ int do_go (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 
 	printf ("## Starting application at 0x%08lX ...\n", addr);
 
-#if defined(CONFIG_BLACKFIN)
-        if(icache_status())
-                invalidate_entire_icache();
-#endif
 	/*
 	 * pass address parameter as argv[0] (aka command name),
 	 * and all remaining args
