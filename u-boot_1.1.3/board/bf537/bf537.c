@@ -29,6 +29,8 @@
 #include <config.h>
 #include <asm/blackfin.h>
 
+#define POST_WORD_ADDR 0xFF903FFC
+
 int checkboard(void)
 {
 	printf("CPU:   ADSP BF537 Rev.: 0.%d\n", *pCHIPID >>28);
@@ -73,6 +75,10 @@ int post_hotkeys_pressed(void)
 	int i;
 	unsigned short value;
 	
+	*pPORTF_FER   &= ~PF5;
+	*pPORTFIO_DIR &= ~PF5;
+	*pPORTFIO_INEN|=  PF5;
+	
 	printf("########Press SW10 to enter POST########: %2d ",delay);	
 	while(delay--){
 		for(i=0;i<100;i++){
@@ -86,13 +92,12 @@ int post_hotkeys_pressed(void)
 	}
 	printf("\b\b\b 0");
 	printf("\n");
-	value = 0;
 	if(value == 0)
 		return 0;
 	else
 		{
 		printf("Hotkey has been pressed, Enter POST . . . . . .\n");
-		return 0;
+		return 1;
 		}
 }
 #endif
@@ -100,15 +105,15 @@ int post_hotkeys_pressed(void)
 #if defined(CONFIG_POST) || defined(CONFIG_LOGBUFFER)
 void post_word_store(ulong a)
 {
-	volatile ulong *save_addr = 
-		(volatile ulong *)0xFF907FFC;
+	volatile ulong *save_addr =
+		(volatile ulong *)POST_WORD_ADDR;
 	*save_addr = a;
 }
 
 ulong post_word_load(void)
 {
 	volatile ulong *save_addr = 
-		(volatile ulong *)0xFF907FFC;
+		(volatile ulong *)POST_WORD_ADDR;
 	return *save_addr;
 }
 
