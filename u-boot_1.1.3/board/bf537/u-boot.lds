@@ -72,7 +72,7 @@ SECTIONS
     lib_generic/vsprintf.o	(.text)
     lib_generic/crc32.o		(.text)
     lib_generic/zlib.o		(.text)
-    board/bf537/bf537.o		(.text)
+/*  board/bf537/bf537.o		(.text) */
 
     . = DEFINED(env_offset) ? env_offset : .;
     common/environment.o	(.text)

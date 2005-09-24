@@ -70,7 +70,8 @@
 				  CFG_POST_UART	  | \
 				  CFG_POST_FLASH  | \
 				  CFG_POST_ETHER  | \
-				  CFG_POST_BLINK)
+				  CFG_POST_LED	  | \
+				  CFG_POST_BUTTON)
 #undef CONFIG_POST
 
 #ifdef CONFIG_POST

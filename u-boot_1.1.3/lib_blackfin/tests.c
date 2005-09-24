@@ -30,8 +30,9 @@
 #ifdef CONFIG_POST
 
 #include <post.h>
-#define CFG_POST_FLASH 0x00004000
-#define CFG_POST_BLINK 0x00008000
+#define CFG_POST_FLASH  0x00004000
+#define CFG_POST_LED    0x00008000
+#define CFG_POST_BUTTON 0x00010000
 
 
 extern int cache_post_test (int flags);
@@ -54,7 +55,8 @@ extern int sysmon_init_f (void);
 extern void sysmon_reloc (void);
 
 extern int flash_post_test(int flags);
-extern int blink_post_test(int flags);
+extern int led_post_test(int flags);
+extern int button_post_test(int flags);
 
 
 struct post_test post_list[] =
@@ -240,16 +242,28 @@ struct post_test post_list[] =
 	CFG_POST_FLASH
     },
 #endif
-#if CONFIG_POST & CFG_POST_BLINK
+#if CONFIG_POST & CFG_POST_LED
     {
-        "LED and SWITCH test",
-        "blink",
-        "This test checks LED and switch.",
+        "LED test",
+        "LED",
+        "This test checks LED ",
 	POST_RAM | POST_ALWAYS | POST_MANUAL,
-        &blink_post_test,
+        &led_post_test,
         NULL,
         NULL,
-        CFG_POST_BLINK
+        CFG_POST_LED
+    },
+#endif
+#if CONFIG_POST & CFG_POST_BUTTON
+    {
+        "Button test",
+        "button",
+        "This test checks Button ",
+        POST_RAM | POST_ALWAYS | POST_MANUAL,
+        &button_post_test,
+        NULL,
+        NULL,
+        CFG_POST_BUTTON
     },
 #endif
 
