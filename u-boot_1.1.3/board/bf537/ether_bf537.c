@@ -29,6 +29,10 @@
 #include <command.h>
 #include "ether_bf537.h"
 
+#ifdef CONFIG_POST
+#include <post.h>
+#endif
+
 #undef DEBUG_ETHERNET
 
 #ifdef DEBUG_ETHERNET
@@ -399,4 +403,61 @@ ADI_ETHER_BUFFER *SetupTxBuffer(int no)
                                                                                                                                                              
         return buf;
 }
-#endif  /* CONFIG_ETHER_ON_SCC && CFG_CMD_NET */
+
+#if defined(CONFIG_POST) && defined(CFG_POST_ETHER)
+int ether_post_test(int flags)
+{
+	uchar buf[64];
+	int i, value = 0;
+	int length;
+	
+	printf("\n--------");
+	eth_init(NULL);
+	/* construct the package */
+	buf[0] = buf[6] = (unsigned char)(*pEMAC_ADDRLO &0xFF);
+        buf[1] = buf[7] = (unsigned char)((*pEMAC_ADDRLO &0xFF00)     >>  8);
+        buf[2] = buf[8] = (unsigned char)((*pEMAC_ADDRLO &0xFF0000)   >> 16);
+        buf[3] = buf[9] = (unsigned char)((*pEMAC_ADDRLO &0xFF000000) >> 24);
+        buf[4] = buf[10]= (unsigned char)(*pEMAC_ADDRHI &0xFF);
+        buf[5] = buf[11]= (unsigned char)((*pEMAC_ADDRHI &0xFF00)     >>  8);
+	buf[12] = 0x08;		/* Type: ARP */
+	buf[13] = 0x06;
+	buf[14] = 0x00;		/* Hardware type: Ethernet */
+	buf[15] = 0x01;
+	buf[16] = 0x08;		/* Protocal type: IP */
+	buf[17] = 0x00;
+	buf[18] = 0x06;		/* Hardware size    */
+	buf[19] = 0x04;		/* Protocol size    */
+	buf[20] = 0x00;		/* Opcode: request  */
+	buf[21] = 0x01;
+	
+        for(i=0;i<42;i++)
+                buf[i+22] = i;
+	printf("--------Send 64 bytes......\n");
+	eth_send((volatile void *)buf,64);
+	for(i=0;i<100;i++){
+		udelay(10000);
+		if((rxbuf[rxIdx]->StatusWord & RX_COMP) !=0){
+			value = 1;
+			break;
+		}
+	}
+	if(value == 0){
+		printf("--------EMAC can't receive any data\n");
+		eth_halt();
+		return -1;
+	}
+	length = rxbuf[rxIdx]->StatusWord & 0x000007FF -4;
+        for(i=0;i<length;i++){
+                if(rxbuf[rxIdx]->FrmData->Dest[i] != buf[i]){
+                        printf("--------EMAC receive error data!\n");
+			eth_halt();
+                        return -1;
+                }
+        }
+	printf("--------receive %d bytes, matched\n", length);
+        eth_halt();
+	return 0;
+}
+#endif
+#endif  /* CFG_CMD_NET */

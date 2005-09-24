@@ -124,11 +124,6 @@ int uart_post_test(int flags)
 	return 0;
 }
 
-int ether_post_test(int flags)
-{
-	return 0;
-}
-
 int flash_post_test(int flags)
 {
 	return 0;
