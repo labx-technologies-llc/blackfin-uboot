@@ -76,6 +76,8 @@
 
 #ifdef CONFIG_POST
 #define CFG_CMD_POST_DIAG	CFG_CMD_DIAG
+#define FLASH_START_POST_BLOCK 11       /* Should > = 11 */
+#define FLASH_END_POST_BLOCK   71       /* Should < = 71 */
 #else
 #define CFG_CMD_POST_DIAG	0
 #endif

@@ -235,7 +235,7 @@ struct post_test post_list[] =
 	"FLASH test",
 	"flash",
 	"This test checks flash.",
-	POST_MANUAL,
+	POST_RAM | POST_ALWAYS | POST_MANUAL,
 	&flash_post_test,
 	NULL,
 	NULL,

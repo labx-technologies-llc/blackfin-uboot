@@ -124,9 +124,47 @@ int uart_post_test(int flags)
 	return 0;
 }
 
+#define BLOCK_SIZE 0x10000
+#define VERIFY_ADDR 0x2000000
+extern int erase_block_flash(int);
+extern int write_data(long lStart, long lCount, uchar *pnData);
 int flash_post_test(int flags)
 {
-	return 0;
+	unsigned short *pbuf, *temp;
+	int offset,n,i;
+	int value = 0;
+	int result = 0;
+	printf("\n");
+	pbuf = (unsigned short *)VERIFY_ADDR;
+	temp = pbuf;
+	for(n=FLASH_START_POST_BLOCK;n<FLASH_END_POST_BLOCK;n++){
+		offset = (n - 7)*BLOCK_SIZE;
+		printf("--------Erase   block:%2d..", n);
+		erase_block_flash(n);
+		printf("OK\r");
+		printf("--------Program block:%2d...", n);
+		write_data(CFG_FLASH_BASE+offset, BLOCK_SIZE, pbuf);
+		printf("OK\r");
+		printf("--------Verify  block:%2d...", n);
+		for(i=0;i< BLOCK_SIZE;i+=2){
+			if( *(unsigned short *)(CFG_FLASH_BASE + offset +i)!=*temp++){
+				value = 1;
+				result = 1;
+			}
+		}
+		if(value)
+			printf("failed\n");
+		else
+			printf("OK		%3d%%\r",(int)((n+1-FLASH_START_POST_BLOCK)*100/(FLASH_END_POST_BLOCK - FLASH_START_POST_BLOCK)));
+
+		temp = pbuf;
+		value = 0;
+	}
+	printf("\n");		
+	if(result)
+		return -1;
+	else
+	        return 0;
 }
 
 /****************************************************
