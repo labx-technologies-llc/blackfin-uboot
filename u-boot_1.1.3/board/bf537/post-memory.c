@@ -470,7 +470,7 @@ int memory_post_test (int flags)
 	if (flags & POST_SLOWTEST) {
 		ret = memory_post_tests (CFG_SDRAM_BASE, memsize);
 	} else {			/* POST_NORMAL */
-
+#ifdef POST_NORMAL_MEMORY
 		unsigned long i;
 
 		for (i = 0; i < (memsize >> 20) && ret == 0; i++) {
@@ -479,6 +479,7 @@ int memory_post_test (int flags)
 			if (ret == 0)
 				ret = memory_post_tests ((i << 20) + 0xff800, 0x800);
 		}
+#endif
 	}
 
 	return ret;
