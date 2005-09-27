@@ -46,7 +46,7 @@ uchar env_get_char_spec (int index)
 	uchar c;
 
 	eeprom_read (CFG_DEF_EEPROM_ADDR,
-#ifdef CONFIG_SERIAL_STAMP
+#if defined(CONFIG_SERIAL_STAMP) || defined(CONFIG_SERIAL_BF537)
 		     CFG_ENV_HEADER+index+offsetof(env_t,data),
 #else
 		     CFG_ENV_OFFSET+index+offsetof(env_t,data),
@@ -59,7 +59,7 @@ uchar env_get_char_spec (int index)
 void env_relocate_spec (void)
 {
 	eeprom_read (CFG_DEF_EEPROM_ADDR,
-#ifdef CONFIG_SERIAL_STAMP
+#if defined(CONFIG_SERIAL_STAMP) || defined(CONFIG_SERIAL_BF537)
 		     CFG_ENV_HEADER,
 #else
 		     CFG_ENV_OFFSET,
@@ -71,7 +71,7 @@ void env_relocate_spec (void)
 int saveenv(void)
 {
 	return eeprom_write (CFG_DEF_EEPROM_ADDR,
-#ifdef CONFIG_SERIAL_STAMP
+#if defined(CONFIG_SERIAL_STAMP) || defined(CONFIG_SERIAL_BF537)
 			     CFG_ENV_HEADER,
 #else
 			     CFG_ENV_OFFSET,
@@ -98,7 +98,7 @@ int env_init(void)
 
 	/* read old CRC */
 	eeprom_read (CFG_DEF_EEPROM_ADDR,
-#ifdef CONFIG_SERIAL_STAMP
+#if defined(CONFIG_SERIAL_STAMP) || defined(CONFIG_SERIAL_BF537)
 		     CFG_ENV_HEADER+offsetof(env_t,crc),
 #else
 		     CFG_ENV_OFFSET+offsetof(env_t,crc),
@@ -110,7 +110,7 @@ int env_init(void)
 	while (len > 0) {
 		int n = (len > sizeof(buf)) ? sizeof(buf) : len;
 		eeprom_read (CFG_DEF_EEPROM_ADDR, 
-#ifdef CONFIG_SERIAL_STAMP
+#if defined(CONFIG_SERIAL_STAMP) || defined(CONFIG_SERIAL_BF537)
 			     CFG_ENV_HEADER+off, 
 #else
 			     CFG_ENV_OFFSET+off,

@@ -1616,6 +1616,9 @@ serial_stamp_config:	unconfig
 bf537_config	:	unconfig
 	@./mkconfig $(@:_config=) blackfin bf533 bf537
 
+serial_bf537_config:	unconfig
+	@./mkconfig $(@:_config=) blackfin bf533 serial_bf537
+
 bf534_config	:	unconfig
 	@./mkconfig $(@:_config=) blackfin bf533 bf534
 

@@ -28,7 +28,13 @@ init_sdram:
 	[--SP] = (R7:0);
 	[--SP] = (P5:0);
 
-#ifdef CONFIG_SERIAL_STAMP
+        p0.h = hi(SIC_IWR);
+        p0.l = lo(SIC_IWR);
+        r0.l = 0x1;
+        w[p0] = r0.l;
+        SSYNC;
+	
+#if defined(CONFIG_SERIAL_STAMP) || defined(CONFIG_SERIAL_BF537)
 	p0.h = hi(SPI_BAUD);
 	p0.l = lo(SPI_BAUD);
 	r0.l = CONFIG_SPI_BAUD;

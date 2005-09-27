@@ -137,12 +137,6 @@ no_soft_reset:
 	LSETUP(4,4) lc0 = p1;
 	[ p0 ++ ] = r1;
 
-	p0.h = hi(SIC_IWR);
-	p0.l = lo(SIC_IWR);
-	r0.l = 0x1;
-	w[p0] = r0.l;
-	SSYNC;
-
 	sp.l = (0xffb01000 & 0xFFFF);
 	sp.h = (0xffb01000 >> 16);
 
