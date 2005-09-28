@@ -34,6 +34,11 @@ void flush_cache(unsigned long dummy1, unsigned long dummy2)
 {
         if((dummy1>= L1_ISRAM) && (dummy1 < L1_ISRAM_END))
                 return;
+	if((dummy1>= DATA_BANKA_SRAM) && (dummy1 < DATA_BANKA_SRAM_END))
+		return;
+	if((dummy1>= DATA_BANKB_SRAM) && (dummy1 < DATA_BANKB_SRAM_END))
+		return;
+
 	if(icache_status()){
 		blackfin_icache_flush_range(dummy1,dummy1+dummy2);
 		}
