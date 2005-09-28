@@ -67,19 +67,6 @@
 /* Values can range from 1-15                                    */
 #define CONFIG_SCLK_DIV			5
 
-/*
- * Network Settings
- */
-/* network support */
-#define CONFIG_IPADDR           192.168.0.15
-#define CONFIG_NETMASK          255.255.255.0
-#define CONFIG_GATEWAYIP        192.168.0.1
-#define CONFIG_SERVERIP         192.168.0.2
-#define CONFIG_HOSTNAME         STAMP
-#define CONFIG_ROOTPATH			/checkout/uClinux-dist/romfs
-
-/* To remove hardcoding and enable MAC storage in EEPROM  */
-/* #define CONFIG_ETHADDR               02:80:ad:20:31:b8 */
 
 /*
  * Command settings
@@ -158,6 +145,19 @@
 /* #define HARDCODE_MAC			1 */
 #if 0
 #define	CONFIG_MII
+#endif
+
+#if (CONFIG_DRIVER_SMC91111)
+/* network support */
+#define CONFIG_IPADDR           192.168.0.15
+#define CONFIG_NETMASK          255.255.255.0
+#define CONFIG_GATEWAYIP        192.168.0.1
+#define CONFIG_SERVERIP         192.168.0.2
+#define CONFIG_HOSTNAME         STAMP
+#define CONFIG_ROOTPATH                 /checkout/uClinux-dist/romfs
+
+/* To remove hardcoding and enable MAC storage in EEPROM  */
+/* #define CONFIG_ETHADDR               02:80:ad:20:31:b8 */
 #endif
 
 /*
@@ -267,7 +267,7 @@
 #endif
 
 /*
- * SDRAM settings
+ * SDRAM settings & memory map
  *
  */
 
@@ -275,17 +275,44 @@
 #define CONFIG_MEM_ADD_WDTH     	11             /* 8, 9, 10, 11    */
 #define CONFIG_MEM_MT48LC64M4A2FB_7E	1
 
-#define CFG_MEMTEST_START		0x00100000	/* memtest works on */
-#define CFG_MEMTEST_END			0x07F7FFFF	/* 1 ... 127.5 MB in DRAM */
-#define	CFG_LOAD_ADDR			0x01000000	/* default load address */
+#define CFG_MEMTEST_START		0x00000000	/* memtest works on */
 
 #define	CFG_SDRAM_BASE			0x00000000
-#define CFG_MAX_RAM_SIZE		0x08000000
+
+#if (CONFIG_MEM_SIZE == 128 )
+	#define CFG_MAX_RAM_SIZE	0x08000000
+	#define CFG_MEMTEST_END		0x07F7FFFF      /* 1 ... 127.5 MB in DRAM */
+	#define CFG_LOAD_ADDR		0x01000000      /* default load address */
+#endif
+#if (CONFIG_MEM_SIZE == 64 )
+	#define CFG_MAX_RAM_SIZE	0x04000000
+        #define CFG_MEMTEST_END         0x04F7FFFF      /* 1 ... 63.5 MB in DRAM */
+        #define CFG_LOAD_ADDR           0x01000000      /* default load address */
+#endif
+#if (CONFIG_MEM_SIZE == 32 )
+	#define CFG_MAX_RAM_SIZE        0x02000000
+        #define CFG_MEMTEST_END         0x01F7FFFF      /* 1 ... 31.5 MB in DRAM */
+        #define CFG_LOAD_ADDR           0x01000000      /* default load address */
+#endif
+#if (CONFIG_MEM_SIZE == 16 )
+	#define CFG_MAX_RAM_SIZE        0x01000000
+        #define CFG_MEMTEST_END         0x00F7FFFF      /* 1 ... 15.5 MB in DRAM */
+        #define CFG_LOAD_ADDR           0x00800000      /* default load address  */
+#endif
 
 #define	CFG_MONITOR_LEN			(256 << 10)	/* Reserve 256 kB for Monitor	*/
-#define CFG_MONITOR_BASE		(CFG_MAX_RAM_SIZE - CFG_MONITOR_LEN)
+#define CFG_MALLOC_LEN                  (128 << 10)     /* Reserve 128 kB for malloc()  */
+#define CFG_GBL_DATA_SIZE               0x4000		/* Reserve 16k for Global Data  */
 
+#define CFG_MONITOR_BASE		TEXT_BASE
+#define CFG_MALLOC_BASE                 (CFG_MONITOR_BASE - CFG_MALLOC_LEN)
+#define CFG_GBL_DATA_ADDR               (CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
+#define CONFIG_STACKBASE                (CFG_GBL_DATA_ADDR  - 4)
 
+/* Check to make sure everything fits in SDRAM */
+#if ((CFG_MONITOR_BASE + CFG_MONITOR_LEN) > CFG_MAX_RAM_SIZE)
+	#error Memory Map does not fit into configuration
+#endif
 
 
 #if ( CONFIG_CLKIN_HALF == 0 )
@@ -302,18 +329,11 @@
 #define CONFIG_SCLK_HZ			CONFIG_CLKIN_HZ
 #endif
 
-
-
 /*
  * Miscellaneous configurable options
  */
-#define	CFG_HZ				1000		/* 1ms time tick */ 
 
-#define	CFG_MALLOC_LEN			(128 << 10)	/* Reserve 128 kB for malloc()	*/
-#define CFG_MALLOC_BASE			(CFG_MONITOR_BASE - CFG_MALLOC_LEN)
-#define CFG_GBL_DATA_SIZE		0x4000
-#define CFG_GBL_DATA_ADDR		(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
-#define CONFIG_STACKBASE		(CFG_GBL_DATA_ADDR  - 4)
+#define	CFG_HZ				1000		/* 1ms time tick */ 
 
 #define CFG_LARGE_IMAGE_LEN	0x4000000	/* Large Image Length, set to 64 Meg */
 
