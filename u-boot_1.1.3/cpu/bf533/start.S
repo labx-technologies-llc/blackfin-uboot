@@ -150,19 +150,17 @@ offset:
 	r1.h = ((offset -start) >> 16);
 	r0 = r0 - r1;
 	p1 = r0;
+
 	p2.l = (CFG_MONITOR_BASE & 0xffff);
 	p2.h = (CFG_MONITOR_BASE >> 16);
-	r0.l = (CFG_MONITOR_LEN & 0xffff);
-	r0.h = (CFG_MONITOR_LEN >> 16);
+
+	p3 = 0x04;
+	p4.l = ((CFG_MONITOR_BASE + CFG_MONITOR_LEN) & 0xffff);
+	p4.h = ((CFG_MONITOR_BASE + CFG_MONITOR_LEN) >> 16);
 loop1:
-	r1 = [p1];
-	[p2] = r1;
-	p3=0x4;
-	p1=p1+p3;	
-	p2=p2+p3;
-	r2=0x4;	
-	r0=r0-r2;
-	cc=r0==0x0;
+	r1 = [p1 ++ p3];
+	[p2 ++ p3] = r1;
+	cc=p2==p4;
 	if !cc jump loop1;
 #endif
 	/*
@@ -253,27 +251,6 @@ _real_start:
         ssync;
 
 #endif
-
-	/* Code for initializing Async mem banks */
-	p2.h = (EBIU_AMBCTL1 >> 16);
-	p2.l = (EBIU_AMBCTL1 & 0xFFFF);
-	r0.h = (AMBCTL1VAL >> 16);
-	r0.l = (AMBCTL1VAL & 0xFFFF);
-	[p2] = r0;
-	ssync;
-
-	p2.h = (EBIU_AMBCTL0 >> 16);
-	p2.l = (EBIU_AMBCTL0 & 0xFFFF);
-	r0.h = (AMBCTL0VAL >> 16);
-	r0.l = (AMBCTL0VAL & 0xFFFF);
-	[p2] = r0;
-	ssync;
-
-	p2.h = (EBIU_AMGCTL >> 16);
-	p2.l = (EBIU_AMGCTL & 0xffff);
-	r0 = AMGCTLVAL;
-	w[p2] = r0;
-	ssync;
 
 	/* DMA reset code to Hi of L1 SRAM */
 copy:

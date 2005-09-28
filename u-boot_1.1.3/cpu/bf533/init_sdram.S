@@ -33,7 +33,7 @@ init_sdram:
         r0.l = 0x1;
         w[p0] = r0.l;
         SSYNC;
-	
+
 #if defined(CONFIG_SERIAL_STAMP) || defined(CONFIG_SERIAL_BF537)
 	p0.h = hi(SPI_BAUD);
 	p0.l = lo(SPI_BAUD);
@@ -41,8 +41,28 @@ init_sdram:
 	w[p0] = r0.l;
     SSYNC;
 #endif
+
 	/*
-         *  Set PLL_CTL
+         * PLL_LOCKCNT - how many SCLK Cycles to delay while PLL becomes stable
+         */
+	p0.h = hi(PLL_LOCKCNT);
+	p0.l = lo(PLL_LOCKCNT);
+	r0 = 0x300(Z);
+	w[p0] = r0.l;
+	ssync;
+
+	/*
+         * Put SDRAM in self-refresh, incase anything is running
+         */
+        P2.H = hi(EBIU_SDGCTL);
+        P2.L = lo(EBIU_SDGCTL);
+        R0 = [P2];
+        BITSET (R0, 24);
+        [P2] = R0;
+        SSYNC;
+
+        /*
+         *  Set PLL_CTL with the value that we calculate in R0
          *   - [14:09] = MSEL[5:0] : CLKIN / VCO multiplication factors
          *   - [8]     = BYPASS    : BYPASS the PLL, run CLKIN into CCLK/SCLK
          *   - [7]     = output delay (add 200ps of delay to mem signals)
@@ -54,20 +74,7 @@ init_sdram:
          *   all other bits set to zero
          */
 
-	p0.h = hi(PLL_LOCKCNT);
-	p0.l = lo(PLL_LOCKCNT);
-	r0 = 0x300(Z);
-	w[p0] = r0.l;
-	ssync;
-
-        P2.H = hi(EBIU_SDGCTL);
-        P2.L = lo(EBIU_SDGCTL);
-        R0 = [P2];
-        BITSET (R0, 24);
-        [P2] = R0;
-        SSYNC;
-
-        r0 = CONFIG_VCO_MULT & 63; /* Load the VCO multiplier         */
+        r0 = CONFIG_VCO_MULT & 63;      /* Load the VCO multiplier         */
         r0 = r0 << 9;                   /* Shift it over,                  */
         r1 = CONFIG_CLKIN_HALF;        /* Do we need to divide CLKIN by 2?*/
         r0 = r1 | r0;
@@ -76,10 +83,10 @@ init_sdram:
         r0 = r1 | r0;                   /* add them all together           */
 
         p0.h = hi(PLL_CTL);
-        p0.l = lo(PLL_CTL);      /* Load the address                */
+        p0.l = lo(PLL_CTL);             /* Load the address                */
         cli r2;                         /* Disable interrupts              */
 	ssync;
-        w[p0] = r0.l;                     /* Set the value                   */
+        w[p0] = r0.l;                   /* Set the value                   */
         idle;                           /* Wait for the PLL to stablize    */
         sti r2;                         /* Enable interrupts               */
 
@@ -97,38 +104,77 @@ check_again:
         w[p0] = r0.l;
         ssync;
 
+	/*
+         * We now are running at speed, time to set the Async mem bank wait states
+	 * This will speed up execution, since we are normally running from FLASH.
+	 */
+
+        p2.h = (EBIU_AMBCTL1 >> 16);
+        p2.l = (EBIU_AMBCTL1 & 0xFFFF);
+        r0.h = (AMBCTL1VAL >> 16);
+        r0.l = (AMBCTL1VAL & 0xFFFF);
+        [p2] = r0;
+        ssync;
+
+        p2.h = (EBIU_AMBCTL0 >> 16);
+        p2.l = (EBIU_AMBCTL0 & 0xFFFF);
+        r0.h = (AMBCTL0VAL >> 16);
+        r0.l = (AMBCTL0VAL & 0xFFFF);
+        [p2] = r0;
+        ssync;
+
+        p2.h = (EBIU_AMGCTL >> 16);
+        p2.l = (EBIU_AMGCTL & 0xffff);
+        r0 = AMGCTLVAL;
+        w[p2] = r0;
+        ssync;
+
+	/*
+	 * Now, Initialize the SDRAM,
+	 * start with the SDRAM Refresh Rate Control Register
+         */
 	p0.l = lo(EBIU_SDRRC);
         p0.h = hi(EBIU_SDRRC);
         r0 = mem_SDRRC;
         w[p0] = r0.l;
         ssync;
 
+	/*
+	 * SDRAM Memory Bank Control Register - bank specific parameters
+	 */
 	p0.l = (EBIU_SDBCTL & 0xFFFF);
-	p0.h = (EBIU_SDBCTL >> 16);	/* SDRAM Memory Bank Control Register */
+	p0.h = (EBIU_SDBCTL >> 16);
 	r0 = mem_SDBCTL;
 	w[p0] = r0.l;
 	ssync;
 
+	/*
+	 * SDRAM Global Control Register - global programmable parameters
+	 * Disable self-refresh
+	 */
 	P2.H = hi(EBIU_SDGCTL);
         P2.L = lo(EBIU_SDGCTL);
         R0 = [P2];
         BITCLR (R0, 24);
+
+	/*
+         * Check if SDRAM is already powered up, if it is, enable self-refresh
+         */
 	p0.h = hi(EBIU_SDSTAT);
 	p0.l = lo(EBIU_SDSTAT);
 	r2.l = w[p0];
 	cc = bittst(r2,3);
 	if !cc jump skip;
-    NOP;
+    	NOP;
 	BITSET (R0, 23);
 skip:
 	[P2] = R0;
         SSYNC;
 
+	/* Write in the new value in the register */
         R0.L = lo(mem_SDGCTL);
         R0.H = hi(mem_SDGCTL);
-	R1 = [p2];
-	R1 = R1 | R0;
-	[P2] = R1;
+	[P2] = R0;
         SSYNC;
 	nop;
 
