@@ -63,6 +63,16 @@ long int initdram(int board_type)
 /* miscellaneous platform dependent initialisations */
 int misc_init_r(void)
 {
+	char nid[32];
+	unsigned short *pMACaddr = (unsigned short *) 0x203F0000;
+
+	if ( getenv("ethaddr") == NULL) {
+		sprintf (nid, "%02x:%02x:%02x:%02x:%02x:%02x",
+			pMACaddr[0] & 0xFF , pMACaddr[0] >> 8,
+			pMACaddr[1] & 0xFF , pMACaddr[1] >> 8,
+			pMACaddr[2] & 0xFF , pMACaddr[2] >> 8);
+		setenv ("ethaddr", nid);
+	}
 	return 0;
 }
 #endif

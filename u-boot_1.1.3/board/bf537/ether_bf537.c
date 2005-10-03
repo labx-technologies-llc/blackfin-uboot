@@ -243,11 +243,12 @@ void SetupMacAddr(u8 *MACaddr)
 			if(tmp)
 				tmp = (*end)?end+1:end;
 		}
-	}
-	printf("Using MAC Address %02X:%02X:%02X:%02X:%02X:%02X\n",MACaddr[0],MACaddr[1],
+	
+		printf("Using MAC Address %02X:%02X:%02X:%02X:%02X:%02X\n",MACaddr[0],MACaddr[1],
 				MACaddr[2],MACaddr[3],MACaddr[4],MACaddr[5]);
-	*pEMAC_ADDRLO = *(u32 *)&MACaddr[0];
-	*pEMAC_ADDRHI = *(u16 *)&MACaddr[4];
+		*pEMAC_ADDRLO = *(u32 *)&MACaddr[0];
+		*pEMAC_ADDRHI = *(u16 *)&MACaddr[4];
+	}
 }
 
 void PollMdcDone(void)

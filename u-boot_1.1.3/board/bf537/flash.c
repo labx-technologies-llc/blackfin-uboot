@@ -91,7 +91,9 @@ unsigned long flash_init(void)
 			size_b, size_b >> 20);
 	}
 
+	/* flash_protect (int flag, ulong from, ulong to, flash_info_t *info) */
 	(void)flash_protect(FLAG_PROTECT_SET,CFG_FLASH_BASE,(flash_info[0].start[2] - 1),&flash_info[0]);
+	(void)flash_protect(FLAG_PROTECT_SET, 0x203F0000, 0x203FFFFF, &flash_info[0]);
 
 	return (size_b);
 }
@@ -141,23 +143,16 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 
 	cnt = s_last - s_first + 1;
 
-	if (cnt == FLASH_TOT_SECT) {
-		printf("Erasing flash, Please Wait \n");
-		if(erase_flash() < 0) {
-			printf("Erasing flash failed \n");
-			return FLASH_FAIL;
-		}
-	} else {
-		printf("Erasing Flash locations, Please Wait\n");
-		for (i = s_first; i <= s_last; i++) {
-			if (info->protect[i] == 0) {	/* not protected */
-				if(erase_block_flash(i) < 0) {
-					printf("Error Sector erasing \n");
-					return FLASH_FAIL;
-				}
+	printf("Erasing Flash locations, Please Wait\n");
+	for (i = s_first; i <= s_last; i++) {
+		if (info->protect[i] == 0) {	/* not protected */
+			if(erase_block_flash(i) < 0) {
+				printf("Error Sector erasing \n");
+				return FLASH_FAIL;
 			}
 		}
 	}
+	printf ("\n");
 	return FLASH_SUCCESS;
 }
 
