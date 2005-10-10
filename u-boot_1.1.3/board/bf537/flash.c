@@ -225,8 +225,7 @@ int write_flash(long nOffset, int nValue)
 
 	addr = (CFG_FLASH_BASE + nOffset);
 	*(unsigned volatile short *) addr = nValue;
-	if(icache_status())
-		udelay(CONFIG_CCLK_HZ/1000000);
+	__builtin_bfin_ssync();
 	return FLASH_SUCCESS;
 }
 
