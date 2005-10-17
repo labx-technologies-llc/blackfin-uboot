@@ -363,7 +363,7 @@ evt_system_call:
 	r0 = [SP++];
 	SAVE_CONTEXT
 	sp += -12;
-	call display_excp;
+	call exception_handle;
 	sp += 12;
 	RESTORE_CONTEXT
 	RTI;
@@ -382,7 +382,7 @@ evt_soft_int1:
 	r0 = [SP++];
 	SAVE_CONTEXT
 	sp += -12;
-	call display_excp;
+	call exception_handle;
 	sp += 12;
 	RESTORE_CONTEXT
 	RTI;

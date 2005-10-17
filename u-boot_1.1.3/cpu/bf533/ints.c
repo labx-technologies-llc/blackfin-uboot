@@ -101,6 +101,16 @@ void blackfin_init_IRQ(void)
 	asm("csync;");
 }
 
+void exception_handle(void)
+{
+#if defined (CONFIG_PANIC_HANG)
+	display_excp();
+#else
+	udelay (100000);        /* allow messages to go out */
+        do_reset (NULL, 0, 0, NULL);
+#endif
+}
+
 void display_excp(void)
 {
 	printf("Exception!\n");
