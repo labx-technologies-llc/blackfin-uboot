@@ -23,6 +23,8 @@
 	#include <asm/cpu/bf533_serial.h>
 #elif defined(__ADSPBF561__)
 	#include <asm/cpu/cdefBF561.h>
+	#include <asm/cpu/defBF533_extn.h>
+	#include <asm/cpu/bf533_serial.h>
 #elif defined(__ADSPBF535__)
 	#include <asm/cpu/cdefBF5d35.h>
 #elif defined(__AD6532__)
