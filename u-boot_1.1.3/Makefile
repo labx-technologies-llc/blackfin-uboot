@@ -112,7 +112,15 @@ OBJS += cpu/$(CPU)/cplbmgr.o
 OBJS += cpu/$(CPU)/flush.o
 OBJS += cpu/$(CPU)/init_sdram.o
 endif
-
+ifeq ($(CPU),bf561)
+OBJS += cpu/$(CPU)/start1.o
+OBJS += cpu/$(CPU)/interrupt.o
+OBJS += cpu/$(CPU)/cache.o
+OBJS += cpu/$(CPU)/cplbhdlr.o
+OBJS += cpu/$(CPU)/cplbmgr.o
+OBJS += cpu/$(CPU)/flush.o
+OBJS += cpu/$(CPU)/init_sdram.o
+endif
 LIBS  = lib_generic/libgeneric.a
 LIBS += board/$(BOARDDIR)/lib$(BOARD).a
 LIBS += cpu/$(CPU)/lib$(CPU).a
@@ -1603,6 +1611,9 @@ suzaku_config:	unconfig
 #########################################################################
 ezkit533_config	:	unconfig
 	@./mkconfig $(@:_config=) blackfin bf533 ezkit533
+
+ezkit561_config	:	unconfig
+	@./mkconfig $(@:_config=) blackfin bf533 ezkit561
 
 stamp_config	:	unconfig
 	@./mkconfig $(@:_config=) blackfin bf533 stamp
