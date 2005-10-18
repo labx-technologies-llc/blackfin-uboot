@@ -236,6 +236,8 @@ typedef unsigned long int 		dword;
 
 #ifdef CONFIG_XSENGINE
 #define	SMC_inl(r) 	(*((volatile dword *)(SMC_BASE_ADDRESS+(r<<1))))
+#elif CONFIG_BLACKFIN
+#define	SMC_inl(r) 	({ dword __v = (*((volatile dword *)(SMC_BASE_ADDRESS+(r)))); asm("ssync;"); __v;})
 #else
 #define	SMC_inl(r) 	(*((volatile dword *)(SMC_BASE_ADDRESS+(r))))
 #endif
@@ -251,6 +253,8 @@ typedef unsigned long int 		dword;
 
 #ifdef CONFIG_XSENGINE
 #define	SMC_outl(d,r)	(*((volatile dword *)(SMC_BASE_ADDRESS+(r<<1))) = d)
+#elif CONFIG_BLACKFIN
+#define	SMC_outl(d,r)	{(*((volatile dword *)(SMC_BASE_ADDRESS+(r))) = d);asm("ssync;");}
 #else
 #define	SMC_outl(d,r)	(*((volatile dword *)(SMC_BASE_ADDRESS+(r))) = d)
 #endif
