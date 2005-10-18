@@ -1,5 +1,5 @@
 /*
- * U-boot - start.S Startup file of u-boot for BF533
+ * U-boot - start.S Startup file of u-boot for BF533/BF561
  *
  * Copyright (c) 2005 blackfin.uclinux.org
  *
@@ -202,7 +202,7 @@ WAIT_HERE:
 _real_start:
 	[ -- sp ] = reti;
 
-#ifdef CONFIG_EZKIT533
+#if defined(CONFIG_EZKIT533) | defined (CONFIG_EZKIT561)
 	p0.l = (WDOG_CTL & 0xFFFF);
 	p0.h = (WDOG_CTL >> 16);
 	r0 = WATCHDOG_DISABLE(z);
