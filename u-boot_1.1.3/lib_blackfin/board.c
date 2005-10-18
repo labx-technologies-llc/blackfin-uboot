@@ -197,7 +197,7 @@ void board_init_r(gd_t * id, ulong dest_addr)
         post_reloc();
 #endif
 
-#if	CONFIG_STAMP || CONFIG_BF537
+#if	CONFIG_STAMP || CONFIG_BF537 || CONFIG_EZKIT561
 	/* There are some other pointer constants we must deal with */
 	/* configure available FLASH banks */
 	size = flash_init();
@@ -282,7 +282,7 @@ void board_init_r(gd_t * id, ulong dest_addr)
 #endif
 
 #ifdef DEBUG
-	display_global_data(void);
+	//display_global_data(void);
 #endif
 
 #if defined(CONFIG_BF537) && defined(CONFIG_POST)
