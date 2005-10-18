@@ -134,6 +134,18 @@ ipdt_table:
 .byte4  (SDRAM_EBIU);      /* Async Memory Bank 0 (Prim A)*/
 .byte4  0x20300000;             /*Fix for Network*/
 .byte4  (SDRAM_EBIU);    /*Async Memory bank 3*/
+#if defined(CONFIG_EZKIT561)
+.byte4  0x20400000;
+.byte4	(SDRAM_EBIU);
+.byte4  0x20500000;
+.byte4	(SDRAM_EBIU);
+.byte4  0x20600000;
+.byte4	(SDRAM_EBIU);
+.byte4  0x20700000;
+.byte4	(SDRAM_EBIU);
+.byte4  0x2C000000;
+.byte4  (SDRAM_EBIU);
+#endif
 
 #ifdef CONFIG_STAMP
 .byte4        0x04000000;
@@ -266,7 +278,7 @@ dpdt_table:
 .byte4        (SDRAM_DGENERIC);       /*SDRAM_Page14*/
 .byte4        0x03C00000;
 .byte4        (SDRAM_DGENERIC);       /*SDRAM_Page15*/
-#endif
+#endif 
 .byte4	0x20200000;
 .byte4	(SDRAM_EBIU);	/* Async Memory Bank 2 (Secnd)*/
 .byte4	0x20100000;
@@ -275,7 +287,18 @@ dpdt_table:
 .byte4	(SDRAM_EBIU);	/* Async Memory Bank 0 (Prim A)*/
 .byte4	0x20300000;		/*Fix for Network*/
 .byte4  (SDRAM_EBIU);	/*Async Memory bank 3*/
-
+#if defined(CONFIG_EZKIT561)
+.byte4  0x20400000;
+.byte4	(SDRAM_EBIU);
+.byte4  0x20500000;
+.byte4	(SDRAM_EBIU);
+.byte4  0x20600000;
+.byte4	(SDRAM_EBIU);
+.byte4  0x20700000;
+.byte4	(SDRAM_EBIU);
+.byte4  0x2C000000;
+.byte4  (SDRAM_EBIU);
+#endif
 #ifdef CONFIG_STAMP	
 .byte4	0x04000000;
 .byte4  (SDRAM_DGENERIC);
