@@ -55,7 +55,7 @@ static unsigned int icplb_table[16][2]={
 #ifdef CONFIG_STAMP
 			{0x07C00000, SDRAM_IKERNEL},    /*SDRAM_Page14*/
 #endif
-#ifdef CONFIG_BF537
+#if defined(CONFIG_BF537) | defined(CONFIG_EZKIT561)
 			{0x03C00000, SDRAM_IKERNEL},	/*SDRAM_Page14*/
 #endif
 			{0x00800000, SDRAM_IGENERIC},	/*SDRAM_Page2*/
@@ -79,7 +79,7 @@ static unsigned int dcplb_table[16][2]={
 #ifdef CONFIG_STAMP
 			{0x07C00000,SDRAM_DKERNEL},	/*SDRAM_Page15*/
 #endif
-#ifdef CONFIG_BF537
+#if defined(CONFIG_BF537) | defined (CONFIG_EZKIT561)
 			{0x03C00000,SDRAM_DKERNEL},	/*SDRAM_Page15 */
 #endif
 			{0x00800000,SDRAM_DGENERIC},	/*SDRAM_Page2*/
@@ -93,7 +93,11 @@ static unsigned int dcplb_table[16][2]={
 			{0x02800000,SDRAM_DGENERIC},	/*SDRAM_Page10*/
 			{0x02C00000,SDRAM_DGENERIC},	/*SDRAM_Page11*/
 			{0x03000000,SDRAM_DGENERIC},	/*SDRAM_Page12*/
-			{0x20000000,SDRAM_EBIU},	/*For Network */	
+#if defined(CONFIG_EZKIT561)
+			{0x2C000000,SDRAM_EBIU},	/*For Network */
+#else
+			{0x20000000,SDRAM_EBIU},	/*For Network */
+#endif
 };
 
 
