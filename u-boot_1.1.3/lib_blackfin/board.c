@@ -282,7 +282,7 @@ void board_init_r(gd_t * id, ulong dest_addr)
 #endif
 
 #ifdef DEBUG
-	//display_global_data(void);
+	display_global_data(void);
 #endif
 
 #if defined(CONFIG_BF537) && defined(CONFIG_POST)
