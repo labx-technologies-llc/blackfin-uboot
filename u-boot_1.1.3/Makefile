@@ -1651,6 +1651,7 @@ clean:
 	rm -f tools/easylogo/easylogo tools/bmp_logo
 	rm -f tools/gdb/astest tools/gdb/gdbcont tools/gdb/gdbsend
 	rm -f tools/env/fw_printenv tools/env/fw_setenv
+	rm -f tools/bin2ldr/app.bin tools/bin2ldr/app.hex tools/bin2ldr/app.ldr
 	rm -f board/cray/L1/bootscript.c board/cray/L1/bootscript.image
 	rm -f board/trab/trab_fkt
 
