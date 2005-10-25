@@ -39,7 +39,9 @@
 #include <post.h>
 #endif
 
+#ifndef CFG_NO_FLASH
 extern flash_info_t flash_info[];
+#endif
 
 
 static void mem_malloc_init(void)
@@ -197,7 +199,7 @@ void board_init_r(gd_t * id, ulong dest_addr)
         post_reloc();
 #endif
 
-#if	CONFIG_STAMP || CONFIG_BF537 || CONFIG_EZKIT561
+#if	(CONFIG_STAMP || CONFIG_BF537 || CONFIG_EZKIT561) && !defined(CFG_NO_FLASH)
 	/* There are some other pointer constants we must deal with */
 	/* configure available FLASH banks */
 	size = flash_init();

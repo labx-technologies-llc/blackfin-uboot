@@ -136,13 +136,20 @@ no_soft_reset:
 	r1 = 0;
 	LSETUP(4,4) lc0 = p1;
 	[ p0 ++ ] = r1;
+	
+#ifndef CONFIG_SERIAL_BF537
+	p0.h = hi(SIC_IWR);
+        p0.l = lo(SIC_IWR);
+        r0.l = 0x1;
+        w[p0] = r0.l;
+        SSYNC;
+#endif
 
 	sp.l = (0xffb01000 & 0xFFFF);
 	sp.h = (0xffb01000 >> 16);
 
 	call init_sdram;
 
-#ifndef	CFG_NO_FLASH
 	/* relocate into to RAM */
 	call get_pc;
 offset:
@@ -162,7 +169,6 @@ loop1:
 	[p2 ++ p3] = r1;
 	cc=p2==p4;
 	if !cc jump loop1;
-#endif
 	/*
 	 * configure STACK
 	 */
