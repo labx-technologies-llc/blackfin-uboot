@@ -37,6 +37,7 @@
 
 #if defined(CONFIG_BF537)&&defined(CONFIG_POST)
 #include <post.h>
+int post_flag;
 #endif
 
 #ifndef CFG_NO_FLASH
@@ -288,7 +289,8 @@ void board_init_r(gd_t * id, ulong dest_addr)
 #endif
 
 #if defined(CONFIG_BF537) && defined(CONFIG_POST)
-	post_run(NULL, POST_RAM | post_bootmode_get(0));
+	if(post_flag)
+		post_run(NULL, POST_RAM | post_bootmode_get(0));
 #endif
 
 	/* main_loop() can return to retry autoboot, if so just run it again. */

@@ -29,10 +29,17 @@ OUTPUT_ARCH(bfin)
 SEARCH_DIR(/lib); SEARCH_DIR(/usr/lib); SEARCH_DIR(/usr/local/lib);
 /* Do we need any of these for elf?
    __DYNAMIC = 0;    */
+MEMORY
+ {
+ ram : 	   ORIGIN = 0x03FC0000, LENGTH = (256 * 1024)
+ l1_code : ORIGIN = 0xFFA00000, LENGTH = 0xC000
+ l1_data : ORIGIN = 0xFF900000, LENGTH = 0x4000
+ }
+
 SECTIONS
 {
   /* Read-only sections, merged into text segment: */
-  . = + SIZEOF_HEADERS;
+  . = 0x1000;
   .interp : { *(.interp) }
   .hash          : { *(.hash)		}
   .dynsym        : { *(.dynsym)		}
@@ -77,18 +84,48 @@ SECTIONS
     . = DEFINED(env_offset) ? env_offset : .;
     common/environment.o	(.text)
 
-    *(.text)
+    *(EXCLUDE_FILE (board/bf537/post-memory.o) .text)	
     *(.fixup)
     *(.got1)
-  }
+  } > ram
   _etext = .;
   PROVIDE (etext = .);
-  .rodata    :
+  .text_l1	:
   {
-    *(.rodata)
-    *(.rodata1)
-    *(.rodata.str1.4)
-  }
+  . = ALIGN(4) ;
+  _text_l1 = .;
+  PROVIDE (text_l1 = .);
+  board/bf537/post-memory.o   (.text)
+  . = ALIGN(4) ;
+  _etext_l1 = .;
+  PROVIDE (etext_l1 = .);
+  } > l1_code AT > ram
+
+  .rodata :
+  {
+    . = ALIGN(4);
+    *(EXCLUDE_FILE (board/bf537/post-memory.o) .rodata)
+    *(EXCLUDE_FILE (board/bf537/post-memory.o) .rodata1)
+    *(EXCLUDE_FILE (board/bf537/post-memory.o) .rodata.str1.4)
+    . = ALIGN(4);
+  } > ram
+
+  . = ALIGN(4);
+  _erodata = .;
+  PROVIDE (erodata = .);
+  .rodata_l1 :
+ {
+   . = ALIGN(4) ;
+   _rodata_l1 = .;
+   PROVIDE (rodata_l1 = .);
+   board/bf537/post-memory.o (.rodata)
+   board/bf537/post-memory.o (.rodata1)
+   board/bf537/post-memory.o (.rodata.str1.4)
+   . = ALIGN(4) ;
+   _erodata_l1 = .;
+   PROVIDE(erodata_l1 = .);
+ } > l1_data AT > ram
+
   .fini      : { *(.fini)    } =0
   .ctors     : { *(.ctors)   }
   .dtors     : { *(.dtors)   }
@@ -116,12 +153,12 @@ SECTIONS
     *(.sdata2)
     *(.dynamic)
     CONSTRUCTORS
-  }
+  } > ram
   _edata  =  .;
   PROVIDE (edata = .);
 
   __u_boot_cmd_start = .;
-  .u_boot_cmd : { *(.u_boot_cmd) }
+  .u_boot_cmd : { *(.u_boot_cmd) } > ram
   __u_boot_cmd_end = .;
 
 
@@ -143,7 +180,7 @@ SECTIONS
    *(.dynbss)
    *(.bss)
    *(COMMON)
-  }
+  } > ram
   _end = . ;
   PROVIDE (end = .);
 }

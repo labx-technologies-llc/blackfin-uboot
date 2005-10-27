@@ -1,154 +1,4 @@
-/*
- * (C) Copyright 2002
- * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
- *
- * See file CREDITS for list of people who contributed to this
- * project.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
- */
-
 #include <common.h>
-
-/* Memory test
- *
- * General observations:
- * o The recommended test sequence is to test the data lines: if they are
- *   broken, nothing else will work properly.  Then test the address
- *   lines.  Finally, test the cells in the memory now that the test
- *   program knows that the address and data lines work properly.
- *   This sequence also helps isolate and identify what is faulty.
- *
- * o For the address line test, it is a good idea to use the base
- *   address of the lowest memory location, which causes a '1' bit to
- *   walk through a field of zeros on the address lines and the highest
- *   memory location, which causes a '0' bit to walk through a field of
- *   '1's on the address line.
- *
- * o Floating buses can fool memory tests if the test routine writes
- *   a value and then reads it back immediately.  The problem is, the
- *   write will charge the residual capacitance on the data bus so the
- *   bus retains its state briefely.  When the test program reads the
- *   value back immediately, the capacitance of the bus can allow it
- *   to read back what was written, even though the memory circuitry
- *   is broken.  To avoid this, the test program should write a test
- *   pattern to the target location, write a different pattern elsewhere
- *   to charge the residual capacitance in a differnt manner, then read
- *   the target location back.
- *
- * o Always read the target location EXACTLY ONCE and save it in a local
- *   variable.  The problem with reading the target location more than
- *   once is that the second and subsequent reads may work properly,
- *   resulting in a failed test that tells the poor technician that
- *   "Memory error at 00000000, wrote aaaaaaaa, read aaaaaaaa" which
- *   doesn't help him one bit and causes puzzled phone calls.  Been there,
- *   done that.
- *
- * Data line test:
- * ---------------
- * This tests data lines for shorts and opens by forcing adjacent data
- * to opposite states. Because the data lines could be routed in an
- * arbitrary manner the must ensure test patterns ensure that every case
- * is tested. By using the following series of binary patterns every
- * combination of adjacent bits is test regardless of routing.
- *
- *     ...101010101010101010101010
- *     ...110011001100110011001100
- *     ...111100001111000011110000
- *     ...111111110000000011111111
- *
- * Carrying this out, gives us six hex patterns as follows:
- *
- *     0xaaaaaaaaaaaaaaaa
- *     0xcccccccccccccccc
- *     0xf0f0f0f0f0f0f0f0
- *     0xff00ff00ff00ff00
- *     0xffff0000ffff0000
- *     0xffffffff00000000
- *
- * To test for short and opens to other signals on our boards, we
- * simply test with the 1's complemnt of the paterns as well, resulting
- * in twelve patterns total.
- *
- * After writing a test pattern. a special pattern 0x0123456789ABCDEF is
- * written to a different address in case the data lines are floating.
- * Thus, if a byte lane fails, you will see part of the special
- * pattern in that byte lane when the test runs.  For example, if the
- * xx__xxxxxxxxxxxx byte line fails, you will see aa23aaaaaaaaaaaa
- * (for the 'a' test pattern).
- *
- * Address line test:
- * ------------------
- *  This function performs a test to verify that all the address lines
- *  hooked up to the RAM work properly.  If there is an address line
- *  fault, it usually shows up as two different locations in the address
- *  map (related by the faulty address line) mapping to one physical
- *  memory storage location.  The artifact that shows up is writing to
- *  the first location "changes" the second location.
- *
- * To test all address lines, we start with the given base address and
- * xor the address with a '1' bit to flip one address line.  For each
- * test, we shift the '1' bit left to test the next address line.
- *
- * In the actual code, we start with address sizeof(ulong) since our
- * test pattern we use is a ulong and thus, if we tried to test lower
- * order address bits, it wouldn't work because our pattern would
- * overwrite itself.
- *
- * Example for a 4 bit address space with the base at 0000:
- *   0000 <- base
- *   0001 <- test 1
- *   0010 <- test 2
- *   0100 <- test 3
- *   1000 <- test 4
- * Example for a 4 bit address space with the base at 0010:
- *   0010 <- base
- *   0011 <- test 1
- *   0000 <- (below the base address, skipped)
- *   0110 <- test 2
- *   1010 <- test 3
- *
- * The test locations are successively tested to make sure that they are
- * not "mirrored" onto the base address due to a faulty address line.
- * Note that the base and each test location are related by one address
- * line flipped.  Note that the base address need not be all zeros.
- *
- * Memory tests 1-4:
- * -----------------
- * These tests verify RAM using sequential writes and reads
- * to/from RAM. There are several test cases that use different patterns to
- * verify RAM. Each test case fills a region of RAM with one pattern and
- * then reads the region back and compares its contents with the pattern.
- * The following patterns are used:
- *
- *  1a) zero pattern (0x00000000)
- *  1b) negative pattern (0xffffffff)
- *  1c) checkerboard pattern (0x55555555)
- *  1d) checkerboard pattern (0xaaaaaaaa)
- *  2)  bit-flip pattern ((1 << (offset % 32))
- *  3)  address pattern (offset)
- *  4)  address pattern (~offset)
- *
- * Being run in normal mode, the test verifies only small 4Kb
- * regions of RAM around each 1Mb boundary. For example, for 64Mb
- * RAM the following areas are verified: 0x00000000-0x00000800,
- * 0x000ff800-0x00100800, 0x001ff800-0x00200800, ..., 0x03fff800-
- * 0x04000000. If the test is run in slow-test mode, it verifies
- * the whole RAM.
- */
 
 #ifdef CONFIG_POST
 
@@ -156,333 +6,298 @@
 #include <watchdog.h>
 
 #if CONFIG_POST & CFG_POST_MEMORY
+#define CLKIN 25000000
+#define PATTERN1 0x5A5A5A5A
+#define PATTERN2 0xAAAAAAAA
 
-/*
- * Define INJECT_*_ERRORS for testing error detection in the presence of
- * _good_ hardware.
- */
-#undef  INJECT_DATA_ERRORS
-#undef  INJECT_ADDRESS_ERRORS
+#define CCLK_NUM	4
+#define SCLK_NUM	3
 
-#ifdef INJECT_DATA_ERRORS
-#warning "Injecting data line errors for testing purposes"
-#endif
+void post_out_buff(char *buff);
+int  post_key_pressed(void);
+void post_init_pll(int mult, int div);
+int  post_init_sdram(int sclk);
+void post_init_uart(int sclk);
 
-#ifdef INJECT_ADDRESS_ERRORS
-#warning "Injecting address line errors for testing purposes"
-#endif
-
-
-/*
- * This function performs a double word move from the data at
- * the source pointer to the location at the destination pointer.
- * This is helpful for testing memory on processors which have a 64 bit
- * wide data bus.
- *
- * On those PowerPC with FPU, use assembly and a floating point move:
- * this does a 64 bit move.
- *
- * For other processors, let the compiler generate the best code it can.
- */
-static void move64(unsigned long long *src, unsigned long long *dest)
-{
-#if defined(CONFIG_MPC8260) || defined(CONFIG_MPC824X)
-	asm ("lfd  0, 0(3)\n\t" /* fpr0	  =  *scr	*/
-	 "stfd 0, 0(4)"		/* *dest  =  fpr0	*/
-	 : : : "fr0" );		/* Clobbers fr0		*/
-    return;
-#else
-	*dest = *src;
-#endif
-}
-
-/*
- * This is 64 bit wide test patterns.  Note that they reside in ROM
- * (which presumably works) and the tests write them to RAM which may
- * not work.
- *
- * The "otherpattern" is written to drive the data bus to values other
- * than the test pattern.  This is for detecting floating bus lines.
- *
- */
-const static unsigned long long pattern[] = {
-	0xaaaaaaaaaaaaaaaaULL,
-	0xccccccccccccccccULL,
-	0xf0f0f0f0f0f0f0f0ULL,
-	0xff00ff00ff00ff00ULL,
-	0xffff0000ffff0000ULL,
-	0xffffffff00000000ULL,
-	0x00000000ffffffffULL,
-	0x0000ffff0000ffffULL,
-	0x00ff00ff00ff00ffULL,
-	0x0f0f0f0f0f0f0f0fULL,
-	0x3333333333333333ULL,
-	0x5555555555555555ULL
-};
-const unsigned long long otherpattern = 0x0123456789abcdefULL;
-
-
-static int memory_post_dataline(unsigned long long * pmem)
-{
-	unsigned long long temp64;
-	int num_patterns = sizeof(pattern)/ sizeof(pattern[0]);
-	int i;
-	unsigned int hi, lo, pathi, patlo;
-	int ret = 0;
-
-	for ( i = 0; i < num_patterns; i++) {
-		move64((unsigned long long *)&(pattern[i]), pmem++);
-		/*
-		 * Put a different pattern on the data lines: otherwise they
-		 * may float long enough to read back what we wrote.
-		 */
-		move64((unsigned long long *)&otherpattern, pmem--);
-		move64(pmem, &temp64);
-
-#ifdef INJECT_DATA_ERRORS
-		temp64 ^= 0x00008000;
-#endif
-		if (temp64 != pattern[i]){
-			pathi = (pattern[i]>>32) & 0xffffffff;
-			patlo = pattern[i] & 0xffffffff;
-
-			hi = (temp64>>32) & 0xffffffff;
-			lo = temp64 & 0xffffffff;
-
-			post_log ("Memory (date line) error at %08x, "
-				  "wrote %08x%08x, read %08x%08x !\n",
-					  pmem, pathi, patlo, hi, lo);
-			ret = -1;
-		}
-	}
-	return ret;
-}
-
-static int memory_post_addrline(ulong *testaddr, ulong *base, ulong size)
-{
-	ulong *target;
-	ulong *end;
-	ulong readback;
-	ulong xor;
-	int   ret = 0;
-
-	end = (ulong *)((ulong)base + size);	/* pointer arith! */
-	xor = 0;
-	for(xor = sizeof(ulong); xor > 0; xor <<= 1) {
-		target = (ulong *)((ulong)testaddr ^ xor);
-		if((target >= base) && (target < end)) {
-			*testaddr = ~*target;
-			readback  = *target;
-
-#ifdef INJECT_ADDRESS_ERRORS
-			if(xor == 0x00008000) {
-				readback = *testaddr;
-			}
-#endif
-			if(readback == *testaddr) {
-				post_log ("Memory (address line) error at %08x<->%08x, "
-				  	"XOR value %08x !\n",
-					testaddr, target, xor);
-				ret = -1;
-			}
-		}
-	}
-	return ret;
-}
-
-static int memory_post_test1 (unsigned long start,
-			      unsigned long size,
-			      unsigned long val)
-{
-	unsigned long i;
-	ulong *mem = (ulong *) start;
-	ulong readback;
-	int ret = 0;
-
-	for (i = 0; i < size / sizeof (ulong); i++) {
-		mem[i] = val;
-		if (i % 1024 == 0)
-			WATCHDOG_RESET ();
-	}
-
-	for (i = 0; i < size / sizeof (ulong) && ret == 0; i++) {
-		readback = mem[i];
-		if (readback != val) {
-			post_log ("Memory error at %08x, "
-				  "wrote %08x, read %08x !\n",
-					  mem + i, val, readback);
-
-			ret = -1;
-			break;
-		}
-		if (i % 1024 == 0)
-			WATCHDOG_RESET ();
-		if( i % 0x100000 == 0)
-			 printf("test 1: Address 0x%08x passed, pattern 0x%08x\n",mem+i, val);
-	}
-
-	return ret;
-}
-
-static int memory_post_test2 (unsigned long start, unsigned long size)
-{
-	unsigned long i;
-	ulong *mem = (ulong *) start;
-	ulong readback;
-	int ret = 0;
-
-	for (i = 0; i < size / sizeof (ulong); i++) {
-		mem[i] = 1 << (i % 32);
-		if (i % 1024 == 0)
-			WATCHDOG_RESET ();
-	}
-
-	for (i = 0; i < size / sizeof (ulong) && ret == 0; i++) {
-		readback = mem[i];
-		if (readback != (1 << (i % 32))) {
-			post_log ("Memory error at %08x, "
-				  "wrote %08x, read %08x !\n",
-					  mem + i, 1 << (i % 32), readback);
-
-			ret = -1;
-			break;
-		}
-		if (i % 1024 == 0)
-			WATCHDOG_RESET ();
-		if( i % 0x100000 == 0)
-                         printf("test 2: Address 0x%08x passed, pattern: %s\n",mem+i, "1<<(addr%32)");
-
-	}
-
-	return ret;
-}
-
-static int memory_post_test3 (unsigned long start, unsigned long size)
-{
-	unsigned long i;
-	ulong *mem = (ulong *) start;
-	ulong readback;
-	int ret = 0;
-
-	for (i = 0; i < size / sizeof (ulong); i++) {
-		mem[i] = i;
-		if (i % 1024 == 0)
-			WATCHDOG_RESET ();
-	}
-
-	for (i = 0; i < size / sizeof (ulong) && ret == 0; i++) {
-		readback = mem[i];
-		if (readback != i) {
-			post_log ("Memory error at %08x, "
-				  "wrote %08x, read %08x !\n",
-					  mem + i, i, readback);
-
-			ret = -1;
-			break;
-		}
-		if (i % 1024 == 0)
-			WATCHDOG_RESET ();
-		if( i % 0x100000 == 0)
-                         printf("test 3: Address 0x%08x passed, pattern: %s\n",mem+i,"addr");
-	}
-
-	return ret;
-}
-
-static int memory_post_test4 (unsigned long start, unsigned long size)
-{
-	unsigned long i;
-	ulong *mem = (ulong *) start;
-	ulong readback;
-	int ret = 0;
-
-	for (i = 0; i < size / sizeof (ulong); i++) {
-		mem[i] = ~i;
-		if (i % 1024 == 0)
-			WATCHDOG_RESET ();
-	}
-
-	for (i = 0; i < size / sizeof (ulong) && ret == 0; i++) {
-		readback = mem[i];
-		if (readback != ~i) {
-			post_log ("Memory error at %08x, "
-				  "wrote %08x, read %08x !\n",
-					  mem + i, ~i, readback);
-
-			ret = -1;
-			break;
-		}
-		if (i % 1024 == 0)
-			WATCHDOG_RESET ();
-		if( i % 0x100000 == 0)
-                         printf("test 4: Address 0x%08x passed, pattern: %s\n",mem+i,"~addr");
-	}
-
-	return ret;
-}
-
-static int memory_post_tests (unsigned long start, unsigned long size)
-{
-	int ret = 0;
-
-	if (ret == 0)
-		ret = memory_post_dataline ((long long *)start);
-	WATCHDOG_RESET ();
-	if (ret == 0)
-		ret = memory_post_addrline ((long *)start, (long *)start, size);
-	WATCHDOG_RESET ();
-	if (ret == 0)
-		ret = memory_post_addrline ((long *)(start + size - 8),
-					    (long *)start, size);
-	WATCHDOG_RESET ();
-	if (ret == 0)
-		ret = memory_post_test1 (start, size, 0x00000000);
-	WATCHDOG_RESET ();
-	if (ret == 0)
-		ret = memory_post_test1 (start, size, 0xffffffff);
-	WATCHDOG_RESET ();
-	if (ret == 0)
-		ret = memory_post_test1 (start, size, 0x55555555);
-	WATCHDOG_RESET ();
-	if (ret == 0)
-		ret = memory_post_test1 (start, size, 0xaaaaaaaa);
-	WATCHDOG_RESET ();
-	if (ret == 0)
-		ret = memory_post_test2 (start, size);
-	WATCHDOG_RESET ();
-	if (ret == 0)
-		ret = memory_post_test3 (start, size);
-	WATCHDOG_RESET ();
-	if (ret == 0)
-		ret = memory_post_test4 (start, size);
-	WATCHDOG_RESET ();
-
-	return ret;
-}
+const int pll[CCLK_NUM][SCLK_NUM][2] = {
+                { {20, 4}, {20, 5}, {20, 10} },         /* CCLK = 500M */
+                { {16, 4}, {16, 5}, {16,  8} },         /* CCLK = 400M */
+                { {8 , 2}, {8,  4}, {8,   5} },         /* CCLK = 200M */
+                { {4 , 1}, {4,  2}, {4,   4} }          /* CCLK = 100M */
+                };
+const char *const log[CCLK_NUM][SCLK_NUM] = {
+                {"CCLK-500Mhz SCLK-125Mhz:    Writing...\0",
+                 "CCLK-500Mhz SCLK-100Mhz:    Writing...\0",
+                 "CCLK-500Mhz SCLK- 50Mhz:    Writing...\0",},
+                {"CCLK-400Mhz SCLK-100Mhz:    Writing...\0",
+                 "CCLK-400Mhz SCLK- 80Mhz:    Writing...\0",
+                 "CCLK-400Mhz SCLK- 50Mhz:    Writing...\0",},
+                {"CCLK-200Mhz SCLK-100Mhz:    Writing...\0",
+                 "CCLK-200Mhz SCLK- 50Mhz:    Writing...\0",
+                 "CCLK-200Mhz SCLK- 40Mhz:    Writing...\0",},
+                {"CCLK-100Mhz SCLK-100Mhz:    Writing...\0",
+                 "CCLK-100Mhz SCLK- 50Mhz:    Writing...\0",
+                 "CCLK-100Mhz SCLK- 25Mhz:    Writing...\0",},
+		};
 
 int memory_post_test (int flags)
 {
-	int ret = 0;
-	DECLARE_GLOBAL_DATA_PTR;
-	bd_t *bd = gd->bd;
-	unsigned long memsize = bd->bi_memsize - (1<<20);
-				
-	if (flags & POST_SLOWTEST) {
-		ret = memory_post_tests (CFG_SDRAM_BASE, memsize);
-	} else {			/* POST_NORMAL */
-#ifdef POST_NORMAL_MEMORY
-		unsigned long i;
+	int addr;
+	int m,n;
+	int sclk, sclk_temp;
+	int ret = 1;
 
-		for (i = 0; i < (memsize >> 20) && ret == 0; i++) {
-			if (ret == 0)
-				ret = memory_post_tests (i << 20, 0x800);
-			if (ret == 0)
-				ret = memory_post_tests ((i << 20) + 0xff800, 0x800);
+	post_init_uart(125000000);
+	if(post_key_pressed() == 0)
+		return 0;
+
+        for(m=0;m<CCLK_NUM; m++){
+		for(n=0;n< SCLK_NUM; n++){
+			/* Calculate the sclk */	
+			sclk_temp = CLKIN/1000000;
+			sclk_temp = sclk_temp*pll[m][n][0];
+			for(sclk=0;sclk_temp>0;sclk++)
+				sclk_temp -= pll[m][n][1];
+			sclk = sclk * 1000000;
+			
+			post_init_pll(pll[m][n][0],pll[m][n][1]);
+			post_init_sdram(sclk);
+			post_init_uart(sclk);
+			post_out_buff("\n\r\0");
+			post_out_buff(log[m][n]);
+		        for(addr=0x0;addr<CFG_MAX_RAM_SIZE;addr+=4)
+			        *(unsigned long *)addr = PATTERN1;
+        		post_out_buff("Reading...\0");
+		        for(addr=0x0;addr<CFG_MAX_RAM_SIZE;addr+=4){
+                		if( (*(unsigned long *)addr)!= PATTERN1){
+					post_out_buff("Error\n\r\0");
+					ret = 0;
+				}
+		        }
+			post_out_buff("OK\n\r\0");
 		}
-#endif
 	}
+	if(ret)
+		post_out_buff("memory POST passed\n\r\0");
+	else
+		post_out_buff("memory POST failed\n\r\0");
 
-	return ret;
+	post_out_buff("\n\r\n\r\0");
+        return 1;
+}
+
+void post_init_uart(int sclk) {
+	int divisor;
+
+	for(divisor =0;sclk > 0;divisor ++)
+		sclk -= 57600*16;
+  
+	*pPORTF_FER = 0x000F;
+        *pPORTH_FER = 0xFFFF;
+
+        *pUART_GCTL = 0x00;
+        *pUART_LCR = 0x83;
+        __builtin_bfin_ssync();
+        *pUART_DLL = (divisor & 0xFF);
+        __builtin_bfin_ssync();
+        *pUART_DLH = ((divisor >> 8) & 0xFF);
+        __builtin_bfin_ssync();
+        *pUART_LCR = 0x03;
+        __builtin_bfin_ssync();
+        *pUART_GCTL = 0x01;
+        __builtin_bfin_ssync();
+}
+
+void post_out_buff (char *buff) {
+
+        int i=0;
+	for(i=0;i< 0x80000;i++);
+	i = 0;
+        while ( (buff[i] != '\0') && ( i != 100 ) ) {
+                while ( ! (*pUART_LSR & 0x20) ) ;
+                *pUART_THR=buff[i];
+		__builtin_bfin_ssync();
+                i++;
+        }
+	for(i=0;i< 0x80000;i++);
+}
+
+/* Using sw10-PF5 as the hotkey */
+#define KEY_LOOP 0x80000
+#define KEY_DELAY 0x80
+int post_key_pressed(void)
+{
+        int i, n;
+	unsigned short value;
+
+        *pPORTF_FER   &= ~PF5;
+        *pPORTFIO_DIR &= ~PF5;
+        *pPORTFIO_INEN|=  PF5;
+	__builtin_bfin_ssync();
+
+        post_out_buff("########Press SW10 to enter Memory POST########: 3\0");
+        for(i=0;i<KEY_LOOP;i++){
+        	value = *pPORTFIO & PF5;
+		if(*pUART0_RBR == 0x0D){
+			value =0;
+			goto key_pressed;
+		}
+	        if(value != 0){
+		        goto key_pressed;
+	        }
+		for(n=0;n<KEY_DELAY;n++);
+        }
+        post_out_buff("\b2\0");
+
+	for(i=0;i<KEY_LOOP;i++){
+                value = *pPORTFIO & PF5;
+		if(*pUART0_RBR == 0x0D){
+			value =0;
+			goto key_pressed;
+		}
+                if(value != 0){
+                        goto key_pressed;
+                }
+		 for(n=0;n<KEY_DELAY;n++);
+        }
+        post_out_buff("\b1\0");
+
+	for(i=0;i<KEY_LOOP;i++){
+                value = *pPORTFIO & PF5;
+		if(*pUART0_RBR == 0x0D){
+			value =0;
+			goto key_pressed;
+		}
+                if(value != 0){
+                        goto key_pressed;
+                }
+		 for(n=0;n<KEY_DELAY;n++);
+        }
+key_pressed:
+        post_out_buff("\b0");
+        post_out_buff("\n\r\0");
+        if(value == 0)
+                return 0;
+        post_out_buff("Hotkey has been pressed, Enter POST . . . . . .\n\r\0");
+	return 1;
+}
+
+void post_init_pll(int mult, int div) {
+
+        *pSIC_IWR=0x01;
+        *pPLL_CTL=(mult<<9);
+        *pPLL_DIV = div;
+        asm("CLI R2;");
+        asm("IDLE;");
+        asm("STI R2;");
+        while (! (*pPLL_STAT & 0x20)) ;
+}
+
+int post_init_sdram(int sclk) {
+	int SDRAM_tRP, SDRAM_tRP_num, SDRAM_tRAS, SDRAM_tRAS_num, SDRAM_tRCD, SDRAM_tWR;
+	int SDRAM_Tref, SDRAM_NRA, SDRAM_CL, SDRAM_SIZE, SDRAM_WIDTH, mem_SDGCTL, mem_SDBCTL, mem_SDRRC;
+	
+if (( sclk > 119402985 )) {
+	SDRAM_tRP      = TRP_2;
+	SDRAM_tRP_num  = 2;
+	SDRAM_tRAS     = TRAS_7;
+	SDRAM_tRAS_num = 7;
+	SDRAM_tRCD     = TRCD_2;
+	SDRAM_tWR      = TWR_2;
+} else if (( sclk > 104477612 ) && ( sclk <= 119402985 )) {
+	SDRAM_tRP      = TRP_2;
+	SDRAM_tRP_num  = 2;
+	SDRAM_tRAS     = TRAS_6;
+	SDRAM_tRAS_num = 6;
+	SDRAM_tRCD     = TRCD_2;
+	SDRAM_tWR      = TWR_2;
+} else if (( sclk >  89552239 ) && ( sclk <= 104477612 )) {
+	SDRAM_tRP      = TRP_2;
+	SDRAM_tRP_num  = 2;
+	SDRAM_tRAS     = TRAS_5;
+	SDRAM_tRAS_num = 5;
+	SDRAM_tRCD     = TRCD_2;
+	SDRAM_tWR      = TWR_2;
+} else if (( sclk >  74626866 ) && ( sclk <=  89552239 )) {
+	SDRAM_tRP      = TRP_2;
+	SDRAM_tRP_num  = 2;
+	SDRAM_tRAS     = TRAS_4;
+	SDRAM_tRAS_num = 4;
+	SDRAM_tRCD     = TRCD_2;
+	SDRAM_tWR      = TWR_2;
+} else if (( sclk >  66666667 ) && ( sclk <= 74626866 )) {
+	SDRAM_tRP      = TRP_2;
+	SDRAM_tRP_num  = 2;
+	SDRAM_tRAS     = TRAS_3;
+	SDRAM_tRAS_num = 3;
+	SDRAM_tRCD     = TRCD_2;
+	SDRAM_tWR      = TWR_2;
+} else if (( sclk >  59701493 ) && ( sclk <= 66666667 )) {
+	SDRAM_tRP      = TRP_1;
+	SDRAM_tRP_num  = 1;
+	SDRAM_tRAS     = TRAS_4;
+	SDRAM_tRAS_num = 4;
+	SDRAM_tRCD     = TRCD_1;
+	SDRAM_tWR      = TWR_2;
+} else if (( sclk >  44776119 ) && ( sclk <=  59701493 )) {
+	SDRAM_tRP      = TRP_1;
+	SDRAM_tRP_num  = 1;
+	SDRAM_tRAS     = TRAS_3;
+	SDRAM_tRAS_num = 3;
+	SDRAM_tRCD     = TRCD_1;
+	SDRAM_tWR      = TWR_2;
+} else if (( sclk >  29850746 ) && ( sclk <=  44776119 )) {
+	SDRAM_tRP      = TRP_1;
+	SDRAM_tRP_num  = 1;
+	SDRAM_tRAS     = TRAS_2;
+	SDRAM_tRAS_num = 2;
+	SDRAM_tRCD     = TRCD_1;
+	SDRAM_tWR      = TWR_2;
+} else if ( sclk <=  29850746 ) {
+	SDRAM_tRP      = TRP_1;
+	SDRAM_tRP_num  = 1;
+	SDRAM_tRAS     = TRAS_1;
+	SDRAM_tRAS_num = 1;
+	SDRAM_tRCD     = TRCD_1;
+	SDRAM_tWR      = TWR_2;
+} else {
+	SDRAM_tRP      = TRP_1;
+        SDRAM_tRP_num  = 1;
+        SDRAM_tRAS     = TRAS_1;
+        SDRAM_tRAS_num = 1;
+        SDRAM_tRCD     = TRCD_1;
+        SDRAM_tWR      = TWR_2;
+}
+	/*SDRAM INFORMATION: */
+	SDRAM_Tref	= 64;       /* Refresh period in milliseconds   */
+	SDRAM_NRA	= 4096;     /* Number of row addresses in SDRAM */
+	SDRAM_CL	= CL_3;		// 2
+
+	SDRAM_SIZE	= EBSZ_64;
+	SDRAM_WIDTH	= EBCAW_10;
+
+
+	mem_SDBCTL = SDRAM_WIDTH | SDRAM_SIZE | EBE; 
+
+	/* Equation from section 17 (p17-46) of BF533 HRM */
+	mem_SDRRC = ((( CONFIG_SCLK_HZ / 1000) * SDRAM_Tref)  / SDRAM_NRA) - (SDRAM_tRAS_num + SDRAM_tRP_num);
+
+	/* Enable SCLK Out */
+	mem_SDGCTL = ( SCTLE | SDRAM_CL | SDRAM_tRAS | SDRAM_tRP | SDRAM_tRCD | SDRAM_tWR | PSS );
+
+	__builtin_bfin_ssync();
+	
+	*pEBIU_SDGCTL |= 0x1000000;
+	/* Set the SDRAM Refresh Rate control register based on SSCLK value */
+	*pEBIU_SDRRC = mem_SDRRC;		
+
+	//SDRAM Memory Bank Control Register
+	*pEBIU_SDBCTL= mem_SDBCTL;
+					  
+	//SDRAM Memory Global Control Register
+	*pEBIU_SDGCTL= mem_SDGCTL;
+	__builtin_bfin_ssync();
+	return mem_SDRRC;
 }
 
 #endif /* CONFIG_POST & CFG_POST_MEMORY */
