@@ -6,6 +6,7 @@
 #include <asm/mem_init.h>
 .global init_sdram;
 
+#ifndef BF537_UART_BOOT
 #if (CONFIG_CCLK_DIV == 1)
 #define CONFIG_CCLK_ACT_DIV   CCLK_DIV1
 #endif
@@ -20,6 +21,7 @@
 #endif
 #ifndef CONFIG_CCLK_ACT_DIV
 #define CONFIG_CCLK_ACT_DIV   CONFIG_CCLK_DIV_not_defined_properly
+#endif
 #endif
 
 init_sdram:
@@ -44,6 +46,7 @@ init_sdram:
     SSYNC;
 #endif
 
+#ifndef BF537_UART_BOOT
 	/*
          * PLL_LOCKCNT - how many SCLK Cycles to delay while PLL becomes stable
          */
@@ -105,6 +108,7 @@ check_again:
         p0.l = lo(PLL_DIV);
         w[p0] = r0.l;
         ssync;
+#endif
 
 	/*
          * We now are running at speed, time to set the Async mem bank wait states

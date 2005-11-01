@@ -62,6 +62,23 @@
 .global post_flag;
 #endif 
 
+#ifdef BF537_UART_BOOT
+#if (CONFIG_CCLK_DIV == 1)
+#define CONFIG_CCLK_ACT_DIV   CCLK_DIV1
+#endif
+#if (CONFIG_CCLK_DIV == 2)
+#define CONFIG_CCLK_ACT_DIV   CCLK_DIV2
+#endif
+#if (CONFIG_CCLK_DIV == 4)
+#define CONFIG_CCLK_ACT_DIV   CCLK_DIV4
+#endif
+#if (CONFIG_CCLK_DIV == 8)
+#define CONFIG_CCLK_ACT_DIV   CCLK_DIV8
+#endif
+#ifndef CONFIG_CCLK_ACT_DIV
+#define CONFIG_CCLK_ACT_DIV   CONFIG_CCLK_DIV_not_defined_properly
+#endif
+#endif
 
 .text
 _start:
@@ -149,6 +166,77 @@ no_soft_reset:
         SSYNC;
 #endif
 
+#ifdef BF537_UART_BOOT
+
+	p0.h = hi(SIC_IWR);
+	p0.l = lo(SIC_IWR);
+	r0.l = 0x1;
+	w[p0] = r0.l;
+	SSYNC;
+	
+	/*
+	* PLL_LOCKCNT - how many SCLK Cycles to delay while PLL becomes stable
+	*/
+	p0.h = hi(PLL_LOCKCNT);
+	p0.l = lo(PLL_LOCKCNT);
+	r0 = 0x300(Z);
+	w[p0] = r0.l;
+	ssync;
+	
+	/*
+	* Put SDRAM in self-refresh, incase anything is running
+	*/
+	P2.H = hi(EBIU_SDGCTL);
+	P2.L = lo(EBIU_SDGCTL);
+	R0 = [P2];
+	BITSET (R0, 24);
+	[P2] = R0;
+	SSYNC;
+	
+	/*
+	*  Set PLL_CTL with the value that we calculate in R0
+	*   - [14:09] = MSEL[5:0] : CLKIN / VCO multiplication factors
+	*   - [8]     = BYPASS    : BYPASS the PLL, run CLKIN into CCLK/SCLK
+	*   - [7]     = output delay (add 200ps of delay to mem signals)
+	*   - [6]     = input delay (add 200ps of input delay to mem signals)
+	*   - [5]     = PDWN      : 1=All Clocks off
+	*   - [3]     = STOPCK    : 1=Core Clock off
+	*   - [1]     = PLL_OFF   : 1=Disable Power to PLL
+	*   - [0]     = DF        : 1=Pass CLKIN/2 to PLL / 0=Pass CLKIN to PLL
+	*   all other bits set to zero
+	*/
+	
+	r0 = CONFIG_VCO_MULT & 63;      /* Load the VCO multiplier         */
+	r0 = r0 << 9;                   /* Shift it over,                  */
+	r1 = CONFIG_CLKIN_HALF;        /* Do we need to divide CLKIN by 2?*/
+	r0 = r1 | r0;
+	r1 = CONFIG_PLL_BYPASS;         /* Bypass the PLL?                 */
+	r1 = r1 << 8;                   /* Shift it over                   */
+	r0 = r1 | r0;                   /* add them all together           */
+	
+	p0.h = hi(PLL_CTL);
+	p0.l = lo(PLL_CTL);             /* Load the address                */
+	cli r2;                         /* Disable interrupts              */
+		ssync;
+	w[p0] = r0.l;                   /* Set the value                   */
+	idle;                           /* Wait for the PLL to stablize    */
+	sti r2;                         /* Enable interrupts               */
+	
+check_again:
+	p0.h = hi(PLL_STAT);
+	p0.l = lo(PLL_STAT);
+	R0 = W[P0](Z);
+	CC = BITTST(R0,5);
+	if ! CC jump check_again;
+
+	/* Configure SCLK & CCLK Dividers */
+	r0 = (CONFIG_CCLK_ACT_DIV | CONFIG_SCLK_DIV);
+	p0.h = hi(PLL_DIV);
+	p0.l = lo(PLL_DIV);
+	w[p0] = r0.l;
+	ssync;
+#endif
+	
 	sp.l = (0xffb01000 & 0xFFFF);
 	sp.h = (0xffb01000 >> 16);
 

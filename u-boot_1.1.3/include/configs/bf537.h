@@ -227,6 +227,7 @@
 #define AMBCTL1VAL              0xFFC27BB0
 
 #define CONFIG_VDSP		1
+#undef BF537_UART_BOOT
 
 #ifdef CONFIG_VDSP
 #define ET_EXEC_VDSP		0x8
