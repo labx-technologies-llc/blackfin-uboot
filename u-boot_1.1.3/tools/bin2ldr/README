@@ -1,9 +1,7 @@
 This package converts u-boot binary file to LDR format file
 for Blackfin BF53x to boot.
 
-Now this package is only for SPI boot and has been tested on 
-BF533 stamp board.
-
+So far the package can support BF533 and BF537 SPI boot, BF537 UART boot.
 
 (C) Copyright 2005 (www.blackfin.uclinux.org)
 
@@ -12,8 +10,10 @@ How it is used:
 	1. build the u-boot package first.
 	2. a macro "APP_ENTRY" in the "bin2ldr.h" defines where the u-boot
 	   will be loaded. Modify this macro to fit for your target board.
-	3. strongly recommend running "runme.sh" to get the LDR format file
-	4. file description:
+	3. a macro "BFIN_BOOT_MODE" in the "bin2ldr.h" defines the boot mode
+           of your target board. The default mode is BF5XX_SPI_BOOT.
+	4. strongly recommend running "runme.sh" to get the LDR format file
+	5. file description:
 		app.bin:  the original u-boot.bin
 		app.ldr:  the binary LDR format file.
 		app.hex:  the HEX LDR format file

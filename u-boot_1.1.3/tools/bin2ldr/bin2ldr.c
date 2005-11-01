@@ -9,11 +9,13 @@
 #define APP_FILE "app.bin"
 #define OUT_FILE "app.ldr"
 
+#define PORT_G	  0x0400 >>8
+#define GPIO6	  0x00C0
 #define ZEROFILL  0x0001
 #define RESVECT   0x0002
 #define INIT	  0x0008
 #define IGNORE    0x0010
-#define FINAL     0x8000
+#define FINAL     0x8000 >>8 
 
 #define BLOCK_SIZE 0x8000
 
@@ -47,9 +49,9 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
-/**************************************/
-/* DXE 0			      */
-/**************************************/	
+/*
+ * DXE 
+ */	
 
 /* Add BLOCK 0, 10 bytes head and 4 bytes data */
 	block[i++] = 0x40;
@@ -62,9 +64,13 @@ int main(void)
 	block[i++] = 0x00;
 	block[i++] = 0x00;
 
-	block[i++] = 0x12;
-	block[i++] = 0x00;
-
+#if (BFIN_BOOT_MODE == BF537_UART_BOOT)
+	block[i++] = (GPIO6|IGNORE|RESVECT);
+	block[i++] = PORT_G;
+#else
+	block[i++] = (IGNORE|RESVECT);
+        block[i++] = 0;
+#endif
 	dxe_temp1  = i;
 	block[i++] = 0x00;
 	dxe_temp2  = i;
@@ -88,8 +94,13 @@ int main(void)
 	block[i++] = 0x00;
 	block_temp4 = i;
 	block[i++] = 0x00;
-	block[i++] = 0x0a;	/* flag of init block */ 
+#if (BFIN_BOOT_MODE == BF537_UART_BOOT)
+	block[i++] = (GPIO6|INIT|RESVECT);
+	block[i++] = PORT_G;
+#else
+	block[i++] = (INIT|RESVECT);	/* flag of init block */ 
 	block[i++] = 0x00;
+#endif
 	
 	temp = i;		/* index for the data of init block */
 	while( (ch=fgetc(init_fd))!=EOF )
@@ -108,9 +119,9 @@ int main(void)
 	block[dxe_temp2] = (dxe_n & 0xFF00)	>>8;
 	block[dxe_temp3] = (dxe_n & 0xFF0000)	>>16;
 	block[dxe_temp4] = (dxe_n & 0xFF000000)	>> 24;
-/*********************************/
-/* DXE 1			 */
-/*********************************/
+/*
+ * DXE 1
+ */
 
 	temp = i;	/* save the start index of DXE 1*/
 /* Add BLOCK 0, 10 bytes head and 4 bytes data */
@@ -123,10 +134,15 @@ int main(void)
         block[i++] = 0x00;
         block[i++] = 0x00;
         block[i++] = 0x00;
-                                                                                                                                                             
-        block[i++] = 0x12;
-        block[i++] = 0x00;
-                                                                                                                                                             
+
+#if (BFIN_BOOT_MODE == BF537_UART_BOOT)
+        block[i++] = (GPIO6|IGNORE|RESVECT);
+        block[i++] = PORT_G;
+#else
+        block[i++] = (IGNORE|RESVECT);
+        block[i++] = 0;
+#endif
+
         dxe_temp1  = i;
         block[i++] = 0x00;
         dxe_temp2  = i;
@@ -152,9 +168,13 @@ int main(void)
 	block_temp4 = i;
 	block[i++]  = 0x00;
 
-	block[i++]  = 0x02;
-	block[i++]  = 0x00;
-	
+#if (BFIN_BOOT_MODE == BF537_UART_BOOT)
+        block[i++] = (GPIO6|RESVECT);
+        block[i++] = PORT_G;
+#else
+        block[i++] = RESVECT;
+        block[i++] = 0;
+#endif
 	jump_n = i;
 	while( (ch=fgetc(jump_fd))!=EOF)
 		block[i++] = ch;
@@ -182,8 +202,13 @@ int main(void)
 		block[i++] = (BLOCK_SIZE & 0xFF00)     >> 8;
 		block[i++] = (BLOCK_SIZE & 0xFF0000)   >> 16;
 		block[i++] = (BLOCK_SIZE & 0xFF000000) >> 24;
-		block[i++] = 0x02;
-		block[i++] = 0x00;
+#if (BFIN_BOOT_MODE == BF537_UART_BOOT)
+	        block[i++] = (GPIO6|RESVECT);
+        	block[i++] = PORT_G;
+#else
+	        block[i++] = RESVECT;
+        	block[i++] = 0;
+#endif
 		for(app_j = app_i*BLOCK_SIZE; app_j < (app_i+1)*BLOCK_SIZE; app_j++)
 			block[i++] = app[app_j];
 		}
@@ -197,8 +222,13 @@ int main(void)
 	block[i++] = (app_y & 0xFF0000)	       >> 16;
 	block[i++] = (app_y & 0xFF000000)      >> 24;
 
-	block[i++]  = 0x02;
-	block[i++]  = 0x80;
+#if (BFIN_BOOT_MODE == BF537_UART_BOOT)
+        block[i++] = (GPIO6|RESVECT);
+        block[i++] = PORT_G|FINAL;
+#else
+        block[i++] = RESVECT;
+        block[i++] = FINAL;
+#endif
 	for(app_j = app_i*BLOCK_SIZE;app_j < app_n; app_j ++)
 			block[i++] = app[app_j];
 
