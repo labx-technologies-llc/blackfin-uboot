@@ -25,7 +25,12 @@
 #define CONFIG_CCLK_DIV			1
 /* CONFIG_SCLK_DIV controls what the peripheral clock divider is */
 /* Values can range from 1-15                                    */
-#define CONFIG_SCLK_DIV			4
+#define CONFIG_SCLK_DIV			5
+/* CONFIG_SPI_BAUD controls the SPI peripheral clock divider     */
+/* Values can range from 2-65535                                 */
+/* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)                  */
+#define CONFIG_SPI_BAUD                 2
+
 
 #if ( CONFIG_CLKIN_HALF == 0 )
 #define CONFIG_VCO_HZ           ( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT )
@@ -92,6 +97,7 @@
 					 CFG_CMD_I2C	| \
 					 CFG_CMD_CACHE  | \
 					 CFG_CMD_JFFS2	| \
+					 CFG_CMD_EEPROM | \
 					 CFG_CMD_POST_DIAG | \
 					 CFG_CMD_DATE)
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"	
@@ -159,6 +165,7 @@
 /* 512k reserved for u-boot */
 #define CFG_JFFS2_FIRST_SECTOR                 15
 
+#define CONFIG_SPI
 
 /*
  * Stack sizes
