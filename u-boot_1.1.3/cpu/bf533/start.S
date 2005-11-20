@@ -128,8 +128,9 @@ _stext:
 	/* Set loop counters to zero, to make sure that
 	 * hw loops are disabled.
 	 */
-	lc0 = 0;
-	lc1 = 0;
+	r0  = 0;
+	lc0 = r0;
+	lc1 = r0;
 
 	SSYNC;
 
