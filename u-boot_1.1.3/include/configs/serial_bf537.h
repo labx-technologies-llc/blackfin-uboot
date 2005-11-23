@@ -80,21 +80,20 @@
 					 CFG_CMD_EEPROM | \
 					 CFG_CMD_DATE)
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"	
-#define CONFIG_EXTRA_ENV_SETTINGS                                                                                               \
-        "ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"                                                      \
-        "nfsargs=setenv bootargs root=/dev/nfs rw "                                                                     \
-        "nfsroot=$(serverip):$(rootpath)\0"                                                                                     \
-        "addip=setenv bootargs $(bootargs) "                                                                            \
-        "ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask)"                                                      \
-        ":$(hostname):eth0:off\0"                                                                                                       \
-    "ramboot=tftpboot 0x1000000 linux;"                                                                                 \
-        "run ramargs;run addip;bootelf\0"                                                                                       \
-        "nfsboot=tftpboot 0x1000000 linux;"                                                                                     \
-        "run nfsargs;run addip;bootelf\0"                                                                                       \
-        "flashboot=bootm 0x20100000\0"                                                                                          \
-        "update=tftpboot 0x1000000 u-boot.bin;"                                                                                 \
-        "protect off 0x20000000 0x2007FFFF;"                                                                                    \
-        "erase 0x20000000 0x2007FFFF;cp.b 0x1000000 0x20000000 $(filesize)\0"                                                   \
+#define CONFIG_EXTRA_ENV_SETTINGS					\
+        "ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"		\
+        "nfsargs=setenv bootargs root=/dev/nfs rw "			\
+        "nfsroot=$(serverip):$(rootpath)\0"				\
+        "addip=setenv bootargs $(bootargs) "				\
+        "ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask)"		\
+        ":$(hostname):eth0:off\0"					\
+    	"ramboot=tftpboot 0x1000000 linux;"				\
+        "run ramargs;run addip;bootelf\0"				\
+        "nfsboot=tftpboot 0x1000000 linux;"				\
+        "run nfsargs;run addip;bootelf\0"				\
+        "flashboot=bootm 0x20100000\0"					\
+        "update=tftpboot 0x1000000 app.ldr;"				\
+        "eeprom write 0x1000000 0x0 $(filesize);\0"			\
         ""
 
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
