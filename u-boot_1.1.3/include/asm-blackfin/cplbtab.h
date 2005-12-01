@@ -39,53 +39,15 @@
 	#define SDRAM_DNON_CHBL         (PAGE_SIZE_4MB | CPLB_DIRTY | CPLB_SUPV_WR | CPLB_USER_RD | CPLB_USER_WR | CPLB_VALID | ANOMALY_05000158)
 	#define SDRAM_DKERNEL 		(PAGE_SIZE_4MB | CPLB_L1_CHBL | CPLB_USER_RD | CPLB_USER_WR | CPLB_DIRTY | CPLB_SUPV_WR | CPLB_VALID | CPLB_LOCK | ANOMALY_05000158)
 	#define L1_DMEMORY		(PAGE_SIZE_4KB | CPLB_L1_CHBL | CPLB_DIRTY | CPLB_SUPV_WR | CPLB_USER_WR | CPLB_USER_RD | CPLB_VALID | ANOMALY_05000158)
-	#define SDRAM_EBIU		(PAGE_SIZE_1MB | CPLB_DIRTY | CPLB_USER_RD | CPLB_USER_WR | CPLB_SUPV_WR | CPLB_VALID | ANOMALY_05000158)
+	#define SDRAM_EBIU		(PAGE_SIZE_4MB | CPLB_DIRTY | CPLB_USER_RD | CPLB_USER_WR | CPLB_SUPV_WR | CPLB_VALID | ANOMALY_05000158)
 
 #else  /*Write Through*/
 	#define SDRAM_DGENERIC 		(PAGE_SIZE_4MB | CPLB_L1_CHBL | CPLB_WT | CPLB_L1_AOW | CPLB_SUPV_WR | CPLB_USER_RD | CPLB_USER_WR | CPLB_VALID | ANOMALY_05000158)
 	#define SDRAM_DNON_CHBL         (PAGE_SIZE_4MB | CPLB_WT | CPLB_L1_AOW | CPLB_SUPV_WR | CPLB_USER_WR | CPLB_USER_RD | CPLB_VALID | ANOMALY_05000158)
 	#define SDRAM_DKERNEL 		(PAGE_SIZE_4MB | CPLB_L1_CHBL | CPLB_WT | CPLB_L1_AOW | CPLB_USER_RD | CPLB_SUPV_WR | CPLB_USER_WR | CPLB_VALID | CPLB_LOCK | ANOMALY_05000158)
 	#define L1_DMEMORY		(PAGE_SIZE_4KB | CPLB_L1_CHBL | CPLB_L1_AOW | CPLB_WT | CPLB_SUPV_WR | CPLB_USER_WR | CPLB_VALID | ANOMALY_05000158)	
-	#define SDRAM_EBIU		(PAGE_SIZE_1MB | CPLB_WT | CPLB_L1_AOW | CPLB_USER_RD | CPLB_USER_WR | CPLB_SUPV_WR | CPLB_VALID | ANOMALY_05000158)
+	#define SDRAM_EBIU		(PAGE_SIZE_4MB | CPLB_WT | CPLB_L1_AOW | CPLB_USER_RD | CPLB_USER_WR | CPLB_SUPV_WR | CPLB_VALID | ANOMALY_05000158)
 #endif 
-
-.global icplb_table
-icplb_table:
-.byte4 0xFFA00000;
-.byte4 (L1_IMEMORY);	
-.byte4 0x00000000;
-.byte4 (SDRAM_IKERNEL);			/*SDRAM_Page1*/
-.byte4 0x00400000;
-.byte4 (SDRAM_IKERNEL);		/*SDRAM_Page1*/
-.byte4 0x07C00000;
-.byte4 (SDRAM_IKERNEL);		/*SDRAM_Page14*/
-.byte4 0x00800000;
-.byte4 (SDRAM_IGENERIC);		/*SDRAM_Page2*/
-.byte4 0x00C00000;
-.byte4 (SDRAM_IGENERIC);		/*SDRAM_Page2*/
-.byte4 0x01000000;
-.byte4 (SDRAM_IGENERIC);		/*SDRAM_Page4*/
-.byte4 0x01400000;
-.byte4 (SDRAM_IGENERIC);		/*SDRAM_Page5*/
-.byte4 0x01800000;
-.byte4 (SDRAM_IGENERIC);		/*SDRAM_Page6*/
-.byte4 0x01C00000;
-.byte4 (SDRAM_IGENERIC);		/*SDRAM_Page7*/
-#ifndef CONFIG_EZKIT			/*STAMP Memory regions*/
-.byte4 0x02000000;
-.byte4 (SDRAM_IGENERIC);		/*SDRAM_Page8*/
-.byte4 0x02400000;
-.byte4 (SDRAM_IGENERIC);		/*SDRAM_Page9*/
-.byte4 0x02800000;
-.byte4 (SDRAM_IGENERIC);		/*SDRAM_Page10*/
-.byte4 0x02C00000;
-.byte4 (SDRAM_IGENERIC);		/*SDRAM_Page11*/
-.byte4 0x03000000;
-.byte4 (SDRAM_IGENERIC);		/*SDRAM_Page12*/
-.byte4 0x03400000;
-.byte4 (SDRAM_IGENERIC);		/*SDRAM_Page13*/
-#endif
-.byte4 0xffffffff;			/* end of section - termination*/
 
 .align 4;
 .global ipdt_table
@@ -126,22 +88,12 @@ ipdt_table:
 .byte4  0x03C00000;
 .byte4  (SDRAM_IGENERIC);              /*SDRAM_Page15*/
 #endif
-.byte4  0x20200000;
-.byte4  (SDRAM_EBIU);      /* Async Memory Bank 2 (Secnd)*/
-.byte4  0x20100000;
-.byte4  (SDRAM_EBIU);      /* Async Memory Bank 1 (Prim B)*/
 .byte4  0x20000000;
-.byte4  (SDRAM_EBIU);      /* Async Memory Bank 0 (Prim A)*/
-.byte4  0x20300000;             /*Fix for Network*/
-.byte4  (SDRAM_EBIU);    /*Async Memory bank 3*/
+.byte4  (SDRAM_EBIU);      /* Async Memory Bank 2 (Secnd)*/
 #if defined(CONFIG_EZKIT561)
 .byte4  0x20400000;
 .byte4	(SDRAM_EBIU);
-.byte4  0x20500000;
-.byte4	(SDRAM_EBIU);
-.byte4  0x20600000;
-.byte4	(SDRAM_EBIU);
-.byte4  0x20700000;
+.byte4  0x20800000;
 .byte4	(SDRAM_EBIU);
 .byte4  0x2C000000;
 .byte4  (SDRAM_EBIU);
@@ -184,48 +136,6 @@ ipdt_table:
 #endif
 #endif
 .byte4 0xffffffff;                    /* end of section - termination*/
-
-/*********************************************************************
- *			DCPLB TABLE		
- ********************************************************************/
-
-.global dcplb_table
-dcplb_table:
-.byte4	0x00000000;
-.byte4	(SDRAM_DKERNEL);	/*SDRAM_Page1*/
-.byte4	0x00400000; 
-.byte4	(SDRAM_DKERNEL);	/*SDRAM_Page1*/
-.byte4	0x07C00000;
-.byte4	(SDRAM_DKERNEL);	/*SDRAM_Page15*/
-.byte4	0x00800000; 
-.byte4 	(SDRAM_DGENERIC);	/*SDRAM_Page2*/
-.byte4 	0x00C00000; 
-.byte4	(SDRAM_DGENERIC);	/*SDRAM_Page3*/
-.byte4	0x01000000;
-.byte4	(SDRAM_DGENERIC);	/*SDRAM_Page4*/
-.byte4	0x01400000;
-.byte4	(SDRAM_DGENERIC);	/*SDRAM_Page5*/
-.byte4	0x01800000;
-.byte4	(SDRAM_DGENERIC);	/*SDRAM_Page6*/
-.byte4	0x01C00000;
-.byte4	(SDRAM_DGENERIC);	/*SDRAM_Page7*/
-#ifndef CONFIG_EZKIT	
-.byte4	0x02000000;
-.byte4	(SDRAM_DGENERIC);	/*SDRAM_Page8*/
-.byte4	0x02400000;
-.byte4	(SDRAM_DGENERIC);	/*SDRAM_Page9*/
-.byte4	0x02800000;
-.byte4	(SDRAM_DGENERIC);	/*SDRAM_Page10*/
-.byte4	0x02C00000;
-.byte4	(SDRAM_DGENERIC);	/*SDRAM_Page11*/
-.byte4	0x03000000;
-.byte4	(SDRAM_DGENERIC);	/*SDRAM_Page12*/
-.byte4	0x03400000;
-.byte4	(SDRAM_DGENERIC);	/*SDRAM_Page13*/
-.byte4	0x03800000;
-.byte4	(SDRAM_DGENERIC);	/*SDRAM_Page14*/
-#endif
-.byte4	0xffffffff;		/*end of section - termination*/
 
 /**********************************************************************
  *		PAGE DESCRIPTOR TABLE
@@ -279,25 +189,15 @@ dpdt_table:
 .byte4        0x03C00000;
 .byte4        (SDRAM_DGENERIC);       /*SDRAM_Page15*/
 #endif 
-.byte4	0x20200000;
-.byte4	(SDRAM_EBIU);	/* Async Memory Bank 2 (Secnd)*/
-.byte4	0x20100000;
-.byte4	(SDRAM_EBIU);	/* Async Memory Bank 1 (Prim B)*/
 .byte4	0x20000000;	
 .byte4	(SDRAM_EBIU);	/* Async Memory Bank 0 (Prim A)*/
-.byte4	0x20300000;		/*Fix for Network*/
-.byte4  (SDRAM_EBIU);	/*Async Memory bank 3*/
 #if defined(CONFIG_EZKIT561)
 .byte4  0x20400000;
 .byte4	(SDRAM_EBIU);
-.byte4  0x20500000;
+.byte4  0x20800000;
 .byte4	(SDRAM_EBIU);
-.byte4  0x20600000;
+.byte4  0x20C00000;
 .byte4	(SDRAM_EBIU);
-.byte4  0x20700000;
-.byte4	(SDRAM_EBIU);
-.byte4  0x2C000000;
-.byte4  (SDRAM_EBIU);
 #endif
 #ifdef CONFIG_STAMP	
 .byte4	0x04000000;
