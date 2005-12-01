@@ -141,13 +141,23 @@ int eth_rx(void)
 		length = -1;
 		break;
 	}
+	if((rxbuf[rxIdx]->StatusWord & RX_DMAO) != 0){
+		printf("Ethernet: rx dma overrun\n");
+		break;
+	}
+	if((rxbuf[rxIdx]->StatusWord & RX_OK) == 0){
+		printf("Ethernet: rx error\n");
+		break;
+	}
 	length = rxbuf[rxIdx]->StatusWord & 0x000007FF;
+	if(length < = 4){
+		printf("Ethernet: bad frame\n");
+		break;
+	}
 	NetRxPackets[rxIdx] = (volatile uchar *)(rxbuf[rxIdx]->FrmData->Dest);
 	NetReceive(NetRxPackets[rxIdx],length - 4);
 	*pDMA1_IRQ_STATUS |= DMA_DONE|DMA_ERR;
 	rxbuf[rxIdx]->StatusWord = 0x00000000;
-	*pDMA1_CONFIG &= ~0x01;
-	*pDMA1_CONFIG = *((u16 *)&rxdmacfg);
 	if((rxIdx+1) >= PKTBUFSRX)
 		rxIdx = 0;
 	else
@@ -363,8 +373,8 @@ ADI_ETHER_BUFFER *SetupRxBuffer(int no)
 	buf->Dma[1].CONFIG.b_WNR    = 1;	/* Write to memory */
 	buf->Dma[1].CONFIG.b_WDSIZE = 2;	/* wordsize is 32 bits */
 	buf->Dma[1].CONFIG.b_DI_EN  = 1;	/* enable interrupt */
-	buf->Dma[1].CONFIG.b_NDSIZE = 0;	/* must be 0 when FLOW is 0 */ 
-	buf->Dma[1].CONFIG.b_FLOW   = 0;	/* stop */
+	buf->Dma[1].CONFIG.b_NDSIZE = 5;	/* must be 0 when FLOW is 0 */ 
+	buf->Dma[1].CONFIG.b_FLOW   = 7;	/* stop */
 	
 	return buf;
 }	
