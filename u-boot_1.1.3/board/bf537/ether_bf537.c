@@ -150,7 +150,7 @@ int eth_rx(void)
 		break;
 	}
 	length = rxbuf[rxIdx]->StatusWord & 0x000007FF;
-	if(length < = 4){
+	if(length <= 4){
 		printf("Ethernet: bad frame\n");
 		break;
 	}
