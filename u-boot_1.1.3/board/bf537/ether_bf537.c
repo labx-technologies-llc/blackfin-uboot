@@ -101,6 +101,11 @@ int eth_send(volatile void *packet, int length)
 		goto out;
 	}
 	
+	if((*pDMA2_IRQ_STATUS & DMA_ERR)!=0){
+			printf("Ethernet: tx DMA error\n");
+			goto out;
+	}
+	
 	for(i=0;(*pDMA2_IRQ_STATUS & DMA_RUN) != 0; i++){
 		if(i>TOUT_LOOP){
 			puts("Ethernet: tx time out\n");
@@ -120,7 +125,6 @@ int eth_send(volatile void *packet, int length)
 			goto out;
 		}
 	}
-	*pEMAC_OPMODE &= ~TE;
 	result = txbuf[txIdx]->StatusWord;
 	txbuf[txIdx]->StatusWord = 0;
 	if((txIdx+1) >= TX_BUF_CNT)
@@ -328,7 +332,7 @@ void SetupSystemRegs(void)
 	phydat = PHY_ANEG_EN | PHY_DUPLEX | PHY_SPD_SET;
 	WrPHYReg(PHYADDR, PHY_MODECTL, phydat);
 	
-	*pEMAC_MMC_CTL = RSTC | CROLL | MMCE;
+	*pEMAC_MMC_CTL = RSTC | CROLL;
 	
 	/* Initialize the TX DMA channel registers */
 	*pDMA2_X_COUNT	= 0;
