@@ -40,7 +40,7 @@ ulong monitor_flash_len;
 
 #define VERSION_STRING_SIZE  150 /* including 40 bytes buffer to change any string */ 
 #define VERSION_STRING_FORMAT "%s (%s - %s)\n"
-#define ADI_UBOOT_VERSION	"U-Boot-1.1.3-ADI-2005R3"
+#define ADI_UBOOT_VERSION	"U-Boot-1.1.3-ADI-2005R4"
 #define VERSION_STRING		ADI_UBOOT_VERSION, __DATE__, __TIME__
 
 char version_string[VERSION_STRING_SIZE];
