@@ -180,6 +180,7 @@ int eth_rx(void)
 int eth_init(bd_t *bis)
 {
 	u32	opmode;
+	int 	dat;
 	int 	i;
 	DEBUGF("Eth_init: ......\n");
 
@@ -187,7 +188,8 @@ int eth_init(bd_t *bis)
 	rxIdx = 0;
 
 /* Initialize System Register */
-	SetupSystemRegs();
+	if(SetupSystemRegs(&dat)< 0)
+		return -1;
 
 /* Initialize EMAC address */
 	SetupMacAddr(SrcAddr);
@@ -226,7 +228,10 @@ int eth_init(bd_t *bis)
    FDMODE : Full Duplex Mode
    LB	  : Internal Loopback for test
    RE     : Receiver Enable */
-	opmode = ASTP|FDMODE|PSF;
+	if(dat == FDMODE)
+		opmode = ASTP|FDMODE|PSF;
+	else
+		opmode = ASTP|PSF;
 	opmode |= RE;
 	/* Turn on the EMAC */
 	*pEMAC_OPMODE = opmode;
@@ -315,7 +320,7 @@ void SoftResetPHY(void)
 	} while ((phydat & PHY_RESET) != 0);
 }
 
-void SetupSystemRegs(void)
+int SetupSystemRegs(int *opmode)
 {
 	u16 sysctl, phydat;
 	/* Enable PHY output */
@@ -326,12 +331,35 @@ void SetupSystemRegs(void)
 	/* Configure checksum support and rcve frame word alignment */
 	sysctl |= RXDWA | RXCKS;
 	*pEMAC_SYSCTL  = sysctl;
-	/* auto negotiation on 	*/
-	/* full duplex 		*/
-	/* 100 Mbps    		*/
-	phydat = PHY_ANEG_EN | PHY_DUPLEX | PHY_SPD_SET;
-	WrPHYReg(PHYADDR, PHY_MODECTL, phydat);
+	do{
+	phydat = RdPHYReg(PHYADDR, PHY_MODESTAT);
+	}while(RdPHYReg(PHYADDR, PHY_MODESTAT) != phydat);
 	
+        if( (phydat & 0x0004) == 0){
+		printf("Link is down, please check your network connection\n");
+		return -1;
+	}
+	if( (phydat & 0x0008) == 0){
+		printf("Unable to auto-negotiation\n");
+	}else{
+		DEBUGF("Auto-Negotiation .........\n");
+		/* auto negotiation on 	*/
+		/* full duplex 		*/
+		/* 100 Mbps    		*/
+		phydat = PHY_ANEG_EN | PHY_DUPLEX | PHY_SPD_SET;
+		WrPHYReg(PHYADDR, PHY_MODECTL, phydat);
+		do{
+			phydat = RdPHYReg(PHYADDR, PHY_MODESTAT);
+		}while((phydat & 0x0020) == 0);
+	}
+	
+	phydat = RdPHYReg(PHYADDR, PHY_ANLPAR);
+
+	if((phydat & 0x0100) || (phydat & 0x0040))
+		*opmode = FDMODE;
+	else
+		*opmode = 0;
+
 	*pEMAC_MMC_CTL = RSTC | CROLL;
 	
 	/* Initialize the TX DMA channel registers */
@@ -345,6 +373,7 @@ void SetupSystemRegs(void)
 	*pDMA1_X_MODIFY = 4;
 	*pDMA1_Y_COUNT  = 0;
 	*pDMA1_Y_MODIFY = 0;
+	return 0;
 }	
 
 ADI_ETHER_BUFFER *SetupRxBuffer(int no)

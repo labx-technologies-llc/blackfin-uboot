@@ -68,4 +68,4 @@ u16  RdPHYReg(u16 PHYAddr, u16 RegAddr);
 void SoftResetPHY(void);
 void DumpPHYRegs(void);
 
-void SetupSystemRegs(void);
+int SetupSystemRegs(int *opmode);
