@@ -47,7 +47,12 @@ int memory_post_test (int flags)
 	int sclk, sclk_temp;
 	int ret = 1;
 
-	post_init_uart(125000000);
+	sclk_temp = CLKIN/1000000;
+	sclk_temp = sclk_temp * CONFIG_VCO_MULT;
+	for(sclk = 0; sclk_temp>0;sclk++)
+		sclk_temp -= CONFIG_SCLK_DIV;
+	sclk = sclk * 1000000;
+	post_init_uart(sclk);
 	if(post_key_pressed() == 0)
 		return 0;
 
