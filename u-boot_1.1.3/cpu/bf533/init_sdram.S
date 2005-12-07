@@ -47,6 +47,16 @@ init_sdram:
 #endif
 
 #ifndef BF537_UART_BOOT
+
+#ifdef CONFIG_BF537
+	/* Enable PHY CLK buffer output */
+	p0.h = hi(VR_CTL);
+	p0.l = lo(VR_CTL);
+	r0.l = w[p0];
+	bitset(r0, 14);
+	w[p0] = r0.l;
+	ssync;
+#endif
 	/*
          * PLL_LOCKCNT - how many SCLK Cycles to delay while PLL becomes stable
          */
