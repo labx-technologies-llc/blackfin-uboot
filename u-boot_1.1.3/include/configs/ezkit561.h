@@ -201,6 +201,7 @@
  */
 
 #define	CFG_HZ			1000	/* decrementer freq: 10 ms ticks */
+#define CFG_LARGE_IMAGE_LEN     0x4000000       /* Large Image Length, set to 64 Meg */
 
 /* 
  * FLASH organization and environment definitions
