@@ -163,6 +163,8 @@
  */
 #define	CONFIG_MISC_INIT_R
 
+#define CFG_LARGE_IMAGE_LEN     0x4000000       /* Large Image Length, set to 64 Meg */
+
 /*
  * I2C settings
  * By default PF1 is used as SDA and PF0 as SCL on the Stamp board
