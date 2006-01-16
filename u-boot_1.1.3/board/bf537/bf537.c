@@ -27,6 +27,7 @@
 
 #include <common.h>
 #include <config.h>
+#include <command.h>
 #include <asm/blackfin.h>
 
 #define POST_WORD_ADDR 0xFF903FFC
