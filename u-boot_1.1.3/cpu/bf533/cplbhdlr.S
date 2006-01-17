@@ -13,7 +13,8 @@
 #include <asm/cplb.h>
 #include <asm/entry.h>
 
-.text.globl _cplb_hdr;
+.text
+.globl _cplb_hdr;
 .type _cplb_hdr, STT_FUNC;
 .extern _cplb_mgr;
 .type _cplb_mgr, STT_FUNC;

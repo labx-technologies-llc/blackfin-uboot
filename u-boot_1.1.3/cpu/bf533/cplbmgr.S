@@ -33,7 +33,8 @@
 #include <asm-blackfin/cplbtab.h>
 #include <asm-blackfin/cplb.h>
 
-.text.align 2;
+.text
+.align 2;
 ENTRY(_cplb_mgr)
 
 	[--SP] = (R7: 0, P5:0);
@@ -606,7 +607,8 @@ dnext:
 	R0 = CPLB_RELOADED;
 	RTS;
 	
-.data.align 4;
+.data
+.align 4;
 page_size_table:
 .byte4 0x00000400;		/* 1K */
 .byte4 0x00001000;		/* 4K */

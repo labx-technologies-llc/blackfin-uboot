@@ -5,7 +5,8 @@
 
 .text
 .align 2 
-ENTRY(blackfin_icache_flush_range) R2 = -32;
+ENTRY(blackfin_icache_flush_range) 
+	R2 = -32;
 	R2 = R0 & R2;
 	P0 = R2;
 	P1 = R1;
@@ -13,10 +14,10 @@ ENTRY(blackfin_icache_flush_range) R2 = -32;
 	1:
 	IFLUSH[P0++];
 	CC = P0 < P1(iu);
-	IF CC JUMP 1 b(bp);
+	IF CC JUMP 1b(bp);
 	IFLUSH[P0];
 	SSYNC;
-RTS;
+	RTS;
 
 ENTRY(blackfin_dcache_flush_range)
 	R2 = -32;
@@ -27,10 +28,10 @@ ENTRY(blackfin_dcache_flush_range)
 1:
 	FLUSH[P0++];
 	CC = P0 < P1(iu);
-	IF CC JUMP 1 b(bp);
+	IF CC JUMP 1b(bp);
 	FLUSH[P0];
 	SSYNC;
-RTS;
+	RTS;
 
 ENTRY(_icache_invalidate)
 ENTRY(invalidate_entire_icache)
@@ -65,7 +66,7 @@ ENTRY(invalidate_entire_icache)
 	STI R6;
 
 	(R7:5) =[SP++];
-RTS;
+	RTS;
 
 /* 
  * Invalidate the Entire Data cache by
@@ -115,7 +116,7 @@ ENTRY(blackfin_dcache_invalidate_range)
 1:
 	FLUSHINV[P0++];
 	CC = P0 < P1(iu);
-	IF CC JUMP 1 b(bp);
+	IF CC JUMP 1b(bp);
 
 /* 
  * If the data crosses a cache line, then we'll be pointing to
