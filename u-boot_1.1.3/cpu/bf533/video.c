@@ -90,7 +90,7 @@ int NtscVideoOutFrameBuffInit ( char *base_address )
 }
 
 void FillFrame (char *Frame, int Value) {
-                                                                                                                                                             
+
         int *OddPtr32;
         int OddLine;
         int *EvenPtr32;

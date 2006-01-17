@@ -246,7 +246,8 @@ check_again:
 #if defined(CONFIG_BF537)&&defined(CONFIG_POST)
 	/* DMA POST code to Hi of L1 SRAM */
 postcopy:
-        P1.H = hi(SYSMMR_BASE); /* P1 Points to the beginning of SYSTEM MMR Space */
+        /* P1 Points to the beginning of SYSTEM MMR Space */
+        P1.H = hi(SYSMMR_BASE);
         P1.L = lo(SYSMMR_BASE);
 
         R0.H = _text_l1;  
@@ -265,7 +266,8 @@ postcopy:
         R1.H = hi(L1_ISRAM);    /* Destination Address (high) */
         R1.L = lo(L1_ISRAM);    /* Destination Address (low) */
         R3.L = DMAEN;           /* Source DMAConfig Value (8-bit words) */
-        R4.L = (DI_EN | WNR | DMAEN);   /* Destination DMAConfig Value (8-bit words) */
+	/* Destination DMAConfig Value (8-bit words) */
+	R4.L = (DI_EN | WNR | DMAEN);
 
         R6 = 0x1 (Z);
         W[P1+OFFSET_(MDMA_S0_X_MODIFY)] = R6;   /* Source Modify = 1 */
@@ -413,17 +415,19 @@ _real_start:
 #endif
 
 #ifdef CONFIG_BF537
-/* Initialise General-Purpose I/O Modules on BF537 */
-/* Rev 0.0 Anomaly 05000212 - PORTx_FER, PORT_MUX Registers Do Not accept "writes" correctly: */
+/* Initialise General-Purpose I/O Modules on BF537 
+ * Rev 0.0 Anomaly 05000212 - PORTx_FER, 
+ * PORT_MUX Registers Do Not accept "writes" correctly
+ */
         p0.h = hi(PORTF_FER);
         p0.l = lo(PORTF_FER);
-        R0.L = W[P0]; //Read
+        R0.L = W[P0]; /* Read */
 	nop;
 	nop;
 	nop;
         ssync;
         R0 = 0x000F(Z);
-        W[P0] = R0.L; //Write
+        W[P0] = R0.L; /* Write */
 	nop;
 	nop;
 	nop;
@@ -436,13 +440,13 @@ _real_start:
 
  	p0.h = hi(PORTH_FER);
         p0.l = lo(PORTH_FER);
-        R0.L = W[P0]; //Read
+        R0.L = W[P0]; /* Read */
         nop;
         nop;
         nop;
         ssync;
         R0 = 0xFFFF(Z);
-        W[P0] = R0.L; //Write
+        W[P0] = R0.L; /* Write */
         nop;
         nop;
         nop;

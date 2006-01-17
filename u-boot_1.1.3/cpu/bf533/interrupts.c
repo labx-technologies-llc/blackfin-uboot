@@ -10,7 +10,7 @@
  * Copyright 2002 Arcturus Networks Inc. MaTed <mated@sympatico.ca>
  * Copyright 2003 Metrowerks/Motorola
  * Copyright 2003 Bas Vermeulen <bas@buyways.nl>,
- * 			BuyWays B.V. (www.buyways.nl)
+ *			BuyWays B.V. (www.buyways.nl)
  *
  * (C) Copyright 2000-2004
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
