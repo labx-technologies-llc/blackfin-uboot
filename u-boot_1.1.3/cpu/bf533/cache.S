@@ -3,7 +3,8 @@
 #include <config.h>
 #include <asm/blackfin.h>
 
-.text.align 2 
+.text
+.align 2 
 ENTRY(blackfin_icache_flush_range) R2 = -32;
 	R2 = R0 & R2;
 	P0 = R2;
