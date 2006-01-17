@@ -3,17 +3,15 @@
  * This file is subject to the terms and conditions of the GNU General Public
  * License. 
  *
- * Blackfin BF533/2.6 support : LG Soft India	
  */
 
-
-/* Include an exception handler to invoke the CPLB manager
+/* 
+ * Include an exception handler to invoke the CPLB manager
  */
 
 #include <asm-blackfin/linkage.h>
 #include <asm/cplb.h>
 #include <asm/entry.h>
-
 
 .text
  
@@ -138,7 +136,7 @@ strange_return_from_cplb_mgr:
 	CSYNC;
 	JUMP strange_return_from_cplb_mgr;
 
-/************************************
+/*
  * Diagnostic exception handlers 
  */	
 
@@ -165,20 +163,19 @@ __cplb_protection_violation:
 
 __unknown_exception_occurred:
 
-	/* This function is invoked by the default exception
-	 * handler, if it does not recognise the kind of
-	 * exception that has occurred. In other words, the
-	 * default handler only handles some of the system's
-	 * exception types, and it does not expect any others
-	 * to occur. If your application is going to be using
-	 * other kinds of exceptions, you must replace the
-	 * default handler with your own, that handles all the
-	 * exceptions you will use.
-	 * 
-	 * Since there's nothing we can do, we just loop here
-	 * at what we hope is a suitably informative label.
-	 */
-	
+/* This function is invoked by the default exception
+ * handler, if it does not recognise the kind of
+ * exception that has occurred. In other words, the
+ * default handler only handles some of the system's
+ * exception types, and it does not expect any others
+ * to occur. If your application is going to be using
+ * other kinds of exceptions, you must replace the
+ * default handler with your own, that handles all the
+ * exceptions you will use.
+ * 
+ * Since there's nothing we can do, we just loop here
+ * at what we hope is a suitably informative label.
+ */
 	IDLE;
 do_not_know_what_to_do:
 	CSYNC;
