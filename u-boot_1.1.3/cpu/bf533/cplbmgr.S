@@ -1,17 +1,13 @@
-/*This file is subject to the terms and conditions of the GNU General Public
+/*
+ * This file is subject to the terms and conditions of the GNU General Public
  * License.
  *
- * Blackfin BF533/2.6 support : LG Soft India
  * Modification: Dec 07 2004
  *	1. Correction in icheck_lock.  Valid lock entries were 
  *	   geting victimized, for instruction cplb replacement.
  *	2. Setup loop's are modified as now toolchain support's P Indexed
  *	   addressing
- *	   :LG Soft India
- *
- */
-
-/* Usage: int _cplb_mgr(is_data_miss,int enable_cache)
+ *Usage: int _cplb_mgr(is_data_miss,int enable_cache)
  * is_data_miss==2 => Mark as Dirty, write to the clean data page
  * is_data_miss==1 => Replace a data CPLB.
  * is_data_miss==0 => Replace an instruction CPLB.
@@ -161,14 +157,15 @@ is_move:
 	[P0-0x104] = R0; 
 ie_move:P0+=4;
 	
-	/* We've made space in the ICPLB table, so that ICPLB15
-	 * is now free to be overwritten. Next, we have to determine
-	 * which CPLB we need to install, from the configuration
-	 * table. This is a matter of getting the start-of-page
-	 * addresses and page-lengths from the config table, and
-	 * determining whether the fault address falls within that
-	 * range.
- 	 */
+/* 
+ * We've made space in the ICPLB table, so that ICPLB15
+ * is now free to be overwritten. Next, we have to determine
+ * which CPLB we need to install, from the configuration
+ * table. This is a matter of getting the start-of-page
+ * addresses and page-lengths from the config table, and
+ * determining whether the fault address falls within that
+ * range.
+ */
 	
 	P2.L = ipdt_table;
 	P2.H = ipdt_table;
@@ -180,15 +177,17 @@ ie_move:P0+=4;
 	P0.L = page_size_table;
 	P0.H = page_size_table;
 
-	/* Retrieve our fault address (which may have been advanced
-	 * because the faulting instruction crossed a page boundary).
-	 */
+/* 
+ * Retrieve our fault address (which may have been advanced
+ * because the faulting instruction crossed a page boundary).
+ */
 
 	R0 = I0;
 
-	/* An extraction pattern, to get the page-size bits from
-	 * the CPLB data entry. Bits 16-17, so two bits at posn 16.
-	 */
+/* 
+ * An extraction pattern, to get the page-size bits from
+ * the CPLB data entry. Bits 16-17, so two bits at posn 16.
+ */
 
 	R1 = ((16<<8)|2);
 inext:	R4 = [P2++];	/* address from config table */			
