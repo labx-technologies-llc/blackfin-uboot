@@ -43,7 +43,7 @@
 				CPLB_USER_RD | CPLB_VALID | CPLB_LOCK
 #define SDRAM_INON_CHBL		(PAGE_SIZE_4MB | CPLB_USER_RD | CPLB_VALID)
 
-#define ANOMALY_05000158	0x200	
+#define ANOMALY_05000158	0x200
 #define SDRAM_DGENERIC          PAGE_SIZE_4MB | CPLB_L1_CHBL | CPLB_WT | \
 				CPLB_L1_AOW | CPLB_SUPV_WR | CPLB_USER_RD | \
 				CPLB_USER_WR | CPLB_VALID | ANOMALY_05000158
@@ -61,68 +61,63 @@
 				CPLB_USER_RD | CPLB_USER_WR | CPLB_SUPV_WR | \
 				CPLB_VALID | ANOMALY_05000158
 
-static unsigned int icplb_table[16][2]={
-			{0xFFA00000, L1_IMEMORY},
-			{0x00000000, SDRAM_IKERNEL},	/*SDRAM_Page1*/
-			{0x00400000, SDRAM_IKERNEL},	/*SDRAM_Page1*/
+static unsigned int icplb_table[16][2] = {
+	{0xFFA00000, L1_IMEMORY},
+	{0x00000000, SDRAM_IKERNEL},	/*SDRAM_Page1 */
+	{0x00400000, SDRAM_IKERNEL},	/*SDRAM_Page1 */
 #ifdef CONFIG_STAMP
-			{0x07C00000, SDRAM_IKERNEL},    /*SDRAM_Page14*/
+	{0x07C00000, SDRAM_IKERNEL},	/*SDRAM_Page14 */
 #endif
 #if defined(CONFIG_BF537) | defined(CONFIG_EZKIT561)
-			{0x03C00000, SDRAM_IKERNEL},	/*SDRAM_Page14*/
+	{0x03C00000, SDRAM_IKERNEL},	/*SDRAM_Page14 */
 #endif
-			{0x00800000, SDRAM_IGENERIC},	/*SDRAM_Page2*/
-			{0x00C00000, SDRAM_IGENERIC},	/*SDRAM_Page2*/
-			{0x01000000, SDRAM_IGENERIC},	/*SDRAM_Page4*/
-			{0x01400000, SDRAM_IGENERIC},	/*SDRAM_Page5*/
-			{0x01800000, SDRAM_IGENERIC},	/*SDRAM_Page6*/
-			{0x01C00000, SDRAM_IGENERIC},	/*SDRAM_Page7*/
-			{0x02000000, SDRAM_IGENERIC},	/*SDRAM_Page8*/
-			{0x02400000, SDRAM_IGENERIC},	/*SDRAM_Page9*/
-			{0x02800000, SDRAM_IGENERIC},	/*SDRAM_Page10*/
-			{0x02C00000, SDRAM_IGENERIC},	/*SDRAM_Page11*/
-			{0x03000000, SDRAM_IGENERIC},	/*SDRAM_Page12*/
-			{0x03400000, SDRAM_IGENERIC},	/*SDRAM_Page13*/
+	{0x00800000, SDRAM_IGENERIC},	/*SDRAM_Page2 */
+	{0x00C00000, SDRAM_IGENERIC},	/*SDRAM_Page2 */
+	{0x01000000, SDRAM_IGENERIC},	/*SDRAM_Page4 */
+	{0x01400000, SDRAM_IGENERIC},	/*SDRAM_Page5 */
+	{0x01800000, SDRAM_IGENERIC},	/*SDRAM_Page6 */
+	{0x01C00000, SDRAM_IGENERIC},	/*SDRAM_Page7 */
+	{0x02000000, SDRAM_IGENERIC},	/*SDRAM_Page8 */
+	{0x02400000, SDRAM_IGENERIC},	/*SDRAM_Page9 */
+	{0x02800000, SDRAM_IGENERIC},	/*SDRAM_Page10 */
+	{0x02C00000, SDRAM_IGENERIC},	/*SDRAM_Page11 */
+	{0x03000000, SDRAM_IGENERIC},	/*SDRAM_Page12 */
+	{0x03400000, SDRAM_IGENERIC},	/*SDRAM_Page13 */
 };
 
-static unsigned int dcplb_table[16][2]={
-			{0xFFA00000,L1_DMEMORY},	
-			{0x00000000,SDRAM_DKERNEL},	/*SDRAM_Page1*/
-			{0x00400000,SDRAM_DKERNEL},	/*SDRAM_Page1*/
+static unsigned int dcplb_table[16][2] = {
+	{0xFFA00000, L1_DMEMORY},
+	{0x00000000, SDRAM_DKERNEL},	/*SDRAM_Page1 */
+	{0x00400000, SDRAM_DKERNEL},	/*SDRAM_Page1 */
 #ifdef CONFIG_STAMP
-			{0x07C00000,SDRAM_DKERNEL},	/*SDRAM_Page15*/
+	{0x07C00000, SDRAM_DKERNEL},	/*SDRAM_Page15 */
 #endif
 #if defined(CONFIG_BF537) | defined (CONFIG_EZKIT561)
-			{0x03C00000,SDRAM_DKERNEL},	/*SDRAM_Page15 */
+	{0x03C00000, SDRAM_DKERNEL},	/*SDRAM_Page15 */
 #endif
-			{0x00800000,SDRAM_DGENERIC},	/*SDRAM_Page2*/
-			{0x00C00000,SDRAM_DGENERIC},	/*SDRAM_Page3*/
-			{0x01000000,SDRAM_DGENERIC},	/*SDRAM_Page4*/
-			{0x01400000,SDRAM_DGENERIC},	/*SDRAM_Page5*/
-			{0x01800000,SDRAM_DGENERIC},	/*SDRAM_Page6*/
-			{0x01C00000,SDRAM_DGENERIC},	/*SDRAM_Page7*/
-			{0x02000000,SDRAM_DGENERIC},	/*SDRAM_Page8*/
-			{0x02400000,SDRAM_DGENERIC},	/*SDRAM_Page9*/
-			{0x02800000,SDRAM_DGENERIC},	/*SDRAM_Page10*/
-			{0x02C00000,SDRAM_DGENERIC},	/*SDRAM_Page11*/
+	{0x00800000, SDRAM_DGENERIC},	/*SDRAM_Page2 */
+	{0x00C00000, SDRAM_DGENERIC},	/*SDRAM_Page3 */
+	{0x01000000, SDRAM_DGENERIC},	/*SDRAM_Page4 */
+	{0x01400000, SDRAM_DGENERIC},	/*SDRAM_Page5 */
+	{0x01800000, SDRAM_DGENERIC},	/*SDRAM_Page6 */
+	{0x01C00000, SDRAM_DGENERIC},	/*SDRAM_Page7 */
+	{0x02000000, SDRAM_DGENERIC},	/*SDRAM_Page8 */
+	{0x02400000, SDRAM_DGENERIC},	/*SDRAM_Page9 */
+	{0x02800000, SDRAM_DGENERIC},	/*SDRAM_Page10 */
+	{0x02C00000, SDRAM_DGENERIC},	/*SDRAM_Page11 */
 #if defined(CONFIG_EZKIT561)
-			{0x20000000,SDRAM_EBIU},	/*For Network */
-			{0x2C000000,SDRAM_EBIU},	/*For Network */
+	{0x20000000, SDRAM_EBIU},	/*For Network */
+	{0x2C000000, SDRAM_EBIU},	/*For Network */
 #else
-			{0x03000000,SDRAM_DGENERIC},	/*SDRAM_Page12*/
-			{0x20000000,SDRAM_EBIU},	/*For Network */
+	{0x03000000, SDRAM_DGENERIC},	/*SDRAM_Page12 */
+	{0x20000000, SDRAM_EBIU},	/*For Network */
 #endif
 };
 
-int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
+int do_reset(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 {
-	__asm__ __volatile__
-	("cli r3;"
-	"P0 = %0;"
-	"JUMP (P0);"
-	:
-	: "r" (L1_ISRAM)
-	);
+	__asm__ __volatile__("cli r3;" "P0 = %0;" "JUMP (P0);"::"r"(L1_ISRAM)
+	    );
 
 	return 0;
 }
@@ -140,21 +135,21 @@ int cleanup_before_linux(void)
 
 void icache_enable(void)
 {
-	unsigned int *I0,*I1;
+	unsigned int *I0, *I1;
 	int i;
 #ifdef __ADSPBF537__
-	if((*pCHIPID >> 28)<2)
+	if ((*pCHIPID >> 28) < 2)
 		return;
-#endif 
+#endif
 	/* Before enable icache, disable it first */
 	icache_disable();
 	I0 = (unsigned int *)ICPLB_ADDR0;
 	I1 = (unsigned int *)ICPLB_DATA0;
-	
-	for(i=0;i<16;i++){
+
+	for (i = 0; i < 16; i++) {
 		*I0++ = icplb_table[i][0];
 		*I1++ = icplb_table[i][1];
-		}
+	}
 	cli();
 	__builtin_bfin_ssync();
 	asm(" .align 8; ");
@@ -166,7 +161,7 @@ void icache_enable(void)
 void icache_disable(void)
 {
 #ifdef __ADSPBF537__
-	if((*pCHIPID >> 28)<2)
+	if ((*pCHIPID >> 28) < 2)
 		return;
 #endif
 	cli();
@@ -182,7 +177,7 @@ int icache_status(void)
 	unsigned int value;
 	value = *(unsigned int *)IMEM_CONTROL;
 
-	if( value & (IMC|ENICPLB) )
+	if (value & (IMC | ENICPLB))
 		return CACHE_ON;
 	else
 		return CACHE_OFF;
@@ -190,7 +185,7 @@ int icache_status(void)
 
 void dcache_enable(void)
 {
-	unsigned int *I0,*I1;
+	unsigned int *I0, *I1;
 	unsigned int temp;
 	int i;
 	/* Before enable dcache, disable it first */
@@ -198,26 +193,27 @@ void dcache_enable(void)
 	I0 = (unsigned int *)DCPLB_ADDR0;
 	I1 = (unsigned int *)DCPLB_DATA0;
 
-	for(i=0;i<16;i++){
+	for (i = 0; i < 16; i++) {
 		*I0++ = dcplb_table[i][0];
 		*I1++ = dcplb_table[i][1];
-		}
+	}
 	cli();
-	temp = *(unsigned int *)DMEM_CONTROL; 
+	temp = *(unsigned int *)DMEM_CONTROL;
 	__builtin_bfin_ssync();
 	asm(" .align 8; ");
-	*(unsigned int *)DMEM_CONTROL = ACACHE_BCACHE |ENDCPLB |PORT_PREF0|temp;
+	*(unsigned int *)DMEM_CONTROL =
+	    ACACHE_BCACHE | ENDCPLB | PORT_PREF0 | temp;
 	__builtin_bfin_ssync();
 	sti();
 }
-		
 
 void dcache_disable(void)
 {
 	cli();
 	__builtin_bfin_ssync();
 	asm(" .align 8; ");
-	*(unsigned int *)DMEM_CONTROL &= ~(ACACHE_BCACHE |ENDCPLB |PORT_PREF0);
+	*(unsigned int *)DMEM_CONTROL &=
+	    ~(ACACHE_BCACHE | ENDCPLB | PORT_PREF0);
 	__builtin_bfin_ssync();
 	sti();
 }
@@ -226,7 +222,7 @@ int dcache_status(void)
 {
 	unsigned int value;
 	value = *(unsigned int *)DMEM_CONTROL;
-	if( value & (ENDCPLB))
+	if (value & (ENDCPLB))
 		return CACHE_ON;
 	else
 		return CACHE_OFF;
