@@ -35,6 +35,7 @@
 #define pSWRST ((volatile unsigned short *)SWRST)
 #define pSYSCR ((volatile unsigned short *)SYSCR)
 #define pPLL_IOCKR ((volatile unsigned short *)PLL_IOCKR)
+#define pPLL_IOCK ((volatile unsigned short *)PLL_IOCK)
  
 /* JTAG/Debug Communication Channel (0xFFC0 0800-0xFFC0 0BFF) */
 #define pCHIPID ((volatile unsigned long *)CHIPID)
