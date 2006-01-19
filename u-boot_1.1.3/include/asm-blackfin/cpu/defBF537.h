@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2004 Analog Devices Inc., All Rights Reserved.
+** Copyright (C) 2004-2005 Analog Devices Inc., All Rights Reserved.
 **
 ************************************************************************************
 **

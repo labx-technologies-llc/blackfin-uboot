@@ -587,7 +587,7 @@
 
 #define pCAN_CLOCK			((volatile unsigned short *)CAN_CLOCK)
 #define pCAN_TIMING			((volatile unsigned short *)CAN_TIMING)
-#define pCAN_CNF			((volatile unsigned short *)CAN_CNF)
+#define pCAN_DEBUG			((volatile unsigned short *)CAN_DEBUG)
 #define pCAN_STATUS			((volatile unsigned short *)CAN_STATUS)
 #define pCAN_CEC			((volatile unsigned short *)CAN_CEC)
 #define pCAN_GIS			((volatile unsigned short *)CAN_GIS)

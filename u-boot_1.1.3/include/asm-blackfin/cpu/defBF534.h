@@ -561,7 +561,7 @@
 /* CAN Configuration, Control, and Status Registers										*/
 #define CAN_CLOCK			0xFFC02A80	/* Bit Timing Configuration register 0			*/
 #define CAN_TIMING			0xFFC02A84	/* Bit Timing Configuration register 1			*/
-#define CAN_CNF				0xFFC02A88	/* Config register								*/
+#define CAN_DEBUG			0xFFC02A88	/* Debug Register								*/
 #define CAN_STATUS			0xFFC02A8C	/* Global Status Register						*/
 #define CAN_CEC				0xFFC02A90	/* Error Counter Register						*/
 #define CAN_GIS				0xFFC02A94	/* Global Interrupt Status Register				*/
@@ -1040,10 +1040,11 @@
 #define	VLEV_130		0x00F0	/* 		VLEV = 1.30 V (-5% - +10% Accuracy)	*/
 
 #define	WAKE			0x0100	/* Enable RTC/Reset Wakeup From Hibernate	*/
-#define PHYWE			0x0200	/* Enable PHY Wakeup From Hibernate			*/
-#define	CANWE			0x0400	/* Enable CAN Wakeup From Hibernate			*/
-#define	PHYCLKOE		0x4000	/* PHY Clock Output Enable					*/
-#define	CKELOW			0x8000	/* Enable Drive CKE Low During Reset		*/
+#define	CANWE			0x0200	/* Enable CAN Wakeup From Hibernate			*/
+#define	PHYWE			0x0400	/* Enable PHY Wakeup From Hibernate			*/
+#define	CLKBUFOE		0x4000	/* CLKIN Buffer Output Enable */
+#define	PHYCLKOE		CLKBUFOE	/* Alternative legacy name for the above */
+#define	CKELOW		0x8000	/* Enable Drive CKE Low During Reset		*/
 
 /* PLL_STAT Masks																	*/
 #define ACTIVE_PLLENABLED	0x0001	/* Processor In Active Mode With PLL Enabled	*/
@@ -1059,15 +1060,15 @@
 #define RESET_SOFTWARE		0x8000	/* SW Reset Occurred Since Last Read Of SWRST	*/
 
 /* SYSCR Masks																				*/
-#define BMODE				0x0006	/* Boot Mode - Latched During HW Reset From Mode Pins	*/
+#define BMODE				0x0007	/* Boot Mode - Latched During HW Reset From Mode Pins	*/
 #define	NOBOOT				0x0010	/* Execute From L1 or ASYNC Bank 0 When BMODE = 0		*/
 
 
 /* *************  SYSTEM INTERRUPT CONTROLLER MASKS *************************************/
 /* Peripheral Masks For SIC_ISR, SIC_IWR, SIC_IMASK										*/
 #define IRQ_PLL_WAKEUP	0x00000001	/* PLL Wakeup Interrupt			 					*/
-#define IRQ_ERROR1		0x00000002	/* Error Interrupt (DMA, CAN, Ethernet, SPORTs)		*/  
-#define IRQ_ERROR2		0x00000004	/* Error Interrupt (PPI, SPI, UARTs)				*/
+#define IRQ_ERROR1      0x00000002  /* Error Interrupt (DMA, DMARx Block, DMARx Overflow) */
+#define IRQ_ERROR2      0x00000004  /* Error Interrupt (CAN, Ethernet, SPORTx, PPI, SPI, UARTx) */
 #define IRQ_RTC			0x00000008	/* Real Time Clock Interrupt 						*/ 
 #define IRQ_DMA0		0x00000010	/* DMA Channel 0 (PPI) Interrupt 					*/ 
 #define IRQ_DMA3		0x00000020	/* DMA Channel 3 (SPORT0 RX) Interrupt 				*/ 
@@ -1098,13 +1099,13 @@
 #define IRQ_TIMER6		0x02000000	/* Timer 6 Interrupt 								*/
 #define IRQ_TIMER7		0x04000000	/* Timer 7 Interrupt 								*/
 #define IRQ_PFA_PORTFG	0x08000000	/* PF Ports F&G (PF31:0) Interrupt A 				*/
-#define IRQ_PFB_PORTF	0x10000000	/* PF Port F (PF15:0) Interrupt B 					*/
+#define IRQ_PFB_PORTF	0x80000000	/* PF Port F (PF15:0) Interrupt B 					*/
 #define IRQ_DMA12		0x20000000	/* DMA Channels 12 (MDMA1 Source) RX Interrupt 		*/
 #define IRQ_DMA13		0x20000000	/* DMA Channels 13 (MDMA1 Destination) TX Interrupt */
 #define IRQ_DMA14		0x40000000	/* DMA Channels 14 (MDMA0 Source) RX Interrupt 		*/
 #define IRQ_DMA15		0x40000000	/* DMA Channels 15 (MDMA0 Destination) TX Interrupt */
 #define IRQ_WDOG		0x80000000	/* Software Watchdog Timer Interrupt 				*/
-#define IRQ_PFB_PORTG	0x80000000	/* PF Port F (PF15:0) Interrupt B 					*/
+#define IRQ_PFB_PORTG	0x10000000	/* PF Port G (PF31:16) Interrupt B 					*/
 
 /* SIC_IAR0 Macros															*/
 #define P0_IVG(x)		(((x)&0xF)-7)			/* Peripheral #0 assigned IVG #x 	*/
@@ -1160,15 +1161,38 @@
 #define IWR_DISABLE(x)	(0xFFFFFFFF ^ (1 << ((x)&0x1F))) 	/* Wakeup Disable Peripheral #x		*/
 
 
-/* ***************  WATCHDOG TIMER MASKS  *******************************************/
-/* WDOG_CTL Masks																	*/
-#define WDOG_RESET		0x0000		/* Generate Reset Event							*/
-#define WDOG_NMI		0x0002		/* Generate Non-Maskable Interrupt (NMI) Event	*/
-#define WDOG_GPI		0x0004		/* Generate General Purpose (GP) Interrupt		*/
-#define WDOG_NONE		0x0006		/* Disable Watchdog Timer Interrupts			*/
-#define TMR_EN			0x0FF0		/* Watchdog Counter Enable						*/
-#define	WDOG_DISABLE	0x0AD0		/* Watchdog Counter Disable						*/
-#define TRO				0x8000		/* Watchdog Expired								*/
+/* ********* WATCHDOG TIMER MASKS ******************** */
+
+/* Watchdog Timer WDOG_CTL Register Masks */
+
+#define WDEV(x) ((x<<1) & 0x0006) /* event generated on roll over */
+#define WDEV_RESET 0x0000 /* generate reset event on roll over */
+#define WDEV_NMI 0x0002 /* generate NMI event on roll over */
+#define WDEV_GPI 0x0004 /* generate GP IRQ on roll over */
+#define WDEV_NONE 0x0006 /* no event on roll over */
+#define WDEN 0x0FF0 /* enable watchdog */
+#define WDDIS 0x0AD0 /* disable watchdog */
+#define WDRO 0x8000 /* watchdog rolled over latch */ 
+
+/* depreciated WDOG_CTL Register Masks for legacy code */
+
+
+#define ICTL WDEV
+#define ENABLE_RESET WDEV_RESET
+#define WDOG_RESET WDEV_RESET
+#define ENABLE_NMI WDEV_NMI
+#define WDOG_NMI WDEV_NMI
+#define ENABLE_GPI WDEV_GPI
+#define WDOG_GPI WDEV_GPI
+#define DISABLE_EVT WDEV_NONE
+#define WDOG_NONE WDEV_NONE
+
+#define TMR_EN WDEN
+#define TMR_DIS WDDIS
+#define TRO WDRO
+#define ICTL_P0 0x01
+#define ICTL_P1 0x02
+#define TRO_P 0x0F
 
 
 /* ***************  REAL TIME CLOCK MASKS  **************************/
@@ -1307,10 +1331,10 @@
 #define TIMIL1			0x00000002	/* Timer 1 Interrupt				*/
 #define TIMIL2			0x00000004	/* Timer 2 Interrupt				*/
 #define TIMIL3			0x00000008	/* Timer 3 Interrupt				*/
-#define TOVL_ERR0		0x00000010	/* Timer 0 Counter Overflow			*/
-#define TOVL_ERR1		0x00000020	/* Timer 1 Counter Overflow			*/
-#define TOVL_ERR2		0x00000040	/* Timer 2 Counter Overflow			*/
-#define TOVL_ERR3		0x00000080	/* Timer 3 Counter Overflow			*/
+#define TOVF_ERR0		0x00000010	/* Timer 0 Counter Overflow			*/
+#define TOVF_ERR1		0x00000020	/* Timer 1 Counter Overflow			*/
+#define TOVF_ERR2		0x00000040	/* Timer 2 Counter Overflow			*/
+#define TOVF_ERR3		0x00000080	/* Timer 3 Counter Overflow			*/
 #define TRUN0			0x00001000	/* Timer 0 Slave Enable Status		*/
 #define TRUN1			0x00002000	/* Timer 1 Slave Enable Status		*/
 #define TRUN2			0x00004000	/* Timer 2 Slave Enable Status		*/
@@ -1319,14 +1343,24 @@
 #define TIMIL5			0x00020000	/* Timer 5 Interrupt				*/
 #define TIMIL6			0x00040000	/* Timer 6 Interrupt				*/
 #define TIMIL7			0x00080000	/* Timer 7 Interrupt				*/
-#define TOVL_ERR4		0x00100000	/* Timer 4 Counter Overflow			*/
-#define TOVL_ERR5		0x00200000	/* Timer 5 Counter Overflow			*/
-#define TOVL_ERR6		0x00400000	/* Timer 6 Counter Overflow			*/
-#define TOVL_ERR7		0x00800000	/* Timer 7 Counter Overflow			*/
+#define TOVF_ERR4		0x00100000	/* Timer 4 Counter Overflow			*/
+#define TOVF_ERR5		0x00200000	/* Timer 5 Counter Overflow			*/
+#define TOVF_ERR6		0x00400000	/* Timer 6 Counter Overflow			*/
+#define TOVF_ERR7		0x00800000	/* Timer 7 Counter Overflow			*/
 #define TRUN4			0x10000000	/* Timer 4 Slave Enable Status		*/
 #define TRUN5			0x20000000	/* Timer 5 Slave Enable Status		*/
 #define TRUN6			0x40000000	/* Timer 6 Slave Enable Status		*/
 #define TRUN7			0x80000000	/* Timer 7 Slave Enable Status		*/
+
+/* Alternate Deprecated Macros Provided For Backwards Code Compatibility */
+#define TOVL_ERR0 TOVF_ERR0
+#define TOVL_ERR1 TOVF_ERR1
+#define TOVL_ERR2 TOVF_ERR2
+#define TOVL_ERR3 TOVF_ERR3
+#define TOVL_ERR4 TOVF_ERR4
+#define TOVL_ERR5 TOVF_ERR5
+#define TOVL_ERR6 TOVF_ERR6
+#define TOVL_ERR7 TOVF_ERR7
 
 /* TIMERx_CONFIG Masks													*/
 #define PWM_OUT			0x0001	/* Pulse-Width Modulation Output Mode	*/
@@ -1926,6 +1960,15 @@
 #define	TSEG2		0x0070	/* Time Segment 2				*/
 #define	SAM			0x0080	/* Sampling						*/
 #define	SJW			0x0300	/* Synchronization Jump Width	*/
+
+/* CAN_DEBUG Masks											*/
+#define	DEC			0x0001	/* Disable CAN Error Counters	*/
+#define	DRI			0x0002	/* Disable CAN RX Input			*/
+#define	DTO			0x0004	/* Disable CAN TX Output		*/
+#define	DIL			0x0008	/* Disable CAN Internal Loop	*/
+#define	MAA			0x0010	/* Mode Auto-Acknowledge Enable	*/
+#define	MRB			0x0020	/* Mode Read Back Enable		*/
+#define	CDE			0x8000	/* CAN Debug Enable				*/
 
 /* CAN_CEC Masks										*/
 #define	RXECNT		0x00FF	/* Receive Error Counter	*/
