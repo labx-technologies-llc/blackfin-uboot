@@ -392,7 +392,8 @@ loop1:
 
 	p0.l = (IMASK & 0xFFFF);
 	p0.h = (IMASK >> 16);
-	r0 = IVG15_POS;
+	r0.l = LO(IVG15_POS);
+	r0.h = HI(IVG15_POS);
 	[p0] = r0;
 	raise 15;
 	p0.l = WAIT_HERE;
@@ -413,6 +414,7 @@ _real_start:
 	r0 = WATCHDOG_DISABLE(z);
 	w[p0] = r0;
 #endif
+
 
 #ifdef CONFIG_BF537
 /* Initialise General-Purpose I/O Modules on BF537 
