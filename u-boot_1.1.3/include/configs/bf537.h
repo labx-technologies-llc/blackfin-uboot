@@ -103,6 +103,7 @@
 					 CFG_CMD_JFFS2	| \
 					 CFG_CMD_EEPROM | \
 					 CFG_CMD_DHCP   | \
+					 CFG_CMD_IDE	| \
 					 CFG_CMD_POST_DIAG | \
 					 CFG_CMD_DATE)
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"	
@@ -185,8 +186,6 @@
 /*
  * Initialize PSD4256 registers for using I2C
  */
-#define	CONFIG_MISC_INIT_R
-
 #define CFG_LARGE_IMAGE_LEN     0x4000000       /* Large Image Length, set to 64 Meg */
 
 /*
@@ -236,6 +235,7 @@
 #define AMBCTL1VAL              (B3WAT_2 | B3RAT_2 | B3HT_1 | B3ST_1 | B3TT_4 | B3RDYPOL | ~B3RDYEN |   \
                                 B2WAT_7 | B2RAT_11 | B2HT_2 | B2ST_3 | B2TT_4 | ~B2RDYPOL | ~B2RDYEN)
 */
+
 #define AMGCTLVAL               0xFF
 #define AMBCTL0VAL              0x7BB07BB0
 #define AMBCTL1VAL              0xFFC27BB0
@@ -248,6 +248,39 @@
 #define SHT_STRTAB_VDSP		0x1
 #define ELFSHDRSIZE_VDSP	0x2C
 #define VDSP_ENTRY_ADDR		0xFFA00000
+#endif
+
+#define CONFIG_BF537_CF              1
+
+#if defined(CONFIG_BF537_CF) && (CONFIG_COMMANDS & CFG_CMD_IDE)
+
+#define CONFIG_DOS_PARTITION            1
+/*
+ * IDE/ATA stuff
+ */
+#undef  CONFIG_IDE_8xx_DIRECT           /* no pcmcia interface required */
+#undef  CONFIG_IDE_LED                  /* no led for ide supported */
+#undef  CONFIG_IDE_RESET                /* no reset for ide supported */
+
+#define CFG_IDE_MAXBUS  1               /* max. 1 IDE busses */
+#define CFG_IDE_MAXDEVICE               (CFG_IDE_MAXBUS*1) /* max. 1 drives per IDE bus */
+
+#define CFG_ATA_BASE_ADDR               0x2030C000
+#define CFG_ATA_IDE0_OFFSET             0x0000
+
+#define CFG_ATA_DATA_OFFSET             0x0020  /* Offset for data I/O */
+#define CFG_ATA_REG_OFFSET              0x0020  /* Offset for normal register accesses */
+#define CFG_ATA_ALT_OFFSET              0x001C  /* Offset for alternate registers */
+
+#undef  CONFIG_SCLK_DIV
+#define CONFIG_SCLK_DIV                 8
+
+#undef  AMBCTL1VAL
+#define AMBCTL1VAL			0xFFC3FFC3
+
+#define CF_ATASEL_ENA			0x20310002
+
+#define CFG_ATA_STRIDE                  1 	/* CF.A0 --> Blackfin.A1 */
 #endif
 
 #endif

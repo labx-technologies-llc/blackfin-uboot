@@ -89,6 +89,47 @@ int checkboard(void)
 	return 0;
 }
 
+#ifdef CONFIG_BF537_CF
+
+void cf_outb(unsigned char val, volatile unsigned char* addr)
+{
+        *(addr) = val;
+	__builtin_bfin_ssync();
+}
+
+unsigned char cf_inb(volatile unsigned char *addr)
+{
+        volatile unsigned char c;
+
+        c = *(addr);
+	__builtin_bfin_ssync();
+
+        return c;
+}
+
+void cf_insw(unsigned short *sect_buf, unsigned short *addr, int words)
+{
+        int i;
+
+        for (i = 0;i < words; i++)
+        {
+                *(sect_buf + i) = *(addr);
+		__builtin_bfin_ssync();
+        }
+}
+
+void cf_outsw(unsigned short *addr, unsigned short *sect_buf, int words)
+{
+        int i;
+
+        for (i = 0;i < words; i++)
+        {
+                *(addr) = *(sect_buf + i);
+		__builtin_bfin_ssync();
+        }
+}
+#endif
+
 long int initdram(int board_type)
 {
 	DECLARE_GLOBAL_DATA_PTR;
@@ -114,6 +155,9 @@ long int initdram(int board_type)
 int misc_init_r(void)
 {
 	char nid[32];
+	int i;
+	unsigned short buf=0;
+	unsigned short *addr = CF_ATASEL_ENA;
 	unsigned short *pMACaddr = (unsigned short *) 0x203F0000;
 
 	if ( getenv("ethaddr") == NULL) {
@@ -123,6 +167,11 @@ int misc_init_r(void)
 			pMACaddr[2] & 0xFF , pMACaddr[2] >> 8);
 		setenv ("ethaddr", nid);
 	}
+#ifdef CONFIG_BF537_CF
+	cf_outsw(addr, &buf, 1);
+	udelay(5000);
+	ide_init();
+#endif
 	return 0;
 }
 #endif
