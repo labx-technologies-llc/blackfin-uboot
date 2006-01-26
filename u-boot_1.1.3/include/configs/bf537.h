@@ -250,7 +250,7 @@
 #define VDSP_ENTRY_ADDR		0xFFA00000
 #endif
 
-#define CONFIG_BF537_CF              1
+/* #define CONFIG_BF537_CF              1	*/
 
 #if defined(CONFIG_BF537_CF) && (CONFIG_COMMANDS & CFG_CMD_IDE)
 
