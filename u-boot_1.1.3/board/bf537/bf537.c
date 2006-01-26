@@ -112,10 +112,8 @@ void cf_insw(unsigned short *sect_buf, unsigned short *addr, int words)
         int i;
 
         for (i = 0;i < words; i++)
-        {
                 *(sect_buf + i) = *(addr);
-		__builtin_bfin_ssync();
-        }
+	__builtin_bfin_ssync();
 }
 
 void cf_outsw(unsigned short *addr, unsigned short *sect_buf, int words)
@@ -123,10 +121,8 @@ void cf_outsw(unsigned short *addr, unsigned short *sect_buf, int words)
         int i;
 
         for (i = 0;i < words; i++)
-        {
                 *(addr) = *(sect_buf + i);
-		__builtin_bfin_ssync();
-        }
+	__builtin_bfin_ssync();
 }
 #endif
 
