@@ -103,7 +103,6 @@
 					 CFG_CMD_JFFS2	| \
 					 CFG_CMD_EEPROM | \
 					 CFG_CMD_DHCP   | \
-					 CFG_CMD_IDE	| \
 					 CFG_CMD_POST_DIAG | \
 					 CFG_CMD_DATE)
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"	

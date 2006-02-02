@@ -153,7 +153,6 @@ int misc_init_r(void)
 	char nid[32];
 	int i;
 	unsigned short buf=0;
-	unsigned short *addr = CF_ATASEL_ENA;
 	unsigned short *pMACaddr = (unsigned short *) 0x203F0000;
 
 	if ( getenv("ethaddr") == NULL) {
@@ -164,6 +163,8 @@ int misc_init_r(void)
 		setenv ("ethaddr", nid);
 	}
 #ifdef CONFIG_BF537_CF
+	unsigned short *addr = CF_ATASEL_ENA;
+
 	cf_outsw(addr, &buf, 1);
 	udelay(5000);
 	ide_init();
