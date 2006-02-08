@@ -94,6 +94,13 @@
 #define CFG_CMD_POST_DIAG	0
 #endif
 
+/* #define CONFIG_BF537_CF */
+
+#ifdef CONFIG_BF537_CF
+#  define ADD_IDE_CMD             CFG_CMD_IDE
+#else
+#  define ADD_IDE_CMD           0
+#endif
 
 #define CONFIG_COMMANDS			(CONFIG_CMD_DFL	| \
 					 CFG_CMD_PING	| \
@@ -103,6 +110,7 @@
 					 CFG_CMD_JFFS2	| \
 					 CFG_CMD_EEPROM | \
 					 CFG_CMD_DHCP   | \
+					 ADD_IDE_CMD	| \
 					 CFG_CMD_POST_DIAG | \
 					 CFG_CMD_DATE)
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"	
@@ -248,8 +256,6 @@
 #define ELFSHDRSIZE_VDSP	0x2C
 #define VDSP_ENTRY_ADDR		0xFFA00000
 #endif
-
-/* #define CONFIG_BF537_CF              1	*/
 
 #if defined(CONFIG_BF537_CF) && (CONFIG_COMMANDS & CFG_CMD_IDE)
 
