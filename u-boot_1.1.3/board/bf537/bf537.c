@@ -176,14 +176,17 @@ int misc_init_r(void)
 extern struct nand_chip nand_dev_desc[CFG_MAX_NAND_DEVICE];
 void nand_init(void) {
 
-       unsigned char temp;
-       *pPORTF_FER   &= ~PF3;
-       *pPORTFIO_DIR &= ~PF3;
-       *pPORTFIO_INEN|=  PF3;
-       nand_probe(CFG_NAND_BASE);
-        if (nand_dev_desc[0].ChipID != NAND_ChipID_UNKNOWN) {
-                print_size(nand_dev_desc[0].totlen, "\n");
-        }
+       	unsigned char temp;
+	*pPORTF_FER   &= ~PF3;
+       	*pPORTFIO_DIR &= ~PF3;
+       	*pPORTFIO_INEN|=  PF3;
+       	nand_probe(CFG_NAND_BASE);
+	if (nand_dev_desc[0].ChipID != NAND_ChipID_UNKNOWN) {
+		print_size(nand_dev_desc[0].totlen, "\n");
+        } else {
+		printf("none\n");
+	}
+	
 }
 #endif
 
