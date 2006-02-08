@@ -105,9 +105,9 @@ void udelay(unsigned long usec)
 			usec -= 1000;
 		}
 
-		asm volatile (" %0 = CYCLES;": "=g"(start));
+		asm volatile (" %0 = CYCLES;": "=r"(start));
 		do {
-			asm volatile (" %0 = CYCLES; ": "=g"(stop));
+			asm volatile (" %0 = CYCLES; ": "=r"(stop));
 		} while (stop - start < delay);
 	}
 
