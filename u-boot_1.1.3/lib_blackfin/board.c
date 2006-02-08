@@ -256,6 +256,12 @@ void board_init_r(gd_t * id, ulong dest_addr)
 		copy_filename(BootFile, s, sizeof(BootFile));
 	}
 #endif
+
+#if (CONFIG_COMMANDS & CFG_CMD_NAND)
+        puts ("NAND:  ");
+        nand_init();            /* go init the NAND */
+#endif
+
 #if defined(CONFIG_MISC_INIT_R)
 	/* miscellaneous platform dependent initialisations */
 	misc_init_r();

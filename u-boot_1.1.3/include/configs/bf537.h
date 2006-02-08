@@ -111,6 +111,7 @@
 					 CFG_CMD_EEPROM | \
 					 CFG_CMD_DHCP   | \
 					 ADD_IDE_CMD	| \
+					 CFG_CMD_NAND	| \
 					 CFG_CMD_POST_DIAG | \
 					 CFG_CMD_DATE)
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"	
@@ -189,6 +190,40 @@
 #define FLASH_TOT_SECT		71
 #define FLASH_SIZE		0x400000
 #define CFG_FLASH_SIZE		0x400000
+
+/*
+ * Board NAND Infomation
+ */
+
+#define CFG_NAND_ADDR          0x20202000
+#define CFG_NAND_BASE          CFG_NAND_ADDR
+#define CFG_MAX_NAND_DEVICE    1
+#define SECTORSIZE             512
+#define ADDR_COLUMN             1
+#define ADDR_PAGE               2
+#define ADDR_COLUMN_PAGE        3
+#define NAND_ChipID_UNKNOWN    0x00
+#define NAND_MAX_FLOORS        1
+#define NAND_MAX_CHIPS         1
+
+#define NAND_WAIT_READY(nand)  udelay(12); \
+                               while(!(*pPORTFIO & PF3))
+#define NAND_CTL_CLRALE(nandptr)
+#define NAND_CTL_SETALE(nandptr)
+#define NAND_CTL_CLRCLE(nandptr)
+#define NAND_CTL_SETCLE(nandptr)
+#define NAND_DISABLE_CE(nand)
+#define NAND_ENABLE_CE(nand)
+
+#define BFIN_NAND_CLE          (1<<2)                  /* A2 -> Command Enable */
+#define BFIN_NAND_ALE          (1<<1)                  /* A1 -> Address Enable */
+
+#define WRITE_NAND_COMMAND(d, adr) do{ *(volatile __u8 *)((unsigned long)adr | BFIN_NAND_CLE) = (__u8)(d); } while(0)
+#define WRITE_NAND_ADDRESS(d, adr) do{ *(volatile __u8 *)((unsigned long)adr | BFIN_NAND_ALE) = (__u8)(d); } while(0)
+#define WRITE_NAND(d, adr) do{ *(volatile __u8 *)((unsigned long)adr) = (__u8)d; } while(0)
+#define READ_NAND(adr) ((volatile unsigned char)(*(volatile __u8 *)(unsigned long)adr))
+
+
 
 /*
  * Initialize PSD4256 registers for using I2C

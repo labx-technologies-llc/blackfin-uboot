@@ -47,6 +47,7 @@ static struct nand_flash_dev nand_flash_ids[] = {
 	{"Samsung unknown 4Mb",   NAND_MFR_SAMSUNG, 0xe5, 22, 0, 2, 0x2000},
 	{"Samsung KM29U64000",    NAND_MFR_SAMSUNG, 0xe6, 23, 0, 2, 0x2000},
 	{"Samsung KM29W16000",    NAND_MFR_SAMSUNG, 0xea, 21, 1, 2, 0x1000},
+	{"ST NAND128W3A",	  NAND_MFR_ST,	    0x73, 24, 0, 2, 0x4000},
 	{NULL,}
 };
 

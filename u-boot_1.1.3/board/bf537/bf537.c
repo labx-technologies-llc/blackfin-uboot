@@ -151,8 +151,6 @@ long int initdram(int board_type)
 int misc_init_r(void)
 {
 	char nid[32];
-	int i;
-	unsigned short buf=0;
 	unsigned short *pMACaddr = (unsigned short *) 0x203F0000;
 
 	if ( getenv("ethaddr") == NULL) {
@@ -170,6 +168,22 @@ int misc_init_r(void)
 	ide_init();
 #endif
 	return 0;
+}
+#endif
+
+#if (CONFIG_COMMANDS & CFG_CMD_NAND) 
+#include <linux/mtd/nand.h>
+extern struct nand_chip nand_dev_desc[CFG_MAX_NAND_DEVICE];
+void nand_init(void) {
+
+       unsigned char temp;
+       *pPORTF_FER   &= ~PF3;
+       *pPORTFIO_DIR &= ~PF3;
+       *pPORTFIO_INEN|=  PF3;
+       nand_probe(CFG_NAND_BASE);
+        if (nand_dev_desc[0].ChipID != NAND_ChipID_UNKNOWN) {
+                print_size(nand_dev_desc[0].totlen, "\n");
+        }
 }
 #endif
 

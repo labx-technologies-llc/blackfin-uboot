@@ -129,6 +129,7 @@ struct nand_chip {
  */
 #define NAND_MFR_TOSHIBA	0x98
 #define NAND_MFR_SAMSUNG	0xec
+#define NAND_MFR_ST		0x20
 
 /*
  * NAND Flash Device ID Structure
