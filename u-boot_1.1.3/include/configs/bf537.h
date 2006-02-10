@@ -94,12 +94,20 @@
 #define CFG_CMD_POST_DIAG	0
 #endif
 
-/* #define CONFIG_BF537_CF */
+/* #define CONFIG_BF537_CF */		/* Add CF flash card support */
 
 #ifdef CONFIG_BF537_CF
-#  define ADD_IDE_CMD             CFG_CMD_IDE
+#  define ADD_IDE_CMD           CFG_CMD_IDE
 #else
 #  define ADD_IDE_CMD           0
+#endif
+
+/* #define CONFIG_BF537_NAND */		/* Add nand flash support */
+
+#ifdef CONFIG_BF537_NAND
+#  define ADD_NAND_CMD		CFG_CMD_NAND
+#else
+#  define ADD_NAND_CMD		0
 #endif
 
 #define CONFIG_COMMANDS			(CONFIG_CMD_DFL	| \
@@ -111,7 +119,7 @@
 					 CFG_CMD_EEPROM | \
 					 CFG_CMD_DHCP   | \
 					 ADD_IDE_CMD	| \
-					 CFG_CMD_NAND	| \
+					 ADD_NAND_CMD	| \
 					 CFG_CMD_POST_DIAG | \
 					 CFG_CMD_DATE)
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"	
