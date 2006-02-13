@@ -184,7 +184,7 @@ void nand_init(void) {
 	if (nand_dev_desc[0].ChipID != NAND_ChipID_UNKNOWN) {
 		print_size(nand_dev_desc[0].totlen, "\n");
         } else {
-		printf("none\n");
+		printf("unsupported or none\n");
 	}
 	
 }
