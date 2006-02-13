@@ -162,6 +162,7 @@ int misc_init_r(void)
 	}
 #ifdef CONFIG_BF537_CF
 	unsigned short *addr = CF_ATASEL_ENA;
+	unsigned short	buf=0;
 
 	cf_outsw(addr, &buf, 1);
 	udelay(5000);
