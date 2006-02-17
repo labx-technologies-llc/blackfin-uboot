@@ -323,6 +323,7 @@ void SoftResetPHY(void)
 int SetupSystemRegs(int *opmode)
 {
 	u16 sysctl, phydat;
+	int count = 0;
 	/* Enable PHY output */
 	*pVR_CTL |= PHYCLKOE;
 	/* MDC  = 2.5 MHz */
@@ -331,27 +332,20 @@ int SetupSystemRegs(int *opmode)
 	/* Configure checksum support and rcve frame word alignment */
 	sysctl |= RXDWA | RXCKS;
 	*pEMAC_SYSCTL  = sysctl;
+	/* auto negotiation on  */
+        /* full duplex          */
+        /* 100 Mbps             */
+        phydat = PHY_ANEG_EN | PHY_DUPLEX | PHY_SPD_SET;
+        WrPHYReg(PHYADDR, PHY_MODECTL, phydat);
 	do{
-	phydat = RdPHYReg(PHYADDR, PHY_MODESTAT);
-	}while(RdPHYReg(PHYADDR, PHY_MODESTAT) != phydat);
-	
-        if( (phydat & 0x0004) == 0){
+	udelay(1000);
+	phydat = RdPHYReg(PHYADDR,PHY_MODESTAT);
+	if(count>3000){
 		printf("Link is down, please check your network connection\n");
 		return -1;
-	}
-	if( (phydat & 0x0008) == 0){
-		printf("Unable to auto-negotiation\n");
-	}else{
-		DEBUGF("Auto-Negotiation .........\n");
-		/* auto negotiation on 	*/
-		/* full duplex 		*/
-		/* 100 Mbps    		*/
-		phydat = PHY_ANEG_EN | PHY_DUPLEX | PHY_SPD_SET;
-		WrPHYReg(PHYADDR, PHY_MODECTL, phydat);
-		do{
-			phydat = RdPHYReg(PHYADDR, PHY_MODESTAT);
-		}while((phydat & 0x0020) == 0);
-	}
+		}
+	count++;
+	}while(!(phydat & 0x0004));
 	
 	phydat = RdPHYReg(PHYADDR, PHY_ANLPAR);
 
