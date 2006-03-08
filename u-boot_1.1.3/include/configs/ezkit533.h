@@ -161,6 +161,7 @@
 #define CFG_I2C_SPEED			50000
 #define CFG_I2C_SLAVE			0xFE
 
+#define CFG_LARGE_IMAGE_LEN		0x4000000	/* Large Image Length, set to 64 Meg */
 
 #define __ADSPLPBLACKFIN__	1
 #define __ADSPBF533__		1
