@@ -152,14 +152,23 @@ int misc_init_r(void)
 {
 	char nid[32];
 	unsigned short *pMACaddr = (unsigned short *) 0x203F0000;
+	u8  SrcAddr[6] = {0x02,0x80,0xAD,0x20,0x31,0xB8};
 
-	if ( getenv("ethaddr") == NULL) {
+	if ( getenv("ethaddr") == NULL && (
+		((pMACaddr[0] & 0xFF) != 0xFF) && ((pMACaddr[0] >> 8) != 0xFF ) &&
+		((pMACaddr[1] & 0xFF) != 0xFF) && ((pMACaddr[1] >> 8) != 0xFF ) &&
+		((pMACaddr[2] & 0xFF) != 0xFF) && ((pMACaddr[2] >> 8) != 0xFF ))) {
 		sprintf (nid, "%02x:%02x:%02x:%02x:%02x:%02x",
 			pMACaddr[0] & 0xFF , pMACaddr[0] >> 8,
 			pMACaddr[1] & 0xFF , pMACaddr[1] >> 8,
 			pMACaddr[2] & 0xFF , pMACaddr[2] >> 8);
 		setenv ("ethaddr", nid);
 	}
+
+	if ( getenv("ethaddr") ) {
+		SetupMacAddr(SrcAddr);
+	}
+
 #ifdef CONFIG_BF537_CF
 	unsigned short *addr = CF_ATASEL_ENA;
 	unsigned short	buf=0;
