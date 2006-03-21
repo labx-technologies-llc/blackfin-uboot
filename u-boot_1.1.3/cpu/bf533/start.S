@@ -352,8 +352,12 @@ POST_DATA_DMA_DONE:
 	/* relocate into to RAM */
 	call get_pc;
 offset:
-	r1.l = ((offset -start) & 0xffff);
-	r1.h = ((offset -start) >> 16);
+	r2.l = offset;
+	r2.h = offset;
+	r3.l = start;
+	r3.h = start;
+	r1 = r2 - r3;
+
 	r0 = r0 - r1;
 	p1 = r0;
 
