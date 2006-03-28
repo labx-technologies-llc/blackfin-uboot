@@ -203,7 +203,7 @@
  * Board NAND Infomation
  */
 
-#define CFG_NAND_ADDR          0x20202000
+#define CFG_NAND_ADDR          0x20212000
 #define CFG_NAND_BASE          CFG_NAND_ADDR
 #define CFG_MAX_NAND_DEVICE    1
 #define SECTORSIZE             512
@@ -230,8 +230,6 @@
 #define WRITE_NAND_ADDRESS(d, adr) do{ *(volatile __u8 *)((unsigned long)adr | BFIN_NAND_ALE) = (__u8)(d); } while(0)
 #define WRITE_NAND(d, adr) do{ *(volatile __u8 *)((unsigned long)adr) = (__u8)d; } while(0)
 #define READ_NAND(adr) ((volatile unsigned char)(*(volatile __u8 *)(unsigned long)adr))
-
-
 
 /*
  * Initialize PSD4256 registers for using I2C
@@ -313,7 +311,7 @@
 #define CFG_IDE_MAXBUS  1               /* max. 1 IDE busses */
 #define CFG_IDE_MAXDEVICE               (CFG_IDE_MAXBUS*1) /* max. 1 drives per IDE bus */
 
-#define CFG_ATA_BASE_ADDR               0x2030C000
+#define CFG_ATA_BASE_ADDR               0x2031C000
 #define CFG_ATA_IDE0_OFFSET             0x0000
 
 #define CFG_ATA_DATA_OFFSET             0x0020  /* Offset for data I/O */
@@ -326,7 +324,7 @@
 #undef  AMBCTL1VAL
 #define AMBCTL1VAL			0xFFC3FFC3
 
-#define CF_ATASEL_ENA			0x20310002
+#define CF_ATASEL_ENA			0x20311802
 
 #define CFG_ATA_STRIDE                  1 	/* CF.A0 --> Blackfin.A1 */
 #endif
