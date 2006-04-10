@@ -77,7 +77,7 @@
 #define GEN_VALUE(str) #str
 #define GEN_ABS(name, value) \
 		asm (".globl " GEN_SYMNAME(name)); \
-		asm (GEN_SYMNAME(name) " = " GEN_VALUE(value))
+		asm (".set " GEN_SYMNAME(name) ", " GEN_VALUE(value))
 
 /*
  * Macros to transform values
