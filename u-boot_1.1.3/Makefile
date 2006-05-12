@@ -1624,6 +1624,12 @@ dspstamp_config	:	unconfig
 serial_stamp_config:	unconfig
 	@./mkconfig $(@:_config=) blackfin bf533 serial_stamp
 
+cm-bf533_config	:	unconfig
+	@./mkconfig $(@:_config=) blackfin bf533 cm-bf533
+
+cm-bf537_config	:	unconfig
+	@./mkconfig $(@:_config=) blackfin bf533 cm-bf537
+
 bf537_config	:	unconfig
 	@./mkconfig $(@:_config=) blackfin bf533 bf537
 
