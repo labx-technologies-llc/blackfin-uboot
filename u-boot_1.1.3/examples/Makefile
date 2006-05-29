@@ -60,16 +60,16 @@ endif
 include $(TOPDIR)/config.mk
 
 SREC	= hello_world.srec
-BIN	= hello_world.bin hello_world
+BIN	= hello_world hello_world.bin
 
 ifeq ($(ARCH),i386)
 SREC   += 82559_eeprom.srec
-BIN    += 82559_eeprom.bin 82559_eeprom
+BIN    += 82559_eeprom 82559_eeprom.bin
 endif
 
 ifeq ($(ARCH),ppc)
 SREC   += sched.srec
-BIN    += sched.bin sched
+BIN    += sched sched.bin
 endif
 
 ifeq ($(ARCH),blackfin)
@@ -77,7 +77,7 @@ ifneq ($(BOARD),bf537)
 ifneq ($(BOARD),cm-bf537) 
 ifneq ($(BOARD),serial_bf537)
 SREC	+= smc91111_eeprom.srec
-BIN 	+= smc91111_eeprom.bin smc91111_eeprom
+BIN 	+= smc91111_eeprom smc91111_eeprom.bin
 endif
 endif
 endif
@@ -86,19 +86,19 @@ endif
 # The following example is pretty 8xx specific...
 ifeq ($(CPU),mpc8xx)
 SREC   += timer.srec
-BIN    += timer.bin timer
+BIN    += timer timer.bin
 endif
 
 # The following example is 8260 specific...
 ifeq ($(CPU),mpc8260)
 SREC   += mem_to_mem_idma2intr.srec
-BIN    += mem_to_mem_idma2intr.bin mem_to_mem_idma2intr
+BIN    += mem_to_mem_idma2intr mem_to_mem_idma2intr.bin
 endif
 
 # Utility for resetting i82559 EEPROM
 ifeq ($(BOARD),oxc)
 SREC   += eepro100_eeprom.srec
-BIN    += eepro100_eeprom.bin eepro100_eeprom
+BIN    += eepro100_eeprom eepro100_eeprom.bin
 endif
 
 ifeq ($(BIG_ENDIAN),y)
@@ -120,7 +120,7 @@ clibdir := $(shell dirname `$(CC) $(CFLAGS) -print-file-name=libc.a`)
 
 CPPFLAGS += -I..
 
-all:	.depend $(OBJS) $(LIB) $(SREC) $(BIN)
+all:	.depend $(OBJS) $(LIB) $(BIN) $(SREC)
 
 #########################################################################
 $(LIB): .depend $(LIBOBJS)
