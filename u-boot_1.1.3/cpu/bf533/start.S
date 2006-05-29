@@ -55,8 +55,8 @@
 .global _exit;
 .global flashdataend;
 .global init_sdram;
-.global icache_enable;
-.global dcache_enable;
+.global _icache_enable;
+.global _dcache_enable;
 #if defined(CONFIG_BF537)&&defined(CONFIG_POST)
 .global memory_post_test;
 .global post_flag;
@@ -533,8 +533,8 @@ _clear_bss_skip:
         [p0] = r0;
 #endif
 
-	call icache_enable;
-	call dcache_enable;
+	call _icache_enable;
+	call _dcache_enable;
 
 	p0.l = _start1;
 	p0.h = _start1;

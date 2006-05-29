@@ -34,5 +34,5 @@
 _start1:
 start1:
 	sp += -12;
-	call	board_init_f;
+	call	_board_init_f;
 	sp += 12;

@@ -46,37 +46,37 @@
 #include <asm/entry.h>
 #include <asm/blackfin_defs.h>
 
-.global blackfin_irq_panic;
+.global _blackfin_irq_panic;
 
 .text
 .align 2
 
 #ifndef CONFIG_KGDB
-.global evt_emulation
-evt_emulation:
+.global _evt_emulation
+_evt_emulation:
 	SAVE_CONTEXT
 	r0 = IRQ_EMU;
 	r1 = seqstat;
 	sp += -12;
-	call blackfin_irq_panic;
+	call _blackfin_irq_panic;
 	sp += 12;
 	rte;
 #endif
 
-.global evt_nmi
-evt_nmi:
+.global _evt_nmi
+_evt_nmi:
 	SAVE_CONTEXT
 	r0 = IRQ_NMI;
 	r1 = RETN;
 	sp += -12;
-	call blackfin_irq_panic;
+	call _blackfin_irq_panic;
 	sp += 12;
 
 _evt_nmi_exit:
 	rtn;
 
-.global trap
-trap:
+.global _trap
+_trap:
 	[--sp] = r0;
 	[--sp] = r1;
 	[--sp] = p0;
@@ -230,13 +230,13 @@ EVTABLE:
 	.byte2 0x0006;
 	.byte2 0x0026;
 
-.global evt_rst
-evt_rst:
+.global _evt_rst
+_evt_rst:
 	SAVE_CONTEXT
 	r0 = IRQ_RST;
 	r1 = RETN;
 	sp += -12;
-	call do_reset;
+	call _do_reset;
 	sp += 12;
 
 _evt_rst_exit:
@@ -246,19 +246,19 @@ irq_panic:
 	r0 = IRQ_EVX;
 	r1 =  sp;
 	sp += -12;
-	call blackfin_irq_panic;
+	call _blackfin_irq_panic;
 	sp += 12;
 
-.global evt_ivhw
-evt_ivhw:
+.global _evt_ivhw
+_evt_ivhw:
 	SAVE_CONTEXT
 	RAISE 14;
 
 _evt_ivhw_exit:
 	 rti;
 
-.global evt_timer
-evt_timer:
+.global _evt_timer
+_evt_timer:
 	SAVE_CONTEXT
 	r0 = IRQ_CORETMR;
 	sp += -12;
@@ -269,91 +269,91 @@ evt_timer:
 	rti;
 	nop;
 
-.global evt_evt7
-evt_evt7:
+.global _evt_evt7
+_evt_evt7:
 	SAVE_CONTEXT
 	r0 = 7;
 	sp += -12;
-	call process_int;
+	call _process_int;
 	sp += 12;
 
 evt_evt7_exit:
 	RESTORE_CONTEXT
 	rti; 
 
-.global evt_evt8
-evt_evt8:
+.global _evt_evt8
+_evt_evt8:
 	SAVE_CONTEXT
 	r0 = 8;
 	sp += -12;
-	call process_int;
+	call _process_int;
 	sp += 12;
 
 evt_evt8_exit:
 	RESTORE_CONTEXT
 	rti;
 
-.global evt_evt9
-evt_evt9:
+.global _evt_evt9
+_evt_evt9:
 	SAVE_CONTEXT
 	r0 = 9;
 	sp += -12;
-	call process_int;
+	call _process_int;
 	sp += 12;
 
 evt_evt9_exit:
 	RESTORE_CONTEXT
 	rti;
 
-.global evt_evt10
-evt_evt10:
+.global _evt_evt10
+_evt_evt10:
 	SAVE_CONTEXT
 	r0 = 10;
 	sp += -12;
-	call process_int;
+	call _process_int;
 	sp += 12;
 
 evt_evt10_exit:
 	RESTORE_CONTEXT
 	rti;
 
-.global evt_evt11
-evt_evt11:
+.global _evt_evt11
+_evt_evt11:
 	SAVE_CONTEXT
 	r0 = 11;
 	sp += -12;
-	call process_int;
+	call _process_int;
 	sp += 12;
 
 evt_evt11_exit:
 	RESTORE_CONTEXT
 	rti;
 
-.global evt_evt12
-evt_evt12:
+.global _evt_evt12
+_evt_evt12:
 	SAVE_CONTEXT
 	r0 = 12;
 	sp += -12;
-	call process_int;
+	call _process_int;
 	sp += 12;
 evt_evt12_exit:
 	 RESTORE_CONTEXT
 	 rti;
 
-.global evt_evt13
-evt_evt13:
+.global _evt_evt13
+_evt_evt13:
 	SAVE_CONTEXT
 	r0 = 13;
 	sp += -12;
-	call process_int;
+	call _process_int;
 	sp += 12;
 
 evt_evt13_exit:
 	 RESTORE_CONTEXT
 	 rti;
 
-.global evt_system_call
-evt_system_call:
+.global _evt_system_call
+_evt_system_call:
 	[--sp] = r0;
 	[--SP] = RETI;
 	r0 = [sp++];
@@ -363,7 +363,7 @@ evt_system_call:
 	r0 = [SP++];
 	SAVE_CONTEXT
 	sp += -12;
-	call exception_handle;
+	call _exception_handle;
 	sp += 12;
 	RESTORE_CONTEXT
 	RTI;
@@ -371,8 +371,8 @@ evt_system_call:
 evt_system_call_exit:
 	rti;
 
-.global evt_soft_int1
-evt_soft_int1:
+.global _evt_soft_int1
+_evt_soft_int1:
 	[--sp] = r0;
 	[--SP] = RETI;
 	r0 = [sp++];
@@ -382,7 +382,7 @@ evt_soft_int1:
 	r0 = [SP++];
 	SAVE_CONTEXT
 	sp += -12;
-	call exception_handle;
+	call _exception_handle;
 	sp += 12;
 	RESTORE_CONTEXT
 	RTI;

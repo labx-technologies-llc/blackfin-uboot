@@ -126,10 +126,18 @@ all:	.depend $(OBJS) $(LIB) $(SREC) $(BIN)
 $(LIB): .depend $(LIBOBJS)
 	$(AR) crv $@ $(LIBOBJS)
 
+ifeq ($(ARCH),blackfin)
+%:      %.o $(LIB)
+	$(LD) -g $(EX_LDFLAGS) -Ttext $(LOAD_ADDR) \
+		-o $@ -e _$(<:.o=) $< $(LIB) \
+		-L$(gcclibdir) -lgcc
+else
 %:	%.o $(LIB)
 	$(LD) -g $(EX_LDFLAGS) -Ttext $(LOAD_ADDR) \
 		-o $@ -e $(<:.o=) $< $(LIB) \
 		-L$(gcclibdir) -lgcc
+endif
+
 %.srec:	%
 	$(OBJCOPY) -O srec $< $@ 2>/dev/null
 

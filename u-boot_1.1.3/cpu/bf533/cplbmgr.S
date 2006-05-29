@@ -473,7 +473,7 @@ dicount_done:
 	/* Retrieve the page start address */
 	R0 =[P0 - 0x104];
 	[--sp] = rets;
-	CALL dcplb_flush;		/* R0==CPLB addr, R1==CPLB data */
+	CALL _dcplb_flush;		/* R0==CPLB addr, R1==CPLB data */
 	rets =[sp++];
 	Ddoverwrite:
 	

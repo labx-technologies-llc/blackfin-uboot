@@ -132,7 +132,7 @@ gd_t *global_data;
  */
 #define EXPORT_FUNC(x)			\
         asm volatile (			\
-"       .globl " #x "\n"		\
+"       .globl _" #x "\n_"		\
 #x ":\n"				\
 "	P0 = [P5 + %0]\n"		\
 "	P0 = [P0 + %1]\n"		\
@@ -158,11 +158,11 @@ void __attribute__((unused)) dummy(void)
 #include <_exports.h>
 }
 
-extern unsigned long __bss_start, _end;
+extern unsigned long _bss_start, _end;
 
 void app_startup(char **argv)
 {
-	unsigned long * cp = &__bss_start;
+	unsigned long * cp = &_bss_start;
 
 	/* Zero out BSS */
 	while (cp < &_end) {

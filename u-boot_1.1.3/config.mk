@@ -54,7 +54,7 @@ endif
 endif
 
 ifeq ($(ARCH),blackfin)
-PLATFORM_CPPFLAGS+= -D__BLACKFIN__ -mno-underscore
+PLATFORM_CPPFLAGS+= -D__BLACKFIN__
 endif
 
 ifdef	ARCH
