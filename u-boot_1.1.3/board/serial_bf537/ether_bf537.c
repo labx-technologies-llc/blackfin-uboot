@@ -101,6 +101,11 @@ int eth_send(volatile void *packet, int length)
 		goto out;
 	}
 	
+	if((*pDMA2_IRQ_STATUS & DMA_ERR)!=0){
+			printf("Ethernet: tx DMA error\n");
+			goto out;
+	}
+	
 	for(i=0;(*pDMA2_IRQ_STATUS & DMA_RUN) != 0; i++){
 		if(i>TOUT_LOOP){
 			puts("Ethernet: tx time out\n");
@@ -120,7 +125,6 @@ int eth_send(volatile void *packet, int length)
 			goto out;
 		}
 	}
-	*pEMAC_OPMODE &= ~TE;
 	result = txbuf[txIdx]->StatusWord;
 	txbuf[txIdx]->StatusWord = 0;
 	if((txIdx+1) >= TX_BUF_CNT)
@@ -141,13 +145,23 @@ int eth_rx(void)
 		length = -1;
 		break;
 	}
+	if((rxbuf[rxIdx]->StatusWord & RX_DMAO) != 0){
+		printf("Ethernet: rx dma overrun\n");
+		break;
+	}
+	if((rxbuf[rxIdx]->StatusWord & RX_OK) == 0){
+		printf("Ethernet: rx error\n");
+		break;
+	}
 	length = rxbuf[rxIdx]->StatusWord & 0x000007FF;
+	if(length <= 4){
+		printf("Ethernet: bad frame\n");
+		break;
+	}
 	NetRxPackets[rxIdx] = (volatile uchar *)(rxbuf[rxIdx]->FrmData->Dest);
 	NetReceive(NetRxPackets[rxIdx],length - 4);
 	*pDMA1_IRQ_STATUS |= DMA_DONE|DMA_ERR;
 	rxbuf[rxIdx]->StatusWord = 0x00000000;
-	*pDMA1_CONFIG &= ~0x01;
-	*pDMA1_CONFIG = *((u16 *)&rxdmacfg);
 	if((rxIdx+1) >= PKTBUFSRX)
 		rxIdx = 0;
 	else
@@ -166,6 +180,7 @@ int eth_rx(void)
 int eth_init(bd_t *bis)
 {
 	u32	opmode;
+	int 	dat;
 	int 	i;
 	DEBUGF("Eth_init: ......\n");
 
@@ -173,7 +188,8 @@ int eth_init(bd_t *bis)
 	rxIdx = 0;
 
 /* Initialize System Register */
-	SetupSystemRegs();
+	if(SetupSystemRegs(&dat)< 0)
+		return -1;
 
 /* Initialize EMAC address */
 	SetupMacAddr(SrcAddr);
@@ -212,7 +228,10 @@ int eth_init(bd_t *bis)
    FDMODE : Full Duplex Mode
    LB	  : Internal Loopback for test
    RE     : Receiver Enable */
-	opmode = ASTP|FDMODE|PSF;
+	if(dat == FDMODE)
+		opmode = ASTP|FDMODE|PSF;
+	else
+		opmode = ASTP|PSF;
 	opmode |= RE;
 	/* Turn on the EMAC */
 	*pEMAC_OPMODE = opmode;
@@ -243,11 +262,12 @@ void SetupMacAddr(u8 *MACaddr)
 			if(tmp)
 				tmp = (*end)?end+1:end;
 		}
-	}
-	printf("Using MAC Address %02X:%02X:%02X:%02X:%02X:%02X\n",MACaddr[0],MACaddr[1],
+	
+		printf("Using MAC Address %02X:%02X:%02X:%02X:%02X:%02X\n",MACaddr[0],MACaddr[1],
 				MACaddr[2],MACaddr[3],MACaddr[4],MACaddr[5]);
-	*pEMAC_ADDRLO = *(u32 *)&MACaddr[0];
-	*pEMAC_ADDRHI = *(u16 *)&MACaddr[4];
+		*pEMAC_ADDRLO = MACaddr[0] | MACaddr[1]<<8 | MACaddr[2] <<16 | MACaddr[3] << 24;
+		*pEMAC_ADDRHI = MACaddr[4] | MACaddr[5]<<8;
+	}
 }
 
 void PollMdcDone(void)
@@ -300,9 +320,10 @@ void SoftResetPHY(void)
 	} while ((phydat & PHY_RESET) != 0);
 }
 
-void SetupSystemRegs(void)
+int SetupSystemRegs(int *opmode)
 {
 	u16 sysctl, phydat;
+	int count = 0;
 	/* Enable PHY output */
 	*pVR_CTL |= PHYCLKOE;
 	/* MDC  = 2.5 MHz */
@@ -311,13 +332,29 @@ void SetupSystemRegs(void)
 	/* Configure checksum support and rcve frame word alignment */
 	sysctl |= RXDWA | RXCKS;
 	*pEMAC_SYSCTL  = sysctl;
-	/* auto negotiation on 	*/
-	/* full duplex 		*/
-	/* 100 Mbps    		*/
-	phydat = PHY_ANEG_EN | PHY_DUPLEX | PHY_SPD_SET;
-	WrPHYReg(PHYADDR, PHY_MODECTL, phydat);
+	/* auto negotiation on  */
+        /* full duplex          */
+        /* 100 Mbps             */
+        phydat = PHY_ANEG_EN | PHY_DUPLEX | PHY_SPD_SET;
+        WrPHYReg(PHYADDR, PHY_MODECTL, phydat);
+	do{
+	udelay(1000);
+	phydat = RdPHYReg(PHYADDR,PHY_MODESTAT);
+	if(count>3000){
+		printf("Link is down, please check your network connection\n");
+		return -1;
+		}
+	count++;
+	}while(!(phydat & 0x0004));
 	
-	*pEMAC_MMC_CTL = RSTC | CROLL | MMCE;
+	phydat = RdPHYReg(PHYADDR, PHY_ANLPAR);
+
+	if((phydat & 0x0100) || (phydat & 0x0040))
+		*opmode = FDMODE;
+	else
+		*opmode = 0;
+
+	*pEMAC_MMC_CTL = RSTC | CROLL;
 	
 	/* Initialize the TX DMA channel registers */
 	*pDMA2_X_COUNT	= 0;
@@ -330,6 +367,7 @@ void SetupSystemRegs(void)
 	*pDMA1_X_MODIFY = 4;
 	*pDMA1_Y_COUNT  = 0;
 	*pDMA1_Y_MODIFY = 0;
+	return 0;
 }	
 
 ADI_ETHER_BUFFER *SetupRxBuffer(int no)
@@ -362,8 +400,8 @@ ADI_ETHER_BUFFER *SetupRxBuffer(int no)
 	buf->Dma[1].CONFIG.b_WNR    = 1;	/* Write to memory */
 	buf->Dma[1].CONFIG.b_WDSIZE = 2;	/* wordsize is 32 bits */
 	buf->Dma[1].CONFIG.b_DI_EN  = 1;	/* enable interrupt */
-	buf->Dma[1].CONFIG.b_NDSIZE = 0;	/* must be 0 when FLOW is 0 */ 
-	buf->Dma[1].CONFIG.b_FLOW   = 0;	/* stop */
+	buf->Dma[1].CONFIG.b_NDSIZE = 5;	/* must be 0 when FLOW is 0 */ 
+	buf->Dma[1].CONFIG.b_FLOW   = 7;	/* stop */
 	
 	return buf;
 }	
