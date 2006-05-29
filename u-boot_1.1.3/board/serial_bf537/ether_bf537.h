@@ -56,7 +56,7 @@ typedef struct adi_ether_buffer {
 	struct adi_ether_buffer	*pPrev;	/* prev buffer	*/
 	u16	IPHdrChksum;	/* the IP header checksum	*/
 	u16	IPPayloadChksum;	/* the IP header and payload checksum	*/
-	u32	StatusWord;		/* the frame status word	*/
+	volatile u32	StatusWord;		/* the frame status word	*/
 } ADI_ETHER_BUFFER;
 /* 40 bytes/struct in 44 bytes */
 
