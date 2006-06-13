@@ -60,7 +60,7 @@ void calc_baud(void)
 
 	for (i = 0; i < sizeof(baud_table) / sizeof(int); i++) {
 		temp = CONFIG_SCLK_HZ / (baud_table[i] * 8);
-		if (temp && 0x1 == 1) {
+		if (temp & 0x1 == 1) {
 			temp++;
 		}
 		temp = temp / 2;
