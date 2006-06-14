@@ -1630,6 +1630,9 @@ cm-bf533_config	:	unconfig
 cm-bf537_config	:	unconfig
 	@./mkconfig $(@:_config=) blackfin bf533 cm-bf537
 
+cm-bf537u_config	:	unconfig
+	@./mkconfig $(@:_config=) blackfin bf533 cm-bf537u
+
 bf537_config	:	unconfig
 	@./mkconfig $(@:_config=) blackfin bf533 bf537
 

@@ -68,11 +68,8 @@ SECTIONS
     cpu/bf533/interrupt.o	(.text)
     cpu/bf533/serial.o		(.text)
     common/dlmalloc.o		(.text)
-/*  lib_blackfin/bf533_string.o	(.text) */
-    lib_generic/vsprintf.o	(.text)
     lib_generic/crc32.o		(.text)
     lib_generic/zlib.o		(.text)
- /*   board/cm_bf537/cm_bf537.o		(.text)*/
 
     . = DEFINED(env_offset) ? env_offset : .;
     common/environment.o	(.text)
@@ -120,9 +117,9 @@ SECTIONS
   _edata  =  .;
   PROVIDE (edata = .);
 
-  __u_boot_cmd_start = .;
+  ___u_boot_cmd_start = .;
   .u_boot_cmd : { *(.u_boot_cmd) }
-  __u_boot_cmd_end = .;
+  ___u_boot_cmd_end = .;
 
 
   __start___ex_table = .;
