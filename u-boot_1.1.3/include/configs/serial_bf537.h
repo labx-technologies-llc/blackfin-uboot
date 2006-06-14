@@ -49,7 +49,7 @@
 
 #define CONFIG_MEM_SIZE                 64             /* 128, 64, 32, 16 */
 #define CONFIG_MEM_ADD_WDTH              10             /* 8, 9, 10, 11    */
-#define CONFIG_MEM_MT48LC16M8A2TG_75    1
+#define CONFIG_MEM_MT48LC32M8A2_75    1
 
 #define CONFIG_LOADS_ECHO	1
 
