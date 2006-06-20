@@ -31,6 +31,9 @@
 #include <config.h>
 #include <asm/blackfin.h>
 
+extern void blackfin_icache_flush_range(const void *, const void *);
+extern void blackfin_dcache_flush_range(const void *, const void *);
+
 void *dma_memcpy(void *,const void *,size_t);
 
 char *strcpy(char *dest, const char *src)
@@ -109,7 +112,7 @@ int strncmp(const char *cs, const char *ct, size_t count)
 		"CC = %2 == 0;\n\t" "if ! cc jump 1b;\n"	/* more to do, keep going */
 		"2:\t%3 = 0;\n\t"		/* strings are equal */
 		"jump.s    4f;\n" "3:\t%3 = %3 - %4;\n"	/* *cs - *ct */
- 		"4:":	"=a"(cs), "=a"(ct), "=da"(count), "=d"(__res1),
+		"4:":	"=a"(cs), "=a"(ct), "=da"(count), "=d"(__res1),
 		"=d"(__res2)
 		: "0"(cs), "1"(ct), "2"(count));
 
@@ -128,22 +131,23 @@ int strncmp(const char *cs, const char *ct, size_t count)
 void * memcpy(void * dest,const void *src,size_t count)
 {
 	char *tmp = (char *) dest, *s = (char *) src;
-	
-/* Turn off the cache, if destination in the L1 memory */
-	if ( (tmp >= (char *)L1_ISRAM) && (tmp < (char *)L1_ISRAM_END)
-		|| (tmp >= (char *)DATA_BANKA_SRAM) && (tmp < DATA_BANKA_SRAM_END)
-	    || (tmp >= (char *)DATA_BANKB_SRAM) && (tmp < DATA_BANKB_SRAM_END) ){
-			if(icache_status()){
-					blackfin_icache_flush_range(src, src+count);
-					icache_disable();
-			}
-			if(dcache_status()){
-					blackfin_dcache_flush_range(src, src+count);
-					dcache_disable();
-			}
-			dma_memcpy(dest,src,count);
-	}else{
-		while(count--)
+
+	/* Turn off the cache, if destination in the L1 memory */
+	if (((tmp >= (char *)L1_ISRAM) && (tmp < (char *)L1_ISRAM_END))
+	    || ((tmp >= (char *)DATA_BANKA_SRAM) && (tmp < (char *)DATA_BANKA_SRAM_END))
+	    || ((tmp >= (char *)DATA_BANKB_SRAM) && (tmp < (char *)DATA_BANKB_SRAM_END)))
+	{
+		if (icache_status()) {
+			blackfin_icache_flush_range(src, src+count);
+			icache_disable();
+		}
+		if (dcache_status()) {
+			blackfin_dcache_flush_range(src, src+count);
+			dcache_disable();
+		}
+		dma_memcpy(dest,src,count);
+	} else {
+		while (count--)
 			*tmp++ = *s++;
 	}
 	return dest;
@@ -151,36 +155,35 @@ void * memcpy(void * dest,const void *src,size_t count)
 
 void *dma_memcpy(void * dest,const void *src,size_t count)
 {
-	
-		*pMDMA_D0_IRQ_STATUS = DMA_DONE | DMA_ERR;
+	*pMDMA_D0_IRQ_STATUS = DMA_DONE | DMA_ERR;
 
-		/* Copy sram functions from sdram to sram */
-		/* Setup destination start address */
-		*pMDMA_D0_START_ADDR = (volatile void **)dest;
-		/* Setup destination xcount */
-		*pMDMA_D0_X_COUNT = count ;
-		/* Setup destination xmodify */
-		*pMDMA_D0_X_MODIFY = 1;
+	/* Copy sram functions from sdram to sram */
+	/* Setup destination start address */
+	*pMDMA_D0_START_ADDR = (volatile void **)dest;
+	/* Setup destination xcount */
+	*pMDMA_D0_X_COUNT = count ;
+	/* Setup destination xmodify */
+	*pMDMA_D0_X_MODIFY = 1;
 
-		/* Setup Source start address */
-		*pMDMA_S0_START_ADDR = (volatile void **)src;
-		/* Setup Source xcount */
-		*pMDMA_S0_X_COUNT = count;
-		/* Setup Source xmodify */
-		*pMDMA_S0_X_MODIFY = 1;
+	/* Setup Source start address */
+	*pMDMA_S0_START_ADDR = (volatile void **)src;
+	/* Setup Source xcount */
+	*pMDMA_S0_X_COUNT = count;
+	/* Setup Source xmodify */
+	*pMDMA_S0_X_MODIFY = 1;
 
-		/* Enable source DMA */
-		*pMDMA_S0_CONFIG = (DMAEN);
-		asm("ssync;");
+	/* Enable source DMA */
+	*pMDMA_S0_CONFIG = (DMAEN);
+	__builtin_bfin_ssync();
 
-		*pMDMA_D0_CONFIG = ( WNR | DMAEN);
-		
-		while(*pMDMA_D0_IRQ_STATUS & DMA_RUN){
-			*pMDMA_D0_IRQ_STATUS |= (DMA_DONE | DMA_ERR);
-		}
+	*pMDMA_D0_CONFIG = ( WNR | DMAEN);
+
+	while (*pMDMA_D0_IRQ_STATUS & DMA_RUN) {
 		*pMDMA_D0_IRQ_STATUS |= (DMA_DONE | DMA_ERR);
+	}
+	*pMDMA_D0_IRQ_STATUS |= (DMA_DONE | DMA_ERR);
 
-		dest += count;
-		src  += count;
-		return dest;
+	dest += count;
+	src  += count;
+	return dest;
 }
