@@ -28,7 +28,7 @@ LIB	= lib$(BOARD).a
 OBJS	:= sacsng.o flash.o clkinit.o
 
 $(LIB):	$(OBJS) $(SOBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 clean:
 	rm -f $(SOBJS) $(OBJS)

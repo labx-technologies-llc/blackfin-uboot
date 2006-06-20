@@ -29,7 +29,7 @@ OBJS	:= ns9750dev.o flash.o led.o
 SOBJS	:= platform.o
 
 $(LIB):	$(OBJS) $(SOBJS)
-	$(AR) crv $@ $(OBJS) $(SOBJS)
+	$(AR) cr $@ $(OBJS) $(SOBJS)
 
 clean:
 	rm -f $(SOBJS) $(OBJS)

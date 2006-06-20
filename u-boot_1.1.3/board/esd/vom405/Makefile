@@ -33,7 +33,7 @@ CPLD    = ../common/xilinx_jtag/lenval.o \
 OBJS	= $(BOARD).o flash.o ../common/misc.o $(CPLD)
 
 $(LIB):	$(OBJS) $(SOBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 clean:
 	rm -f $(SOBJS) $(OBJS)

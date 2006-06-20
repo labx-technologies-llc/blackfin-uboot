@@ -32,7 +32,7 @@ LIB	= lib$(BOARD).a
 OBJS	= $(BOARD).o ezkit561.o
 
 $(LIB):	.depend $(OBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 #########################################################################
 

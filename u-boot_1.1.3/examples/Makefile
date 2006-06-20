@@ -124,7 +124,7 @@ all:	.depend $(OBJS) $(LIB) $(BIN) $(SREC)
 
 #########################################################################
 $(LIB): .depend $(LIBOBJS)
-	$(AR) crv $@ $(LIBOBJS)
+	$(AR) cr $@ $(LIBOBJS)
 
 ifeq ($(ARCH),blackfin)
 %:      %.o $(LIB)

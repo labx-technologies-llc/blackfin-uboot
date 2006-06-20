@@ -38,7 +38,7 @@ OBJS	= $(AOBJS) $(COBJS)
 all:	.depend $(START) $(LIB)
 
 $(LIB):	$(OBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 #########################################################################
 

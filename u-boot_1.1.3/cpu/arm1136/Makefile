@@ -31,7 +31,7 @@ OBJS	= interrupts.o cpu.o
 all:	.depend $(START) $(LIB)
 
 $(LIB):	$(OBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 #########################################################################
 

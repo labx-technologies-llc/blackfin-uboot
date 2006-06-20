@@ -37,7 +37,7 @@ SOBJS	= plprcr_write.o
 all:	.depend $(START) $(LIB)
 
 $(LIB):	$(OBJS) $(SOBJS)
-	$(AR) crv $@ $(OBJS) $(SOBJS) kgdb.o
+	$(AR) cr $@ $(OBJS) $(SOBJS) kgdb.o
 
 #########################################################################
 

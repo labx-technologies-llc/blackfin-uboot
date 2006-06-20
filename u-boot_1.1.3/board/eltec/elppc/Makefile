@@ -30,7 +30,7 @@ OBJS	= $(BOARD).o flash.o pci.o misc.o mpc107_i2c.o eepro100_srom.o
 SOBJS	= asm_init.o
 
 $(LIB):	.depend $(OBJS) $(SOBJS)
-	$(AR) crv $@  $(OBJS) $(SOBJS)
+	$(AR) cr $@  $(OBJS) $(SOBJS)
 
 clean:
 	rm -f $(SOBJS) $(OBJS)

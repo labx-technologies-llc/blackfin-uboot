@@ -31,7 +31,7 @@ OBJS	= serial.o interrupts.o cpu.o i2c.o pxafb.o mmc.o
 all:	.depend $(START) $(LIB)
 
 $(LIB):	$(OBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 #########################################################################
 

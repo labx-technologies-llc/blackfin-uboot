@@ -29,7 +29,7 @@ LIB	= lib$(BOARD).a
 OBJS	= $(BOARD).o flash.o cmd_dasa_sim.o eeprom.o ../common/pci.o
 
 $(LIB):	$(OBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 clean:
 	rm -f $(SOBJS) $(OBJS)

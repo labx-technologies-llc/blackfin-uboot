@@ -32,7 +32,7 @@ OBJS	= $(BOARD).o serial.o ../../Marvell/common/memory.o pci.o \
 	  sdram_init.o strataflash.o ide.o
 
 $(LIB):	.depend $(OBJS) $(SOBJS)
-	$(AR) crv $@ $(OBJS) $(SOBJS)
+	$(AR) cr $@ $(OBJS) $(SOBJS)
 
 #########################################################################
 

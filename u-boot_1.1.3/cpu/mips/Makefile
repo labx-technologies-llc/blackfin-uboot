@@ -33,7 +33,7 @@ SOBJS	= incaip_wdt.o cache.o
 all:	.depend $(START) $(LIB)
 
 $(LIB):	$(OBJS) $(SOBJS)
-	$(AR) crv $@ $(OBJS) $(SOBJS)
+	$(AR) cr $@ $(OBJS) $(SOBJS)
 
 #########################################################################
 

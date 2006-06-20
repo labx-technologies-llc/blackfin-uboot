@@ -29,7 +29,7 @@ LIB	= lib$(BOARD).a
 OBJS	:= $(BOARD).o ../common/flash.o ../common/vpd.o ../common/am79c874.o
 
 $(LIB):	$(OBJS) $(SOBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 clean:
 	rm -f $(SOBJS) $(OBJS)

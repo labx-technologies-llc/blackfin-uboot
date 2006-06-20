@@ -43,7 +43,7 @@ all:	.depend $(LIB) $(PROG)
 
 #########################################################################
 $(LIB): .depend $(LIBOBJS)
-	$(AR) crv $@ $(LIBOBJS)
+	$(AR) cr $@ $(LIBOBJS)
 
 %.srec:	%.o $(LIB)
 	$(LD) -g -Ttext $(LOAD_ADDR) -o $(<:.o=) -e $(<:.o=) $< $(LIB)

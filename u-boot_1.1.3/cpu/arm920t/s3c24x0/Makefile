@@ -31,7 +31,7 @@ OBJS	= i2c.o interrupts.o serial.o speed.o \
 all:	.depend $(LIB)
 
 $(LIB):	$(OBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 #########################################################################
 

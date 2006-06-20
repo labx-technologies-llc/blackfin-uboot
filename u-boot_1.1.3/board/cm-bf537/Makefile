@@ -32,7 +32,7 @@ LIB	= lib$(BOARD).a
 OBJS	= $(BOARD).o flash.o cm-bf537.o ether_bf537.o
 
 $(LIB):	.depend $(OBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 #########################################################################
 

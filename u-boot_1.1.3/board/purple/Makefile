@@ -30,7 +30,7 @@ OBJS	= $(BOARD).o flash.o sconsole.o
 SOBJS	= memsetup.o
 
 $(LIB):	.depend $(OBJS) $(SOBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 #########################################################################
 

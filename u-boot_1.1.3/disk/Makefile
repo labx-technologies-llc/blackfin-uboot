@@ -32,7 +32,7 @@ OBJS	= part.o part_mac.o part_dos.o part_iso.o part_amiga.o
 all:	$(LIB)
 
 $(LIB):	$(START) $(OBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 #########################################################################
 

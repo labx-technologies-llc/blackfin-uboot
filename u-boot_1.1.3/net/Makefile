@@ -31,7 +31,7 @@ OBJS	= net.o tftp.o bootp.o rarp.o eth.o nfs.o
 all:	$(LIB)
 
 $(LIB):	$(START) $(OBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 #########################################################################
 

@@ -33,7 +33,7 @@ OBJS	= traps.o serial_smc.o serial_scc.o cpu.o cpu_init.o speed.o \
 all:	.depend $(START) $(LIB)
 
 $(LIB):	$(OBJS)
-	$(AR) crv $@ $(OBJS) kgdb.o
+	$(AR) cr $@ $(OBJS) kgdb.o
 
 #########################################################################
 

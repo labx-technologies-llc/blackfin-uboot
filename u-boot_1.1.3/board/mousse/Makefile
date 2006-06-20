@@ -29,7 +29,7 @@ LIB	= lib$(BOARD).a
 OBJS	= $(BOARD).o m48t59y.o pci.o flash.o
 
 $(LIB):	.depend $(OBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 #########################################################################
 

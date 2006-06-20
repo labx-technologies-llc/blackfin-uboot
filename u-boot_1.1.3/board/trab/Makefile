@@ -37,7 +37,7 @@ LOAD_ADDR = 0xc100000
 all:	$(LIB) trab_fkt.srec trab_fkt.bin
 
 $(LIB):	$(OBJS) $(SOBJS)
-	$(AR) crv $@ $(OBJS) $(SOBJS)
+	$(AR) cr $@ $(OBJS) $(SOBJS)
 
 trab_fkt.srec:	trab_fkt.o rs485.o tsc2000.o $(LIB)
 	$(LD) -g -Ttext $(LOAD_ADDR) -o $(<:.o=) -e $(<:.o=) $^ $(LIB) \

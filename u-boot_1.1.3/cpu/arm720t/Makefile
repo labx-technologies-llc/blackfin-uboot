@@ -31,7 +31,7 @@ OBJS	= serial.o serial_netarm.o interrupts.o cpu.o
 all:	.depend $(START) $(LIB)
 
 $(LIB):	$(OBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 #########################################################################
 

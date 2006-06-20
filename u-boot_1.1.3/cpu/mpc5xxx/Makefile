@@ -33,7 +33,7 @@ OBJS	= i2c.o traps.o cpu.o cpu_init.o fec.o ide.o interrupts.o \
 all:	.depend $(START) $(ASOBJS) $(LIB)
 
 $(LIB):	$(OBJS)
-	$(AR) crv $@ $(ASOBJS) $(OBJS)
+	$(AR) cr $@ $(ASOBJS) $(OBJS)
 
 #########################################################################
 

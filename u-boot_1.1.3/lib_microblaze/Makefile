@@ -32,7 +32,7 @@ COBJS	= board.o microblaze_linux.o time.o cache.o
 OBJS	= $(AOBJS) $(COBJS)
 
 $(LIB):	.depend $(OBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 #########################################################################
 

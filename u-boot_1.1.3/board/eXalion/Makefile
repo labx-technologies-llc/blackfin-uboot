@@ -29,7 +29,7 @@ OBJS	= $(BOARD).o
 SOBJS	=
 
 $(LIB):	.depend $(OBJS) $(SOBJS)
-	$(AR) crv $@ $(OBJS) $(SOBJS)
+	$(AR) cr $@ $(OBJS) $(SOBJS)
 
 #########################################################################
 

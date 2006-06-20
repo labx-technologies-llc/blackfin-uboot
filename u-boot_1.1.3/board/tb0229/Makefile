@@ -31,7 +31,7 @@ OBJS	= $(BOARD).o flash.o vr4131-pci.o
 SOBJS	= memsetup.o
 
 $(LIB):	.depend $(OBJS) $(SOBJS)
-	$(AR) crv $@ $(OBJS) $(SOBJS)
+	$(AR) cr $@ $(OBJS) $(SOBJS)
 
 #########################################################################
 

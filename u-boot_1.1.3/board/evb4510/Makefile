@@ -29,7 +29,7 @@ OBJS	:= evb4510.o flash.o
 SOBJS	:= memsetup.o
 
 $(LIB):	$(OBJS) $(SOBJS)
-	$(AR) crv $@ $^
+	$(AR) cr $@ $^
 
 clean:
 	rm -f $(SOBJS) $(OBJS)

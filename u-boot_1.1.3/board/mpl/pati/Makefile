@@ -30,7 +30,7 @@ OBJS	:=  pati.o ../common/flash.o ../common/memtst.o cmd_pati.o ../common/common
 SOBJS	:=
 
 $(LIB):	$(OBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 clean:
 	rm -f $(SOBJS) $(OBJS)

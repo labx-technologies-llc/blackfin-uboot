@@ -31,7 +31,7 @@ OBJS	= $(BOARD).o flash.o ns16550.o serial.o m48t59y.o
 SOBJS	= early_init.o
 
 $(LIB):	.depend $(OBJS) $(SOBJS)
-	$(AR) crv $@ $(OBJS) $(SOBJS)
+	$(AR) cr $@ $(OBJS) $(SOBJS)
 
 #########################################################################
 

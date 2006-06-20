@@ -32,7 +32,7 @@ OBJS	= $(BOARD).o ../common/flash.o ../common/serial.o ../common/memory.o pci.o 
 	  sdram_init.o ../common/intel_flash.o
 
 $(LIB):	.depend $(OBJS) $(SOBJS)
-	$(AR) crv $@ $(OBJS) $(SOBJS)
+	$(AR) cr $@ $(OBJS) $(SOBJS)
 
 #########################################################################
 

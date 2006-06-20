@@ -29,7 +29,7 @@ OBJS	:= omap1510innovator.o
 SOBJS	:= platform.o
 
 $(LIB):	$(OBJS) $(SOBJS)
-	$(AR) crv $@ $^
+	$(AR) cr $@ $^
 
 clean:
 	rm -f $(SOBJS) $(OBJS)

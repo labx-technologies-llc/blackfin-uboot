@@ -32,7 +32,7 @@ OBJS	= cpu.o interrupts.o serial.o asmi.o spi.o
 all:	.depend $(START) $(LIB)
 
 $(LIB):	$(OBJS) $(AOBJS)
-	$(AR) crv $@ $(OBJS) $(AOBJS)
+	$(AR) cr $@ $(OBJS) $(AOBJS)
 
 #########################################################################
 

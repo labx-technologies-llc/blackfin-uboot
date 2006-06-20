@@ -28,7 +28,7 @@ LIB	= lib$(BOARD).a
 OBJS	:= ixdp425.o flash.o
 
 $(LIB):	$(OBJS) $(SOBJS)
-	$(AR) crv $@ $^
+	$(AR) cr $@ $^
 
 clean:
 	rm -f $(SOBJS) $(OBJS)

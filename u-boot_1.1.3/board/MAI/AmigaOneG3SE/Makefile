@@ -43,7 +43,7 @@ EMUSRC = $(EMUOBJ:.o=.c)
 $(LIB):	.depend $(OBJS) $(EMUSRC)
 	make libx86emu.a -C ../bios_emulator/scitech/src/x86emu -f makefile.uboot CROSS_COMPILE=$(CROSS_COMPILE)
 	-rm $(LIB)
-	$(AR) crv $@ $(OBJS) $(EMUOBJ)
+	$(AR) cr $@ $(OBJS) $(EMUOBJ)
 
 
 #########################################################################

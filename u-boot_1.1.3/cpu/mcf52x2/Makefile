@@ -33,7 +33,7 @@ OBJS	= serial.o interrupts.o cpu.o speed.o cpu_init.o fec.o
 all:	.depend $(START) $(LIB)
 
 $(LIB):	$(OBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 #########################################################################
 

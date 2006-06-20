@@ -31,7 +31,7 @@ SOBJS	= init.o
 # HACK: depend needs bootscript.c, which needs tools/mkimage, which is not
 # built in the depend stage.  So... put bootscript.o here, not in OBJS
 $(LIB):	$(OBJS) $(SOBJS) bootscript.o
-	$(AR) crv $@ $^
+	$(AR) cr $@ $^
 
 clean:
 	rm -f $(SOBJS) $(OBJS) bootscript.c bootscript.image bootscript.o

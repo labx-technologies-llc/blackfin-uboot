@@ -32,7 +32,7 @@ COBJS	= board.o cache.o divmod.o nios_linux.o mult.o time.o
 OBJS	= $(AOBJS) $(COBJS)
 
 $(LIB):	.depend $(OBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 #########################################################################
 

@@ -30,7 +30,7 @@ OBJS	= $(BOARD).o flash.o fpga.o fsboot.o post2.o vpd.o cmd_vpd.o \
 SOBJS	= init.o post1.o
 
 $(LIB):	$(OBJS) $(SOBJS)
-	$(AR) crv $@ $^
+	$(AR) cr $@ $^
 
 clean:
 	rm -f $(SOBJS) $(OBJS)

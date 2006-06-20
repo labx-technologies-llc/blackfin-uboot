@@ -31,7 +31,7 @@ OBJS	= bzlib.o bzlib_crctable.o bzlib_decompress.o \
 	  string.o vsprintf.o zlib.o
 
 $(LIB):	.depend $(OBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 #########################################################################
 

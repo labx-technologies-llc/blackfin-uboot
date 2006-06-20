@@ -29,7 +29,7 @@ OBJS	:= omap2420h4.o flash.o mem.o sys_info.o
 SOBJS	:= platform.o
 
 $(LIB):	$(OBJS) $(SOBJS)
-	$(AR) crv $@ $^
+	$(AR) cr $@ $^
 
 clean:
 	rm -f $(SOBJS) $(OBJS)

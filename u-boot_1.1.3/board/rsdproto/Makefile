@@ -29,7 +29,7 @@ OBJS	:= rsdproto.o flash.o
 SOBJS	:= flash_asm.o
 
 $(LIB):	$(OBJS) $(SOBJS)
-	$(AR) crv $@ $^
+	$(AR) cr $@ $^
 
 clean:
 	rm -f $(SOBJS) $(OBJS)

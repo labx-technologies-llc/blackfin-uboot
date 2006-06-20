@@ -32,7 +32,7 @@ OBJS	:= $(BOARD).o $(COMOBJS)
 SOBJS	=
 
 $(LIB): $(OBJS) $(SOBJS)
-	$(AR) crv $@ $^
+	$(AR) cr $@ $^
 
 clean:
 	rm -f $(SOBJS) $(OBJS)

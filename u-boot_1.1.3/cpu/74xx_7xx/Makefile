@@ -32,7 +32,7 @@ OBJS	= traps.o cpu.o cpu_init.o speed.o interrupts.o
 all:	.depend $(START) $(ASOBJS) $(LIB)
 
 $(LIB):	$(OBJS)
-	$(AR) crv $@ $(ASOBJS) $(OBJS)
+	$(AR) cr $@ $(ASOBJS) $(OBJS)
 
 #########################################################################
 

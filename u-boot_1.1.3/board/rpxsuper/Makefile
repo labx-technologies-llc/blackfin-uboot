@@ -28,7 +28,7 @@ LIB	= lib$(BOARD).a
 OBJS	:= rpxsuper.o flash.o mii_phy.o
 
 $(LIB):	$(OBJS) $(SOBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 clean:
 	rm -f $(SOBJS) $(OBJS)

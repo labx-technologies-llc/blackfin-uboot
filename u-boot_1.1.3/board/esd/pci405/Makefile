@@ -29,8 +29,8 @@ OBJS	= $(BOARD).o flash.o ../common/misc.o cmd_pci405.o
 SOBJS	= writeibm.o
 
 $(LIB):	$(OBJS) $(SOBJS)
-#	$(AR) crv $@ $(OBJS)
-	$(AR) crv $@ $(OBJS) $(SOBJS)
+#	$(AR) cr $@ $(OBJS)
+	$(AR) cr $@ $(OBJS) $(SOBJS)
 
 clean:
 	rm -f $(SOBJS) $(OBJS)

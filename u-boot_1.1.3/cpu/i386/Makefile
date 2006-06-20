@@ -32,7 +32,7 @@ AOBJS	= sc520_asm.o
 all:	.depend $(START) $(LIB)
 
 $(LIB):	$(COBJS) $(AOBJS)
-	$(AR) crv $@ $(COBJS) $(AOBJS)
+	$(AR) cr $@ $(COBJS) $(AOBJS)
 
 #########################################################################
 

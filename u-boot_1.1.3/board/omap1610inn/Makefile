@@ -29,7 +29,7 @@ OBJS	:= omap1610innovator.o flash.o
 SOBJS	:= platform.o
 
 $(LIB):	$(OBJS) $(SOBJS)
-	$(AR) crv $@ $^
+	$(AR) cr $@ $^
 
 clean:
 	rm -f $(SOBJS) $(OBJS)

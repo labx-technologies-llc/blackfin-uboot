@@ -32,7 +32,7 @@ OBJS	= $(BOARD).o flash.o serial.o memory.o pci.o \
 
 
 $(LIB):	.depend $(OBJS) $(SOBJS)
-	$(AR) crv $@ $(OBJS) $(SOBJS)
+	$(AR) cr $@ $(OBJS) $(SOBJS)
 
 #########################################################################
 

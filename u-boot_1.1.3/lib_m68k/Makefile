@@ -30,7 +30,7 @@ COBJS	= cache.o traps.o time.o board.o m68k_linux.o
 OBJS	= $(AOBJS) $(COBJS)
 
 $(LIB):	.depend $(OBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 #########################################################################
 

@@ -56,7 +56,7 @@ OBJS	= $(BOARD).o serial_stamp.o spi.o
 SOBJS	=
 
 $(LIB):	.depend $(OBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 #########################################################################
 

@@ -32,7 +32,7 @@ OBJS	= traps.o cpu.o cpu_init.o interrupts.o speed.o \
 all:	.depend $(START) $(LIB)
 
 $(LIB):	$(OBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 bedbug_603e.c:
 	ln -s ../mpc8260/bedbug_603e.c bedbug_603e.c

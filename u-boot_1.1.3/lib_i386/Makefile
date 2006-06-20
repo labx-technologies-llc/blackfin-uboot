@@ -33,7 +33,7 @@ COBJS	= board.o bios_setup.o i386_linux.o zimage.o realmode.o \
 OBJS	= $(AOBJS) $(COBJS)
 
 $(LIB):	.depend $(OBJS)
-	$(AR) crv $@ $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 #########################################################################
 
