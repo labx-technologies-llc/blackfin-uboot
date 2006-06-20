@@ -32,6 +32,7 @@
 #include <version.h>
 #include <net.h>
 #include <environment.h>
+#include <i2c.h>
 #include "blackfin_board.h"
 #include "../drivers/smc91111.h"
 
@@ -154,7 +155,7 @@ void board_init_f(ulong bootflag)
 	addr = (CFG_GBL_DATA_ADDR + sizeof(gd_t));
 
 	/* Align to 4 byte boundary */
-        addr &= ~(4 - 1);
+	addr &= ~(4 - 1);
 	bd = (bd_t*)addr;
 	gd->bd = bd;
 	memset((void *) bd, 0, sizeof(bd_t));
@@ -176,20 +177,20 @@ void board_init_f(ulong bootflag)
 	printf("SDRAM: ");
 	print_size(initdram(0), "\n");
 #if defined(CONFIG_BF537)&&defined(CONFIG_POST)
-        post_init_f();
-        post_bootmode_init();
-        post_run(NULL, POST_ROM | post_bootmode_get(0));
+	post_init_f();
+	post_bootmode_init();
+	post_run(NULL, POST_ROM | post_bootmode_get(0));
 #endif
 	board_init_r((gd_t *) gd, 0x20000010);
 }
 
 #ifdef CONFIG_SOFT_I2C
-static int init_func_i2c (void)
+static int init_func_i2c(void)
 {
-        puts ("I2C:   ");
-        i2c_init (CFG_I2C_SPEED, CFG_I2C_SLAVE);
-        puts ("ready\n");
-        return (0);
+	puts("I2C:   ");
+	i2c_init(CFG_I2C_SPEED, CFG_I2C_SLAVE);
+	puts("ready\n");
+	return (0);
 }
 #endif
 
@@ -206,8 +207,8 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	bd = gd->bd;
 
 #if    defined(CONFIG_BF537) && defined(CONFIG_POST)
-        post_output_backlog();
-        post_reloc();
+	post_output_backlog();
+	post_reloc();
 #endif
 
 #if	(CONFIG_STAMP || CONFIG_BF537 || CONFIG_EZKIT561) && !defined(CFG_NO_FLASH)
@@ -268,8 +269,8 @@ void board_init_r(gd_t * id, ulong dest_addr)
 #endif
 
 #if (CONFIG_COMMANDS & CFG_CMD_NAND)
-        puts ("NAND:  ");
-        nand_init();            /* go init the NAND */
+	puts("NAND:  ");
+	nand_init();            /* go init the NAND */
 #endif
 
 #if defined(CONFIG_MISC_INIT_R)
@@ -286,7 +287,7 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	/* Switch to Ethernet */
 	swap_to(ETHERNET);
 #endif
-	if  ( (SMC_inw(BANK_SELECT) & UPPER_BYTE_MASK) != SMC_IDENT ) {
+	if ((SMC_inw(BANK_SELECT) & UPPER_BYTE_MASK) != SMC_IDENT) {
 		printf("ERROR: Can't find SMC91111 at address %x\n", SMC_BASE_ADDRESS);
 	} else {
 		printf("Net:   SMC91111 at 0x%08X\n", SMC_BASE_ADDRESS);
@@ -305,7 +306,7 @@ void board_init_r(gd_t * id, ulong dest_addr)
 #endif
 
 #if defined(CONFIG_BF537) && defined(CONFIG_POST)
-	if(post_flag)
+	if (post_flag)
 		post_run(NULL, POST_RAM | post_bootmode_get(0));
 #endif
 
