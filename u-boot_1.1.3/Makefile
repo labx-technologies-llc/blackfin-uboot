@@ -161,7 +161,7 @@ endif
 #########################################################################
 #########################################################################
 
-ALL = u-boot.srec u-boot.bin System.map
+ALL = u-boot.srec u-boot.bin u-boot.ldr System.map
 
 all:		$(ALL)
 
@@ -173,6 +173,10 @@ u-boot.srec:	u-boot
 
 u-boot.bin:	u-boot
 		$(OBJCOPY) ${OBJCFLAGS} -O binary $< $@
+
+u-boot.ldr: u-boot.bin u-boot
+		$(MAKE) -C tools/bin2ldr
+		cp tools/bin2ldr/app.ldr u-boot.ldr
 
 u-boot.img:	u-boot.bin
 		./tools/mkimage -A $(ARCH) -T firmware -C none \
