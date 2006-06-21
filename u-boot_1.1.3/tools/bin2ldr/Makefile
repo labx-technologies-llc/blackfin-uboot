@@ -3,6 +3,8 @@ CC = gcc
 CFLAG = -g
 APP_FILE = ../../u-boot.bin
 
+all:    bin2ldr jump.bin init_sdram.bin app.bin
+
 ###############################################################
 bin2ldr: bin2ldr.o
 	$(CC) bin2ldr.o -o bin2ldr
@@ -26,7 +28,6 @@ init_sdram.bin: init_sdram
 app.bin:
 	cp $(APP_FILE) app.bin
 ################################################################
-all:    bin2ldr jump.bin init_sdram.bin app.bin
 distclean:
 	rm bin2ldr bin2ldr.o -f
 	rm init_sdram.o init_sdram init_sdram.bin -f
@@ -34,3 +35,5 @@ distclean:
 clean:
 	make distclean
 	rm app.bin app.ldr app.hex -f
+
+.PHONY: all distclean clean
