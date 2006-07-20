@@ -412,7 +412,7 @@ WAIT_HERE:
 _real_start:
 	[ -- sp ] = reti;
 
-#if defined(CONFIG_EZKIT533) | defined (CONFIG_EZKIT561)
+#if defined(CONFIG_EZKIT533) || defined(CONFIG_EZKIT561)
 	p0.l = (WDOG_CTL & 0xFFFF);
 	p0.h = (WDOG_CTL >> 16);
 	r0 = WATCHDOG_DISABLE(z);
