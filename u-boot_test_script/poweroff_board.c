@@ -1,10 +1,14 @@
-The executable called "reset_board" is an open source program based on the
+/* README
+
+The executable called "poweroff_board" is an open source program based on the
 open source program called parapin -- a Parallel Port Pin Programming
 Library for Linux which can be found at
 http://www.circlemud.org/~jelson/software/parapin/
 
 Here's the source code.  I simply took the example outputtest.c and
 modified it to the code below.
+
+*/
 
 
 /*
@@ -61,12 +65,7 @@ int main(int argc, char *argv[])
 
   pin_output_mode(LP_DATA_PINS | LP_SWITCHABLE_PINS);
 
-  printf("powering OFF board attached to printer port pin %d\n", pin_num);
+  printf("powering off board attached to printer port pin %d\n", pin_num);
   clear_pin(LP_PIN[pin_num]);
-
-  sleep(1);
-
-  printf("powering ON board attached to printer port pin %d\n", pin_num);
-  set_pin(LP_PIN[pin_num]);
   exit(0);
 }
