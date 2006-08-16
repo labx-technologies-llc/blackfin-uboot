@@ -32,7 +32,7 @@ OBJS	= date.o   \
 	  ds1556.o ds164x.o ds174x.o \
 	  m41t11.o max6900.o m48t35ax.o mc146818.o mk48t59.o \
 	  mpc5xxx.o mpc8xx.o pcf8563.o s3c24x0_rtc.o rs5c372.o \
-	  bf533.o
+	  bf53x.o
 
 all:	$(LIB)
 
