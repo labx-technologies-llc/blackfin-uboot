@@ -62,11 +62,11 @@ SECTIONS
     /* an error during compilation remove an object here to get	*/
     /* it linked after the configuration sector.		*/
 
-    cpu/bf533/start.o		(.text)
-    cpu/bf533/start1.o		(.text)
-    cpu/bf533/traps.o		(.text)
-    cpu/bf533/interrupt.o	(.text)
-    cpu/bf533/serial.o		(.text)
+    cpu/bf537/start.o		(.text)
+    cpu/bf537/start1.o		(.text)
+    cpu/bf537/traps.o		(.text)
+    cpu/bf537/interrupt.o	(.text)
+    cpu/bf537/serial.o		(.text)
     common/dlmalloc.o		(.text)
     lib_generic/vsprintf.o	(.text)
     lib_generic/crc32.o		(.text)
