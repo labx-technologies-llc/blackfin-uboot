@@ -112,6 +112,15 @@ OBJS += cpu/$(CPU)/cplbmgr.o
 OBJS += cpu/$(CPU)/flush.o
 OBJS += cpu/$(CPU)/init_sdram.o
 endif
+ifeq ($(CPU),bf537)
+OBJS += cpu/$(CPU)/start1.o
+OBJS += cpu/$(CPU)/interrupt.o
+OBJS += cpu/$(CPU)/cache.o
+OBJS += cpu/$(CPU)/cplbhdlr.o
+OBJS += cpu/$(CPU)/cplbmgr.o
+OBJS += cpu/$(CPU)/flush.o
+OBJS += cpu/$(CPU)/init_sdram.o
+endif
 ifeq ($(CPU),bf561)
 OBJS += cpu/$(CPU)/start1.o
 OBJS += cpu/$(CPU)/interrupt.o
@@ -1614,13 +1623,13 @@ suzaku_config:	unconfig
 ## Blackfin
 #########################################################################
 ezkit533_config	:	unconfig
-	@./mkconfig $(@:_config=) blackfin bf533 ezkit533
+	@./mkconfig $(@:_config=) blackfin bf533 bf533-ezkit
 
 ezkit561_config	:	unconfig
-	@./mkconfig $(@:_config=) blackfin bf533 ezkit561
+	@./mkconfig $(@:_config=) blackfin bf561 bf561-ezkit
 
 stamp_config	:	unconfig
-	@./mkconfig $(@:_config=) blackfin bf533 stamp
+	@./mkconfig $(@:_config=) blackfin bf533 bf533-stamp
 
 dspstamp_config	:	unconfig
 	@./mkconfig $(@:_config=) blackfin bf533 dsp_stamp
@@ -1632,19 +1641,19 @@ cm-bf533_config	:	unconfig
 	@./mkconfig $(@:_config=) blackfin bf533 cm-bf533
 
 cm-bf537_config	:	unconfig
-	@./mkconfig $(@:_config=) blackfin bf533 cm-bf537
+	@./mkconfig $(@:_config=) blackfin bf537 cm-bf537
 
 cm-bf537u_config	:	unconfig
-	@./mkconfig $(@:_config=) blackfin bf533 cm-bf537u
+	@./mkconfig $(@:_config=) blackfin bf537 cm-bf537u
 
 bf537_config	:	unconfig
-	@./mkconfig $(@:_config=) blackfin bf533 bf537
+	@./mkconfig $(@:_config=) blackfin bf537 bf537-stamp
 
 serial_bf537_config:	unconfig
-	@./mkconfig $(@:_config=) blackfin bf533 serial_bf537
+	@./mkconfig $(@:_config=) blackfin bf537 serial_bf537
 
 bf534_config	:	unconfig
-	@./mkconfig $(@:_config=) blackfin bf533 bf534
+	@./mkconfig $(@:_config=) blackfin bf537 bf534
 
 #########################################################################
 #########################################################################

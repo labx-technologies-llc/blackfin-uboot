@@ -34,6 +34,6 @@
 #endif
 #endif
 
-#include <asm/cpu/cdefBF53x.h>
+#include <asm/arch-common/cdefBF5xx.h>
 
 #endif
