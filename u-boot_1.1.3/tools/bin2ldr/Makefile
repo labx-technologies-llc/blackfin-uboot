@@ -21,7 +21,7 @@ jump.bin: jump
 init_sdram: init_sdram.o
 	bfin-uclinux-ld -o init_sdram -e 0x00000000 init_sdram.o
 init_sdram.o:
-	cp ../../cpu/bf533/init_sdram.o .
+	cp ../../cpu/$(CPU)/init_sdram.o .
 init_sdram.bin: init_sdram
 	bfin-uclinux-objcopy -O binary init_sdram init_sdram.bin
 ################################################################
