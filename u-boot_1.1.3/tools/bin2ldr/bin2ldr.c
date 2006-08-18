@@ -3,6 +3,9 @@
  ********************************************************************/
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <getopt.h>
+#include <string.h>
 #include "bin2ldr.h"
 #define INIT_FILE "init_sdram.bin"
 #define JUMP_FILE "jump.bin"
@@ -22,18 +25,29 @@
 int block[0x80000] = {0};
 int app[0x80000]= {0};
 
-int main(void)
+static struct option bin2ldr_options[]={
+	{"proc", required_argument, 0, 'p'},
+	{"help", no_argument, 0, 'h'},
+};
+
+void usage(void)
 {
-	int i=0,ch;
+	printf("----------------------------------------\n");
+	printf("bin2ldr 1.0 (C) 2005-2006 Analog Devices\n");
+	printf("Usage: bin2ldr --proc [target name]\n");
+	printf("target name: bf531,bf532,bf533,bf534,bf535,bf536,bf537,bf561\n\n");
+}
+
+int main(int argc, char *argv[])
+{
+	int i=0,c,ch;
 	int temp,block_temp1,block_temp2,block_temp3,block_temp4;
 	int dxe_temp1,dxe_temp2,dxe_temp3,dxe_temp4;
 	int app_i,app_j,app_x,app_y,start_addr;
 
 	FILE *init_fd, *jump_fd, *app_fd, *out_fd;
 	int init_n,jump_n,app_n,dxe_n;
-
-	printf("bin2ldr 1.0 (C) 2005-2006 Analog Devices\n");
-	printf("Generating " OUT_FILE ": ");
+	char *target = NULL;
 
 	if ((out_fd = fopen(OUT_FILE,"wb")) < 0) {
 		printf("Error open %s to write\n",OUT_FILE);
@@ -52,6 +66,33 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
+	while((c = getopt_long(argc, argv, "p:h", bin2ldr_options, (int *)0))!=EOF){
+		switch(c){
+			case 'p':
+				target = optarg;
+				break;
+			case 'h':
+				usage();
+				break;
+			default:
+				printf("unsupported options\n");
+		}
+	}
+
+	if(target == NULL){
+		usage();
+		exit(EXIT_FAILURE);
+	}
+	
+	if(strcmp(target,"bf561") == 0){
+/* BF561 needs an additional global header.
+   The details can be found at page 2-39 in
+   http://www.analog.com/UploadedFiles/Associated_Docs/8055513140_loader_man.pdf */
+	block [i++] = 0xDF;
+	block [i++] = 0x00;
+	block [i++] = 0x00;
+	block [i++] = 0xA0;
+	}
 /*
  * DXE 
  */

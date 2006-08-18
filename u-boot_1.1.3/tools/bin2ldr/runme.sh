@@ -7,7 +7,7 @@ if [ ! -e bin2ldr ] ; then
 fi
 
 if [ -e ../../u-boot.bin ] ; then
-	./bin2ldr || exit 1
+	./bin2ldr --proc bf537 || exit 1
 	bfin-uclinux-objcopy -I binary -O ihex app.ldr app.hex || exit 1
 	exit 0
 else
