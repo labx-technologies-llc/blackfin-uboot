@@ -52,7 +52,7 @@
 #include <asm/blackfin.h>
 
 #if defined(CONFIG_RTC_BF533) && (CONFIG_COMMANDS & CFG_CMD_DATE)
-                                                                                                                                                             
+
 #include <asm/arch-common/bf53x_rtc.h>
 
 void rtc_reset(void)
@@ -104,7 +104,7 @@ void rtc_set (struct rtc_time *tmp)
 	n_secs_rem = n_secs_rem % (NUM_SECS_IN_HOUR);
 	n_mins = n_secs_rem / (NUM_SECS_IN_MIN);
 	n_secs = n_secs_rem % (NUM_SECS_IN_MIN);
-	
+
 	/* Store the new time in the RTC_STAT register */
 	*(volatile unsigned long *) RTC_STAT =
 		((n_days_1970 << DAY_BITS_OFF) | (n_hrs << HOUR_BITS_OFF) |
@@ -118,7 +118,7 @@ void rtc_get (struct rtc_time *tmp)
 {
 	unsigned long cur_rtc_stat = 0;
 	unsigned long time_in_sec;
-	unsigned long tm_sec = 0, tm_min = 0, tm_hour = 0, tm_day = 0; 
+	unsigned long tm_sec = 0, tm_min = 0, tm_hour = 0, tm_day = 0;
 
 	if(tmp == NULL) {
 		printf("Error getting the date/time \n");
@@ -127,7 +127,7 @@ void rtc_get (struct rtc_time *tmp)
 
 	/* Read the RTC_STAT register */
 	cur_rtc_stat = *(volatile unsigned long *) RTC_STAT;
-	
+
 	/* Get the secs (0-59), mins (0-59), hrs (0-23) and the days since Jan 1970 */
 	tm_sec = (cur_rtc_stat >> SEC_BITS_OFF) & 0x3f;
 	tm_min = (cur_rtc_stat >> MIN_BITS_OFF) & 0x3f;
@@ -139,6 +139,7 @@ void rtc_get (struct rtc_time *tmp)
 					MIN_TO_SECS(tm_min) + 
 						HRS_TO_SECS(tm_hour) + 
 							DAYS_TO_SECS(tm_day);
-	to_tm(time_in_sec,tmp);	
+	to_tm(time_in_sec,tmp);
 }
+
 #endif	/* CONFIG_RTC_BF533 && CFG_CMD_DATE */
