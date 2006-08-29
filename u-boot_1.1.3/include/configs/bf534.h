@@ -3,6 +3,8 @@
 
 #define CFG_LONGHELP		1
 #define CONFIG_BAUDRATE		57600
+/* Set default serial console for bf534 */
+#define CONFIG_UART_CONSOLE     0
 #define CONFIG_BF537		1
 #define CONFIG_BF534		1
 #define CONFIG_BOOTDELAY	5
