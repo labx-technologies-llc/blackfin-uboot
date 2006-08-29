@@ -7,6 +7,8 @@
 #define CONFIG_UART_CONSOLE	0
 #define CONFIG_BF537		1
 #define CONFIG_BOOTDELAY	5
+/* define CONFIG_BF537_STAMP_LEDCMD to enable LED command*/
+/*#define CONFIG_BF537_STAMP_LEDCMD	1*/
 
 #define CONFIG_RTC_BF533	1
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
