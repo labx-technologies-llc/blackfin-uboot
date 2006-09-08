@@ -237,11 +237,14 @@ check_again:
 	w[p0] = r0.l;
 	ssync;
 #endif
-	
+
+#if (!defined(CONFIG_SERIAL_BF537)) && (!defined(BF537_UART_BOOT))
 	sp.l = (0xffb01000 & 0xFFFF);
 	sp.h = (0xffb01000 >> 16);
 
 	call init_sdram;
+#endif
+
 
 #if defined(CONFIG_BF537)&&defined(CONFIG_POST)
 	/* DMA POST code to Hi of L1 SRAM */
