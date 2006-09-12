@@ -73,8 +73,8 @@ BIN    += sched sched.bin
 endif
 
 ifeq ($(ARCH),blackfin)
-ifneq ($(BOARD),bf537-stamp)  
-ifneq ($(BOARD),cm-bf537) 
+ifneq ($(BOARD),bf537-stamp)
+ifneq ($(BOARD),cm-bf537e)
 ifneq ($(BOARD),serial_bf537)
 SREC	+= smc91111_eeprom.srec
 BIN 	+= smc91111_eeprom smc91111_eeprom.bin

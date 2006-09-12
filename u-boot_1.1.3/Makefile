@@ -160,7 +160,7 @@ PLATFORM_LIBS += -L $(shell dirname `$(CC) $(CFLAGS) -print-libgcc-file-name`) -
 # The "tools" are needed early, so put this first
 # Don't include stuff already done in $(LIBS)
 SUBDIRS	= tools \
-	  examples 
+	  examples
 ifneq ($(BOARD), bf537)
 SUBDIRS += post \
 	  post/cpu
@@ -1640,8 +1640,8 @@ serial_stamp_config:	unconfig
 cm-bf533_config	:	unconfig
 	@./mkconfig $(@:_config=) blackfin bf533 cm-bf533
 
-cm-bf537_config	:	unconfig
-	@./mkconfig $(@:_config=) blackfin bf537 cm-bf537
+cm-bf537e_config	:	unconfig
+	@./mkconfig $(@:_config=) blackfin bf537 cm-bf537e
 
 cm-bf537u_config	:	unconfig
 	@./mkconfig $(@:_config=) blackfin bf537 cm-bf537u
