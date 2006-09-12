@@ -150,7 +150,7 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 	if (prot)
                 printf ("- Warning: %d protected sectors will not be erased!\n", prot);
         else
-                printf ("\n");	
+                printf ("\n");
 
 	cnt = s_last - s_first + 1;
 
@@ -279,9 +279,9 @@ int write_flash(long nOffset, int nValue)
 	long addr;
 
 	addr = (CFG_FLASH_BASE + nOffset);
-	asm("ssync;");
+	__builtin_bfin_ssync();
 	*(unsigned volatile short *) addr = nValue;
-	asm("ssync;");
+	__builtin_bfin_ssync();
 	if(poll_toggle_bit(nOffset) < 0)
 		return FLASH_FAIL;
 	return FLASH_SUCCESS;
@@ -294,9 +294,9 @@ int read_flash(long nOffset, int *pnValue)
 
 	if (nOffset != 0x2)
 		reset_flash();
-	asm("ssync;");
+	__builtin_bfin_ssync();
 	nValue = *(volatile unsigned short *) addr;
-	asm("ssync;");
+	__builtin_bfin_ssync();
 	*pnValue = nValue;
 	return TRUE;
 }

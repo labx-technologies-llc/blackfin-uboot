@@ -30,12 +30,12 @@
 #include "serial_stamp.h"
 
 #define STATUS_LED_OFF 0
-#define STATUS_LED_ON  1 	
+#define STATUS_LED_ON  1
 
 #ifdef CONFIG_SHOW_BOOT_PROGRESS
 # define SHOW_BOOT_PROGRESS(arg)	show_boot_progress(arg)
 #else
-# define SHOW_BOOT_PROGRESS(arg)	
+# define SHOW_BOOT_PROGRESS(arg)
 #endif
 
 int checkboard(void)
@@ -70,9 +70,9 @@ void swap_to(int device_id)
 	if (device_id == ETHERNET)
 	{
 		*pFIO_DIR = PF0;
-		asm("ssync;");
+		__builtin_bfin_ssync();
 		*pFIO_FLAG_S = PF0;
-		asm("ssync;");
+		__builtin_bfin_ssync();
 	}
 	else if (device_id == FLASH)
 	{
@@ -84,12 +84,12 @@ void swap_to(int device_id)
 		*pFIO_EDGE = (PF8 | PF7 | PF6 | PF5);
 		*pFIO_INEN = (PF8 | PF7 | PF6 | PF5);
 		*pFIO_FLAG_D = (PF4 | PF3 | PF2 );
-		asm("ssync;");
+		__builtin_bfin_ssync();
 	}
 	else {
 		printf("Unknown bank to switch\n");
-	}	
-	
+	}
+
 	return;
 }
 
@@ -104,7 +104,7 @@ int misc_init_r(void)
 	*pFIO_EDGE = FIO_EDGE_CF_BITS;
 	*pFIO_POLAR = FIO_POLAR_CF_BITS;
 	for (i=0; i < 0x300 ; i++) asm("nop;");
-			
+
 	if ( (*pFIO_FLAG_S) & CF_STAT_BITS)
 	{
 		cf_stat = 0;
@@ -116,7 +116,7 @@ int misc_init_r(void)
 
 	*pFIO_EDGE  = FIO_EDGE_BITS;
 	*pFIO_POLAR = FIO_POLAR_BITS;
-	
+
 
 	if (cf_stat)
 	{
@@ -148,21 +148,21 @@ int misc_init_r(void)
 
 void cf_outb(unsigned char val, volatile unsigned char* addr)
 {
-	/* 
+	/*
 	 * Set PF1 PF0 respectively to 0 1 to divert address
-	 * to the expansion memory banks  
+	 * to the expansion memory banks
 	 */
 	*pFIO_FLAG_S = CF_PF0;
 	*pFIO_FLAG_C = CF_PF1;
-	asm("ssync;");
+	__builtin_bfin_ssync();
 
 	*(addr) = val;
-	asm("ssync;");
+	__builtin_bfin_ssync();
 
-	/* Setback PF1 PF0 to 0 0 to address external 
+	/* Setback PF1 PF0 to 0 0 to address external
 	 * memory banks  */
 	*(volatile unsigned short *) pFIO_FLAG_C = CF_PF1_PF0;
-	asm("ssync;");
+	__builtin_bfin_ssync();
 }
 
 unsigned char cf_inb(volatile unsigned char *addr)
@@ -171,13 +171,13 @@ unsigned char cf_inb(volatile unsigned char *addr)
 
 	*pFIO_FLAG_S = CF_PF0;
 	*pFIO_FLAG_C = CF_PF1;
-	asm("ssync;");
+	__builtin_bfin_ssync();
 
 	c = *(addr);
-	asm("ssync;");
+	__builtin_bfin_ssync();
 
 	*pFIO_FLAG_C = CF_PF1_PF0;
-	asm("ssync;");
+	__builtin_bfin_ssync();
 
 	return c;
 }
@@ -188,16 +188,16 @@ void cf_insw(unsigned short *sect_buf, unsigned short *addr, int words)
 
 	*pFIO_FLAG_S = CF_PF0;
 	*pFIO_FLAG_C = CF_PF1;
-	asm("ssync;");
+	__builtin_bfin_ssync();
 
 	for (i = 0;i < words; i++)
 	{
 		*(sect_buf + i) = *(addr);
-		asm("ssync;");
+		__builtin_bfin_ssync();
 	}
 
 	*pFIO_FLAG_C = CF_PF1_PF0;
-	asm("ssync;");
+	__builtin_bfin_ssync();
 }
 
 void cf_outsw(unsigned short *addr, unsigned short *sect_buf, int words)
@@ -206,16 +206,16 @@ void cf_outsw(unsigned short *addr, unsigned short *sect_buf, int words)
 
 	*pFIO_FLAG_S = CF_PF0;
 	*pFIO_FLAG_C = CF_PF1;
-	asm("ssync;");
+	__builtin_bfin_ssync();
 
 	for (i = 0;i < words; i++)
 	{
 		*(addr) = *(sect_buf + i);
-		asm("ssync;");
+		__builtin_bfin_ssync();
 	}
 
 	*pFIO_FLAG_C = CF_PF1_PF0;
-	asm("ssync;");
+	__builtin_bfin_ssync();
 }
 #endif
 
@@ -223,7 +223,7 @@ void stamp_led_set(int LED1, int LED2, int LED3)
 {
 	*pFIO_INEN  &= ~( PF2 | PF3 | PF4);
 	*pFIO_DIR   |=  ( PF2 | PF3 | PF4);
-	
+
 	if(LED1 == STATUS_LED_OFF)
 		*pFIO_FLAG_S = PF2;
 	else
@@ -236,13 +236,13 @@ void stamp_led_set(int LED1, int LED2, int LED3)
 		*pFIO_FLAG_S = PF4;
 	else
 		*pFIO_FLAG_C = PF4;
-	asm("ssync;");
+	__builtin_bfin_ssync();
 }
 
 void show_boot_progress(int status)
 {
 	switch(status){
-		case 1:	
+		case 1:
 			stamp_led_set(STATUS_LED_OFF,STATUS_LED_OFF,STATUS_LED_ON);
 			break;
 		case 2:
@@ -250,17 +250,17 @@ void show_boot_progress(int status)
 			break;
 		case 3:
 			stamp_led_set(STATUS_LED_OFF,STATUS_LED_ON,STATUS_LED_ON);
-			break;	
+			break;
 		case 4:
-			stamp_led_set(STATUS_LED_ON,STATUS_LED_OFF,STATUS_LED_OFF);			
+			stamp_led_set(STATUS_LED_ON,STATUS_LED_OFF,STATUS_LED_OFF);
 			break;
 		case 5:
 		case 6:
-			stamp_led_set(STATUS_LED_ON,STATUS_LED_OFF,STATUS_LED_ON);			
+			stamp_led_set(STATUS_LED_ON,STATUS_LED_OFF,STATUS_LED_ON);
 			break;
 		case 7:
 		case 8:
-			stamp_led_set(STATUS_LED_ON,STATUS_LED_ON,STATUS_LED_OFF);			
+			stamp_led_set(STATUS_LED_ON,STATUS_LED_ON,STATUS_LED_OFF);
 			break;
 		case 9:
 		case 10:
@@ -269,10 +269,10 @@ void show_boot_progress(int status)
 		case 13:
 		case 14:
 		case 15:
-			stamp_led_set(STATUS_LED_OFF,STATUS_LED_OFF,STATUS_LED_OFF);			
+			stamp_led_set(STATUS_LED_OFF,STATUS_LED_OFF,STATUS_LED_OFF);
 			break;
 		default:
-			stamp_led_set(STATUS_LED_ON,STATUS_LED_ON,STATUS_LED_ON);			
+			stamp_led_set(STATUS_LED_ON,STATUS_LED_ON,STATUS_LED_ON);
 			break;
 	}
 }

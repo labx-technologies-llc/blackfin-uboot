@@ -10,7 +10,7 @@
  *
  * based on EZ-KIT flash driver
  * Edited by Thomas Tamandl, thomas.tamandl@bluetechnix.at
- * 
+ *
  * See file CREDITS for list of people who contributed to this
  * project.
  *
@@ -37,7 +37,7 @@
 unsigned long flash_init(void)
 {
 	int i = 0;
-	
+
 	if (CFG_MAX_FLASH_BANKS > 1) printf("Only FLASH bank 0 will be used!");
 	flash_info[0].flash_id = FLASH_UNKNOWN;
 	if (get_codes() == MT_MANUFACT_CM_BF533) flash_info[0].flash_id = MT_MANUFACT_CM_BF533 ;
@@ -99,7 +99,7 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 	if (prot)
                 printf ("- Warning: %d protected sectors will not be erased!\n", prot);
         else
-                printf ("\n");	
+                printf ("\n");
 	printf("Erasing Flash locations, Please Wait\n");
 	for (i = s_first; i <= s_last; i++) {
 		if (info->protect[i] == 0) {	/* not protected */
@@ -127,7 +127,7 @@ int write_buff(flash_info_t * info, uchar * src, ulong addr, ulong cnt)
 
 	iFirst_sector = (int) (ulOffset / FLASH_SECTOR_SIZE);
 	for (iSectors=1; (iSectors * FLASH_SECTOR_SIZE) < cnt; iSectors++);
-	
+
 	printf("Bytes for programming: %li\n",cnt);
 	printf("First sector: %d\n",iFirst_sector);
  	printf("Sectors needed:%d\n",iSectors);
@@ -137,18 +137,18 @@ int write_buff(flash_info_t * info, uchar * src, ulong addr, ulong cnt)
 		printf("Not enough free flash-sectors!\n");
 		return ERR_INVAL;
 	}
-	
+
 	for (i = iFirst_sector; i < (iFirst_sector + iSectors); i++)
 	{
 		if (check_sector(i) == ERR_NOT_ERASED) return ERR_NOT_ERASED;
 	}
-	
+
 	printf("[                     ]\n[");
-	
+
 	for (i = 0; (i < cnt / 4); i++)
 	{
 		if((i % iProgress) == 0) printf (".");
-		 
+
 		if(write_flash(ulOffset, ( ((int *) src)[i])) < 0) {
 			printf("Error programming the flash \n");
 			return ERR_TIMOUT;
@@ -160,9 +160,9 @@ int write_buff(flash_info_t * info, uchar * src, ulong addr, ulong cnt)
 		}
 		ulOffset += 2;
 	}
- 	if (nLeftover > 0) 
+ 	if (nLeftover > 0)
 	{
- 		if(write_flash(ulOffset, ((int *) src)[i]) < 0) 
+ 		if(write_flash(ulOffset, ((int *) src)[i]) < 0)
 		{
  			printf("Error programming the flash \n");
  			return ERR_TIMOUT;
@@ -180,7 +180,7 @@ int check_sector(unsigned short usSector)
 	for (i=0; i < FLASH_SECTOR_SIZE; i+=2)
 	{
 		iData= *((unsigned short *)(CFG_FLASH_BASE + (i + (usSector * FLASH_SECTOR_SIZE))));
-		
+
 		if (iData != 0xFFFF)
 		{
 			printf(" ... not empty!\n");
@@ -193,7 +193,7 @@ int check_sector(unsigned short usSector)
 
 int write_flash(long nOffset, unsigned short nValue)
 {
-	
+
 	volatile unsigned short *memIndex;
 	unsigned long nTimeout;
 	unsigned short status;
@@ -201,20 +201,20 @@ int write_flash(long nOffset, unsigned short nValue)
 	memIndex = (unsigned short *)(CFG_FLASH_BASE + nOffset);
 
 	*memIndex = 0x0050; 	//Reset statusregister
-	asm("ssync;");
+	__builtin_bfin_ssync();
 
 	*memIndex = 0x0040;
-	asm("ssync;");
+	__builtin_bfin_ssync();
 
 	*memIndex = (unsigned short) nValue;
-	asm("ssync;");
+	__builtin_bfin_ssync();
 
 	nTimeout=0;
 	do
 	{
 		status = *memIndex;
 		nTimeout++;
-		asm("ssync;");
+		__builtin_bfin_ssync();
 	}
 	while (((status & 0x0080) == 0x00) && (nTimeout < FLASH_TIMEOUT));
 	if (nTimeout >= FLASH_TIMEOUT) status = 0xff00;
@@ -222,11 +222,11 @@ int write_flash(long nOffset, unsigned short nValue)
 	nTimeout = FLASH_TIMEOUT;
 	do {
 		*memIndex = 0xff; 		//Back to "read array mode".
-		asm("ssync;");
+		__builtin_bfin_ssync();
 		nTimeout --;
 	}while ((*memIndex != (unsigned short) nValue) && (nTimeout > 0));
 	if (!nTimeout) status = 0xee00;
-	
+
 	if (status == 0x0080) return (ERR_OK);
 	else return (ERR_TIMOUT);
 }
@@ -238,35 +238,35 @@ int erase_block_flash(int nBlock, unsigned long address)
 	unsigned long nTimeout;
 
 	if ((nBlock < 0) || (nBlock >= CFG_MAX_FLASH_SECT))
-	{	
+	{
 		printf("Invalid sector number\n");
  		return -1;
-	}	
+	}
 	memIndex = (unsigned short *)(address);// + CFG_FLASH_BASE);
 
 	*memIndex = 0x0050;
-	asm("ssync;");
+	__builtin_bfin_ssync();
 
 	*memIndex = 0x0020;
-	asm("ssync;");
+	__builtin_bfin_ssync();
 
 	*memIndex = 0x00d0;
-	asm("ssync;");
-	
+	__builtin_bfin_ssync();
+
 	nTimeout = 0;
 	do
 	{
 		status = *memIndex;
-		asm("ssync;");
+		__builtin_bfin_ssync();
 		nTimeout ++;
 	}
 	while (((status & 0x0080) == 0x00) && (nTimeout < FLASH_TIMEOUT));
 	if (nTimeout >= FLASH_TIMEOUT) status = 0xff00;
-	
+
 	*memIndex = 0xff; //Zurueck zu "Read Array Mode"
-	asm("ssync;");
-	
-	
+	__builtin_bfin_ssync();
+
+
 	if (status==0xFF00) return -1;
 	else return ERR_OK;
 }
@@ -276,20 +276,20 @@ int get_codes()
 	int dev_id = 0;
 	long int manufacturer_id;
 	volatile unsigned short *nFlashAddr;
-	
+
 	nFlashAddr = (unsigned short *)CFG_FLASH_BASE;
-	
+
 	*nFlashAddr = 0x0090;	//Read identifier command.
-	asm("ssync;");
-	
+	__builtin_bfin_ssync();
+
 	manufacturer_id = *nFlashAddr;
-	asm("ssync;");
+	__builtin_bfin_ssync();
 	nFlashAddr++;
 	dev_id = *nFlashAddr;
-	asm("ssync;");
-	
+	__builtin_bfin_ssync();
+
 	*nFlashAddr = 0x00ff;	//Return to read array mode.
-	asm("ssync;");
+	__builtin_bfin_ssync();
 
 	dev_id = ((manufacturer_id << 16) | dev_id);
 	return dev_id;
