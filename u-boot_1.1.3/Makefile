@@ -1646,6 +1646,9 @@ cm-bf537e_config	:	unconfig
 cm-bf537u_config	:	unconfig
 	@./mkconfig $(@:_config=) blackfin bf537 cm-bf537u
 
+cm-bf561_config	:	unconfig
+	@./mkconfig $(@:_config=) blackfin bf561 cm-bf561
+
 bf537_config	:	unconfig
 	@./mkconfig $(@:_config=) blackfin bf537 bf537-stamp
 

@@ -17,6 +17,7 @@
 
 #define CONFIG_DRIVER_SMC91111	1
 #define CONFIG_SMC91111_BASE	0x2C010300
+#define CONFIG_ASYNC_EBIU_BASE	CONFIG_SMC91111_BASE & ~(4*1024*1024)
 #define CONFIG_SMC_USE_32_BIT	1
 #define CONFIG_MISC_INIT_R	1
 
@@ -203,7 +204,7 @@
 #define	CFG_HZ			1000	/* decrementer freq: 10 ms ticks */
 #define CFG_LARGE_IMAGE_LEN     0x4000000       /* Large Image Length, set to 64 Meg */
 
-/* 
+/*
  * FLASH organization and environment definitions
  */
 

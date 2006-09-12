@@ -106,8 +106,8 @@ static unsigned int dcplb_table[16][2] = {
 	{0x02800000, SDRAM_DGENERIC},	/*SDRAM_Page10 */
 	{0x02C00000, SDRAM_DGENERIC},	/*SDRAM_Page11 */
 #if defined(CONFIG_EZKIT561)
-	{0x20000000, SDRAM_EBIU},	/*For Network */
-	{0x2C000000, SDRAM_EBIU},	/*For Network */
+	{0x20000000, SDRAM_EBIU},	/*For Flash Memory */
+	{CONFIG_ASYNC_EBIU_BASE, SDRAM_EBIU},	/*For Network */
 #else
 	{0x03000000, SDRAM_DGENERIC},	/*SDRAM_Page12 */
 	{0x20000000, SDRAM_EBIU},	/*For Network */
