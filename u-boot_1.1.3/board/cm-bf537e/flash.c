@@ -46,14 +46,13 @@ unsigned long flash_init(void)
 		flash_info[0].start[i] = (CFG_FLASH_BASE + (i * FLASH_SECTOR_SIZE));
 	flash_info[0].size = CFG_FLASH_SIZE;
 	flash_info[0].sector_count = FLASH_TOT_SECT;
-	if (flash_info[0].flash_id == FLASH_UNKNOWN && CFG_FLASH_SIZE == 0x200000) {
+	if (flash_info[0].flash_id == FLASH_UNKNOWN) {
 		printf("## Unknown FLASH on Bank 0\n");
 	}
 	else
 	{
-	printf("Flash Memory Start 0x%x\n", CFG_FLASH_BASE);
 	printf("Memory Map for the Flash\n");
-	printf("0x20000000 - 0x201FFFFF Single Flash Chip (2MB)\n");
+	printf("0x%x - 0x%x Single Flash Chip\n",CFG_FLASH_BASE, CFG_FLASH_BASE + CFG_FLASH_SIZE);
 	printf("Please type command flinfo for information on Sectors \n");
 	}
 	return (CFG_FLASH_SIZE);
