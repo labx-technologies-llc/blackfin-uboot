@@ -81,7 +81,7 @@
 
 #define CONFIG_MEM_SIZE                 32             /* 128, 64, 32, 16 */
 #define CONFIG_MEM_ADD_WDTH              9             /* 8, 9, 10, 11    */
-#define CONFIG_MEM_MT48LC16M16A2TG_75    1
+#define CONFIG_MEM_MT48LC8M32B2B5_7      1
 
 #define CONFIG_LOADS_ECHO	1
 #define CONFIG_COMMANDS			(CONFIG_CMD_DFL	| \
