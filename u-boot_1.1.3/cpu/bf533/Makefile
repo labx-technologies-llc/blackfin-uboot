@@ -31,7 +31,9 @@ LIB	= lib$(CPU).a
 START	= start.o start1.o interrupt.o cache.o cplbhdlr.o cplbmgr.o flush.o init_sdram.o
 OBJS	= cpu.o traps.o ints.o serial.o interrupts.o video.o
 
-all:	.depend $(START) $(LIB)
+EXTRA = init_sdram_bootrom_initblock.o
+
+all:	.depend $(START) $(LIB) .depend $(EXTRA)
 
 $(LIB):	$(OBJS)
 	$(AR) cr $@ $(OBJS)

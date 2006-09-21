@@ -7,7 +7,7 @@
 #include <getopt.h>
 #include <string.h>
 #include "bin2ldr.h"
-#define INIT_FILE "init_sdram.bin"
+#define INIT_FILE "init_sdram_bootrom_initblock.bin"
 #define JUMP_FILE "jump.bin"
 #define APP_FILE "app.bin"
 #define OUT_FILE "app.ldr"

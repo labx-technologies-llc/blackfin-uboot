@@ -71,7 +71,8 @@
 /* CONFIG_SPI_BAUD controls the SPI peripheral clock divider     */
 /* Values can range from 2-65535                                 */ 
 /* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)                  */
-#define CONFIG_SPI_BAUD			2
+#define CONFIG_SPI_BAUD							2
+#define CONFIG_SPI_BAUD_INITBLOCK		4
 
 
 /*

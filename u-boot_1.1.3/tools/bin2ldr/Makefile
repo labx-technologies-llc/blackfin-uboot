@@ -18,21 +18,21 @@ jump.o: jump.S bin2ldr.h
 jump.bin: jump
 	bfin-uclinux-objcopy -O binary jump jump.bin
 ################################################################
-init_sdram: init_sdram.o
-	bfin-uclinux-ld -o init_sdram -e 0x00000000 init_sdram.o
-init_sdram.o:
-	cp ../../cpu/$(CPU)/init_sdram.o .
-init_sdram.bin: init_sdram
-	bfin-uclinux-objcopy -O binary init_sdram init_sdram.bin
+init_sdram_bootrom_initblock: init_sdram_bootrom_initblock.o
+	bfin-uclinux-ld -o init_sdram_bootrom_initblock -e 0x00000000 init_sdram_bootrom_initblock.o
+init_sdram_bootrom_initblock.o:
+	cp ../../cpu/$(CPU)/init_sdram_bootrom_initblock.o .
+init_sdram_bootrom_initblock.bin: init_sdram_bootrom_initblock
+	bfin-uclinux-objcopy -O binary init_sdram_bootrom_initblock init_sdram_bootrom_initblock.bin
 ################################################################
 app.bin:
 	cp $(APP_FILE) app.bin
-app.ldr: bin2ldr jump.bin init_sdram.bin app.bin
+app.ldr: bin2ldr jump.bin init_sdram_bootrom_initblock.bin app.bin
 	./runme.sh
 ################################################################
 distclean:
 	rm -f bin2ldr bin2ldr.o
-	rm -f init_sdram.o init_sdram init_sdram.bin
+	rm -f init_sdram_bootrom_initblock.o init_sdram_bootrom_initblock init_sdram_bootrom_initblock.bin
 	rm -f jump.o jump jump.bin
 clean:
 	make distclean
