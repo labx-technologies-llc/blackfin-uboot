@@ -47,6 +47,12 @@
 #define CONFIG_SCLK_HZ          CONFIG_CLKIN_HZ
 #endif
 
+#if (CONFIG_SCLK_HZ / (2*CONFIG_SPI_BAUD) > 20000000) 
+#define CONFIG_SERIAL_BF537_USE_FAST_READ 1 /* Needed if SPI_CLK > 20 MHz */
+#else
+#undef CONFIG_SERIAL_BF537_USE_FAST_READ
+#endif
+
 #define CONFIG_MEM_SIZE                 64             /* 128, 64, 32, 16 */
 #define CONFIG_MEM_ADD_WDTH              10             /* 8, 9, 10, 11    */
 #define CONFIG_MEM_MT48LC32M8A2_75    1
