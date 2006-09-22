@@ -41,24 +41,6 @@
 #define CFG_ATA_STRIDE	1
 #endif
 
-#ifdef CONFIG_BF537
-
-#define ATA_DATA_REG    0x0020
-#define ATA_ERROR_REG   0x2020
-#define ATA_SECT_CNT    0x0022
-#define ATA_SECT_NUM    0x2022
-#define ATA_CYL_LOW     0x0024
-#define ATA_CYL_HIGH    0x2024
-#define ATA_DEV_HD      0x0026
-#define ATA_COMMAND     0x2026
-#define ATA_STATUS      ATA_COMMAND
-#define ATA_DEV_CTL     0x001C
-#define ATA_LBA_LOW     ATA_SECT_NUM
-#define ATA_LBA_MID     ATA_CYL_LOW
-#define ATA_LBA_HIGH    ATA_CYL_HIGH
-#define ATA_LBA_SEL     ATA_DEV_CTL
-
-#else
 
 #define ATA_IO_DATA(x)	(CFG_ATA_DATA_OFFSET+((x) * CFG_ATA_STRIDE))
 #define ATA_IO_REG(x)	(CFG_ATA_REG_OFFSET +((x) * CFG_ATA_STRIDE))
@@ -83,7 +65,6 @@
 #define ATA_LBA_MID	ATA_CYL_LOW
 #define ATA_LBA_HIGH	ATA_CYL_HIGH
 #define ATA_LBA_SEL	ATA_DEV_CTL
-#endif /* CONFIG_BF537 */
 
 /*
  * Status register bits

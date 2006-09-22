@@ -98,9 +98,14 @@
 #define CFG_CMD_POST_DIAG	0
 #endif
 
-/* #define CONFIG_BF537_CF */		/* Add CF flash card support */
+/* CF-CARD IDE-HDD Support */
 
-#ifdef CONFIG_BF537_CF
+#define CONFIG_BFIN_CF_IDE		/* Add CF flash card support */
+//#define CONFIG_BFIN_CF_IDE */		/* Add IDE Disk Drive (HDD) support */
+
+
+#if defined(CONFIG_BFIN_CF_IDE) || defined(CONFIG_BFIN_HDD_IDE) 
+#  define CONFIG_BFIN_IDE	1
 #  define ADD_IDE_CMD           CFG_CMD_IDE
 #else
 #  define ADD_IDE_CMD           0
@@ -302,7 +307,7 @@
 #define VDSP_ENTRY_ADDR		0xFFA00000
 #endif
 
-#if defined(CONFIG_BF537_CF) && (CONFIG_COMMANDS & CFG_CMD_IDE)
+#if defined(CONFIG_BFIN_IDE)
 
 #define CONFIG_DOS_PARTITION            1
 /*
@@ -315,22 +320,31 @@
 #define CFG_IDE_MAXBUS  1               /* max. 1 IDE busses */
 #define CFG_IDE_MAXDEVICE               (CFG_IDE_MAXBUS*1) /* max. 1 drives per IDE bus */
 
-#define CFG_ATA_BASE_ADDR               0x2031C000
-#define CFG_ATA_IDE0_OFFSET             0x0000
-
-#define CFG_ATA_DATA_OFFSET             0x0020  /* Offset for data I/O */
-#define CFG_ATA_REG_OFFSET              0x0020  /* Offset for normal register accesses */
-#define CFG_ATA_ALT_OFFSET              0x001C  /* Offset for alternate registers */
-
-#undef  CONFIG_SCLK_DIV
-#define CONFIG_SCLK_DIV                 8
-
 #undef  AMBCTL1VAL
 #define AMBCTL1VAL			0xFFC3FFC3
 
-#define CF_ATASEL_ENA			0x20311802
 
-#define CFG_ATA_STRIDE                  1 	/* CF.A0 --> Blackfin.A1 */
-#endif
+#if defined(CONFIG_BFIN_CF_IDE) /* USE CompactFlash Storage Card in the common memory space */
+#define CFG_ATA_BASE_ADDR               0x20211800
+#define CFG_ATA_IDE0_OFFSET             0x0000
+#define CFG_ATA_DATA_OFFSET             0x0000  /* Offset for data I/O */
+#define CFG_ATA_REG_OFFSET              0x0000  /* Offset for normal register accesses */
+#define CFG_ATA_ALT_OFFSET              0x000E  /* Offset for alternate registers */
+#define CFG_ATA_STRIDE                  1 	/* CF.A0 --> Blackfin.Ax */
+#endif /* CONFIG_BFIN_CF_IDE */
+ 
+#if defined(CONFIG_BFIN_HDD_IDE) /* USE TRUE IDE */
+#define CFG_ATA_BASE_ADDR               0x20314000
+#define CFG_ATA_IDE0_OFFSET             0x0000
+#define CFG_ATA_DATA_OFFSET             0x0020  /* Offset for data I/O */
+#define CFG_ATA_REG_OFFSET              0x0020  /* Offset for normal register accesses */
+#define CFG_ATA_ALT_OFFSET              0x001C  /* Offset for alternate registers */
+#define CFG_ATA_STRIDE                  2 	/* CF.A0 --> Blackfin.A1 */
+
+#undef  CONFIG_SCLK_DIV
+#define CONFIG_SCLK_DIV                 8
+#endif /* CONFIG_BFIN_HDD_IDE */
+
+#endif /*CONFIG_BFIN_IDE*/
 
 #endif

@@ -89,7 +89,7 @@ int checkboard(void)
 	return 0;
 }
 
-#ifdef CONFIG_BF537_CF
+#if defined(CONFIG_BFIN_IDE)
 
 void cf_outb(unsigned char val, volatile unsigned char* addr)
 {
@@ -124,7 +124,7 @@ void cf_outsw(unsigned short *addr, unsigned short *sect_buf, int words)
                 *(addr) = *(sect_buf + i);
 	__builtin_bfin_ssync();
 }
-#endif
+#endif /* CONFIG_BFIN_IDE */
 
 long int initdram(int board_type)
 {
@@ -169,12 +169,7 @@ int misc_init_r(void)
 		SetupMacAddr(SrcAddr);
 	}
 
-#ifdef CONFIG_BF537_CF
-	unsigned short *addr = CF_ATASEL_ENA;
-	unsigned short	buf=0;
-
-	cf_outsw(addr, &buf, 1);
-	udelay(5000);
+#if defined(CONFIG_BFIN_IDE)
 	ide_init();
 #endif
 	return 0;
