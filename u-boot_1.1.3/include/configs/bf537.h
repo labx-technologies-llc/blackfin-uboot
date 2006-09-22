@@ -100,8 +100,8 @@
 
 /* CF-CARD IDE-HDD Support */
 
-//#define CONFIG_BFIN_CF_IDE		/* Add CF flash card support */
-//#define CONFIG_BFIN_HDD_IDE */		/* Add IDE Disk Drive (HDD) support */
+//#define CONFIG_BFIN_CF_IDE    /* Add CF flash card support */
+//#define CONFIG_BFIN_HDD_IDE   /* Add IDE Disk Drive (HDD) support */
 
 
 #if defined(CONFIG_BFIN_CF_IDE) || defined(CONFIG_BFIN_HDD_IDE) 
