@@ -1,13 +1,20 @@
 #ifndef __CONFIG_EZKIT533_H__
 #define __CONFIG_EZKIT533_H__
 
-#define CFG_LONGHELP		1
 #define CONFIG_BAUDRATE		57600
 #define CONFIG_STAMP		1
+
 #define CONFIG_BOOTDELAY	5
+#define CFG_AUTOLOAD                    "no"    /*rarpb, bootp or dhcp commands will perform only a */
+
+#define CFG_LONGHELP                    1
+#define CONFIG_BOOTCOMMAND	"tftp 0x1000000 linux"
+#define CONFIG_AUTOBOOT_PROMPT	"autoboot in %d seconds\n"
+#define CONFIG_BOOTARGS		"root=/dev/mtdblock0 rw"
 
 #define CONFIG_DRIVER_SMC91111	1
 #define CONFIG_SMC91111_BASE	0x20310300
+
 #if 0
 #define	CONFIG_MII
 #define CFG_DISCOVER_PHY
