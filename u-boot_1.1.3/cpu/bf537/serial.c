@@ -57,9 +57,10 @@ void calc_baud(void)
 {
 	unsigned char i;
 	int temp;
+	u_long sclk = get_sclk();
 
 	for (i = 0; i < sizeof(baud_table) / sizeof(int); i++) {
-		temp = CONFIG_SCLK_HZ / (baud_table[i] * 8);
+		temp = sclk / (baud_table[i] * 8);
 		if (temp & 0x1 == 1) {
 			temp++;
 		}

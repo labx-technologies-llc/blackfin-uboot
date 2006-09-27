@@ -45,6 +45,50 @@ int post_flag;
 extern flash_info_t flash_info[];
 #endif
 
+static inline u_long get_vco(void)
+{
+	u_long msel;
+	u_long vco;
+
+	msel = (*pPLL_CTL >> 9) & 0x3F;
+	if (0 == msel)
+		msel = 64;
+
+	vco = CONFIG_CLKIN_HZ;
+	vco >>= (1 & *pPLL_CTL);	/* DF bit */
+	vco = msel * vco;
+	return vco;
+}
+
+/*Get the Core clock*/
+u_long get_cclk()
+{
+	u_long csel, ssel;
+	if (*pPLL_STAT & 0x1)
+		return CONFIG_CLKIN_HZ;
+
+	ssel = *pPLL_DIV;
+	csel = ((ssel >> 4) & 0x03);
+	ssel &= 0xf;
+	if (ssel && ssel < (1 << csel))	/* SCLK > CCLK */
+		return get_vco() / ssel;
+	return get_vco() >> csel;
+}
+
+
+/* Get the System clock */
+u_long get_sclk()
+{
+	u_long ssel;
+
+	if (*pPLL_STAT & 0x1)
+		return CONFIG_CLKIN_HZ;
+
+	ssel = (*pPLL_DIV & 0xf);
+
+	return get_vco() / ssel;
+}
+
 
 static void mem_malloc_init(void)
 {
@@ -173,7 +217,7 @@ void board_init_f(ulong bootflag)
 #endif
 	timer_init();
 	printf("Clock: VCO: %lu MHz, Core: %lu MHz, System: %lu MHz\n", \
-	CONFIG_VCO_HZ/1000000, CONFIG_CCLK_HZ/1000000, CONFIG_SCLK_HZ/1000000);
+	get_vco()/1000000, get_cclk()/1000000, get_sclk()/1000000);
 	printf("SDRAM: ");
 	print_size(initdram(0), "\n");
 #if defined(CONFIG_BF537)&&defined(CONFIG_POST)
