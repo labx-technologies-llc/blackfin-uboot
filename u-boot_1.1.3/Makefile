@@ -146,7 +146,7 @@ LIBS += dtt/libdtt.a
 LIBS += drivers/libdrivers.a
 LIBS += drivers/sk98lin/libsk98lin.a
 
-ifneq ($(BOARD), bf537)
+ifneq ($(BOARD), bf537-stamp)
 LIBS += post/libpost.a post/cpu/libcpu.a
 endif
 
