@@ -238,6 +238,31 @@ check_again:
 	ssync;
 #endif
 
+	/*
+         * We now are running at speed, time to set the Async mem bank wait states
+	 * This will speed up execution, since we are normally running from FLASH.
+	 * we need to read MAC address from FLASH
+	 */
+        p2.h = (EBIU_AMBCTL1 >> 16);
+        p2.l = (EBIU_AMBCTL1 & 0xFFFF);
+        r0.h = (AMBCTL1VAL >> 16);
+        r0.l = (AMBCTL1VAL & 0xFFFF);
+        [p2] = r0;
+        ssync;
+
+        p2.h = (EBIU_AMBCTL0 >> 16);
+        p2.l = (EBIU_AMBCTL0 & 0xFFFF);
+        r0.h = (AMBCTL0VAL >> 16);
+        r0.l = (AMBCTL0VAL & 0xFFFF);
+        [p2] = r0;
+        ssync;
+
+        p2.h = (EBIU_AMGCTL >> 16);
+        p2.l = (EBIU_AMGCTL & 0xffff);
+        r0 = AMGCTLVAL;
+        w[p2] = r0;
+        ssync;
+
 #if (!defined(CONFIG_SERIAL_BF537)) && (!defined(BF537_UART_BOOT))
 	sp.l = (0xffb01000 & 0xFFFF);
 	sp.h = (0xffb01000 >> 16);

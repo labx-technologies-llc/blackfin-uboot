@@ -121,31 +121,6 @@ check_again:
 #endif
 
 	/*
-         * We now are running at speed, time to set the Async mem bank wait states
-	 * This will speed up execution, since we are normally running from FLASH.
-	 */
-
-        p2.h = (EBIU_AMBCTL1 >> 16);
-        p2.l = (EBIU_AMBCTL1 & 0xFFFF);
-        r0.h = (AMBCTL1VAL >> 16);
-        r0.l = (AMBCTL1VAL & 0xFFFF);
-        [p2] = r0;
-        ssync;
-
-        p2.h = (EBIU_AMBCTL0 >> 16);
-        p2.l = (EBIU_AMBCTL0 & 0xFFFF);
-        r0.h = (AMBCTL0VAL >> 16);
-        r0.l = (AMBCTL0VAL & 0xFFFF);
-        [p2] = r0;
-        ssync;
-
-        p2.h = (EBIU_AMGCTL >> 16);
-        p2.l = (EBIU_AMGCTL & 0xffff);
-        r0 = AMGCTLVAL;
-        w[p2] = r0;
-        ssync;
-
-	/*
 	 * Now, Initialize the SDRAM,
 	 * start with the SDRAM Refresh Rate Control Register
          */
