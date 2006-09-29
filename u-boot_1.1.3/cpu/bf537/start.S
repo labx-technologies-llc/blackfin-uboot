@@ -58,8 +58,8 @@
 .global _icache_enable;
 .global _dcache_enable;
 #if defined(CONFIG_BF537)&&defined(CONFIG_POST)
-.global memory_post_test;
-.global post_flag;
+.global _memory_post_test;
+.global _post_flag;
 #endif 
 
 #ifdef BF537_UART_BOOT
@@ -368,8 +368,8 @@ POST_DATA_DMA_DONE:
         R0 = 0x1;
         W[P1+OFFSET_(MDMA_D0_IRQ_STATUS)] = R0; /* Write 1 to clear DMA interrupt */
 
-	p0.l = memory_post_test;
-	p0.h = memory_post_test;
+	p0.l = _memory_post_test;
+	p0.h = _memory_post_test;
 	r0 = 0x0;
 	call (p0);
 	r7 = r0;				/* save return value */
@@ -555,8 +555,8 @@ _clear_bss_end:
 _clear_bss_skip:
 
 #if defined(CONFIG_BF537)&&defined(CONFIG_POST)
-        p0.l = post_flag;
-        p0.h = post_flag;
+        p0.l = _post_flag;
+        p0.h = _post_flag;
         r0   = r7;
         [p0] = r0;
 #endif
