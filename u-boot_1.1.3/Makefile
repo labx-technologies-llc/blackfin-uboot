@@ -161,7 +161,7 @@ PLATFORM_LIBS += -L $(shell dirname `$(CC) $(CFLAGS) -print-libgcc-file-name`) -
 # Don't include stuff already done in $(LIBS)
 SUBDIRS	= tools \
 	  examples
-ifneq ($(BOARD), bf537)
+ifneq ($(BOARD), bf537-stamp)
 SUBDIRS += post \
 	  post/cpu
 endif
