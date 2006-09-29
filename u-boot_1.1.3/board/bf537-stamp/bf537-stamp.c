@@ -170,6 +170,11 @@ int misc_init_r(void)
 	}
 
 #if defined(CONFIG_BFIN_IDE)
+#if defined(CONFIG_BFIN_CF_IDE)
+ /*Disable ATASEL when we're in Common Memory Mode*/
+	cf_outb(0, CONFIG_CF_ATASEL_DIS);
+	udelay(1000);
+#endif
 	ide_init();
 #endif
 	return 0;

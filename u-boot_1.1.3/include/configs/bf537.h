@@ -71,7 +71,7 @@
 #define CONFIG_HOSTNAME         BF537
 #define CONFIG_ROOTPATH		/romfs
 /* Uncomment next line to use fixed MAC address */
-/* #define CONFIG_ETHADDR          02:80:ad:20:31:b8 */
+#define CONFIG_ETHADDR          02:80:ad:20:31:e8 */
 /* This is the routine that copies the MAC in Flash to the 'ethaddr' setting */
 #define CONFIG_MISC_INIT_R
 
@@ -100,7 +100,7 @@
 
 /* CF-CARD IDE-HDD Support */
 
-//#define CONFIG_BFIN_CF_IDE    /* Add CF flash card support */
+#define CONFIG_BFIN_CF_IDE    /* Add CF flash card support */
 //#define CONFIG_BFIN_HDD_IDE   /* Add IDE Disk Drive (HDD) support */
 
 
@@ -323,6 +323,7 @@
 #undef  AMBCTL1VAL
 #define AMBCTL1VAL			0xFFC3FFC3
 
+#define CONFIG_CF_ATASEL_DIS 	0x20311800
 
 #if defined(CONFIG_BFIN_CF_IDE) /* USE CompactFlash Storage Card in the common memory space */
 #define CFG_ATA_BASE_ADDR               0x20211800
