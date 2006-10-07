@@ -23,7 +23,7 @@
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
 
 /* CONFIG_CLKIN_HZ is any value in Hz                            */
-#define CONFIG_CLKIN_HZ          25000000
+#define CONFIG_CLKIN_HZ          30000000
 /* CONFIG_CLKIN_HALF controls what is passed to PLL 0=CLKIN      */
 /*                                                  1=CLKIN/2    */
 #define CONFIG_CLKIN_HALF               0
