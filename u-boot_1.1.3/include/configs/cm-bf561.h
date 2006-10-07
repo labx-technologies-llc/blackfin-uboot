@@ -140,6 +140,7 @@
 #define	CFG_ENV_SECT_SIZE	0x20000	/* Total Size of Environment Sector */
 #define CFG_ENV_SIZE		0x10000
 
+#define CFG_LARGE_IMAGE_LEN     0x2000000       /* Large Image Length, set to 32 Meg */
 
 /*
  * Stack sizes

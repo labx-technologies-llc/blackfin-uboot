@@ -104,7 +104,7 @@
 #define	CFG_BOOTMAPSZ		(8 << 20)	/* Initial Memory map for Linux */
 #define CFG_FLASH_BASE		0x20000000
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
-#define CFG_MAX_FLASH_SECT	16	/* max number of sectors on one chip */
+#define CFG_MAX_FLASH_SECT	32	/* max number of sectors on one chip */
 
 #define	CFG_ENV_IS_IN_FLASH	1
 #define CFG_FLASH0_BASE		0x20000000
@@ -112,16 +112,18 @@
 #define	CFG_ENV_SECT_SIZE	0x20000	/* Total Size of Environment Sector */
 #define CFG_ENV_SIZE		0x10000
 
+#define CFG_LARGE_IMAGE_LEN     0x2000000       /* Large Image Length, set to 32 Meg */
 
 /*
  * Stack sizes
  */
 #define CONFIG_STACKSIZE        (128*1024)      /* regular stack */
 
+#define CONFIG_BT_FLASHMAPPING
 #define POLL_MODE		1
-#define FLASH_TOT_SECT		16
-#define FLASH_SIZE		0x200000
-#define CFG_FLASH_SIZE		0x200000
+#define FLASH_TOT_SECT		32
+#define FLASH_SIZE				0x400000
+#define CFG_FLASH_SIZE		0x400000
 
 
 #define HARDCODE_MAC	1
@@ -131,7 +133,7 @@
 #define CONFIG_SERVERIP		192.168.0.33
 #define CONFIG_HOSTNAME		CM_BF537U
 
-#define CONFIG_ETHADDR 02:80:ad:20:31:b8
+#define CONFIG_ETHADDR 02:80:ad:20:31:e8
 
 
 #define __ADSPLPBLACKFIN__	1

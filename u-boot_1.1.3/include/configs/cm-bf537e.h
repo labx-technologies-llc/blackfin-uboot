@@ -17,6 +17,8 @@
 #define CFG_DISCOVER_PHY
 #endif
 
+//#define BF537_UART_BOOT 1
+
 #define CONFIG_RTC_BF533	1
 
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
@@ -74,7 +76,7 @@
 #define CONFIG_AUTOBOOT_PROMPT		"autoboot in %d seconds\n"
 
 
-#define	CFG_PROMPT		"CM-BF537> "	/* Monitor Command Prompt */
+#define	CFG_PROMPT		"CM-BF537E> "	/* Monitor Command Prompt */
 #if (CONFIG_COMMANDS & CFG_CMD_KGDB)
 #define	CFG_CBSIZE		1024	/* Console I/O Buffer Size */
 #else
@@ -90,7 +92,6 @@
 #define CFG_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 #define	CFG_SDRAM_BASE		0x00000000
 #define CFG_MAX_RAM_SIZE	0x02000000
-#define CFG_FLASH_BASE		0x20000000
 
 #define	CFG_MONITOR_LEN		(256 << 10)	/* Reserve 256 kB for Monitor	*/
 #define CFG_MONITOR_BASE	(CFG_MAX_RAM_SIZE - CFG_MONITOR_LEN)
@@ -103,7 +104,7 @@
 #define	CFG_BOOTMAPSZ		(8 << 20)	/* Initial Memory map for Linux */
 #define CFG_FLASH_BASE		0x20000000
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
-#define CFG_MAX_FLASH_SECT	16	/* max number of sectors on one chip */
+#define CFG_MAX_FLASH_SECT	32	/* max number of sectors on one chip */
 
 #define	CFG_ENV_IS_IN_FLASH	1
 #define CFG_FLASH0_BASE		0x20000000
@@ -111,16 +112,18 @@
 #define	CFG_ENV_SECT_SIZE	0x20000	/* Total Size of Environment Sector */
 #define CFG_ENV_SIZE		0x10000
 
+#define CFG_LARGE_IMAGE_LEN     0x2000000       /* Large Image Length, set to 32 Meg */
 
 /*
  * Stack sizes
  */
 #define CONFIG_STACKSIZE        (128*1024)      /* regular stack */
 
+#define CONFIG_BT_FLASHMAPPING
 #define POLL_MODE		1
-#define FLASH_TOT_SECT		16
-#define FLASH_SIZE		0x200000
-#define CFG_FLASH_SIZE		0x200000
+#define FLASH_TOT_SECT		32
+#define FLASH_SIZE				0x400000
+#define CFG_FLASH_SIZE		0x400000
 
 
 #define HARDCODE_MAC	1
@@ -128,7 +131,7 @@
 #define CONFIG_IPADDR		192.168.0.32
 #define CONFIG_NETMASK		255.255.255.0
 #define CONFIG_SERVERIP		192.168.0.33
-#define CONFIG_HOSTNAME		CM_BF537
+#define CONFIG_HOSTNAME		CM_BF537E
 
 #define CONFIG_ETHADDR 02:80:ad:20:31:b8
 

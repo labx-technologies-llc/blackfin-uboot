@@ -174,7 +174,12 @@ int do_bootm (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		read_dataflash(addr, sizeof(image_header_t), (char *)&header);
 	} else
 #endif
+
+#ifndef CONFIG_BT_FLASHMAPPING
 	memmove (&header, (char *)addr, sizeof(image_header_t));
+#else
+	bt_memmove (&header, (char *)addr, sizeof(image_header_t));
+#endif
 
 	if (ntohl(hdr->ih_magic) != IH_MAGIC) {
 #ifdef __I386__	/* correct image format not implemented yet - fake it */
@@ -219,6 +224,11 @@ int do_bootm (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		read_dataflash(data, len, (char *)CFG_LOAD_ADDR);
 		data = CFG_LOAD_ADDR;
 	}
+#endif
+
+#ifdef CONFIG_BT_FLASHMAPPING
+		bt_memmove(CFG_LOAD_ADDR,data,len);
+		data = CFG_LOAD_ADDR;
 #endif
 
 	if (verify) {

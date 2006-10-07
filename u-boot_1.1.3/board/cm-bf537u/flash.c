@@ -38,6 +38,11 @@ unsigned long flash_init(void)
 {
 	int i = 0;
 
+	*pPORTF_FER &= (~PF4); 
+	*pPORTFIO_DIR |= PF4; 
+	*pPORTFIO_CLEAR = PF4;
+
+
 	if (CFG_MAX_FLASH_BANKS > 1) printf("Only FLASH bank 0 will be used!");
 	flash_info[0].flash_id = FLASH_UNKNOWN;
 	if (get_codes() == MT_MANUFACT_CM_BF533) flash_info[0].flash_id = MT_MANUFACT_CM_BF533 ;
@@ -69,7 +74,7 @@ void flash_print_info(flash_info_t * info)
 
 	switch (info->flash_id) {
 	case MT_MANUFACT_CM_BF533:
-		printf("MT_MANUFACT_on_CM-BF533");
+		printf("MT_MANUFACT_on_CM-BF537");
 		break;
 	default:
 		printf("Unknown Vendor ");
@@ -175,11 +180,30 @@ int check_sector(unsigned short usSector)
 {
 	long i = 0;
 	int iData;
+	unsigned short crossed;
+	volatile unsigned short *memIndex;
 	printf("Checking sector %d",usSector);
 	for (i=0; i < FLASH_SECTOR_SIZE; i+=2)
 	{
-		iData= *((unsigned short *)(CFG_FLASH_BASE + (i + (usSector * FLASH_SECTOR_SIZE))));
+	
+	crossed = 0;
+	memIndex = ((unsigned short *)(CFG_FLASH_BASE + (i + (usSector * FLASH_SECTOR_SIZE))));
 
+	if((u_long)memIndex >= 0x20200000) 
+	{ 
+		*pPORTFIO_SET = PF4; 
+		crossed = 1;
+		__builtin_bfin_ssync();
+		memIndex -= 0x100000;; 
+	}
+
+	iData= *memIndex;
+
+	if(crossed)  
+	{ 
+		*pPORTFIO_CLEAR = PF4; 
+	}
+	
 		if (iData != 0xFFFF)
 		{
 			printf(" ... not empty!\n");
@@ -196,8 +220,17 @@ int write_flash(long nOffset, unsigned short nValue)
 	volatile unsigned short *memIndex;
 	unsigned long nTimeout;
 	unsigned short status;
+	unsigned short crossed = 0;
 
 	memIndex = (unsigned short *)(CFG_FLASH_BASE + nOffset);
+
+	if((u_long)memIndex >= 0x20200000)  
+	{ 
+		*pPORTFIO_SET = PF4; 
+		crossed = 1;
+		__builtin_bfin_ssync();
+		memIndex -= 0x100000;; 
+	}
 
 	*memIndex = 0x0050; 	//Reset statusregister
 	__builtin_bfin_ssync();
@@ -226,6 +259,11 @@ int write_flash(long nOffset, unsigned short nValue)
 	}while ((*memIndex != (unsigned short) nValue) && (nTimeout > 0));
 	if (!nTimeout) status = 0xee00;
 
+	if(crossed)  
+	{ 
+		*pPORTFIO_CLEAR = PF4; 
+	}
+
 	if (status == 0x0080) return (ERR_OK);
 	else return (ERR_TIMOUT);
 }
@@ -235,6 +273,7 @@ int erase_block_flash(int nBlock, unsigned long address)
 	volatile unsigned short *memIndex;
 	unsigned short status;
 	unsigned long nTimeout;
+	unsigned short crossed = 0;
 
 	if ((nBlock < 0) || (nBlock >= CFG_MAX_FLASH_SECT))
 	{
@@ -242,6 +281,14 @@ int erase_block_flash(int nBlock, unsigned long address)
  		return -1;
 	}
 	memIndex = (unsigned short *)(address);// + CFG_FLASH_BASE);
+
+	if((u_long)memIndex >= 0x20200000)  
+	{ 
+		*pPORTFIO_SET = PF4; 
+		crossed = 1;
+		__builtin_bfin_ssync();
+		memIndex -= 0x100000;; 
+	}
 
 	*memIndex = 0x0050;
 	__builtin_bfin_ssync();
@@ -265,6 +312,10 @@ int erase_block_flash(int nBlock, unsigned long address)
 	*memIndex = 0xff; //Zurueck zu "Read Array Mode"
 	__builtin_bfin_ssync();
 
+	if(crossed)  
+	{ 
+		*pPORTFIO_CLEAR = PF4; 
+	}
 
 	if (status==0xFF00) return -1;
 	else return ERR_OK;
@@ -294,4 +345,62 @@ int get_codes()
 	return dev_id;
 }
 
+/**
+ * memmove_l - Copy one area of memory to another
+ * @dest: Where to copy to
+ * @src: Where to copy from
+ * @count: The size of the area.
+ *
+ * Unlike memcpy(), memmove_l() copes with overlapping areas.
+ */
+void * bt_memmove(void * dest,const void *src,size_t count)
+{
+	char *tmp, *s;
+
+	*pPORTF_FER &= (~PF4); 
+	*pPORTFIO_DIR |= PF4; 
+	*pPORTFIO_CLEAR = PF4;
+
+	if (dest <= src) {
+		tmp = (char *) dest;
+		s = (char *) src;
+		while (count--){
+
+			if((u_long)s >= 0x20200000)  
+			{ 
+				*pPORTFIO_SET = PF4; 
+				__builtin_bfin_ssync();
+				s -= 0x200000;
+					*tmp++ = *s++;
+				s += 0x200000; 
+				*pPORTFIO_CLEAR = PF4; 
+				__builtin_bfin_ssync();
+			}
+			else
+			 *tmp++ = *s++;
+			 }
+		}
+	else {
+		tmp = (char *) dest + count;
+		s = (char *) src + count;
+		while (count--)
+{
+
+			if((u_long)s >= 0x20200000)  
+			{ 
+				*pPORTFIO_SET = PF4; 
+				__builtin_bfin_ssync();
+				s -= 0x200000;
+					*tmp++ = *s++;
+				s += 0x200000; 
+				*pPORTFIO_CLEAR = PF4; 
+				__builtin_bfin_ssync();
+			}
+			else
+					*--tmp = *--s;
+			}
+		}
+
+	return dest;
+}
 
