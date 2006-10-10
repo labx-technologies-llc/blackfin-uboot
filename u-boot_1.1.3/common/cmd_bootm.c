@@ -227,8 +227,10 @@ int do_bootm (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 #endif
 
 #ifdef CONFIG_BT_FLASHMAPPING
+if(data >= CFG_FLASH_BASE) {
 		bt_memmove(CFG_LOAD_ADDR,data,len);
 		data = CFG_LOAD_ADDR;
+}
 #endif
 
 	if (verify) {
