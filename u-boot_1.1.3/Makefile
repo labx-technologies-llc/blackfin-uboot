@@ -170,7 +170,7 @@ endif
 #########################################################################
 #########################################################################
 
-ALL = u-boot.srec u-boot.bin u-boot.ldr System.map
+ALL = u-boot.hex u-boot.srec u-boot.bin u-boot.ldr System.map
 
 all:		$(ALL)
 
