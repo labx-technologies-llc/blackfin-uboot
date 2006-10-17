@@ -174,10 +174,10 @@ ALL = u-boot.hex u-boot.srec u-boot.bin u-boot.ldr System.map
 
 all:		$(ALL)
 
-u-boot.hex:	u-boot
+u-boot.hex:	u-boot.bin
 		$(OBJCOPY) ${OBJCFLAGS} -O ihex $< $@
 
-u-boot.srec:	u-boot
+u-boot.srec:	u-boot.bin
 		$(OBJCOPY) ${OBJCFLAGS} -O srec $< $@
 
 u-boot.bin:	u-boot
