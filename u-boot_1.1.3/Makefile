@@ -170,14 +170,14 @@ endif
 #########################################################################
 #########################################################################
 
-ALL = u-boot.hex u-boot.srec u-boot.bin u-boot.ldr System.map
+ALL = u-boot.bin u-boot.ldr System.map
 
 all:		$(ALL)
 
-u-boot.hex:	u-boot.bin
+u-boot.hex:	u-boot
 		$(OBJCOPY) ${OBJCFLAGS} -O ihex $< $@
 
-u-boot.srec:	u-boot.bin
+u-boot.srec:	u-boot
 		$(OBJCOPY) ${OBJCFLAGS} -O srec $< $@
 
 u-boot.bin:	u-boot
