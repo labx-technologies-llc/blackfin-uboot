@@ -50,9 +50,6 @@ export	ARCH CPU BOARD VENDOR SOC
 include $(TOPDIR)/config.mk
 
 ifndef CROSS_COMPILE
-ifeq ($(HOSTARCH),ppc)
-CROSS_COMPILE =
-else
 ifeq ($(ARCH),ppc)
 CROSS_COMPILE = ppc_8xx-
 endif
@@ -83,7 +80,6 @@ CROSS_COMPILE = mb-
 endif
 ifeq ($(ARCH),blackfin)
 CROSS_COMPILE = bfin-uclinux-
-endif
 endif
 endif
 
