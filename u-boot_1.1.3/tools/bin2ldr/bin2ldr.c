@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <string.h>
-#include "bin2ldr.h"
+#include <config.h>
 #define INIT_FILE "init_sdram_bootrom_initblock.bin"
 #define JUMP_FILE "jump.bin"
 #define APP_FILE "app.bin"

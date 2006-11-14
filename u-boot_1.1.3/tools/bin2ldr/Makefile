@@ -1,6 +1,6 @@
 #!/bin/sh
 CC = gcc
-CFLAG = -Wall -g
+CFLAG = -Wall -g -I../../include
 APP_FILE = ../../u-boot.bin
 
 all: app.ldr
@@ -8,12 +8,12 @@ all: app.ldr
 ###############################################################
 bin2ldr: bin2ldr.o
 	$(CC) bin2ldr.o -o bin2ldr
-bin2ldr.o: bin2ldr.c bin2ldr.h
+bin2ldr.o: bin2ldr.c 
 	$(CC) $(CFLAG) -c bin2ldr.c
 ###############################################################
 jump: jump.o
 	bfin-uclinux-ld -o jump -e 0x00000000 jump.o
-jump.o: jump.S bin2ldr.h
+jump.o: jump.S 
 	bfin-uclinux-gcc $(CFLAG) -c jump.S
 jump.bin: jump
 	bfin-uclinux-objcopy -O binary jump jump.bin
