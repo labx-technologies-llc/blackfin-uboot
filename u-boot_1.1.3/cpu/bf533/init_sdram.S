@@ -38,7 +38,7 @@ init_sdram:
         SSYNC;
 #endif
 
-#if defined(CONFIG_SERIAL_STAMP) || defined(CONFIG_SERIAL_BF537)
+#if (BFIN_BOOT_MODE == BF533_SPI_BOOT) 
 	p0.h = hi(SPI_BAUD);
 	p0.l = lo(SPI_BAUD);
 	r0.l = CONFIG_SPI_BAUD;
@@ -46,17 +46,6 @@ init_sdram:
     SSYNC;
 #endif
 
-#ifndef BF537_UART_BOOT
-
-#ifdef CONFIG_BF537
-	/* Enable PHY CLK buffer output */
-	p0.h = hi(VR_CTL);
-	p0.l = lo(VR_CTL);
-	r0.l = w[p0];
-	bitset(r0, 14);
-	w[p0] = r0.l;
-	ssync;
-#endif
 	/*
          * PLL_LOCKCNT - how many SCLK Cycles to delay while PLL becomes stable
          */
@@ -118,7 +107,6 @@ check_again:
         p0.l = lo(PLL_DIV);
         w[p0] = r0.l;
         ssync;
-#endif
 
 	/*
          * We now are running at speed, time to set the Async mem bank wait states

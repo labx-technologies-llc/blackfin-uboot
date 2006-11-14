@@ -29,6 +29,24 @@
 #ifndef __CONFIG_STAMP_H__
 #define __CONFIG_STAMP_H__
 
+#define __ADSPLPBLACKFIN__		1
+#define __ADSPBF533__			1
+#define CONFIG_STAMP			1
+#define CONFIG_RTC_BF533		1
+
+/*
+ * Boot Mode Set  
+ * Blackfin can support several boot modes
+ */
+#define BF533_BYPASS_BOOT	0x0001  /* Bootmode 0: Execute from 16-bit externeal memory ( bypass BOOT ROM) */
+#define BF533_PARA_BOOT		0x0002  /* Bootmode 1: Boot from 8-bit or 16-bit flash */
+#define BF533_SPI_BOOT		0x0004	/* Bootmode 3: Boot from SPI flash		*/
+/* Define where the uboot will be loaded by on-chip boot rom */
+#define APP_ENTRY 0x00001000
+/* Define the boot mode */
+#define BFIN_BOOT_MODE		BF533_BYPASS_BOOT
+//#define BFIN_BOOT_MODE		BF533_SPI_BOOT
+
 /*
  * Stringize definitions - needed for environmental settings
  */
@@ -39,12 +57,6 @@
  * Board settings
  *
  */
-
-#define __ADSPLPBLACKFIN__		1
-#define __ADSPBF533__			1
-#define CONFIG_STAMP			1
-#define CONFIG_RTC_BF533		1
-
 #define CONFIG_DRIVER_SMC91111          1
 #define CONFIG_SMC91111_BASE            0x20300300
 
@@ -94,6 +106,9 @@
 /* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)                  */
 #define CONFIG_SPI_BAUD                 2
 
+#if (BFIN_BOOT_MODE == BF533_SPI_BOOT)
+#define CONFIG_SPI_BAUD_INITBLOCK		4
+#endif
 
 
 /*
@@ -127,14 +142,20 @@
 #define CFG_FLASH_CFI_DRIVER			/* Use common CFI driver        */
 #define	CFG_FLASH_CFI_AMD_RESET
 
-#define CFG_ENV_IS_IN_FLASH		1
-
 #define CFG_FLASH_BASE			0x20000000
 #define CFG_MAX_FLASH_BANKS		1		/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT		67		/* max number of sectors on one chip */
 
+#if (BFIN_BOOT_MODE == BF533_BYPASS_BOOT)
+#define CFG_ENV_IS_IN_FLASH		1
 #define CFG_ENV_ADDR			0x20004000
 #define	CFG_ENV_OFFSET			(CFG_ENV_ADDR - CFG_FLASH_BASE)
+#elif (BFIN_BOOT_MODE == BF533_SPI_BOOT)
+#define CFG_ENV_IS_IN_EEPROM		1
+#define CFG_ENV_OFFSET			0x4000
+#define CFG_ENV_HEADER			(CFG_ENV_OFFSET + 0x12A)	/* 0x12A is the length of LDR file header */
+#endif
+
 #define	CFG_ENV_SIZE			0x2000
 #define CFG_ENV_SECT_SIZE 		0x2000	/* Total Size of Environment Sector */
 #define	ENV_IS_EMBEDDED
@@ -165,7 +186,11 @@
 #define CONFIG_MEM_ADD_WDTH     	11             /* 8, 9, 10, 11    */
 #define CONFIG_MEM_MT48LC64M4A2FB_7E	1
 
+#if (BFIN_BOOT_MODE == BF533_BYPASS_BOOT)
 #define CFG_MEMTEST_START		0x00000000	/* memtest works on */
+#elif (BFIN_BOOT_MODE == BF533_SPI_BOOT)
+#define CFG_MEMTEST_START		0x00100000	/* memtest works on */
+#endif
 
 #define	CFG_SDRAM_BASE			0x00000000
 
@@ -219,19 +244,34 @@
 #define CONFIG_SCLK_HZ			CONFIG_CLKIN_HZ
 #endif
 
+#if (BFIN_BOOT_MODE == BF533_SPI_BOOT)
+#if (CONFIG_SCLK_HZ / (2*CONFIG_SPI_BAUD) > 20000000) 
+#define CONFIG_SPI_FLASH_FAST_READ 1 /* Needed if SPI_CLK > 20 MHz */
+#else
+#undef CONFIG_SPI_FLASH_FAST_READ
+#endif
+#endif
 /*
  * Command settings
  *
  */
 
 #define CFG_LONGHELP                    1
+
+#if (BFIN_BOOT_MODE == BF533_BYPASS_BOOT)
 #define CFG_AUTOLOAD                    "no"    /*rarpb, bootp or dhcp commands will perform only a */
+#endif
                                                 /* configuration lookup from the BOOTP/DHCP server, */
                                                 /* but not try to load any image using TFTP         */
 
 #define CONFIG_BOOTDELAY                5
 #define CONFIG_BOOT_RETRY_TIME          -1      /* Enable this if bootretry required, currently its disabled */
+#if (BFIN_BOOT_MODE == BF533_BYPASS_BOOT)
 #define CONFIG_BOOTCOMMAND              "run ramboot"
+#elif (BFIN_BOOT_MODE == BF533_SPI_BOOT)
+#define CONFIG_BOOTCOMMAND 		"eeprom read 0x1000000 0x100000 0x180000;icache on;dcache on;bootm 0x1000000"
+#endif
+
 #define CONFIG_AUTOBOOT_PROMPT          "autoboot in %d seconds\n"
 
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"
@@ -243,9 +283,20 @@
                                          CFG_CMD_CACHE  | \
                                          CFG_CMD_JFFS2  | \
                                          CFG_CMD_EEPROM | \
-                                         CFG_CMD_DHCP   | \
                                          CFG_CMD_DATE)
 
+#else
+#define CONFIG_COMMANDS1                (CONFIG_CMD_DFL | \
+                                         CFG_CMD_ELF    | \
+                                         CFG_CMD_CACHE  | \
+                                         CFG_CMD_JFFS2  | \
+                                         CFG_CMD_EEPROM | \
+                                         CFG_CMD_DATE)
+
+#endif
+
+#if (BFIN_BOOT_MODE == BF533_BYPASS_BOOT)
+#if (CONFIG_DRIVER_SMC91111)
 #define CONFIG_EXTRA_ENV_SETTINGS \
         "ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" \
         "nfsargs=setenv bootargs root=/dev/nfs rw nfsroot=$(serverip):" \
@@ -262,17 +313,27 @@
                 "cp.b " STRINGIZE(CFG_LOAD_ADDR) " 0x20000000 $(filesize)\0" \
         ""
 #else
-#define CONFIG_COMMANDS1                (CONFIG_CMD_DFL | \
-                                         CFG_CMD_ELF    | \
-                                         CFG_CMD_CACHE  | \
-                                         CFG_CMD_JFFS2  | \
-                                         CFG_CMD_EEPROM | \
-                                         CFG_CMD_DATE)
-
 #define CONFIG_EXTRA_ENV_SETTINGS \
         "ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" \
         "flashboot=bootm 0x20100000\0" \
         ""
+#endif
+
+#elif (BFIN_BOOT_MODE == BF533_SPI_BOOT)
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" \
+	"nfsargs=setenv bootargs root=/dev/nfs rw nfsroot=$(serverip):" \
+		"$(rootpath)\0"	\
+	"addip=setenv bootargs $(bootargs) ip=$(ipaddr):$(serverip):" \
+		"$(gatewayip):$(netmask):$(hostname):eth0:off\0" \
+        "ramboot=tftpboot " STRINGIZE(CFG_LOAD_ADDR) " linux; " \
+		"run ramargs;run addip;bootelf\0" \
+	"nfsboot=tftpboot " STRINGIZE(CFG_LOAD_ADDR) " linux; "	\
+		"run nfsargs;run addip;bootelf\0" \
+	"flashboot=bootm 0x20100000\0" \
+	"update=tftpboot " STRINGIZE(CFG_LOAD_ADDR) " u-boot.ldr;"	\
+		"eeprom write " STRINGIZE(CFG_LOAD_ADDR) " 0x0 $(filesize);\0"\
+	""
 #endif
 
 #ifdef CONFIG_SOFT_I2C
@@ -287,7 +348,11 @@
 #define CONFIG_COMMANDS2 0
 #endif /* CONFIG_SOFT_I2C */
 
+#if (BFIN_BOOT_MODE == BF533_BYPASS_BOOT)
+#define CONFIG_COMMANDS  ( CONFIG_COMMANDS1 | CONFIG_COMMANDS2 | CFG_CMD_DHCP)
+#elif (BFIN_BOOT_MODE == BF533_SPI_BOOT)
 #define CONFIG_COMMANDS  ( CONFIG_COMMANDS1 | CONFIG_COMMANDS2)
+#endif 
 
 /* This must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
@@ -300,7 +365,12 @@
 #define CONFIG_BAUDRATE                 57600
 #define CFG_BAUDRATE_TABLE              { 9600, 19200, 38400, 57600, 115200 }
 
+#if (BFIN_BOOT_MODE == BF533_SPI_BOOT)
+#define CFG_PROMPT			"serial_stamp>" /* Monitor Command Prompt */
+#else
 #define CFG_PROMPT                      "stamp>"        /* Monitor Command Prompt */
+#endif
+
 #if (CONFIG_COMMANDS & CFG_CMD_KGDB)
 #define CFG_CBSIZE                      1024    /* Console I/O Buffer Size */
 #else
