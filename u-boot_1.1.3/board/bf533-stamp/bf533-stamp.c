@@ -43,6 +43,10 @@ int checkboard(void)
 	printf("CPU:   ADSP BF533 Rev.: 0.%d\n", *pCHIPID >> 28);
 	printf("Board: ADI BF533 Stamp board\n");
 	printf("       Support: http://blackfin.uclinux.org/\n");
+#if (BFIN_BOOT_MODE == BF533_SPI_BOOT)
+	icache_enable();
+	dcache_enable();
+#endif	
 	return 0;
 }
 
