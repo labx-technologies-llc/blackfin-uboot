@@ -359,7 +359,7 @@ ERROR_CODE ReadData(  unsigned long ulStart, long lCount,int *pnData  )
 	// Start SPI interface	
 	SetupSPI( (COMMON_SPI_SETTINGS|TIMOD01) );
 
-#ifdef CONFIG_SERIAL_BF537_USE_FAST_READ
+#ifdef CONFIG_SPI_FLASH_FAST_READ
 	*pSPI_TDBR = SPI_FAST_READ;			// Send the read command to SPI device
 #else
 	*pSPI_TDBR = SPI_READ;			// Send the read command to SPI device
@@ -378,7 +378,7 @@ ERROR_CODE ReadData(  unsigned long ulStart, long lCount,int *pnData  )
 	 __builtin_bfin_ssync();
 	Wait_For_SPIF();				// Wait until the instruction has been sent
 
-#ifdef CONFIG_SERIAL_BF537_USE_FAST_READ
+#ifdef CONFIG_SPI_FLASH_FAST_READ
 	*pSPI_TDBR = 0;			// Send dummy for FAST_READ
 	 __builtin_bfin_ssync();
 	Wait_For_SPIF();				// Wait until the instruction has been sent
