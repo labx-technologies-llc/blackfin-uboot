@@ -21,6 +21,7 @@
 #define SPI_RDSR            (0x05)  //Read Status Register
 #define SPI_WRSR            (0x01)  //Write Status Register
 #define SPI_READ            (0x03)  //Read data from memory
+#define SPI_FAST_READ       (0x0B)  //Read data from memory
 #define SPI_PP              (0x02)  //Program Data into memory
 #define SPI_SE              (0xD8)  //Erase one sector in memory
 #define SPI_BE              (0xC7)  //Erase all memory
@@ -357,7 +358,11 @@ ERROR_CODE ReadData(  unsigned long ulStart, long lCount,int *pnData  )
 	// Start SPI interface	
 	SetupSPI( (COMMON_SPI_SETTINGS|TIMOD01) );
 
+#ifdef CONFIG_SPI_FLASH_FAST_READ
+	*pSPI_TDBR = SPI_FAST_READ;			// Send the read command to SPI device
+#else
 	*pSPI_TDBR = SPI_READ;			// Send the read command to SPI device
+#endif
 	 __builtin_bfin_ssync();
 	Wait_For_SPIF();				// Wait until the instruction has been sent
 	ShiftValue = (ulStart >> 16);	// Send the highest byte of the 24 bit address at first
@@ -372,7 +377,12 @@ ERROR_CODE ReadData(  unsigned long ulStart, long lCount,int *pnData  )
 	 __builtin_bfin_ssync();
 	Wait_For_SPIF();				// Wait until the instruction has been sent
 
-
+#ifdef CONFIG_SPI_FLASH_FAST_READ
+	*pSPI_TDBR = 0;			// Send dummy for FAST_READ
+	 __builtin_bfin_ssync();
+	Wait_For_SPIF();				// Wait until the instruction has been sent
+#endif
+	
 	// After the SPI device address has been placed on the MOSI pin the data can be
 	// received on the MISO pin.
 	for (i=0; i<lCount; i++)
