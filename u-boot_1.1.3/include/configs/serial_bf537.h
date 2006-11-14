@@ -49,9 +49,9 @@
 #endif
 
 #if (CONFIG_SCLK_HZ / (2*CONFIG_SPI_BAUD) > 20000000) 
-#define CONFIG_SERIAL_BF537_USE_FAST_READ 1 /* Needed if SPI_CLK > 20 MHz */
+#define CONFIG_SPI_FLASH_FAST_READ 1 /* Needed if SPI_CLK > 20 MHz */
 #else
-#undef CONFIG_SERIAL_BF537_USE_FAST_READ
+#undef CONFIG_SPI_FLASH_FAST_READ
 #endif
 
 #define CONFIG_MEM_SIZE                 64             /* 128, 64, 32, 16 */
