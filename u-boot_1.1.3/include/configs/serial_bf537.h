@@ -174,7 +174,9 @@
  * I2C settings
  * By default PF1 is used as SDA and PF0 as SCL on the Stamp board
  */
-#define CONFIG_SOFT_I2C			1	/* I2C bit-banged		*/
+//#define CONFIG_SOFT_I2C			1	/* I2C bit-banged		*/
+#define CONFIG_HARD_I2C			1	/* I2C TWI */
+#define CONFIG_TWICLK_KHZ		50
 /*
  * Software (bit-bang) I2C driver configuration
  */

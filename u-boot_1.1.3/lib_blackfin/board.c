@@ -228,7 +228,7 @@ void board_init_f(ulong bootflag)
 	board_init_r((gd_t *) gd, 0x20000010);
 }
 
-#ifdef CONFIG_SOFT_I2C
+#ifdef CONFIG_SOFT_I2C || CONFIG_HARD_I2C
 static int init_func_i2c(void)
 {
 	puts("I2C:   ");
@@ -341,7 +341,7 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	swap_to(FLASH);
 #endif
 #endif
-#ifdef CONFIG_SOFT_I2C
+#ifdef CONFIG_SOFT_I2C || CONFIG_HARD_I2C
 	init_func_i2c();
 #endif
 

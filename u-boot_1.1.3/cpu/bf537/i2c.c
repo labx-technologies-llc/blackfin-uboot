@@ -298,7 +298,6 @@ transfer_error:
 
 void i2c_init(int speed, int slaveaddr)
 {
-	printf("i2c twi init.\n");
 	i2c_reset();
 }
 
