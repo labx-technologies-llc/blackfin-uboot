@@ -1,0 +1,501 @@
+#!/usr/bin/expect
+log_file spi_flash_test_log
+send_user "Starting spi_flash_test.exp \n"
+
+set uboot_path ~/checkouts/uboot/u-boot_1.1.3
+set dxe_filename linux
+set ttydev /dev/ttyS0
+
+set BIN2LDR_PATH $uboot_path/tools/bin2ldr
+
+set board_type [lindex $argv 0]
+send_log "\n#### board_type is $board_type\n"
+
+if { $argc < 1} {
+puts "Please input: board_type."
+exit
+}
+
+if { $board_type == "BF533-STAMP" } {
+        set CONFIG_TYPE serial_stamp_config
+} elseif { $board_type == "BF537-STAMP" } {
+        set CONFIG_TYPE serial_bf537_config
+}
+
+proc step { message } {
+
+  global step_sequence_number
+
+  puts "\n*******************************************************************"
+  puts "STEP $step_sequence_number: $message\n\n"
+  send_log "\n************** STEP $step_sequence_number: $message\n\n"
+  incr step_sequence_number
+}
+
+set step_sequence_number    1
+
+cd $uboot_path
+expect "u-boot_1.1.3>"
+
+step "make clean"
+
+spawn make distclean
+set timeout 500
+while 1 {
+      expect {
+	     "u-boot_1.1.3>" { }
+	     "/bin/sh" { }
+	     eof { break }
+      }
+}
+
+spawn make clean
+set timeout 500
+while 1 {
+      expect {
+	     "u-boot_1.1.3>" { }
+	     "/bin/sh" { }
+	     eof { break }
+      }
+}
+
+step " make config"
+
+spawn make mrproper
+set timeout 500
+while 1 {
+      expect {
+	     "u-boot_1.1.3>" { }
+	     "/bin/sh" { }
+	     eof { break }
+      }
+}
+
+spawn make $CONFIG_TYPE
+set timeout 500
+while 1 {
+      expect {
+	     "u-boot_1.1.3>" { }
+	     "/bin/sh" { }
+	     eof { break }
+      }
+}
+
+step " make"
+
+cd $uboot_path
+spawn make
+set timeout 1200
+set bfin_make_status failure
+while 1 {
+      expect {
+	     "u-boot_1.1.3" { set bfin_make_status success }
+	     "Error" {set bfin_make_status failure }
+	     "/bin/sh" { }
+	     eof { break }
+      }
+}
+
+if { $bfin_make_status == "failure" } {
+      puts "ERROR: Error somewhere during make"
+#      lappend result "FATAL ERROR: Error somewhere in make"
+}    
+     
+cd $BIN2LDR_PATH
+exec chmod 777 runme.sh
+spawn ./runme.sh
+set timeout 500
+while 1 {
+      expect {
+	     "u-boot_1.1.3" {  }
+	     "/bin/sh" { }
+	     eof { break }
+      }
+}
+
+step " copy app.ldr"
+exec cp app.ldr  /tftpboot
+
+step " copy u-boot.bin"
+  
+set timeout 8
+cd $uboot_path
+exec cp u-boot.bin  /tftpboot
+
+puts "Uboot building finishes!"
+
+
+step "Start kermit"
+
+send_user "Start up kermit on port $ttydev\n"
+
+# Now set up the kermit parameters.
+#  I want these all contained in this file to make it easier for users.
+#  This just builds up a list of commands which are sent to kermit.
+#
+set kparams     [list "set line $ttydev\r"]
+lappend kparams "set speed 57600\r"
+lappend kparams "set carrier-watch off\r"
+lappend kparams "set handshake none\r"
+lappend kparams "set flow-control none\r"
+lappend kparams "robust\r"
+lappend kparams "set file type bin\r"
+lappend kparams "set file name lit\r"
+lappend kparams "set rec pack 1000\r"
+lappend kparams "set send pack 1000\r"
+lappend kparams "set window 5\r"
+lappend kparams "set escape 255\r"
+set nkparams [llength $kparams]
+
+set timeout 50
+spawn kermit
+# We need to save the id because resetting the board will overwrite it.
+set kermit_spawn_id $spawn_id
+
+while 1 {
+	expect {
+	        "Type ?" { }
+		"ermit>" { break }
+		"not found" {
+                   send_error "ERROR: Failed to start up kermit\n"
+                   all_done
+		}
+		timeout {
+                   send_error "ERROR: Time out starting up kermit\n"
+                   all_done
+		}
+	}
+}
+
+for {set i 0} {$i < $nkparams} {incr i} {
+    send [lindex $kparams $i]
+
+   while 1 {
+	  expect {
+		 "ermit>" { break }
+
+		 "\\?\[A-Z]" {
+                   send_error "ERROR: Failed to set up kermit parameters\n"
+                    all_done
+		 }
+
+		 timeout {
+                    send_error "ERROR: Time out setting up kermit parameters\n"
+                    all_done
+		 }
+	  }
+    }
+}
+
+send "connect\r"
+while 1 {
+	expect {
+		"ype the escape character*" {
+		     break  }
+		timeout {
+		     send_error "ERROR: Can't connect to serial port\n"
+		     exit }
+	}
+}
+
+send_user "Try to figure out if we are in u-boot or the kernel"
+set where_are_we 0
+
+send "\r"
+send "\r"
+  sleep 10
+   set send_slow {1 .1}  
+   set timeout 50
+   while 1 {
+   expect {
+            ">" {
+	    send -s "version\r"
+	     break
+	    }	
+	    
+	    "root:~>" {
+	    send -s "version\r"
+	     break
+	    }	      
+	     
+             timeout {
+	     send_user "failed version\n"
+	     break
+	     }
+	   }   
+    } 
+
+
+set timeout 20
+expect {
+
+    "U-Boot" {
+	send_user "We are in u-boot\n"
+	set where_are_we "uboot"
+    }
+
+    "Linux" {
+	send_user "We are in the kernel\n"
+	set where_are_we "kernel"
+    }
+
+    timeout {
+	send_user "Can't tell if we are in u-boot or the kernel\n"
+    }
+}
+
+if { $where_are_we == "uboot" } {
+    set timeout 50
+    expect ">"
+    send_user "sending reset\n"
+    send -s "reset\r"
+} else {
+    if { $where_are_we == "kernel" } {
+	set timeout 60
+	expect "root:~>"
+	send_user "sending reboot\n"
+	send -s "reboot\r"
+    } else {
+	# If we don't know where we are, hit control-C and enter
+	set timeout 10
+	expect "*"
+	expect "*"
+	send_user "sending control-C\n"
+	send "\3"
+	sleep 1
+	send "\r"
+    }
+}
+
+ while 1 {
+       expect {
+
+         "Hit any key " {
+	     send "\3"
+	     
+         }
+
+	 ">" {
+	     send_user "successful reset attempt\n"
+	     #set temp_status_flag $TEST_PASS
+	     break
+	 }
+
+         timeout {
+	     send_user "failed reset attempt\n"
+            
+            break
+         }
+      }
+   }
+	
+step "Starting test..."
+
+   send_user "set uboot environment\n"
+   send -s "set ipaddr 10.100.4.50\r"
+   send -s "set serverip 10.100.4.174\r"
+   send -s "set bootcmd run tftp_boot\r"
+   send -s "save\r"    
+   while 1 {
+	expect {
+	
+	   -re "Writing to Flash... done" {
+                expect ">"
+                break
+        } 
+	    	    
+	    timeout {
+		break
+	    }
+	}
+    }
+    
+   set timeout 1200
+  
+    
+    send -s "tftp 0x1000000 app.ldr\r"
+    while 1 {
+	expect {
+	
+	    -re "Bytes transferred = \[0-9]+ \\\((\[0-9a-fA-F]+) hex\\\)" {
+                set image_size $expect_out(1,string)
+                send_user "Image size is $image_size\n"
+                break
+        }
+	   	    
+	    	    
+	    timeout {
+		send_user "ERROR: Uboot locked up during tftp\n"
+		
+		break
+	    }
+	}
+    }
+    
+   
+       set timeout 800	
+       send -s "eeprom write 0x1000000 0x0 0x$image_size\r"
+       while 1 {
+    		expect {
+    			
+    	    	    "done" {
+				send_user "  eeprom write success\n"
+				break
+			}
+	
+		    
+		    timeout {
+	    			send_user "ERROR: eeprom write failed\n"
+	    	#		recover
+	    			break
+			}
+    		}
+	}
+
+puts "\n###########################################################################################\n"
+puts "Power off, switch S1 to 11 on BF533, or SW16 to 3 on Bf537."
+puts "\n###########################################################################################\n"	
+send_log "\n###########################################################################################\n"
+send_log "Power off, switch S1 to 00 on BF533, or SW16 to 3 on Bf537."
+send_log "\n###########################################################################################\n"		
+
+set timeout 1000
+   while 1 {
+       expect {
+         "Hit any key" {
+	     send "\3"
+	     break
+	     
+         }
+
+	 timeout {
+	     send_user "failed reset attempt\n"
+            
+            break
+         }
+      }
+   }
+   expect ">"
+   send_user "set uboot environment\n"
+   send -s "set ipaddr 10.100.4.50\r"
+   send -s "set serverip 10.100.4.174\r"
+   send -s "set bootcmd run tftp_boot\r"
+   
+   set timeout 10
+   send -s "save\r"
+   while 1 {
+	expect {
+	
+	   -re "Saving Environment to EEPROM" {
+                expect ">"
+                break
+        } 
+	    	    
+	    timeout {				
+		break
+	    }
+	}
+    }
+    
+    send -s "tftp 0x1000000 uImage\r"
+    while 1 {
+	expect {
+	
+	   -re "Bytes transferred = \[0-9]+ \\\((\[0-9a-fA-F]+) hex\\\)" {
+                set image_size $expect_out(1,string)
+                send_user "Image size is $image_size\n"
+                break
+        }
+ 
+	    	    
+	    timeout {
+		send_user "ERROR: Uboot locked up during tftp\n"
+		
+		break
+	    }
+	}
+    }
+    
+       
+       set timeout 800	
+       send -s "eeprom write 0x1000000 0x40000 0x$image_size\r"
+       while 1 {
+    		expect {
+    
+    	    	    "EEPROM*done" {				
+				send_user "  eeprom write success\n"
+				break
+			}
+	
+		   	
+		    timeout {
+	    			send_user "ERROR: eeprom write failed\n"
+	    	#		recover
+	    			break
+			}
+    		}
+	}
+       send -s "eeprom read 0x2000000 0x40000 0x$image_size\r"
+       
+       set timeout 400		
+	while 1 {
+	    expect {
+	    
+	    	"EEPROM*done" {
+	    		send_user " eeprom read success\n"
+			break
+		}
+				
+		timeout {
+		    send_user "ERROR:  eeprom read failed\n"
+		    
+		    break
+		}
+	    }
+	}
+	
+        set timeout 500
+ 	
+	send -s "cmp.b 0x1000000 0x2000000 0x$image_size\r"
+	while 1 {
+	    expect {
+	    
+	    	"Total of [expr 0x$image_size] bytes were the same" {
+	    		send_user " cmp the same\n"
+		}
+		
+		">" {
+			break
+		}
+		
+		timeout {
+		    send_user "ERROR:  cmp failed\n"
+		    
+		    break
+		}
+	    }
+	}
+    
+    set timeout 50
+    expect ">"
+   
+    send -s "bootm 0x2000000\r" 
+  
+  set timeout 500   
+  while 1 {
+  expect {
+            "root:~>" {
+	    send_user "\nEnding spi_flash_test.exp \n"    
+	    break
+	    }	      
+	     
+             timeout {
+	     send_user "failed spi_flash test\n"
+	     break
+	     }
+	   }   
+    } 
+  
+  log_file
+
+    

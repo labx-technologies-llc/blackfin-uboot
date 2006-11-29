@@ -1,0 +1,40 @@
+#!/bin/sh
+USER=/home/test
+CHECKOUT=$USER/checkouts
+UBOOT_SCRIPTS=$USER/test_scripts/uboot
+NOTIFY=grace.pan@analog.com
+CVS_SERVER=10.99.22.20
+CVS_ROOT=/cvsroot
+
+
+## check out uboot
+if [ ! -d $CHECKOUT ] ; then
+  mkdir -p $CHECKOUT
+fi
+if [ ! -d $CHECKOUT/uboot ] ; then
+  mkdir -p $CHECKOUT/uboot
+fi
+
+
+## check out uboot
+if [ ! -d $CHECKOUT ] ; then
+  mkdir -p $CHECKOUT
+fi
+if [ ! -d $CHECKOUT/uboot ] ; then
+  mkdir -p $CHECKOUT/uboot
+fi
+
+
+  echo -n "Removing checkouts   " ; date
+  
+ # rm -rf $CHECKOUT/kernel/*
+ # cd $CHECKOUT/kernel
+ # echo -n "Checking out kernel     " ; date
+ # cvs -d :pserver:anonymous@$CVS_SERVER:$CVS_ROOT/uclinux533 checkout . 1>/dev/null 2>/dev/null  
+  
+  rm -rf $CHECKOUT/uboot/*
+  cd $CHECKOUT/uboot
+  echo -n "Checking out uboot     " ; date
+  cvs -d :pserver:anonymous@$CVS_SERVER:$CVS_ROOT/uboot533 checkout -r branch_R06R2  . 1>/dev/null 2>/dev/null
+  
+  

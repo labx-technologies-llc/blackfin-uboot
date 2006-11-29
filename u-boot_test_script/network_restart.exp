@@ -1,0 +1,56 @@
+#!/usr/bin/expect
+log_file network_restart_log
+send_user "Starting network_restart.exp\n"
+set password "blackfin"
+set send_slow {1 .1}
+
+
+set timeout 10
+spawn su 
+sleep .5
+while 1 {
+   expect {
+      "Password:" {
+         send "$password\r"
+         break
+      }
+
+      timeout {
+            puts "Fail . "
+            break
+         }
+     }
+}
+ 
+while 1 {
+   expect {
+      "#" {
+         puts "su success.\n"
+         break
+      }
+
+      timeout {
+            puts "Fail su as root. "
+            break
+         }
+     }
+}
+set su_id $spawn_id
+
+set timeout 600
+
+send -s "/etc/init.d/network restart\r"
+while 1 {
+   expect {
+      "#" { 
+           puts "Finished network restart."
+     break
+      }
+
+      timeout {
+            puts "Failed to restart network." 
+            break
+         }
+     }
+}
+
