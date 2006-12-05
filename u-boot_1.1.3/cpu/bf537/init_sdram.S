@@ -6,7 +6,7 @@
 #include <asm/mem_init.h>
 .global init_sdram;
 
-#ifndef BF537_UART_BOOT
+#if (BFIN_BOOT_MODE != BF537_UART_BOOT)
 #if (CONFIG_CCLK_DIV == 1)
 #define CONFIG_CCLK_ACT_DIV   CCLK_DIV1
 #endif
@@ -30,23 +30,21 @@ init_sdram:
 	[--SP] = (R7:0);
 	[--SP] = (P5:0);
 
-#ifdef CONFIG_SERIAL_BF537
+#if (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
         p0.h = hi(SIC_IWR);
         p0.l = lo(SIC_IWR);
         r0.l = 0x1;
         w[p0] = r0.l;
         SSYNC;
-#endif
 
-#if defined(CONFIG_SERIAL_STAMP) || defined(CONFIG_SERIAL_BF537)
 	p0.h = hi(SPI_BAUD);
 	p0.l = lo(SPI_BAUD);
 	r0.l = CONFIG_SPI_BAUD;
 	w[p0] = r0.l;
-    SSYNC;
+    	SSYNC;
 #endif
 
-#ifndef BF537_UART_BOOT
+#if (BFIN_BOOT_MODE != BF537_UART_BOOT)
 
 #ifdef CONFIG_BF537
 	/* Enable PHY CLK buffer output */
