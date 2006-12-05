@@ -22,8 +22,8 @@
 #define BF537_TWI_SLAVE_BOOT	0x0017	/* Bootmode 6: TWI slave mode boot from EEPROM				*/
 #define BF537_UART_BOOT		0x0018	/* Bootmode 7: UART slave mdoe boot via UART host			*/
 /* Define the boot mode */
-//#define BFIN_BOOT_MODE		BF537_BYPASS_BOOT
-#define BFIN_BOOT_MODE		BF537_SPI_MASTER_BOOT
+#define BFIN_BOOT_MODE		BF537_BYPASS_BOOT
+//#define BFIN_BOOT_MODE		BF537_SPI_MASTER_BOOT
 
 /* Define if want to do post memory test */
 #undef CONFIG_POST_TEST
