@@ -6,7 +6,6 @@
 #include <asm/mem_init.h>
 .global init_sdram;
 
-#ifndef BF537_UART_BOOT
 #if (CONFIG_CCLK_DIV == 1)
 #define CONFIG_CCLK_ACT_DIV   CCLK_DIV1
 #endif
@@ -21,7 +20,6 @@
 #endif
 #ifndef CONFIG_CCLK_ACT_DIV
 #define CONFIG_CCLK_ACT_DIV   CONFIG_CCLK_DIV_not_defined_properly
-#endif
 #endif
 
 init_sdram:

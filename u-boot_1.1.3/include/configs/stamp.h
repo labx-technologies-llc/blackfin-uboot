@@ -45,10 +45,8 @@
 #define BFIN_BOOT_MODE		BF533_BYPASS_BOOT
 //#define BFIN_BOOT_MODE		BF533_SPI_BOOT
 
-#if (BFIN_BOOT_MODE != BF533_BYPASS_BOOT)
 /* Define where the uboot will be loaded by on-chip boot rom */
 #define APP_ENTRY 0x00001000
-#endif
 
 /*
  * Stringize definitions - needed for environmental settings
