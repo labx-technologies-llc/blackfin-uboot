@@ -42,8 +42,8 @@
 #define BF533_PARA_BOOT		0x0002  /* Bootmode 1: Boot from 8-bit or 16-bit flash */
 #define BF533_SPI_BOOT		0x0004	/* Bootmode 3: Boot from SPI flash		*/
 /* Define the boot mode */
-//#define BFIN_BOOT_MODE		BF533_BYPASS_BOOT
-#define BFIN_BOOT_MODE		BF533_SPI_BOOT
+#define BFIN_BOOT_MODE		BF533_BYPASS_BOOT
+//#define BFIN_BOOT_MODE		BF533_SPI_BOOT
 
 #if (BFIN_BOOT_MODE != BF533_BYPASS_BOOT)
 /* Define where the uboot will be loaded by on-chip boot rom */

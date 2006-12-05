@@ -39,7 +39,7 @@ MEMORY
 SECTIONS
 {
   /* Read-only sections, merged into text segment: */
-  . = 0x1000;
+  . = + SIZEOF_HEADERS; /*0x1000;*/
   .interp : { *(.interp) }
   .hash          : { *(.hash)		}
   .dynsym        : { *(.dynsym)		}
@@ -87,7 +87,7 @@ SECTIONS
     *(EXCLUDE_FILE (board/bf537-stamp/post-memory.o) .text)	
     *(.fixup)
     *(.got1)
-  } > ram
+  }  > ram 
   _etext = .;
   PROVIDE (etext = .);
   .text_l1	:

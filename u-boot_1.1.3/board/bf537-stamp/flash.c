@@ -27,6 +27,8 @@
  */
 
 #include <malloc.h>
+#include <config.h>
+
 #include "flash-defines.h"
 
 void flash_reset(void)
@@ -93,7 +95,9 @@ unsigned long flash_init(void)
 
 	/* flash_protect (int flag, ulong from, ulong to, flash_info_t *info) */
 	(void)flash_protect(FLAG_PROTECT_SET,CFG_FLASH_BASE,(flash_info[0].start[2] - 1),&flash_info[0]);
+#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
 	(void)flash_protect(FLAG_PROTECT_SET, 0x203F0000, 0x203FFFFF, &flash_info[0]);
+#endif
 
 	return (size_b);
 }
@@ -143,6 +147,7 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 
 	cnt = s_last - s_first + 1;
 
+#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
 	printf("Erasing Flash locations, Please Wait\n");
 	for (i = s_first; i <= s_last; i++) {
 		if (info->protect[i] == 0) {	/* not protected */
@@ -152,6 +157,25 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 			}
 		}
 	}
+#elif (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
+	if (cnt == FLASH_TOT_SECT) {
+		printf("Erasing flash, Please Wait \n");
+		if(erase_flash() < 0) {
+			printf("Erasing flash failed \n");
+			return FLASH_FAIL;
+		}
+	} else {
+		printf("Erasing Flash locations, Please Wait\n");
+		for (i = s_first; i <= s_last; i++) {
+			if (info->protect[i] == 0) {	/* not protected */
+				if(erase_block_flash(i) < 0) {
+					printf("Error Sector erasing \n");
+					return FLASH_FAIL;
+				}
+			}
+		}
+	}
+#endif
 	printf ("\n");
 	return FLASH_SUCCESS;
 }
@@ -226,6 +250,10 @@ int write_flash(long nOffset, int nValue)
 	addr = (CFG_FLASH_BASE + nOffset);
 	*(unsigned volatile short *) addr = nValue;
 	__builtin_bfin_ssync();
+#if (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
+	if(icache_status())
+		udelay(CONFIG_CCLK_HZ/1000000);
+#endif
 	return FLASH_SUCCESS;
 }
 

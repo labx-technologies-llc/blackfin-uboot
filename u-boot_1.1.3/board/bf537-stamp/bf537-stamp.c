@@ -32,6 +32,7 @@
 
 #define POST_WORD_ADDR 0xFF903FFC
 
+#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
 /*
  * the bootldr command loads an address, checks to see if there
  *   is a Boot stream that the on-chip BOOTROM can understand,
@@ -80,6 +81,7 @@ int do_bootldr (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 U_BOOT_CMD(bootldr,2,0,do_bootldr,
 	"bootldr - boot ldr image from memory\n",
 	"[addr]\n         - boot ldr image stored in memory\n");
+#endif
 
 int checkboard(void)
 {
@@ -148,6 +150,7 @@ long int initdram(int board_type)
 
 #if defined(CONFIG_MISC_INIT_R)
 /* miscellaneous platform dependent initialisations */
+#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
 int misc_init_r(void)
 {
 	char nid[32];
@@ -179,6 +182,12 @@ int misc_init_r(void)
 #endif
 	return 0;
 }
+#else
+int misc_init_r(void)
+{
+	return 0;
+}
+#endif
 #endif
 
 #if (CONFIG_COMMANDS & CFG_CMD_NAND) 
@@ -201,11 +210,46 @@ void nand_init(void) {
 #endif
 
 #ifdef CONFIG_POST
+#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
 /* Using sw10-PF5 as the hotkey */
 int post_hotkeys_pressed(void)
 {
 		return 0;
 }
+#else
+/* Using sw10-PF5 as the hotkey */
+int post_hotkeys_pressed(void)
+{
+	int delay = 3;
+	int i;
+	unsigned short value;
+	
+	*pPORTF_FER   &= ~PF5;
+	*pPORTFIO_DIR &= ~PF5;
+	*pPORTFIO_INEN|=  PF5;
+	
+	printf("########Press SW10 to enter Memory POST########: %2d ",delay);	
+	while(delay--){
+		for(i=0;i<100;i++){
+			value = *pPORTFIO & PF5;
+			if(value != 0){
+				break;
+				}
+			udelay(10000);		
+			}
+		printf("\b\b\b%2d ",delay);
+	}
+	printf("\b\b\b 0");
+	printf("\n");
+	if(value == 0)
+		return 0;
+	else
+		{
+		printf("Hotkey has been pressed, Enter POST . . . . . .\n");
+		return 1;
+		}
+}
+#endif
 #endif
 
 #if defined(CONFIG_POST) || defined(CONFIG_LOGBUFFER)
