@@ -440,14 +440,6 @@ WAIT_HERE:
 _real_start:
 	[ -- sp ] = reti;
 
-#if defined(CONFIG_EZKIT533) || defined(CONFIG_EZKIT561)
-	p0.l = (WDOG_CTL & 0xFFFF);
-	p0.h = (WDOG_CTL >> 16);
-	r0 = WATCHDOG_DISABLE(z);
-	w[p0] = r0;
-#endif
-
-
 #ifdef CONFIG_BF537
 /* Initialise General-Purpose I/O Modules on BF537 
  * Rev 0.0 Anomaly 05000212 - PORTx_FER, 
