@@ -1,0 +1,238 @@
+#!/usr/bin/expect
+#
+# Copyright (C) 2004 Bruce Giese
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2, or (at your option) any
+# later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.
+#
+#
+
+# general definitions
+set TRUE      1
+set FALSE     0
+set SUCCESS   "success"
+set FAILURE   "failure"
+set WARNING   "warning"
+set send_slow {1 .01}
+set password                "blackfin"
+
+# Default logfiles contain this core as a unique ID.
+set logcore  [exec date +%b-%d-%G-%H-%M]
+
+# directories and file locations
+set user                    test
+set uboot_scripts_dir       "/home/$user/test_scripts/uboot"
+set log_dir                 "/home/$user/test_scripts/uboot/logs"
+set default_test_dir        "/home/$user/test_scripts/uboot/under_test"
+set tftpboot_dir            "/tftpboot"
+set uclinux_dirname         "/home/$user/test_scripts/uboot/under_test"
+set uclinux_basename        "uClinux-dist"
+set uclinux_path            "$uclinux_dirname/$uclinux_basename"
+set dxe_dir                 "linux-2.6.x"
+set dxe_dirname             "$uclinux_path/$dxe_dir"
+set dxe_filename            "linux"
+set KERMIT_LOCK_DIR         "/var/lock"
+set ethtool_path            /home/$user/ethtool-3
+
+# If using a hacked up printer cable to reset the board,
+# then we need to know which port it's attached to
+# else, you don't care which is selected.
+set STANDARD_PARALLEL_PORT     0
+set ALTERNATE_PARALLEL_PORT    1
+set HACKED_PRINTER_CABLE_PORT  $ALTERNATE_PARALLEL_PORT
+
+# Misc
+set ip_subnet               "10.100.4" 
+set host_ipaddr             "$ip_subnet.174"
+set ttydev                  /dev/ttyS0
+
+set step_sequence_number    1
+
+# directory and file locations
+set config_loc  "include/config.h"
+set configs_loc  "include/configs"
+set uboot_test_dirname  "/home/test/checkouts/uboot"
+set uboot_basename  "u-boot_1.1.3"
+set uboot_test_loc  "$uboot_test_dirname/$uboot_basename"
+set uboot_bin_loc   "$uboot_test_loc/u-boot.bin"
+set uboot_dir  $uboot_test_loc
+
+
+# Hardware definitions (not found in config file)
+set MIN_VCO_MULTIPLIER        1
+set MAX_VCO_MULTIPLIER       63
+set MIN_SCLK_DIVIDER         1
+set MAX_SCLK_DIVIDER         15
+set MIN_CORE_CLOCK           100000000
+set MAX_CORE_CLOCK           500000000
+set MIN_SYS_CLOCK            30000000
+set MAX_SYS_CLOCK            133000000
+
+
+# Set up any directories that don't exist yet.
+proc create_dir_if_needed {dirname} {
+    if { [file exists $dirname] == 0} {
+	send_user "creating $dirname\n"
+	if [catch {exec mkdir -p $dirname}] {
+	    send_error "ERROR: Can't create $dirname"
+	}
+    }
+}
+
+create_dir_if_needed $uboot_test_dirname
+create_dir_if_needed $log_dir
+
+###########################################################
+#
+#  Procedures
+#
+
+#  Step
+#
+#  This procedure delineates steps in the testing within the
+#  log file and screen output.
+#
+#
+proc step { message } {
+    global step_sequence_number
+
+    puts "\n*****************************"
+    puts "STEP $step_sequence_number: $message\n\n"
+    send_log "STEP $step_sequence_number: $message\n\n"
+    incr step_sequence_number 
+}
+
+#
+#  Get the configuration file associated with the given
+#  build of uboot.  NOTE: you must do a make <config>
+#  first, where config is the board specific configuration.
+#
+set get_uboot_config_file_error "ERROR-in-get_uboot_config_file"
+
+proc get_uboot_config_file {uboot_loc} {
+    global config_loc
+    global configs_loc
+    global get_uboot_config_file_error
+
+    set configh "$uboot_loc/$config_loc"
+    set configs "$uboot_loc/$configs_loc"
+    
+    log_user 1
+    set timeout 2
+    spawn grep configs $configh
+    expect {
+	-re "configs/(.*\.h)" {
+	    set value $expect_out(1,string)
+	}
+	
+	-re "No such file or directory" {
+	    send_error "Error: can't find configuration file $configh, did you make ___config uboot yet?"
+	    return $get_uboot_config_file_error
+	}
+	
+	timeout {
+	    send_error "Error: can't find configuration file $configh, did you make ___config uboot yet?"
+	    return $get_uboot_config_file_error
+	}
+    }
+    expect eof
+
+    return "$configs/$value"
+}
+
+
+#
+#  This takes a u-boot configuration parameter name and
+#  returns the value associated with that parameter or
+#  an error indicator.
+#
+set get_uboot_define_error "ERROR-in-get_uboot_define"
+
+proc get_uboot_define { param uboot_loc } {
+    global get_uboot_define_error
+    global get_uboot_config_file_error
+
+    set config_file [get_uboot_config_file $uboot_loc]
+    if { $config_file == $get_uboot_config_file_error} {
+	send_error "Error getting config file\n"
+	return $get_uboot_define_error
+    }
+    set foo "define\[^A-Za-z0-9]$param"
+    spawn grep $foo $config_file
+    expect {
+
+	-re "define\[^A-Za-z0-9]$param\[ \t\"]+(\[^\t\"\n\r])\[ \t\"]+/" {
+	    set value $expect_out(1,string)
+	}
+	
+	-re "define\[^A-Za-z0-9]$param\[ \t\"]+(\[^\t\"\n\r]+)" {
+	    set value $expect_out(1,string)
+	}
+	
+	-re "No such file or directory" {
+	    send_error "ERROR: can't read config file $config_file\n"
+	    return $get_uboot_define_error
+	}
+	
+	timeout {
+	    send_error "ERROR: can't read config file $config_file\n"
+	    return $get_uboot_define_error
+	}
+	
+	eof {
+	    send_error "ERROR: eof found before the expected text\n"
+	    return $get_uboot_define_error
+	}
+    }
+    expect eof
+
+    return $value
+}
+
+
+#
+#  Change the value of a u-boot configuration parameter.
+#
+proc set_uboot_define {param new_value uboot_loc} {
+    global get_uboot_define_error
+    global get_uboot_config_file_error
+    global SUCCESS
+    global FAILURE
+
+    set config_file [get_uboot_config_file $uboot_loc]
+    if { $config_file == $get_uboot_config_file_error} {
+	send_error "Error getting config file in set_uboot_define\n"
+	return $FAILURE
+    }
+
+    set old_value [get_uboot_define $param $uboot_loc]
+    if { $old_value == $get_uboot_define_error } {
+	send_error "ERROR: couldn't get old value of param\n"
+	return $FAILURE
+    }
+
+    send_user "changing u-boot $param from $old_value to \"$new_value\"\n"
+    exec sed -e \{s/$param\t*$old_value/$param\t$new_value/\} \
+    $config_file > $config_file.temp
+
+    exec mv $config_file.temp $config_file
+
+    set changed_value [get_uboot_define $param $uboot_loc]
+    if { $changed_value != $new_value } {
+	send_error "ERROR: new value didn't seem to get set correctly\n"
+	return $FAILURE
+    }
+
+    return $SUCCESS
+}

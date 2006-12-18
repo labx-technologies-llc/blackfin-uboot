@@ -1,0 +1,146 @@
+#!/usr/bin/expect
+
+set uboot_path /home/test/checkouts/uboot/u-boot_1.1.3 
+
+
+proc usage {} {
+    global argv0
+
+    send_user "\nUsage:  $argv0  BOARD_TYPE [ NUM  VCO_MULT  CCLK_DIV  SCLK_DIV ] \n"
+    send_user "\nBOARD_TYPE: BF533-STAMP BF537-STAMP BF561-EZKIT BF533-EZKIT BF537-EZKIT etc.\n"
+    send_user "\n********************************************************************\n"
+    send_user "\nFor BF533-STAMP:\n"
+    send_user "\n NUM CCLK(Mhz)  SCLK (Mhz)   VCO_MULT  CCLK_DIV  SCLK_DIV   \n"
+    send_user "\n 0   300        100         36          1         5       \n"
+    send_user "\n 1   300        100         36          4         8       \n"
+    send_user "\n 2   300        100         50          1         15      \n"
+    send_user "\n 3   300        100         50          1         5       \n"
+    send_user "\n********************************************************************\n"
+
+    send_user "\n********************************************************************\n"
+    send_user "\nFor BF537-STAMP:\n"
+    send_user "\n NUM CCLK(Mhz)  SCLK (Mhz)   VCO_MULT  CCLK_DIV  SCLK_DIV  \n"
+    send_user "\n 0   300        100         20          1         5       \n"
+    send_user "\n 1   300        100         16          4         8       \n"
+    send_user "\n 2   300        100         20          1         10      \n"
+    send_user "\n 3   300        100         22          1         5       \n"
+    send_user "\n********************************************************************\n"
+    exit
+}
+
+
+set argc [llength $argv]
+if { $argc < 1} {
+    usage
+}
+set board_type       [lindex $argv 0]
+
+set num              0
+if { $argc > 1} {
+set num              [lindex $argv 1]
+}
+
+if { $board_type == "BF533-STAMP" } {
+     set config_file stamp.h 
+	if { $num == "0" } {
+	   set vco_mult  36
+	   set cclk_div  1 
+	   set sclk_div  5
+	} elseif { $num == "1" } {
+	   set vco_mult  36
+	   set cclk_div  4 
+	   set sclk_div  8
+	} elseif { $num == "2" } {
+	   set vco_mult  50
+	   set cclk_div  1 
+	   set sclk_div  15
+	} elseif { $num == "3" } {
+	   set vco_mult  50
+	   set cclk_div  1 
+	   set sclk_div  5
+	} 	
+} elseif { $board_type == "BF537-STAMP" } {
+     set config_file bf537.h 
+	if { $num == "0" } {
+	   set vco_mult  20
+	   set cclk_div  1 
+	   set sclk_div  5
+	} elseif { $num == "1" } {
+	   set vco_mult  16
+	   set cclk_div  4 
+	   set sclk_div  8
+	} elseif { $num == "2" } {
+	   set vco_mult  20
+	   set cclk_div  1 
+	   set sclk_div  10
+	} elseif { $num == "3" } {
+	   set vco_mult  22
+	   set cclk_div  1 
+	   set sclk_div  5
+	} 	
+} elseif { $board_type == "BF561-EZKIT" } {
+    set config_file ezkit561.h
+} elseif { $board_type == "BF533-EZKIT" } {
+    set config_file ezkit533.h 
+} elseif { $board_type == "BF537-EZKIT" } {
+    set config_file stamp.h 
+} else { 
+    send_user "\n Unknown target board type.\n"
+    exit
+} 
+
+if { $argc > 4} {
+set vco_mult         [lindex $argv 2]
+set cclk_div         [lindex $argv 3]
+set sclk_div         [lindex $argv 4]
+
+}
+puts "VCO_MULT: $vco_mult ,CCLK_DIV: $cclk_div , SCLK_DIV $sclk_div ."
+
+cd $uboot_path
+sleep 3
+ set timeout 2
+      spawn ex include/configs/$config_file
+      expect {
+         "Entering Ex mode*Normal mode." { }
+
+         "already exists!" {
+            send "e\r"
+            sleep 1
+         }
+      }
+      sleep 1
+      send "/#define *CONFIG_VCO_MULT\r"
+      expect "#define *CONFIG_VCO_MULT"
+      send "d\r"
+      expect ":"
+      send "i\r"
+      sleep .5
+      send "#define CONFIG_VCO_MULT                   $vco_mult\r"
+      sleep .5
+      send ".\r"
+      expect ":"
+
+      send "/#define *CONFIG_CCLK_DIV\r"
+      expect "#define *CONFIG_CCLK_DIV"
+      send "d\r"
+      expect ":"
+      send "i\r"
+      sleep .5
+      send "#define CONFIG_CCLK_DIV                   $cclk_div\r"
+      sleep .5
+      send ".\r"
+      expect ":"
+
+      send "/#define *CONFIG_SCLK_DIV\r"
+      expect "#define *CONFIG_SCLK_DIV"
+      send "d\r"
+      expect ":"
+      send "i\r"
+      sleep .5
+      send "#define CONFIG_SCLK_DIV                   $sclk_div\r"
+      sleep .5
+      send ".\r"
+      expect ":"
+      send "wq\r"
+      expect eof

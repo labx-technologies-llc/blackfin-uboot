@@ -25,22 +25,19 @@
 #  This program performs substantial u-boot functional testing.
 #
 
-source ../config.exp
 source ./uboot-config.exp
 
 # grab the user selections.
-set ttydev            [lindex $argv 0]
-
-set board_type        [lindex $argv 1]
-set icache_status     [lindex $argv 2]
-set dcache_status     [lindex $argv 3]
+set board_type        [lindex $argv 0]
+set icache_status     [lindex $argv 1]
+set dcache_status     [lindex $argv 2]
 
 
 proc usage {} {
     global argv0
     global KERNEL_GZ_FILENAME
 
-    send_user "\nUsage:  $argv0  /dev/port board_type icache_status  dcache_status  \[various options]\n"
+    send_user "\nUsage:  $argv0  board_type icache_status  dcache_status  \[various options]\n"
     send_user "  --logfile  <log-file>\n"
     send_user "  --summary  <summary-log-file>\n"
     send_user "  --compare-file <file>\n"
@@ -94,6 +91,7 @@ set BDINFO_FLASHSIZE        "0x00400000"
 set KERNEL_FLASH_LOC        "0x20100000"
 set KERNEL_FLASH_END        "0x203FFFFF"
 set BIG_ELF_LOAD_ADDRESS    "0x3000000"
+set UBOOT_PROMPT             "stamp>"
 
 set L1_INSTRUCT_SRAM_ADDRESS "0xffa0b000"
 
@@ -104,7 +102,7 @@ set BDINFO_FLASHSIZE        "0x00400000"
 set KERNEL_FLASH_LOC        "0x20100000"
 set KERNEL_FLASH_END        "0x203EFFFF"
 set BIG_ELF_LOAD_ADDRESS    "0x2000000"
-
+set UBOOT_PROMPT             "bf537>"
 set L1_INSTRUCT_SRAM_ADDRESS "0xffa0b000"
 
 } elseif { $board_type == "BF561-EZKIT" } {
@@ -114,6 +112,7 @@ set TEST_DATE_SET                        0
 set TEST_DATE_SET_AFTER_POWER_CYCLE      0
 set TEST_SPI_FLASH			 0
 
+set UBOOT_PROMPT            ">"
 set BDINFO_FLASHSIZE        "0x00800000"
 set KERNEL_FLASH_LOC        "0x20100000"
 set KERNEL_FLASH_END        "0x207FFFFF"
@@ -125,6 +124,8 @@ set BIG_ELF_LOAD_ADDRESS    "0x2000000"
 } elseif { $board_type == "BF533-EZKIT" } {
 
 set TEST_SPI_FLASH			 0
+
+set UBOOT_PROMPT               ">"
 set BDINFO_FLASHSIZE           "0x00220000"
 set KERNEL_FLASH_LOC           "0x20040000"
 set KERNEL_FLASH_END           "0x2021ffff"
@@ -137,6 +138,7 @@ set TEST_JFFS2				 0
 
 } elseif { $board_type == "BF537-EZKIT" } {
 
+set UBOOT_PROMPT                ">"
 set TEST_SPI_FLASH			 0
 
 } else { 
@@ -1369,15 +1371,13 @@ set FLASH_WRITABLE_SECTOR   30   ;# Identify a flash location we can write to
 set AUTOSCR_TEST_FILE       "uboot-autoscr-test.img"
 # the autoscr file above will echo the characters below.
 set AUTOSCR_TEST_RESULT     "hello Robin"
-
 set LINUX_DXE_FILE          "linux.dxe"
-
-set BASE_RESULT             [get_uboot_define CFG_SDRAM_BASE $uboot_test_loc ]
 
 # The test bin file can by anything roughly 100,000 bytes decimal
 # HOWEVER, the binary should not contain any FF bytes.
 set TEST_BIN_FILE           "testfile.bin"
 
+set BASE_RESULT             [get_uboot_define CFG_SDRAM_BASE $uboot_test_loc ]
 set BDINFO_MEMSTART         [get_uboot_define CFG_SDRAM_BASE $uboot_test_loc ]
 set BDINFO_MEMSIZE          [get_uboot_define CFG_MAX_RAM_SIZE $uboot_test_loc ]
 set BDINFO_FLASHSTART       [get_uboot_define CFG_FLASH_BASE $uboot_test_loc ]
@@ -1399,16 +1399,10 @@ set SAVEENV_ITERATIONS      10
 # Number of times to attempt reset/reboot to get u-boot prompt.
 set RESET_RETRIES           5
 
-set send_slow {1 .01}
-
-set UBOOT_PROMPT [get_uboot_define CFG_PROMPT $uboot_test_loc ]
+#set UBOOT_PROMPT [get_uboot_define CFG_PROMPT $uboot_test_loc ]
 send_user "UBOOT_PROMPT = $UBOOT_PROMPT\n"
-
-#  These are sadly hard-coded and not taken from kernel configuration.
-set KERNEL_INDICATION       "Sash command shell"
 set KERNEL_PROMPT           ">"
-set password                "blackfin"
-set ethtool_path            /home/$user/ethtool-3
+set AUTOBOOT_PROMPT         "Hit any key to stop"
 
 # tftp_errors is important for counting any errors in tftp seen anywhere.
 # if this count is not zero, then don't claim tftp passes.
@@ -1416,7 +1410,6 @@ set tftp_errors             0
 set test_started            "...test was never started"
 
 # Set up defaults
-set log_dir                 "$SCRIPT_DIR/uboot/logs"
 set logfile                 "$log_dir/test-uboot-$logcore-detailed-log"
 set summary_logfile         "$log_dir/test-uboot-$logcore-summary-log"
 set compare_file            "/dev/null"
@@ -1424,7 +1417,7 @@ set starting_dir            [exec pwd]
 
 
 set argc [llength $argv]
-if { $argc < 4 } {
+if { $argc < 3 } {
     usage
 }
 
@@ -1460,7 +1453,6 @@ set test_started [exec date +%b-%d-%G-%I:%M%P]
 log_file $logfile
 
 send_user "Running u-boot testing on $test_started\n"
-send_user "ttydev=$ttydev\n"
 send_user "logfile=$logfile\n"
 
 

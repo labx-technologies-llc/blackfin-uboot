@@ -162,7 +162,7 @@ if { $where_are_we == "uboot" } {
    }
 	
        set timeout 800	
-       send -s "tftp 0x1000000 u-boot.bin\;protect off 0x20000000 0x2001ffff\;erase 0x20000000 0x2001ffff\;cp.b 0x1000000 0x20000000 0x20000\r"
+       send -s "run update\r"
        while 1 {
     		expect {	
 		    ">" {
