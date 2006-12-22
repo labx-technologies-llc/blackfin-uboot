@@ -1,0 +1,11 @@
+--- u-boot-1.1.6/common/environment.c	2006-11-02 22:15:01.000000000 +0800
++++ u-boot-blackfin/common/environment.c	2006-11-08 14:59:58.000000000 +0800
+@@ -84,7 +84,7 @@
+ #define GEN_VALUE(str) #str
+ #define GEN_ABS(name, value) \
+ 		asm (".globl " GEN_SYMNAME(name)); \
+-		asm (GEN_SYMNAME(name) " = " GEN_VALUE(value))
++		asm (".set " GEN_SYMNAME(name) ", " GEN_VALUE(value))
+ 
+ /*
+  * Macros to transform values

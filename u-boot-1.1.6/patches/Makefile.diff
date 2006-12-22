@@ -1,0 +1,91 @@
+--- u-boot-1.1.6/Makefile	2006-11-02 22:15:01.000000000 +0800
++++ u-boot-blackfin/Makefile	2006-11-08 17:11:59.000000000 +0800
+@@ -150,7 +150,7 @@
+ CROSS_COMPILE = mb-
+ endif
+ ifeq ($(ARCH),blackfin)
+-CROSS_COMPILE = bfin-elf-
++CROSS_COMPILE = bfin-uclinux-
+ endif
+ ifeq ($(ARCH),avr32)
+ CROSS_COMPILE = avr32-
+@@ -186,6 +186,17 @@
+ ifeq ($(CPU),bf533)
+ OBJS += cpu/$(CPU)/start1.o	cpu/$(CPU)/interrupt.o	cpu/$(CPU)/cache.o
+ OBJS += cpu/$(CPU)/cplbhdlr.o	cpu/$(CPU)/cplbmgr.o	cpu/$(CPU)/flush.o
++OBJS += cpu/$(CPU)/init_sdram.o
++endif
++ifeq ($(CPU),bf537)
++OBJS += cpu/$(CPU)/start1.o	cpu/$(CPU)/interrupt.o	cpu/$(CPU)/cache.o
++OBJS += cpu/$(CPU)/cplbhdlr.o	cpu/$(CPU)/cplbmgr.o	cpu/$(CPU)/flush.o
++OBJS += cpu/$(CPU)/init_sdram.o
++endif
++ifeq ($(CPU),bf561)
++OBJS += cpu/$(CPU)/start1.o     cpu/$(CPU)/interrupt.o  cpu/$(CPU)/cache.o
++OBJS += cpu/$(CPU)/cplbhdlr.o   cpu/$(CPU)/cplbmgr.o    cpu/$(CPU)/flush.o
++OBJS += cpu/$(CPU)/init_sdram.o
+ endif
+ 
+ OBJS := $(addprefix $(obj),$(OBJS))
+@@ -236,7 +247,7 @@
+ #########################################################################
+ #########################################################################
+ 
+-ALL = $(obj)u-boot.srec $(obj)u-boot.bin $(obj)System.map $(U_BOOT_NAND)
++ALL = $(obj)u-boot.srec $(obj)u-boot.bin $(obj)u-boot.ldr $(obj)System.map $(U_BOOT_NAND)
+ 
+ all:		$(ALL)
+ 
+@@ -249,6 +260,10 @@
+ $(obj)u-boot.bin:	$(obj)u-boot
+ 		$(OBJCOPY) ${OBJCFLAGS} -O binary $< $@
+ 
++$(obj)u-boot.ldr: u-boot.bin u-boot
++		$(MAKE) -C tools/bin2ldr
++		cp tools/bin2ldr/app.ldr u-boot.ldr
++
+ $(obj)u-boot.img:	$(obj)u-boot.bin
+ 		./tools/mkimage -A $(ARCH) -T firmware -C none \
+ 		-a $(TEXT_BASE) -e 0 \
+@@ -260,7 +275,7 @@
+ 		$(OBJDUMP) -d $< > $@
+ 
+ $(obj)u-boot:		depend version $(SUBDIRS) $(OBJS) $(LIBS) $(LDSCRIPT)
+-		UNDEF_SYM=`$(OBJDUMP) -x $(LIBS) |sed  -n -e 's/.*\(__u_boot_cmd_.*\)/-u\1/p'|sort|uniq`;\
++		UNDEF_SYM=`$(OBJDUMP) -x $(LIBS) |sed  -n -e 's/.*\(___u_boot_cmd_.*\)/-u\1/p'|sort|uniq`;\
+ 		cd $(LNDIR) && $(LD) $(LDFLAGS) $$UNDEF_SYM $(__OBJS) \
+ 			--start-group $(__LIBS) --end-group $(PLATFORM_LIBS) \
+ 			-Map u-boot.map -o u-boot
+@@ -2233,14 +2248,17 @@
+ #########################################################################
+ ## Blackfin
+ #########################################################################
+-ezkit533_config	:	unconfig
+-	@$(MKCONFIG) $(@:_config=) blackfin bf533 ezkit533
++bf533-ezkit_config	:	unconfig
++	@$(MKCONFIG) $(@:_config=) blackfin bf533 bf533-ezkit
++
++bf533-stamp_config	:	unconfig
++	@$(MKCONFIG) $(@:_config=) blackfin bf533 bf533-stamp
+ 
+-stamp_config	:	unconfig
+-	@$(MKCONFIG) $(@:_config=) blackfin bf533 stamp
++bf537-stamp_config	:	unconfig
++	@$(MKCONFIG) $(@:_config=) blackfin bf537 bf537-stamp
+ 
+-dspstamp_config	:	unconfig
+-	@$(MKCONFIG) $(@:_config=) blackfin bf533 dsp_stamp
++bf561-ezkit_config	:	unconfig
++	@$(MKCONFIG) $(@:_config=) blackfin bf561 bf561-ezkit
+ 
+ #========================================================================
+ # AVR32
+@@ -2272,6 +2290,8 @@
+ 	rm -f $(obj)tools/easylogo/easylogo $(obj)tools/bmp_logo
+ 	rm -f $(obj)tools/gdb/astest $(obj)tools/gdb/gdbcont $(obj)tools/gdb/gdbsend
+ 	rm -f $(obj)tools/env/fw_printenv $(obj)tools/env/fw_setenv
++	rm -f $(obj)tools/bin2ldr/app.bin $(obj)tools/bin2ldr/app.hex $(obj)tools/bin2ldr/app.ldr
++	rm -f $(obj)tools/bin2ldr/init_sdram* $(obj)tools/bin2ldr/jump $(obj)tools/bin2ldr/bin2ldr
+ 	rm -f $(obj)board/cray/L1/bootscript.c $(obj)board/cray/L1/bootscript.image
+ 	rm -f $(obj)board/netstar/eeprom $(obj)board/netstar/crcek $(obj)board/netstar/crcit
+ 	rm -f $(obj)board/netstar/*.srec $(obj)board/netstar/*.bin

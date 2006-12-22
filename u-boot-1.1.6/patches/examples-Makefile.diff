@@ -1,0 +1,24 @@
+--- u-boot-1.1.6/examples/Makefile	2006-11-02 22:15:01.000000000 +0800
++++ u-boot-blackfin/examples/Makefile	2006-11-16 12:39:19.000000000 +0800
+@@ -86,10 +86,12 @@
+ endif
+ 
+ ifeq ($(ARCH),blackfin)
++ifneq ($(BOARD),bf537-stamp)
+ ELF	+= smc91111_eeprom
+ SREC	+= smc91111_eeprom.srec
+ BIN 	+= smc91111_eeprom.bin
+ endif
++endif
+ 
+ # The following example is pretty 8xx specific...
+ ifeq ($(CPU),mpc8xx)
+@@ -157,7 +159,7 @@
+ $(ELF):
+ $(obj)%:	$(obj)%.o $(LIB)
+ 		$(LD) -g $(EX_LDFLAGS) -Ttext $(LOAD_ADDR) \
+-			-o $@ -e $(notdir $(<:.o=)) $< $(LIB) \
++			-o $@ -e $(notdir _$(<:.o=)) $< $(LIB) \
+ 			-L$(gcclibdir) -lgcc
+ 
+ $(SREC):

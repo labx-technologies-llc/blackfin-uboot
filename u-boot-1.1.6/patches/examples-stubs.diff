@@ -1,0 +1,25 @@
+--- u-boot-1.1.6/examples/stubs.c	2006-11-02 22:15:01.000000000 +0800
++++ u-boot-blackfin/examples/stubs.c	2006-11-08 15:04:02.000000000 +0800
+@@ -132,7 +132,7 @@
+  */
+ #define EXPORT_FUNC(x)			\
+ 	asm volatile (			\
+-"       .globl " #x "\n"		\
++"       .globl _" #x "\n_"		\
+ #x ":\n"				\
+ "	P0 = [P5 + %0]\n"		\
+ "	P0 = [P0 + %1]\n"		\
+@@ -170,11 +170,11 @@
+ #include <_exports.h>
+ }
+ 
+-extern unsigned long __bss_start, _end;
++extern unsigned long _bss_start, _end;
+ 
+ void app_startup(char **argv)
+ {
+-	unsigned long * cp = &__bss_start;
++	unsigned long * cp = &_bss_start;
+ 
+ 	/* Zero out BSS */
+ 	while (cp < &_end) {

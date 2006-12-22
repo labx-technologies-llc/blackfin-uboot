@@ -1,0 +1,7 @@
+common-cmd_bootm.diff
+common-cmd_elf.diff
+common-environment.diff
+config.diff
+examples-Makefile.diff
+examples-stubs.diff
+Makefile.diff
