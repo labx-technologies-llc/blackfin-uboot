@@ -57,10 +57,6 @@
 .global init_sdram;
 .global _icache_enable;
 .global _dcache_enable;
-#if defined(CONFIG_BF537)&&defined(CONFIG_POST)
-.global memory_post_test;
-.global post_flag;
-#endif 
 
 #if (CONFIG_CCLK_DIV == 1)
 #define CONFIG_CCLK_ACT_DIV   CCLK_DIV1
