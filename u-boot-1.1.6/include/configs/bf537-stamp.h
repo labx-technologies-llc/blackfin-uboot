@@ -144,7 +144,7 @@
 #  define ADD_IDE_CMD           0
 #endif
 
-#define CONFIG_BF537_NAND 		/* Add nand flash support */
+/*#define CONFIG_BF537_NAND */		/* Add nand flash support */
 
 #ifdef CONFIG_BF537_NAND
 #  define ADD_NAND_CMD		CFG_CMD_NAND
