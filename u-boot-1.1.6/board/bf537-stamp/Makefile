@@ -29,7 +29,7 @@ include $(TOPDIR)/config.mk
 
 LIB	= lib$(BOARD).a
 
-OBJS	= $(BOARD).o flash.o bf537-stamp.o ether_bf537.o post-memory.o stm_m25p64.o cmd_bf537led.o
+OBJS	= $(BOARD).o flash.o ether_bf537.o post-memory.o stm_m25p64.o cmd_bf537led.o nand.o
 
 $(LIB):	.depend $(OBJS)
 	$(AR) cr $@ $(OBJS)

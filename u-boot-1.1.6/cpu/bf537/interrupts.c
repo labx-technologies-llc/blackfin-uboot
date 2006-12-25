@@ -164,3 +164,8 @@ ulong get_timer(ulong base)
 
 	return (milisec - base);
 }
+
+void reset_timer (void)
+{
+        timestamp = 0;
+}

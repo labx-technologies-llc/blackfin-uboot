@@ -190,25 +190,6 @@ int misc_init_r(void)
 #endif
 #endif
 
-#if (CONFIG_COMMANDS & CFG_CMD_NAND) 
-#include <linux/mtd/nand.h>
-extern struct nand_chip nand_dev_desc[CFG_MAX_NAND_DEVICE];
-void nand_init(void) {
-
-       	unsigned char temp;
-	*pPORTF_FER   &= ~PF3;
-       	*pPORTFIO_DIR &= ~PF3;
-       	*pPORTFIO_INEN|=  PF3;
-       	nand_probe(CFG_NAND_BASE);
-	if (nand_dev_desc[0].ChipID != NAND_ChipID_UNKNOWN) {
-		print_size(nand_dev_desc[0].totlen, "\n");
-        } else {
-		printf("unsupported or none\n");
-	}
-	
-}
-#endif
-
 #ifdef CONFIG_POST
 #if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
 /* Using sw10-PF5 as the hotkey */

@@ -79,7 +79,7 @@ SECTIONS
 /*  lib_generic/vsprintf.o	(.text) */
     lib_generic/crc32.o		(.text)
     lib_generic/zlib.o		(.text)
-/*  board/bf537-stamp/bf537.o		(.text) */
+/*  board/bf537-stamp/bf537-stamp.o		(.text) */
 
     . = DEFINED(env_offset) ? env_offset : .;
     common/environment.o	(.text)
@@ -107,6 +107,7 @@ SECTIONS
     *(EXCLUDE_FILE (board/bf537-stamp/post-memory.o) .rodata)
     *(EXCLUDE_FILE (board/bf537-stamp/post-memory.o) .rodata1)
     *(EXCLUDE_FILE (board/bf537-stamp/post-memory.o) .rodata.str1.4)
+    *(.eh_frame)
     . = ALIGN(4);
   } > ram
 

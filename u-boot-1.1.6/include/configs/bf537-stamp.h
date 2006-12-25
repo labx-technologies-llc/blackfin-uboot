@@ -144,7 +144,7 @@
 #  define ADD_IDE_CMD           0
 #endif
 
-/* #define CONFIG_BF537_NAND */		/* Add nand flash support */
+#define CONFIG_BF537_NAND 		/* Add nand flash support */
 
 #ifdef CONFIG_BF537_NAND
 #  define ADD_NAND_CMD		CFG_CMD_NAND
@@ -299,15 +299,15 @@
 #define NAND_ChipID_UNKNOWN    0x00
 #define NAND_MAX_FLOORS        1
 #define NAND_MAX_CHIPS         1
+#define BFIN_NAND_READY		PF3
 
-#define NAND_WAIT_READY(nand)  udelay(12); \
-                               while(!(*pPORTFIO & PF3))
-#define NAND_CTL_CLRALE(nandptr)
-#define NAND_CTL_SETALE(nandptr)
-#define NAND_CTL_CLRCLE(nandptr)
-#define NAND_CTL_SETCLE(nandptr)
-#define NAND_DISABLE_CE(nand)
-#define NAND_ENABLE_CE(nand)
+#define NAND_WAIT_READY(nand)  			\
+	do { 					\
+		int timeout = 0; 		\
+		while(!(*pPORTFIO & PF3)) 	\
+			if (timeout++ > 100000)	\
+				break;		\
+	} while (0)
 
 #define BFIN_NAND_CLE          (1<<2)                  /* A2 -> Command Enable */
 #define BFIN_NAND_ALE          (1<<1)                  /* A1 -> Address Enable */
