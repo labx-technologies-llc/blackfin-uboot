@@ -157,6 +157,7 @@ int misc_init_r(void)
 	unsigned short *pMACaddr = (unsigned short *) 0x203F0000;
 	u8  SrcAddr[6] = {0x02,0x80,0xAD,0x20,0x31,0xB8};
 
+#if (CONFIG_COMMANDS & CFG_CMD_NET)
 	if ( getenv("ethaddr") == NULL && (
 		((pMACaddr[0] & 0xFF) != 0xFF) && ((pMACaddr[0] >> 8) != 0xFF ) &&
 		((pMACaddr[1] & 0xFF) != 0xFF) && ((pMACaddr[1] >> 8) != 0xFF ) &&
@@ -171,6 +172,7 @@ int misc_init_r(void)
 	if ( getenv("ethaddr") ) {
 		SetupMacAddr(SrcAddr);
 	}
+#endif
 
 #if defined(CONFIG_BFIN_IDE)
 #if defined(CONFIG_BFIN_CF_IDE)
