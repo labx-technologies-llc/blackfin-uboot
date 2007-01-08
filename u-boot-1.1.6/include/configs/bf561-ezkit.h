@@ -1,6 +1,30 @@
 #ifndef __CONFIG_EZKIT561_H__
 #define __CONFIG_EZKIT561_H__
 
+#define __ADSPLPBLACKFIN__	1
+#define __ADSPBF561__		1
+#define CONFIG_VDSP		1
+
+#define CFG_LONGHELP		1
+#define CONFIG_BAUDRATE		57600
+/* Set default serial console for bf537 */
+#define CONFIG_UART_CONSOLE	0
+#define CONFIG_EZKIT561		1
+#define CONFIG_BOOTDELAY	5
+
+/*
+* Boot Mode Set
+* Blackfin can support several boot modes
+*/
+#define BF561_BYPASS_BOOT	0x21
+#define BF561_PARA_BOOT		0x22
+#define BF561_SPI_BOOT		0x24
+/* Define the boot mode */
+#define BFIN_BOOT_MODE	BF561_BYPASS_BOOT
+
+/* Define where the uboot will be loaded by on-chip boot rom */
+#define APP_ENTRY 0x00001000
+
 /*
  * Stringize definitions - needed for environmental settings
  */
@@ -10,18 +34,11 @@
 /*
  * Board settings
  */
-
-#define __ADSPLPBLACKFIN__	1
-#define __ADSPBF561__		1
-#define CONFIG_EZKIT561		1
-
 #define CONFIG_DRIVER_SMC91111	1
 #define CONFIG_SMC91111_BASE	0x2C010300
 #define CONFIG_ASYNC_EBIU_BASE	CONFIG_SMC91111_BASE & ~(4*1024*1024)
 #define CONFIG_SMC_USE_32_BIT	1
 #define CONFIG_MISC_INIT_R	1
-
-#define CONFIG_VDSP		1
 
 /*
  * Clock settings
@@ -44,11 +61,10 @@
 /* CONFIG_SCLK_DIV controls what the peripheral clock divider is */
 /* Values can range from 1-15                                    */
 #define CONFIG_SCLK_DIV			5
-
 /* CONFIG_SPI_BAUD controls the SPI peripheral clock divider     */
-/* Values can range from 2-65535                                 */ 
+/* Values can range from 2-65535                                 */
 /* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)                  */
-#define CONFIG_SPI_BAUD							2
+#define CONFIG_SPI_BAUD			2
 #define CONFIG_SPI_BAUD_INITBLOCK		4
 
 /*
@@ -102,10 +118,6 @@
 #define	CFG_MONITOR_LEN		(256 << 10)	/* Reserve 256 kB for Monitor	*/
 #define CFG_MONITOR_BASE	(CFG_MAX_RAM_SIZE - CFG_MONITOR_LEN)
 
-#if CFG_MONITOR_BASE != TEXT_BASE
-#error "CFG_MONITOR_BASE != TEXT_BASE"
-#endif
-
 #define	CFG_MALLOC_LEN		(128 << 10)	/* Reserve 128 kB for malloc()	*/
 #define CFG_MALLOC_BASE		(CFG_MONITOR_BASE - CFG_MALLOC_LEN)
 
@@ -132,13 +144,11 @@
  * Command settings
  */
 
-#define CFG_LONGHELP		1
 #define CFG_AUTOLOAD		"no" 	/* rarpb, bootp, dhcp commands will  */
 					/* only perform a configuration	     */
 					/* lookup from the BOOTP/DHCP server */
 					/* but not try to load any image     */
 					/* using TFTP                        */
-#define CONFIG_BOOTDELAY	5
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required,*/
 					/* currently its disabled */
 #define CONFIG_BOOTCOMMAND	"run ramboot"
@@ -187,7 +197,6 @@
  * Console settings
  */
 
-#define CONFIG_BAUDRATE		57600
 #define CFG_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 
 #define	CFG_PROMPT		"ezkit> "	/* Monitor Command Prompt */
@@ -208,7 +217,7 @@
  */
 
 #define	CFG_HZ			1000	/* decrementer freq: 10 ms ticks */
-#define CFG_BOOTM_LEN		0x4000000       /* Large Image Length, set to 64 Meg */
+#define CFG_BOOTM_LEN     0x4000000       /* Large Image Length, set to 64 Meg */
 
 /*
  * FLASH organization and environment definitions
