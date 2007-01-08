@@ -32,11 +32,11 @@ set logcore  [exec date +%b-%d-%G-%H-%M]
 
 # directories and file locations
 set user                    test
-set uboot_scripts_dir       "/home/$user/test_scripts/uboot"
-set log_dir                 "/home/$user/test_scripts/uboot/logs"
-set default_test_dir        "/home/$user/test_scripts/uboot/under_test"
+set uboot_scripts_dir       "/home/$user/test_scripts/u-boot"
+set log_dir                 "/home/$user/test_scripts/u-boot/logs"
+set default_test_dir        "/home/$user/test_scripts/u-boot/under_test"
 set tftpboot_dir            "/tftpboot"
-set uclinux_dirname         "/home/$user/test_scripts/uboot/under_test"
+set uclinux_dirname         "/home/$user/test_scripts/u-boot/under_test"
 set uclinux_basename        "uClinux-dist"
 set uclinux_path            "$uclinux_dirname/$uclinux_basename"
 set dxe_dir                 "linux-2.6.x"
@@ -62,7 +62,7 @@ set step_sequence_number    1
 # directory and file locations
 set config_loc  "include/config.h"
 set configs_loc  "include/configs"
-set uboot_test_dirname  "/home/test/checkouts/uboot"
+set uboot_test_dirname  "/home/test/checkouts/u-boot"
 set uboot_basename  "u-boot_1.1.3"
 set uboot_test_loc  "$uboot_test_dirname/$uboot_basename"
 set uboot_bin_loc   "$uboot_test_loc/u-boot.bin"

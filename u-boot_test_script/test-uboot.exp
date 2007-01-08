@@ -782,7 +782,7 @@ proc all_done { } {
     
     # End of results
     log_file
-    exec /home/test/test_scripts/uboot/summary.sh $summary_logfile
+    exec /home/test/test_scripts/u-boot/summary.sh $summary_logfile
 
     log_file $logfile
     
