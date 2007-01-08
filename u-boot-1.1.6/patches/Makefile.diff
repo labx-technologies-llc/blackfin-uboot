@@ -1,6 +1,18 @@
---- u-boot-1.1.6/Makefile	2006-11-02 22:15:01.000000000 +0800
-+++ u-boot-blackfin/Makefile	2006-11-08 17:11:59.000000000 +0800
-@@ -150,7 +150,7 @@
+Index: u-boot-1.1.6/Makefile
+===================================================================
+--- u-boot-1.1.6.orig/Makefile
++++ u-boot-1.1.6/Makefile
+@@ -118,9 +118,6 @@ include $(OBJTREE)/include/config.mk
+ export	ARCH CPU BOARD VENDOR SOC
+ 
+ ifndef CROSS_COMPILE
+-ifeq ($(HOSTARCH),ppc)
+-CROSS_COMPILE =
+-else
+ ifeq ($(ARCH),ppc)
+ CROSS_COMPILE = powerpc-linux-
+ endif
+@@ -150,13 +147,12 @@ ifeq ($(ARCH),microblaze)
  CROSS_COMPILE = mb-
  endif
  ifeq ($(ARCH),blackfin)
@@ -9,7 +21,13 @@
  endif
  ifeq ($(ARCH),avr32)
  CROSS_COMPILE = avr32-
-@@ -186,6 +186,17 @@
+ endif
+ endif
+-endif
+ 
+ export	CROSS_COMPILE
+ 
+@@ -186,6 +182,17 @@ endif
  ifeq ($(CPU),bf533)
  OBJS += cpu/$(CPU)/start1.o	cpu/$(CPU)/interrupt.o	cpu/$(CPU)/cache.o
  OBJS += cpu/$(CPU)/cplbhdlr.o	cpu/$(CPU)/cplbmgr.o	cpu/$(CPU)/flush.o
@@ -27,7 +45,7 @@
  endif
  
  OBJS := $(addprefix $(obj),$(OBJS))
-@@ -236,7 +247,7 @@
+@@ -236,7 +243,7 @@ __LIBS := $(subst $(obj),,$(LIBS))
  #########################################################################
  #########################################################################
  
@@ -36,7 +54,7 @@
  
  all:		$(ALL)
  
-@@ -249,6 +260,10 @@
+@@ -249,6 +256,10 @@ $(obj)u-boot.srec:	$(obj)u-boot
  $(obj)u-boot.bin:	$(obj)u-boot
  		$(OBJCOPY) ${OBJCFLAGS} -O binary $< $@
  
@@ -47,7 +65,7 @@
  $(obj)u-boot.img:	$(obj)u-boot.bin
  		./tools/mkimage -A $(ARCH) -T firmware -C none \
  		-a $(TEXT_BASE) -e 0 \
-@@ -260,7 +275,7 @@
+@@ -260,7 +271,7 @@ $(obj)u-boot.dis:	$(obj)u-boot
  		$(OBJDUMP) -d $< > $@
  
  $(obj)u-boot:		depend version $(SUBDIRS) $(OBJS) $(LIBS) $(LDSCRIPT)
@@ -56,7 +74,7 @@
  		cd $(LNDIR) && $(LD) $(LDFLAGS) $$UNDEF_SYM $(__OBJS) \
  			--start-group $(__LIBS) --end-group $(PLATFORM_LIBS) \
  			-Map u-boot.map -o u-boot
-@@ -2233,14 +2248,17 @@
+@@ -2233,14 +2244,17 @@ suzaku_config:	unconfig
  #########################################################################
  ## Blackfin
  #########################################################################
@@ -80,7 +98,7 @@
  
  #========================================================================
  # AVR32
-@@ -2272,6 +2290,8 @@
+@@ -2272,6 +2286,8 @@ clean:
  	rm -f $(obj)tools/easylogo/easylogo $(obj)tools/bmp_logo
  	rm -f $(obj)tools/gdb/astest $(obj)tools/gdb/gdbcont $(obj)tools/gdb/gdbsend
  	rm -f $(obj)tools/env/fw_printenv $(obj)tools/env/fw_setenv
