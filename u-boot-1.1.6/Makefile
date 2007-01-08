@@ -118,9 +118,6 @@ include $(OBJTREE)/include/config.mk
 export	ARCH CPU BOARD VENDOR SOC
 
 ifndef CROSS_COMPILE
-ifeq ($(HOSTARCH),ppc)
-CROSS_COMPILE =
-else
 ifeq ($(ARCH),ppc)
 CROSS_COMPILE = powerpc-linux-
 endif
@@ -154,7 +151,6 @@ CROSS_COMPILE = bfin-uclinux-
 endif
 ifeq ($(ARCH),avr32)
 CROSS_COMPILE = avr32-
-endif
 endif
 endif
 
