@@ -68,7 +68,7 @@
 #define ICTL_RST		0x00000000
 #define ICTL_NMI		0x00000002
 #define ICTL_GP			0x00000004
-#define ICTL_DISABLE		0x00000003
+#define ICTL_DISABLE		0x00000006
 
 /* Watch Dog timer values setup */
 #define WATCHDOG_DISABLE	WDOG_TMR_DISABLE | ICTL_DISABLE
