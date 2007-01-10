@@ -10,7 +10,7 @@
 #define CFG_LONGHELP                    1
 #define CONFIG_BOOTCOMMAND	"tftp 0x1000000 linux"
 #define CONFIG_AUTOBOOT_PROMPT	"autoboot in %d seconds\n"
-#define CONFIG_BOOTARGS		"root=/dev/mtdblock0 rw"
+//#define CONFIG_BOOTARGS		"root=/dev/mtdblock0 rw"
 
 #define CONFIG_DRIVER_SMC91111	1
 #define CONFIG_SMC91111_BASE	0x20310300
@@ -22,6 +22,20 @@
 
 #define CONFIG_RTC_BF533	1
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
+
+/*
+ * Boot Mode Set  
+ * Blackfin can support several boot modes
+ */
+#define BF533_BYPASS_BOOT	0x0001  /* Bootmode 0: Execute from 16-bit externeal memory ( bypass BOOT ROM) */
+#define BF533_PARA_BOOT		0x0002  /* Bootmode 1: Boot from 8-bit or 16-bit flash */
+#define BF533_SPI_BOOT		0x0004	/* Bootmode 3: Boot from SPI flash		*/
+/* Define the boot mode */
+#define BFIN_BOOT_MODE		BF533_BYPASS_BOOT
+//#define BFIN_BOOT_MODE		BF533_SPI_BOOT
+
+/* Define where the uboot will be loaded by on-chip boot rom */
+#define APP_ENTRY 0x00001000
 
 /* CONFIG_CLKIN_HZ is any value in Hz                            */
 #define CONFIG_CLKIN_HZ          27000000
@@ -40,6 +54,11 @@
 /* CONFIG_SCLK_DIV controls what the peripheral clock divider is */
 /* Values can range from 1-15                                    */
 #define CONFIG_SCLK_DIV			5
+/* CONFIG_SPI_BAUD controls the SPI peripheral clock divider     */
+/* Values can range from 2-65535                                 */
+/* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)                  */
+#define CONFIG_SPI_BAUD                 2
+#define CONFIG_SPI_BAUD_INITBLOCK		4
 
 #if ( CONFIG_CLKIN_HALF == 0 )
 #define CONFIG_VCO_HZ           ( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT )
