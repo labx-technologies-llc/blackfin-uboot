@@ -252,7 +252,7 @@
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	71	/* max number of sectors on one chip */
 
-#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
+#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT) || (BFIN_BOOT_MODE == BF537_UART_BOOT)    /* for bf537-stamp, usrt boot mode still store env in flash */
 #define	CFG_ENV_IS_IN_FLASH	1
 #define CFG_ENV_ADDR		0x20004000
 #define CFG_ENV_OFFSET		(CFG_ENV_ADDR - CFG_FLASH_BASE)
