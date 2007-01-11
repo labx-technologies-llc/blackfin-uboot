@@ -5,3 +5,4 @@ common-environment.diff
 config.diff
 examples-Makefile.diff
 examples-stubs.diff
+post-cpu.diff

@@ -1,0 +1,20 @@
+only build asm.S for ppc boards
+
+Index: post/cpu/asm.S
+===================================================================
+--- post/cpu/asm.S	(revision 546)
++++ post/cpu/asm.S	(working copy)
+@@ -20,6 +20,8 @@
+  * MA 02111-1307 USA
+  */
+ 
++#ifdef CONFIG_PPC
++
+ #include <config.h>
+ 
+ #ifdef CONFIG_POST
+@@ -344,3 +346,4 @@ blr
+ 
+ #endif
+ #endif
++#endif
