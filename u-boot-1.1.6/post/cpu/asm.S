@@ -20,8 +20,6 @@
  * MA 02111-1307 USA
  */
 
-#ifdef CONFIG_PPC
-
 #include <config.h>
 
 #ifdef CONFIG_POST
@@ -344,6 +342,5 @@ cpu_post_complex_2_loop:
 	bdnz	cpu_post_complex_2_loop
 blr
 
-#endif
 #endif
 #endif

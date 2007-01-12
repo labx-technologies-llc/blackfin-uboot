@@ -1,0 +1,28 @@
+Index: Makefile
+===================================================================
+--- Makefile	(revision 549)
++++ Makefile	(working copy)
+@@ -214,7 +214,9 @@ LIBS += drivers/libdrivers.a
+ LIBS += drivers/nand/libnand.a
+ LIBS += drivers/nand_legacy/libnand_legacy.a
+ LIBS += drivers/sk98lin/libsk98lin.a
++ifneq ($(ARCH),blackfin)
+ LIBS += post/libpost.a post/cpu/libcpu.a
++endif
+ LIBS += common/libcommon.a
+ LIBS += $(BOARDLIBS)
+ 
+@@ -227,9 +229,10 @@ PLATFORM_LIBS += -L $(shell dirname `$(C
+ # The "tools" are needed early, so put this first
+ # Don't include stuff already done in $(LIBS)
+ SUBDIRS	= tools \
+-	  examples \
+-	  post \
+-	  post/cpu
++	  examples
++ifneq ($(ARCH),blackfin)
++SUBDIRS += post post/cpu
++endif
+ .PHONY : $(SUBDIRS)
+ 
+ ifeq ($(CONFIG_NAND_U_BOOT),y)
