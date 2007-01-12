@@ -1,0 +1,39 @@
+Index: MAKEALL
+===================================================================
+--- MAKEALL	(revision 553)
++++ MAKEALL	(working copy)
+@@ -308,6 +308,17 @@ LIST_coldfire="	\
+ 
+ LIST_avr32="atstk1002"
+ 
++#########################################################################
++## Blackfin Systems
++#########################################################################
++
++LIST_blackfin=" \
++	bf533-ezkit
++	bf533-stamp
++	bf537-stamp
++	bf561-ezkit
++"
++
+ #-----------------------------------------------------------------------
+ 
+ #----- for now, just run PPC by default -----
+@@ -324,7 +335,7 @@ build_target() {
+ 	${MAKE} ${JOBS} all 2>&1 >${LOG_DIR}/$target.MAKELOG \
+ 				| tee ${LOG_DIR}/$target.ERR
+ 
+-	${CROSS_COMPILE:-ppc_8xx-}size ${BUILD_DIR}/u-boot \
++	${CROSS_COMPILE}size ${BUILD_DIR}/u-boot \
+ 				| tee -a ${LOG_DIR}/$target.MAKELOG
+ }
+ 
+@@ -341,6 +352,7 @@ do
+ 	nios|nios2| \
+ 	x86|I486| \
+ 	coldfire| \
++	blackfin| \
+ 	avr32)
+ 			for target in `eval echo '$LIST_'${arg}`
+ 			do

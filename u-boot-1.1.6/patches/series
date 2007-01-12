@@ -6,3 +6,4 @@ config.diff
 examples-Makefile.diff
 examples-stubs.diff
 skip-post-subdir.diff
+MAKEALL-blackfin.diff
