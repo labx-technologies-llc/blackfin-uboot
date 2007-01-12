@@ -25,13 +25,14 @@
 #ifndef _BLACKFIN_H_
 #define _BLACKFIN_H_
 
-#ifndef __ASSEMBLY__
-#ifndef ASSEMBLY
+#if !(defined(__ASSEMBLY__) || defined(ASSEMBLY))
+# ifdef SHARED_RESOURCES
+#  include <asm/shared_resources.h>
+# endif
 
-#ifdef SHARED_RESOURCES
- #include <asm/shared_resources.h>
-#endif
-#endif
+# include <linux/types.h>
+
+extern u_long get_sclk(void);
 #endif
 
 #include <asm/arch-common/cdefBF5xx.h>

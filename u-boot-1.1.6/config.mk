@@ -130,7 +130,7 @@ RANLIB	= $(CROSS_COMPILE)RANLIB
 ifneq (,$(findstring s,$(MAKEFLAGS)))
 ARFLAGS = cr
 else
-ARFLAGS = crv
+ARFLAGS = cr
 endif
 RELFLAGS= $(PLATFORM_RELFLAGS)
 DBGFLAGS= -g # -DDEBUG

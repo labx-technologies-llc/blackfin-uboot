@@ -92,8 +92,6 @@ struct i2c_msg {
  	u8 *buf;		/* pointer to msg data			*/
 };
 
-extern u_long get_sclk(void);
-
 /**
  * i2c_reset: - reset the host controller
  *

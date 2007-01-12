@@ -63,7 +63,6 @@ int serial_getc(void);
 void serial_puts(const char *s);
 static void local_put_char(char ch);
 
-extern int get_clock(void);
 int baud_table[5] = { 9600, 19200, 38400, 57600, 115200 };
 
 struct {
