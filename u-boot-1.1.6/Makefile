@@ -301,9 +301,9 @@ version:
 		echo -n "$(shell $(CONFIG_SHELL) $(TOPDIR)/tools/setlocalversion $(TOPDIR))" >> $(VERSION_FILE).tmp; \
 		echo "\"" >> $(VERSION_FILE).tmp
 		@if ! cmp -s $(VERSION_FILE) $(VERSION_FILE).tmp ; then \
-			mv -vf $(VERSION_FILE).tmp $(VERSION_FILE) ; \
+			mv -f $(VERSION_FILE).tmp $(VERSION_FILE) ; \
 		else \
-			rm -vf $(VERSION_FILE).tmp ; \
+			rm -f $(VERSION_FILE).tmp ; \
 		fi
 
 gdbtools:
