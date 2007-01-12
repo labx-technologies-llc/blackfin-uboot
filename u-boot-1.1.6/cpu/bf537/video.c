@@ -6,7 +6,6 @@
 #include <common.h>
 #include <config.h>
 #include <asm/blackfin.h>
-#include <version.h>
 #include <i2c.h>
 #include <linux/types.h>
 #include <devices.h>

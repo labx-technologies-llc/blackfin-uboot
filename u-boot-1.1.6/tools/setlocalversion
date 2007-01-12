@@ -20,3 +20,11 @@ if head=`git rev-parse --verify HEAD 2>/dev/null`; then
 		printf '%s' -dirty
 	fi
 fi
+
+# Check for svn and a svn repo.
+if rev=`svn info 2>/dev/null | grep '^Revision' | awk '{print $NF}'` ; then
+	printf -- '-svn%s' $rev
+fi
+
+# Check for any localversion-* files
+printf '%s' "`cat localversion-* 2>/dev/null`"

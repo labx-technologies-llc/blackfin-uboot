@@ -1,0 +1,42 @@
+Index: tools/setlocalversion
+===================================================================
+--- tools/setlocalversion	(revision 553)
++++ tools/setlocalversion	(working copy)
+@@ -20,3 +20,11 @@ if head=`git rev-parse --verify HEAD 2>/
+ 		printf '%s' -dirty
+ 	fi
+ fi
++
++# Check for svn and a svn repo.
++if rev=`svn info 2>/dev/null | grep '^Revision' | awk '{print $NF}'` ; then
++	printf -- '-svn%s' $rev
++fi
++
++# Check for any localversion-* files
++printf '%s' "`cat localversion-* 2>/dev/null`"
+Index: Makefile
+===================================================================
+--- Makefile	(revision 553)
++++ Makefile	(working copy)
+@@ -295,11 +295,16 @@ $(U_BOOT_NAND):	$(NAND_SPL) $(obj)u-boot
+ 		cat $(obj)nand_spl/u-boot-spl-16k.bin $(obj)u-boot.bin > $(obj)u-boot-nand.bin
+ 
+ version:
+-		@echo -n "#define U_BOOT_VERSION \"U-Boot " > $(VERSION_FILE); \
+-		echo -n "$(U_BOOT_VERSION)" >> $(VERSION_FILE); \
+-		echo -n $(shell $(CONFIG_SHELL) $(TOPDIR)/tools/setlocalversion \
+-			 $(TOPDIR)) >> $(VERSION_FILE); \
+-		echo "\"" >> $(VERSION_FILE)
++		@set -e; \
++		echo -n "#define U_BOOT_VERSION \"U-Boot " > $(VERSION_FILE).tmp; \
++		echo -n "$(U_BOOT_VERSION)" >> $(VERSION_FILE).tmp; \
++		echo -n "$(shell $(CONFIG_SHELL) $(TOPDIR)/tools/setlocalversion $(TOPDIR))" >> $(VERSION_FILE).tmp; \
++		echo "\"" >> $(VERSION_FILE).tmp
++		@if ! cmp -s $(VERSION_FILE) $(VERSION_FILE).tmp ; then \
++			mv -vf $(VERSION_FILE).tmp $(VERSION_FILE) ; \
++		else \
++			rm -vf $(VERSION_FILE).tmp ; \
++		fi
+ 
+ gdbtools:
+ 		$(MAKE) -C tools/gdb all || exit 1

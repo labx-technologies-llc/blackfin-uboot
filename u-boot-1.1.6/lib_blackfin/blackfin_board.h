@@ -28,6 +28,8 @@
 #ifndef __BLACKFIN_BOARD_H__
 #define __BLACKFIN_BOARD_H__
 
+#include <version.h>
+
 extern void timer_init(void);
 extern void init_IRQ(void);
 extern void rtc_init(void);
@@ -40,8 +42,7 @@ ulong monitor_flash_len;
 
 #define VERSION_STRING_SIZE  150 /* including 40 bytes buffer to change any string */ 
 #define VERSION_STRING_FORMAT "%s (%s - %s)\n"
-#define ADI_UBOOT_VERSION	"U-Boot-1.1.6-ADI-R2007R1-pre"
-#define VERSION_STRING		ADI_UBOOT_VERSION, __DATE__, __TIME__
+#define VERSION_STRING		U_BOOT_VERSION, __DATE__, __TIME__
 
 char version_string[VERSION_STRING_SIZE];
 
