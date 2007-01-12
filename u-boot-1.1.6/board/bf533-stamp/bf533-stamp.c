@@ -138,7 +138,7 @@ int misc_init_r(void)
 		printf ("Booting from FLASH\n");
 	}
 
-	return 1;
+	return 0;
 }
 #endif
 
