@@ -1,3 +1,7 @@
+/*
+ * U-boot - Configuration file for BF561 EZKIT board
+ */
+
 #ifndef __CONFIG_EZKIT561_H__
 #define __CONFIG_EZKIT561_H__
 
@@ -6,6 +10,7 @@
 #define CONFIG_VDSP		1
 
 #define CFG_LONGHELP		1
+#define CONFIG_CMDLINE_EDITING	1
 #define CONFIG_BAUDRATE		57600
 /* Set default serial console for bf537 */
 #define CONFIG_UART_CONSOLE	0

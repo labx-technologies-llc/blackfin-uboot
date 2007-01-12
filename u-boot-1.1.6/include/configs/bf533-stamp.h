@@ -1,29 +1,5 @@
 /*
- * U-boot - stamp.h  Configuration file for STAMP board
- *			having BF533 processor
- *
- * Copyright (c) 2005 blackfin.uclinux.org
- *
- * (C) Copyright 2000-2004
- * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
- *
- * See file CREDITS for list of people who contributed to this
- * project.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
+ * U-boot - Configuration file for BF533 STAMP board
  */
 
 #ifndef __CONFIG_STAMP_H__
@@ -258,6 +234,7 @@
  */
 
 #define CFG_LONGHELP                    1
+#define CONFIG_CMDLINE_EDITING          1
 
 #if (BFIN_BOOT_MODE == BF533_BYPASS_BOOT)
 #define CFG_AUTOLOAD                    "no"    /*rarpb, bootp or dhcp commands will perform only a */

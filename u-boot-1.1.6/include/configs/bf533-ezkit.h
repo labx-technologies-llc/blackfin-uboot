@@ -1,3 +1,7 @@
+/*
+ * U-boot - Configuration file for BF533 EZKIT board
+ */
+
 #ifndef __CONFIG_EZKIT533_H__
 #define __CONFIG_EZKIT533_H__
 
@@ -8,6 +12,7 @@
 #define CFG_AUTOLOAD                    "no"    /*rarpb, bootp or dhcp commands will perform only a */
 
 #define CFG_LONGHELP                    1
+#define CONFIG_CMDLINE_EDITING	1
 #define CONFIG_BOOTCOMMAND	"tftp 0x1000000 linux"
 #define CONFIG_AUTOBOOT_PROMPT	"autoboot in %d seconds\n"
 //#define CONFIG_BOOTARGS		"root=/dev/mtdblock0 rw"

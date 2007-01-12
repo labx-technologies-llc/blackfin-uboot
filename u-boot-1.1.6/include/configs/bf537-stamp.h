@@ -1,7 +1,12 @@
+/*
+ * U-boot - Configuration file for BF537 STAMP board
+ */
+
 #ifndef __CONFIG_BF537_H__
 #define __CONFIG_BF537_H__
 
 #define CFG_LONGHELP		1
+#define CONFIG_CMDLINE_EDITING	1
 #define CONFIG_BAUDRATE		57600
 /* Set default serial console for bf537 */
 #define CONFIG_UART_CONSOLE	0
