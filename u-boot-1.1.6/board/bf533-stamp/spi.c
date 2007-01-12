@@ -349,7 +349,7 @@ ERROR_CODE EraseBlock( int nBlock )
 ERROR_CODE ReadData(  unsigned long ulStart, long lCount,int *pnData  )
 {
 	unsigned long ShiftValue;
-	char *cnData,ReadValue;
+	char *cnData;
 	int i;
 
 	cnData = (char *)pnData; /* Pointer cast to be able to increment byte wise */

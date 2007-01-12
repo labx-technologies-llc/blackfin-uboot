@@ -66,5 +66,7 @@ int misc_init_r(void)
 	*(volatile unsigned char *)(CFG_FLASH1_BASE + PSD_PORTA_DIR) = PSDA_VDEC_RST | PSDA_VENC_RST;
 	/* Deactivate Video en/decoder reset lines			*/
 	*(volatile unsigned char *)(CFG_FLASH1_BASE + PSD_PORTA_DOUT) = PSDA_VDEC_RST | PSDA_VENC_RST;
+
+	return 0;
 }
 #endif

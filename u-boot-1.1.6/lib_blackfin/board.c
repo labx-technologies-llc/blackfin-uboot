@@ -130,7 +130,7 @@ static int init_baudrate(void)
 {
 	DECLARE_GLOBAL_DATA_PTR;
 
-	uchar tmp[64];
+	char tmp[64];
 	int i = getenv_r("baudrate", tmp, sizeof(tmp));
 	gd->bd->bi_baudrate = gd->baudrate = (i > 0)
 		? (int) simple_strtoul(tmp, NULL, 10)
