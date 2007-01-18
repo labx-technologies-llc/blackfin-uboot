@@ -1712,7 +1712,7 @@ send -s  "version\r"
 while 1 {
     expect {
 
-	-re "U-Boot-\[0-9]+.\[0-9]+.\[0-9]+-ADI" {
+	-re "U-Boot \[0-9]+.\[0-9]+.\[0-9]+.*ADI" {
 	    set uboot_version_result $TEST_PASS
 	    break
 	}
