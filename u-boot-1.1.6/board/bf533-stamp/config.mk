@@ -24,5 +24,3 @@
 # TEXT_BASE should be defined as the MAX_SDRAM Address - 256k bytes
 #  256k is defined as CFG_MONITOR_LEN in ./include/configs/<board>.h
 TEXT_BASE = 0x07FC0000
-PLATFORM_CPPFLAGS += -I$(TOPDIR)
-
