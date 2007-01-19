@@ -1,6 +1,6 @@
 #!/usr/bin/expect
 
-set uboot_path /home/test/checkouts/uboot/u-boot_1.1.3 
+set uboot_path /home/test/checkouts/u-boot/u-boot-1.1.6 
 
 
 proc usage {} {
@@ -41,7 +41,7 @@ set num              [lindex $argv 1]
 }
 
 if { $board_type == "BF533-STAMP" } {
-     set config_file stamp.h 
+     set config_file bf533-stamp.h 
 	if { $num == "0" } {
 	   set vco_mult  36
 	   set cclk_div  1 
@@ -60,7 +60,7 @@ if { $board_type == "BF533-STAMP" } {
 	   set sclk_div  5
 	} 	
 } elseif { $board_type == "BF537-STAMP" } {
-     set config_file bf537.h 
+     set config_file bf537-stamp.h 
 	if { $num == "0" } {
 	   set vco_mult  20
 	   set cclk_div  1 
@@ -79,11 +79,11 @@ if { $board_type == "BF533-STAMP" } {
 	   set sclk_div  5
 	} 	
 } elseif { $board_type == "BF561-EZKIT" } {
-    set config_file ezkit561.h
+    set config_file bf561-ezkit.h
 } elseif { $board_type == "BF533-EZKIT" } {
-    set config_file ezkit533.h 
+    set config_file bf533-ezkit.h 
 } elseif { $board_type == "BF537-EZKIT" } {
-    set config_file stamp.h 
+    set config_file bf537-ezkit.h 
 } else { 
     send_user "\n Unknown target board type.\n"
     exit
