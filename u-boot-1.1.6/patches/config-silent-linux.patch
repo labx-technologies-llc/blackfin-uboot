@@ -1,0 +1,31 @@
+--- doc/README.silent
++++ doc/README.silent
+@@ -15,6 +15,8 @@ The following actions are taken if "sile
+    suppressed automatically. Make sure to enable "nulldev" by
+    #defining CFG_DEVICE_NULLDEV in your board config file.
+ 
++Furthermore, if the config option CONFIG_SILENT_LINUX is enabled:
++
+  - When booting a linux kernel, the "bootargs" are fixed up so that
+    the argument "console=" will be in the command line, no matter how
+    it was set in "bootargs" before.
+--- common/cmd_bootm.c
++++ common/cmd_bootm.c
+@@ -480,6 +480,9 @@ U_BOOT_CMD(
+ static void
+ fixup_silent_linux ()
+ {
++# ifndef CONFIG_SILENT_LINUX
++	return
++# else
+ 	char buf[256], *start, *end;
+ 	char *cmdline = getenv ("bootargs");
+ 
+@@ -506,6 +509,7 @@ fixup_silent_linux ()
+ 
+ 	setenv ("bootargs", buf);
+ 	debug ("after silent fix-up: %s\n", buf);
++# endif
+ }
+ #endif /* CONFIG_SILENT_CONSOLE */
+ 

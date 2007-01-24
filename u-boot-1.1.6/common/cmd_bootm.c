@@ -480,6 +480,9 @@ U_BOOT_CMD(
 static void
 fixup_silent_linux ()
 {
+# ifndef CONFIG_SILENT_LINUX
+	return
+# else
 	char buf[256], *start, *end;
 	char *cmdline = getenv ("bootargs");
 
@@ -506,6 +509,7 @@ fixup_silent_linux ()
 
 	setenv ("bootargs", buf);
 	debug ("after silent fix-up: %s\n", buf);
+# endif
 }
 #endif /* CONFIG_SILENT_CONSOLE */
 
