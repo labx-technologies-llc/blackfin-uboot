@@ -113,10 +113,10 @@ int eth_send(volatile void *packet, int length)
 			}
 	}
 	txbuf[txIdx]->FrmData->NoBytes = length;
-	memcpy(txbuf[txIdx]->FrmData->Dest,packet,length);
+	memcpy(txbuf[txIdx]->FrmData->Dest,(void *)packet,length);
 	txbuf[txIdx]->Dma[0].START_ADDR = (u32)txbuf[txIdx]->FrmData;
 	*pDMA2_NEXT_DESC_PTR = &txbuf[txIdx]->Dma[0];
-	*pDMA2_CONFIG  = *((u16 *)&txdmacfg);
+	*pDMA2_CONFIG  = *(u16 *)(void *)(&txdmacfg);
 	*pEMAC_OPMODE |= TE;
 	
 	for(i=0;(txbuf[txIdx]->StatusWord & TX_COMP) ==0; i++){
@@ -138,7 +138,7 @@ out:
 
 int eth_rx(void)
 {	
-	int length;
+	int length =0;
 	
 	for(;;){
 	if((rxbuf[rxIdx]->StatusWord & RX_COMP) == 0){
@@ -216,7 +216,7 @@ int eth_init(bd_t *bis)
 
 /* Set RX DMA */	
 	*pDMA1_NEXT_DESC_PTR = &rxbuf[0]->Dma[0];
-	*pDMA1_CONFIG = *((u16*)&rxbuf[0]->Dma[0].CONFIG);
+	*pDMA1_CONFIG = *((u16*)(void *)&rxbuf[0]->Dma[0].CONFIG);
 
 /* Wait MII done */
 	PollMdcDone();
