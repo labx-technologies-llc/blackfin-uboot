@@ -186,7 +186,7 @@ int write_buff(flash_info_t * info, uchar * src, ulong addr, ulong cnt)
 	if(addr%2){
 		read_flash(addr-1-CFG_FLASH_BASE,&d);
 		d = (int)((d&0x00FF)|(*src++<<8));
-		write_data(addr-1,2,&d);
+		write_data(addr-1,2,(uchar *)&d);
 		write_data(addr+1,cnt-1,src);
 		}
 	else
