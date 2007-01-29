@@ -331,7 +331,7 @@ unsigned long load_elf_image (unsigned long addr)
 			memset ((void *)shdr->sh_addr, 0, shdr->sh_size);
 		} else {
 			for (j = 0, match = 0; j < ehdr->e_phnum; j++) {
-				phdr = addr + ehdr->e_phoff + (j * sizeof (Elf32_Phdr));
+				phdr = (Elf32_Phdr *)(addr + ehdr->e_phoff + (j * sizeof (Elf32_Phdr)));
 				if ((phdr->p_vaddr == shdr->sh_addr) && (phdr->p_paddr != phdr->p_vaddr)) {
 					printf("sh_addr: %08X, p_paddr: %08X\n",
 						shdr->sh_addr, phdr->p_paddr);

@@ -21,7 +21,7 @@
 
 #define OFFSET_( x )		((x) & 0x0000FFFF) /* define macro for offset */
 /* Delay inserted for PLL transition */
-#define DELAY			0x1000
+#define PLL_DELAY			0x1000
 
 #define L1_ISRAM		0xFFA00000
 #define L1_ISRAM_END		0xFFA10000

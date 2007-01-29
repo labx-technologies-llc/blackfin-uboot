@@ -1872,7 +1872,7 @@
 #define	SEN			0x0001		/* Slave Enable									*/
 #define	SADD_LEN	0x0002		/* Slave Address Length							*/
 #define	STDVAL		0x0004		/* Slave Transmit Data Valid					*/
-#define	NAK			0x0008		/* NAK/ACK* Generated At Conclusion Of Transfer */
+#define	TSC_NAK			0x0008		/* NAK/ACK* Generated At Conclusion Of Transfer */
 #define	GEN			0x0010		/* General Call Adrress Matching Enabled		*/
 
 /* TWI_SLAVE_STAT Masks															*/
