@@ -107,7 +107,7 @@
 #define CONFIG_HOSTNAME         BF537
 #define CONFIG_ROOTPATH		/romfs
 /* Uncomment next line to use fixed MAC address */
-#define CONFIG_ETHADDR          02:80:ad:20:31:e8 
+//#define CONFIG_ETHADDR          02:80:ad:20:31:e8 
 /* This is the routine that copies the MAC in Flash to the 'ethaddr' setting */
 
 #define CFG_LONGHELP			1
