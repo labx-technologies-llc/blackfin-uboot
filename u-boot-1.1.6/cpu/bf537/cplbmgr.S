@@ -191,8 +191,8 @@ ENTRY(_cplb_mgr)
 	 * range.
  	 */
 
-	P2.L = ipdt_table;
-	P2.H = ipdt_table;
+	P2.L = _ipdt_table;
+	P2.H = _ipdt_table;
 #ifdef	CONFIG_CPLB_INFO
 	P3.L = _ipdt_swapcount_table;
 	P3.H = _ipdt_swapcount_table;
@@ -504,8 +504,8 @@ ENTRY(_cplb_mgr)
 .Lde_moved:NOP;
 	R0 = I0;		/* Our faulting address */
 
-	P2.L = dpdt_table;
-	P2.H = dpdt_table;
+	P2.L = _dpdt_table;
+	P2.H = _dpdt_table;
 #ifdef	CONFIG_CPLB_INFO
 	P3.L = _dpdt_swapcount_table;
 	P3.H = _dpdt_swapcount_table;

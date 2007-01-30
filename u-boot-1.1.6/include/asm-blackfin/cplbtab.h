@@ -50,8 +50,8 @@
 #endif 
 
 .align 4;
-.global ipdt_table
-ipdt_table:
+.global _ipdt_table
+_ipdt_table:
 #ifdef CONFIG_CPLB_INFO
 .byte4 0x00000000;
 .byte4 (SDRAM_IKERNEL);               /*SDRAM_Page0*/
@@ -150,8 +150,8 @@ ipdt_table:
  * 
  * This is how Page descriptor Table is implemented in uClinux/Blackfin.
  */   
-.global dpdt_table
-dpdt_table:
+.global _dpdt_table
+_dpdt_table:
 #ifdef CONFIG_CPLB_INFO
 .byte4        0x00000000;
 .byte4        (SDRAM_DKERNEL);        /*SDRAM_Page0*/
@@ -264,8 +264,8 @@ dpdt_table:
 .byte4	0xffffffff;		/*end of section - termination*/
 
 #ifdef CONFIG_CPLB_INFO
-.global ipdt_swapcount_table;	/* swapin count first, then swapout count*/
-ipdt_swapcount_table:
+.global _ipdt_swapcount_table;	/* swapin count first, then swapout count*/
+_ipdt_swapcount_table:
 .byte4        0x00000000;
 .byte4        0x00000000;
 .byte4        0x00000000;
@@ -367,8 +367,8 @@ ipdt_swapcount_table:
 .byte4        0x00000000;
 .byte4        0x00000000;	/* 100 */
 
-.global dpdt_swapcount_table;	/* swapin count first, then swapout count*/
-dpdt_swapcount_table:
+.global _dpdt_swapcount_table;	/* swapin count first, then swapout count*/
+_dpdt_swapcount_table:
 .byte4        0x00000000;
 .byte4        0x00000000;
 .byte4        0x00000000;
