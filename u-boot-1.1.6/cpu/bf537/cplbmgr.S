@@ -55,7 +55,7 @@
 #include <asm-blackfin/linkage.h>
 #include <config.h>
 #include <asm-blackfin/blackfin.h>
-#include <asm-blackfin/cplbtab.h>
+#include <asm-blackfin/arch-bf537/cplbtab.h>
 #include <asm-blackfin/cplb.h>
 
 .text
