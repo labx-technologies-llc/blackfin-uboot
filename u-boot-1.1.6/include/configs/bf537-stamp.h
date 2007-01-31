@@ -30,6 +30,11 @@
 #define BFIN_BOOT_MODE		BF537_BYPASS_BOOT
 //#define BFIN_BOOT_MODE		BF537_SPI_MASTER_BOOT
 
+#define ADSP_BF534		0x34
+#define ADSP_BF536		0x36
+#define ADSP_BF537		0x37
+#define BFIN_CPU		ADSP_BF537
+
 /* Define if want to do post memory test */
 #undef CONFIG_POST_TEST
 

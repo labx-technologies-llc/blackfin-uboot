@@ -21,6 +21,11 @@
 #define BFIN_BOOT_MODE		BF533_BYPASS_BOOT
 //#define BFIN_BOOT_MODE		BF533_SPI_BOOT
 
+#define ADSP_BF531		0x31
+#define ADSP_BF532		0x32
+#define ADSP_BF533		0x33
+#define BFIN_CPU		ADSP_BF533
+
 /* Define where the uboot will be loaded by on-chip boot rom */
 #define APP_ENTRY 0x00001000
 
