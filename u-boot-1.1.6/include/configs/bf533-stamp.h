@@ -255,8 +255,6 @@
 #define CONFIG_BOOTCOMMAND 		"eeprom read 0x1000000 0x100000 0x180000;icache on;dcache on;bootm 0x1000000"
 #endif
 
-#define CONFIG_AUTOBOOT_PROMPT          "autoboot in %d seconds\n"
-
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"
 
 #if (CONFIG_DRIVER_SMC91111)

@@ -157,7 +157,6 @@
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required,*/
 					/* currently its disabled */
 #define CONFIG_BOOTCOMMAND	"run ramboot"
-#define CONFIG_AUTOBOOT_PROMPT	"autoboot in %d seconds\n"
 #define CONFIG_BOOTARGS		"root=/dev/mtdblock0 rw"
 
 #if (CONFIG_DRIVER_SMC91111)

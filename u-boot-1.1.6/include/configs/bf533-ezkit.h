@@ -14,7 +14,6 @@
 #define CFG_LONGHELP                    1
 #define CONFIG_CMDLINE_EDITING	1
 #define CONFIG_BOOTCOMMAND	"tftp 0x1000000 linux"
-#define CONFIG_AUTOBOOT_PROMPT	"autoboot in %d seconds\n"
 //#define CONFIG_BOOTARGS		"root=/dev/mtdblock0 rw"
 
 #define CONFIG_DRIVER_SMC91111	1

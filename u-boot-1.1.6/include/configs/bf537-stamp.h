@@ -119,7 +119,6 @@
 #define CONFIG_BOOTDELAY		5
 #define CONFIG_BOOT_RETRY_TIME		-1	/* Enable this if bootretry required, currently its disabled */
 #define CONFIG_BOOTCOMMAND 		"run ramboot"
-#define CONFIG_AUTOBOOT_PROMPT		"autoboot in %d seconds\n"
 
 #if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT) && defined(CONFIG_POST_TEST)
 /* POST support */
