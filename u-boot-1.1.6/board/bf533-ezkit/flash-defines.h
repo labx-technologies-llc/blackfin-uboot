@@ -52,10 +52,6 @@
 #define CFG_FLASH0_BASE		0x20000000
 #define RESET_VAL		0xF0
 
-
-asm("#define FLASH_START_L 0x0000");
-asm("#define FLASH_START_H 0x2000");
-
 flash_info_t flash_info[CFG_MAX_FLASH_BANKS];
 
 int get_codes(void);
