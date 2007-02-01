@@ -116,7 +116,7 @@ void flash_print_info(flash_info_t * info)
 		printf("ST Microelectronics ");
 		break;
 	default:
-		printf("Unknown Vendor ");
+		printf("Unknown Vendor: (0x%08X) ", info->flash_id);
 		break;
 	}
 	for (i = 0; i < info->sector_count; ++i) {
