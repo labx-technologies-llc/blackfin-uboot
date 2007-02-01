@@ -112,6 +112,7 @@ void flash_print_info(flash_info_t * info)
 	}
 	
 	switch (info->flash_id) {
+	case (STM_ID_29W320EB & 0xFFFF):
 	case (STM_ID_29W320DB & 0xFFFF):
 		printf("ST Microelectronics ");
 		break;
