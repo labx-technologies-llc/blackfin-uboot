@@ -52,90 +52,42 @@
 .align 4;
 .global _ipdt_table
 _ipdt_table:
-#ifdef CONFIG_CPLB_INFO
-.byte4 0x00000000;
-.byte4 (SDRAM_IKERNEL);               /*SDRAM_Page0*/
-.byte4 0x00400000;
-.byte4 (SDRAM_IKERNEL);               /*SDRAM_Page1*/
-#endif
-.byte4 0x00800000;
-.byte4 (SDRAM_IGENERIC);              /*SDRAM_Page2*/
-.byte4 0x00C00000;
-.byte4 (SDRAM_IGENERIC);              /*SDRAM_Page3*/
-.byte4 0x01000000;
-.byte4 (SDRAM_IGENERIC);              /*SDRAM_Page4*/
-.byte4 0x01400000;
-.byte4 (SDRAM_IGENERIC);              /*SDRAM_Page5*/
-.byte4 0x01800000;
-.byte4 (SDRAM_IGENERIC);              /*SDRAM_Page6*/
-.byte4 0x01C00000;
-.byte4 (SDRAM_IGENERIC);              /*SDRAM_Page7*/
-#ifndef CONFIG_EZKIT                  /*STAMP Memory regions*/
-.byte4  0x02000000;
-.byte4  (SDRAM_IGENERIC);              /*SDRAM_Page8*/
-.byte4  0x02400000;
-.byte4  (SDRAM_IGENERIC);              /*SDRAM_Page9*/
-.byte4  0x02800000;
-.byte4  (SDRAM_IGENERIC);              /*SDRAM_Page10*/
-.byte4  0x02C00000;
-.byte4  (SDRAM_IGENERIC);              /*SDRAM_Page11*/
-.byte4  0x03000000;
-.byte4  (SDRAM_IGENERIC);              /*SDRAM_Page12*/
-.byte4  0x03400000;
-.byte4  (SDRAM_IGENERIC);              /*SDRAM_Page13*/
-.byte4  0x03800000;
-.byte4  (SDRAM_IGENERIC);              /*SDRAM_Page14*/
-.byte4  0x03C00000;
-.byte4  (SDRAM_IGENERIC);              /*SDRAM_Page15*/
-#endif
-.byte4  0x20000000;
-.byte4  (SDRAM_EBIU);      /* Async Memory Bank 2 (Secnd)*/
-#if defined(CONFIG_EZKIT561)
-.byte4  0x20400000;
-.byte4	(SDRAM_EBIU);
-.byte4  0x20800000;
-.byte4	(SDRAM_EBIU);
-.byte4  0x2C000000;
-.byte4  (SDRAM_EBIU);
-#endif
+.byte4	0x00000000;
+.byte4	(SDRAM_IKERNEL);               /*SDRAM_Page0*/
+.byte4	0x00400000;
+.byte4	(SDRAM_IKERNEL);               /*SDRAM_Page1*/
+.byte4	0x00800000;
+.byte4	(SDRAM_IGENERIC);              /*SDRAM_Page2*/
+.byte4	0x00C00000;
+.byte4	(SDRAM_IGENERIC);              /*SDRAM_Page3*/
+.byte4	0x01000000;
+.byte4	(SDRAM_IGENERIC);              /*SDRAM_Page4*/
+.byte4	0x01400000;
+.byte4	(SDRAM_IGENERIC);              /*SDRAM_Page5*/
+.byte4	0x01800000;
+.byte4	(SDRAM_IGENERIC);              /*SDRAM_Page6*/
+.byte4	0x01C00000;
+.byte4	(SDRAM_IGENERIC);              /*SDRAM_Page7*/
+.byte4	0x02000000;
+.byte4	(SDRAM_IGENERIC);              /*SDRAM_Page8*/
+.byte4	0x02400000;
+.byte4	(SDRAM_IGENERIC);              /*SDRAM_Page9*/
+.byte4	0x02800000;
+.byte4	(SDRAM_IGENERIC);              /*SDRAM_Page10*/
+.byte4	0x02C00000;
+.byte4	(SDRAM_IGENERIC);              /*SDRAM_Page11*/
+.byte4	0x03000000;
+.byte4	(SDRAM_IGENERIC);              /*SDRAM_Page12*/
+.byte4	0x03400000;
+.byte4	(SDRAM_IGENERIC);              /*SDRAM_Page13*/
+.byte4	0x03800000;
+.byte4	(SDRAM_IGENERIC);              /*SDRAM_Page14*/
+.byte4	0x03C00000;
+.byte4	(SDRAM_IGENERIC);              /*SDRAM_Page15*/
+.byte4	0x20000000;
+.byte4	(SDRAM_EBIU);      /* Async Memory Bank 2 (Secnd)*/
 
-#ifdef CONFIG_STAMP
-.byte4        0x04000000;
-.byte4  (SDRAM_IGENERIC);
-.byte4        0x04400000;
-.byte4  (SDRAM_IGENERIC);
-.byte4        0x04800000;
-.byte4  (SDRAM_IGENERIC);
-.byte4        0x04C00000;
-.byte4  (SDRAM_IGENERIC);
-.byte4        0x05000000;
-.byte4  (SDRAM_IGENERIC);
-.byte4        0x05400000;
-.byte4  (SDRAM_IGENERIC);
-.byte4        0x05800000;
-.byte4  (SDRAM_IGENERIC);
-.byte4        0x05C00000;
-.byte4  (SDRAM_IGENERIC);
-.byte4        0x06000000;
-.byte4  (SDRAM_IGENERIC);       /*SDRAM_Page25*/
-.byte4        0x06400000;
-.byte4  (SDRAM_IGENERIC);       /*SDRAM_Page26*/
-.byte4        0x06800000;
-.byte4  (SDRAM_IGENERIC);       /*SDRAM_Page27*/
-.byte4        0x06C00000;
-.byte4  (SDRAM_IGENERIC);       /*SDRAM_Page28*/
-.byte4        0x07000000;
-.byte4  (SDRAM_IGENERIC);       /*SDRAM_Page29*/
-.byte4        0x07400000;
-.byte4  (SDRAM_IGENERIC);       /*SDRAM_Page30*/
-.byte4        0x07800000;
-.byte4  (SDRAM_IGENERIC);       /*SDRAM_Page31*/
-#ifdef CONFIG_CPLB_INFO
-.byte4        0x07C00000;
-.byte4  (SDRAM_IKERNEL);        /*SDRAM_Page32*/
-#endif
-#endif
-.byte4 0xffffffff;                    /* end of section - termination*/
+.byte4	0xffffffff;                    /* end of section - termination*/
 
 /**********************************************************************
  *		PAGE DESCRIPTOR TABLE
@@ -152,343 +104,309 @@ _ipdt_table:
  */   
 .global _dpdt_table
 _dpdt_table:
-#ifdef CONFIG_CPLB_INFO
-.byte4        0x00000000;
-.byte4        (SDRAM_DKERNEL);        /*SDRAM_Page0*/
-.byte4        0x00400000; 
-.byte4        (SDRAM_DKERNEL);        /*SDRAM_Page1*/
-#endif
-.byte4        0x00800000;
-.byte4        (SDRAM_DGENERIC);       /*SDRAM_Page2*/
-.byte4        0x00C00000;
-.byte4        (SDRAM_DGENERIC);       /*SDRAM_Page3*/
-.byte4        0x01000000;
-.byte4        (SDRAM_DGENERIC);       /*SDRAM_Page4*/
-.byte4        0x01400000;
-.byte4        (SDRAM_DGENERIC);       /*SDRAM_Page5*/
-.byte4        0x01800000;
-.byte4        (SDRAM_DGENERIC);       /*SDRAM_Page6*/
-.byte4        0x01C00000;
-.byte4        (SDRAM_DGENERIC);       /*SDRAM_Page7*/
-
-#ifndef CONFIG_EZKIT
-.byte4        0x02000000;
-.byte4        (SDRAM_DGENERIC);       /*SDRAM_Page8*/
-.byte4        0x02400000;
-.byte4        (SDRAM_DGENERIC);       /*SDRAM_Page9*/
-.byte4        0x02800000;
-.byte4        (SDRAM_DGENERIC);       /*SDRAM_Page10*/
-.byte4        0x02C00000;
-.byte4        (SDRAM_DGENERIC);       /*SDRAM_Page11*/
-.byte4        0x03000000;
-.byte4        (SDRAM_DGENERIC);       /*SDRAM_Page12*/
-.byte4        0x03400000;
-.byte4        (SDRAM_DGENERIC);       /*SDRAM_Page13*/
-.byte4        0x03800000;
-.byte4        (SDRAM_DGENERIC);       /*SDRAM_Page14*/
-.byte4        0x03C00000;
-.byte4        (SDRAM_DGENERIC);       /*SDRAM_Page15*/
-#endif 
+.byte4	0x00000000;
+.byte4	(SDRAM_DKERNEL);        /*SDRAM_Page0*/
+.byte4	0x00400000; 
+.byte4	(SDRAM_DKERNEL);        /*SDRAM_Page1*/
+.byte4	0x00800000;
+.byte4	(SDRAM_DGENERIC);       /*SDRAM_Page2*/
+.byte4	0x00C00000;
+.byte4	(SDRAM_DGENERIC);       /*SDRAM_Page3*/
+.byte4	0x01000000;
+.byte4	(SDRAM_DGENERIC);       /*SDRAM_Page4*/
+.byte4	0x01400000;
+.byte4	(SDRAM_DGENERIC);       /*SDRAM_Page5*/
+.byte4	0x01800000;
+.byte4	(SDRAM_DGENERIC);       /*SDRAM_Page6*/
+.byte4	0x01C00000;
+.byte4	(SDRAM_DGENERIC);       /*SDRAM_Page7*/
+.byte4	0x02000000;
+.byte4	(SDRAM_DGENERIC);       /*SDRAM_Page8*/
+.byte4	0x02400000;
+.byte4	(SDRAM_DGENERIC);       /*SDRAM_Page9*/
+.byte4	0x02800000;
+.byte4	(SDRAM_DGENERIC);       /*SDRAM_Page10*/
+.byte4	0x02C00000;
+.byte4	(SDRAM_DGENERIC);       /*SDRAM_Page11*/
+.byte4	0x03000000;
+.byte4	(SDRAM_DGENERIC);       /*SDRAM_Page12*/
+.byte4	0x03400000;
+.byte4	(SDRAM_DGENERIC);       /*SDRAM_Page13*/
+.byte4	0x03800000;
+.byte4	(SDRAM_DGENERIC);       /*SDRAM_Page14*/
+.byte4	0x03C00000;
+.byte4	(SDRAM_DGENERIC);       /*SDRAM_Page15*/
 .byte4	0x20000000;	
 .byte4	(SDRAM_EBIU);	/* Async Memory Bank 0 (Prim A)*/
-#if defined(CONFIG_EZKIT561)
-.byte4  0x20400000;
-.byte4	(SDRAM_EBIU);
-.byte4  0x20800000;
-.byte4	(SDRAM_EBIU);
-.byte4  0x20C00000;
-.byte4	(SDRAM_EBIU);
-#endif
-#ifdef CONFIG_STAMP	
-.byte4	0x04000000;
-.byte4  (SDRAM_DGENERIC);
-.byte4	0x04400000;
-.byte4  (SDRAM_DGENERIC);
-.byte4	0x04800000;
-.byte4  (SDRAM_DGENERIC);
-.byte4	0x04C00000;
-.byte4  (SDRAM_DGENERIC);
-.byte4	0x05000000;
-.byte4  (SDRAM_DGENERIC);
-.byte4	0x05400000;
-.byte4  (SDRAM_DGENERIC);
-.byte4	0x05800000;
-.byte4  (SDRAM_DGENERIC);
-.byte4	0x05C00000;
-.byte4  (SDRAM_DGENERIC);
-.byte4	0x06000000;
-.byte4	(SDRAM_DGENERIC);	/*SDRAM_Page25*/
-.byte4	0x06400000;
-.byte4	(SDRAM_DGENERIC);	/*SDRAM_Page26*/
-.byte4	0x06800000;
-.byte4	(SDRAM_DGENERIC);	/*SDRAM_Page27*/
-.byte4	0x06C00000;
-.byte4	(SDRAM_DGENERIC);	/*SDRAM_Page28*/
-.byte4	0x07000000;
-.byte4	(SDRAM_DGENERIC);	/*SDRAM_Page29*/
-.byte4	0x07400000;
-.byte4	(SDRAM_DGENERIC);	/*SDRAM_Page30*/
-.byte4	0x07800000;
-.byte4	(SDRAM_DGENERIC);	/*SDRAM_Page31*/
-#ifdef CONFIG_CPLB_INFO
-.byte4	0x07C00000;
-.byte4	(SDRAM_DKERNEL);	/*SDRAM_Page32*/
-#endif
-#endif
 
-.byte4  0xFF900000;
-.byte4  (L1_DMEMORY);
-.byte4  0xFF901000;
-.byte4  (L1_DMEMORY);
-.byte4  0xFF902000;
-.byte4  (L1_DMEMORY);
-.byte4  0xFF903000;
-.byte4  (L1_DMEMORY);
-.byte4  0xFF904000;
-.byte4  (L1_DMEMORY);
-.byte4  0xFF905000;
-.byte4  (L1_DMEMORY);
-.byte4  0xFF906000;
-.byte4  (L1_DMEMORY);
-.byte4  0xFF907000;
-.byte4  (L1_DMEMORY);
-.byte4  0xFF800000;
-.byte4  (L1_DMEMORY);
-.byte4  0xFF801000;
-.byte4  (L1_DMEMORY);
-.byte4  0xFF802000;
-.byte4  (L1_DMEMORY);
-.byte4  0xFF803000;
-.byte4  (L1_DMEMORY);
+#if ((BFIN_CPU == ADSP_BF534) || (BFIN_CPU == ADSP_BF537))
+.byte4	0xFF800000;
+.byte4	(L1_DMEMORY);
+.byte4	0xFF801000;
+.byte4	(L1_DMEMORY);
+.byte4	0xFF802000;
+.byte4	(L1_DMEMORY);
+.byte4	0xFF803000;
+.byte4	(L1_DMEMORY);
+#endif
+.byte4	0xFF804000;
+.byte4	(L1_DMEMORY);
+.byte4	0xFF805000;
+.byte4	(L1_DMEMORY);
+.byte4	0xFF806000;
+.byte4	(L1_DMEMORY);
+.byte4	0xFF807000;
+.byte4	(L1_DMEMORY);
+#if ((BFIN_CPU == ADSP_BF534) || (BFIN_CPU == ADSP_BF537))
+.byte4	0xFF900000;
+.byte4	(L1_DMEMORY);
+.byte4	0xFF901000;
+.byte4	(L1_DMEMORY);
+.byte4	0xFF902000;
+.byte4	(L1_DMEMORY);
+.byte4	0xFF903000;
+.byte4	(L1_DMEMORY);
+#endif
+.byte4	0xFF904000;
+.byte4	(L1_DMEMORY);
+.byte4	0xFF905000;
+.byte4	(L1_DMEMORY);
+.byte4	0xFF906000;
+.byte4	(L1_DMEMORY);
+.byte4	0xFF907000;
+.byte4	(L1_DMEMORY);
+
+.byte4	0xFFB00000;
+.byte4	(L1_DMEMORY);
 
 .byte4	0xffffffff;		/*end of section - termination*/
 
 #ifdef CONFIG_CPLB_INFO
 .global _ipdt_swapcount_table;	/* swapin count first, then swapout count*/
 _ipdt_swapcount_table:
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 10 */
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 20 */
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 30 */
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 40 */
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 50 */
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 60 */
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 70 */
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 80 */
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 90 */
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 100 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 10 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 20 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 30 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 40 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 50 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 60 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 70 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 80 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 90 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 100 */
 
 .global _dpdt_swapcount_table;	/* swapin count first, then swapout count*/
 _dpdt_swapcount_table:
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 10 */
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 20 */
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 30 */
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 40 */
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 50 */
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 60 */
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 70 */
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 80 */
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 80 */
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 100 */
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 110 */
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;
-.byte4        0x00000000;	/* 120 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 10 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 20 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 30 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 40 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 50 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 60 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 70 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 80 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 80 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 100 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 110 */
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;
+.byte4	0x00000000;	/* 120 */
 
 #endif
 

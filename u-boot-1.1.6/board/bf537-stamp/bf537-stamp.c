@@ -86,7 +86,13 @@ U_BOOT_CMD(bootldr,2,0,do_bootldr,
 
 int checkboard(void)
 {
+#if (BFIN_CPU == ADSP_BF534)	
+	printf("CPU:   ADSP BF534 Rev.: 0.%d\n", *pCHIPID >>28);
+#elif (BFIN_CPU == ADSP_BF536)	
+	printf("CPU:   ADSP BF536 Rev.: 0.%d\n", *pCHIPID >>28);
+#else	
 	printf("CPU:   ADSP BF537 Rev.: 0.%d\n", *pCHIPID >>28);
+#endif
 	printf("Board: ADI BF537 stamp board\n");
 	printf("       Support: http://blackfin.uclinux.org/\n");
 	return 0;
