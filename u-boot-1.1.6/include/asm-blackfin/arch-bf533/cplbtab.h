@@ -52,12 +52,10 @@
 .align 4;
 .global _ipdt_table
 _ipdt_table:
-#ifdef CONFIG_CPLB_INFO
 .byte4	0x00000000;
 .byte4	(SDRAM_IKERNEL);               /*SDRAM_Page0*/
 .byte4	0x00400000;
 .byte4	(SDRAM_IKERNEL);               /*SDRAM_Page1*/
-#endif
 .byte4	0x00800000;
 .byte4	(SDRAM_IGENERIC);              /*SDRAM_Page2*/
 .byte4	0x00C00000;
@@ -122,10 +120,8 @@ _ipdt_table:
 .byte4	(SDRAM_IGENERIC);       /*SDRAM_Page30*/
 .byte4	0x07800000;
 .byte4	(SDRAM_IGENERIC);       /*SDRAM_Page31*/
-#ifdef CONFIG_CPLB_INFO
 .byte4	0x07C00000;
 .byte4	(SDRAM_IKERNEL);        /*SDRAM_Page32*/
-#endif
 #endif
 .byte4	0xffffffff;                    /* end of section - termination*/
 
@@ -144,12 +140,10 @@ _ipdt_table:
  */   
 .global _dpdt_table
 _dpdt_table:
-#ifdef CONFIG_CPLB_INFO
 .byte4	0x00000000;
 .byte4	(SDRAM_DKERNEL);        /*SDRAM_Page0*/
 .byte4	0x00400000; 
 .byte4	(SDRAM_DKERNEL);        /*SDRAM_Page1*/
-#endif
 .byte4	0x00800000;
 .byte4	(SDRAM_DGENERIC);       /*SDRAM_Page2*/
 .byte4	0x00C00000;
@@ -213,10 +207,8 @@ _dpdt_table:
 .byte4	(SDRAM_DGENERIC);	/*SDRAM_Page30*/
 .byte4	0x07800000;
 .byte4	(SDRAM_DGENERIC);	/*SDRAM_Page31*/
-#ifdef CONFIG_CPLB_INFO
 .byte4	0x07C00000;
 .byte4	(SDRAM_DKERNEL);	/*SDRAM_Page32*/
-#endif
 #endif
 
 .byte4	0x20000000;	
