@@ -347,9 +347,21 @@
 #define CFG_BAUDRATE_TABLE              { 9600, 19200, 38400, 57600, 115200 }
 
 #if (BFIN_BOOT_MODE == BF533_SPI_BOOT)
-#define CFG_PROMPT			"serial_stamp>" /* Monitor Command Prompt */
+#if (BFIN_CPU == ADSP_BF531)
+#define	CFG_PROMPT		"serial_bf531> "	/* Monitor Command Prompt */
+#elif (BFIN_CPU == ADSP_BF532)
+#define	CFG_PROMPT		"serial_bf532> "	/* Monitor Command Prompt */
 #else
-#define CFG_PROMPT                      "stamp>"        /* Monitor Command Prompt */
+#define	CFG_PROMPT		"serial_bf533> "	/* Monitor Command Prompt */
+#endif
+#else
+#if (BFIN_CPU == ADSP_BF531)
+#define	CFG_PROMPT		"bf531> "	/* Monitor Command Prompt */
+#elif (BFIN_CPU == ADSP_BF532)
+#define	CFG_PROMPT		"bf532> "	/* Monitor Command Prompt */
+#else
+#define	CFG_PROMPT		"bf533> "	/* Monitor Command Prompt */
+#endif
 #endif
 
 #if (CONFIG_COMMANDS & CFG_CMD_KGDB)

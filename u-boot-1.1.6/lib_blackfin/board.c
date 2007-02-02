@@ -322,7 +322,7 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	misc_init_r();
 #endif
 	
-#ifdef CONFIG_BF537
+#if ((BFIN_CPU == ADSP_BF537) || (BFIN_CPU == ADSP_BF536))
 	printf("Net:	ADI BF537 EMAC\n");
 #endif
 

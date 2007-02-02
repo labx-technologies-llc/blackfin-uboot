@@ -105,11 +105,14 @@
  * Network Settings
  */
 /* network support */
+#if (BFIN_CPU != ADSP_BF534)
 #define CONFIG_IPADDR           192.168.0.15
 #define CONFIG_NETMASK          255.255.255.0
 #define CONFIG_GATEWAYIP        192.168.0.1
 #define CONFIG_SERVERIP         192.168.0.2
 #define CONFIG_HOSTNAME         BF537
+#endif
+
 #define CONFIG_ROOTPATH		/romfs
 /* Uncomment next line to use fixed MAC address */
 //#define CONFIG_ETHADDR          02:80:ad:20:31:e8 
@@ -161,9 +164,14 @@
 #  define ADD_NAND_CMD		0
 #endif
 
+#if (BFIN_CPU == ADSP_BF534)
+#define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NET) 
+#else
+#define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL | CFG_CMD_PING)
+#endif
+
 #if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
-#define CONFIG_COMMANDS			(CONFIG_CMD_DFL	| \
-					 CFG_CMD_PING	| \
+#define CONFIG_COMMANDS			(CONFIG_BFIN_CMD| \
 					 CFG_CMD_ELF	| \
 					 CFG_CMD_I2C	| \
 					 CFG_CMD_CACHE  | \
@@ -175,8 +183,7 @@
 					 CFG_CMD_POST_DIAG | \
 					 CFG_CMD_DATE)
 #elif (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
-#define CONFIG_COMMANDS			(CONFIG_CMD_DFL	| \
-					 CFG_CMD_PING	| \
+#define CONFIG_COMMANDS			(CONFIG_BFIN_CMD| \
 					 CFG_CMD_ELF	| \
 					 CFG_CMD_I2C	| \
 					 CFG_CMD_CACHE  | \
@@ -188,6 +195,7 @@
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"	
 
 #if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
+#if (BFIN_CPU != ADSP_BF534)
 #define CONFIG_EXTRA_ENV_SETTINGS                               \
         "ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"      \
         "nfsargs=setenv bootargs root=/dev/nfs rw "             \
@@ -204,7 +212,15 @@
         "protect off 0x20000000 0x2007FFFF;"                    \
         "erase 0x20000000 0x2007FFFF;cp.b 0x1000000 0x20000000 $(filesize)\0"\
         ""
+#else
+#define CONFIG_EXTRA_ENV_SETTINGS                               \
+        "ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" \
+        "nfsargs=setenv bootargs root=/dev/nfs rw "             \
+        "flashboot=bootm 0x20100000\0" \
+        ""
+#endif
 #elif (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
+#if (BFIN_CPU != ADSP_BF534)
 #define CONFIG_EXTRA_ENV_SETTINGS					\
         "ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"		\
         "nfsargs=setenv bootargs root=/dev/nfs rw "			\
@@ -220,15 +236,34 @@
         "update=tftpboot 0x1000000 u-boot.ldr;"				\
         "eeprom write 0x1000000 0x0 $(filesize);\0"			\
         ""
+#else
+#define CONFIG_EXTRA_ENV_SETTINGS                               \
+        "ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" \
+        "nfsargs=setenv bootargs root=/dev/nfs rw "             \
+        "flashboot=bootm 0x20100000\0" \
+        ""
+#endif
 #endif
 
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
 
 #if (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
+#if (BFIN_CPU == ADSP_BF534)
+#define	CFG_PROMPT		"serial_bf534> "	/* Monitor Command Prompt */
+#elif (BFIN_CPU == ADSP_BF536)
+#define	CFG_PROMPT		"serial_bf536> "	/* Monitor Command Prompt */
+#else
 #define	CFG_PROMPT		"serial_bf537> "	/* Monitor Command Prompt */
+#endif
+#else
+#if (BFIN_CPU == ADSP_BF534)
+#define	CFG_PROMPT		"bf534> "	/* Monitor Command Prompt */
+#elif (BFIN_CPU == ADSP_BF536)
+#define	CFG_PROMPT		"bf536> "	/* Monitor Command Prompt */
 #else
 #define	CFG_PROMPT		"bf537> "	/* Monitor Command Prompt */
+#endif
 #endif
 
 #if (CONFIG_COMMANDS & CFG_CMD_KGDB)
