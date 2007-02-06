@@ -104,9 +104,17 @@ ssize_t spi_write (uchar *addr, int alen, uchar *buffer, int len)
 	
 	offset = addr[0]<<16 | addr[1] <<8 | addr[2];
 	/* Get the start block number */
-	GetSectorNumber(offset, &start_block);
+	result = GetSectorNumber(offset, &start_block);
+	if(result == INVALID_SECTOR) {
+		printf("Invalid sector! ");
+		return 0;
+	}
 	/* Get the end block number */
-	GetSectorNumber(offset + len, &end_block);
+	result = GetSectorNumber(offset + len -1, &end_block);
+	if(result == INVALID_SECTOR) {
+		printf("Invalid sector! ");
+		return 0;
+	}
 	
 	for(num = start_block;num <= end_block;num ++){
 		ReadData(num*SECTOR_SIZE,SECTOR_SIZE,(int *)temp);
