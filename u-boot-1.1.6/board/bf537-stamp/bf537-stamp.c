@@ -165,10 +165,7 @@ int misc_init_r(void)
 	u8  SrcAddr[6] = {0x02,0x80,0xAD,0x20,0x31,0xB8};
 
 #if (CONFIG_COMMANDS & CFG_CMD_NET)
-	if ( getenv("ethaddr") == NULL && (
-		((pMACaddr[0] & 0xFF) != 0xFF) && ((pMACaddr[0] >> 8) != 0xFF ) &&
-		((pMACaddr[1] & 0xFF) != 0xFF) && ((pMACaddr[1] >> 8) != 0xFF ) &&
-		((pMACaddr[2] & 0xFF) != 0xFF) && ((pMACaddr[2] >> 8) != 0xFF ))) {
+        if ( getenv("ethaddr") == NULL && ((pMACaddr[0] & 0xFF) != 0xFF)) {
 		sprintf (nid, "%02x:%02x:%02x:%02x:%02x:%02x",
 			pMACaddr[0] & 0xFF , pMACaddr[0] >> 8,
 			pMACaddr[1] & 0xFF , pMACaddr[1] >> 8,
