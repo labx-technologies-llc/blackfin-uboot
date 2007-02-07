@@ -87,9 +87,11 @@ endif
 
 ifeq ($(ARCH),blackfin)
 ifneq ($(BOARD),bf537-stamp)
+ifneq ($(BOARD),bf537-pnav)
 ELF	+= smc91111_eeprom
 SREC	+= smc91111_eeprom.srec
 BIN 	+= smc91111_eeprom.bin
+endif
 endif
 endif
 

@@ -2264,6 +2264,9 @@ bf537-stamp_config	:	unconfig
 bf561-ezkit_config	:	unconfig
 	@$(MKCONFIG) $(@:_config=) blackfin bf561 bf561-ezkit
 
+bf537-pnav_config	:	unconfig
+	@$(MKCONFIG) $(@:_config=) blackfin bf537 bf537-pnav
+
 #========================================================================
 # AVR32
 #========================================================================
