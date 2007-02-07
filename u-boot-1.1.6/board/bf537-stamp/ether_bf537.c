@@ -233,6 +233,9 @@ int eth_init(bd_t *bis)
 	else
 		opmode = ASTP|PSF;
 	opmode |= RE;
+#ifdef CONFIG_BFIN_MAC_RMII
+	opmode |= TE | RMII;
+#endif
 	/* Turn on the EMAC */
 	*pEMAC_OPMODE = opmode;
 	return 0;

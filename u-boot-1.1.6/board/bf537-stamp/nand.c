@@ -26,6 +26,15 @@
 #if (CONFIG_COMMANDS & CFG_CMD_NAND)
 
 #include <nand.h>
+
+//#define BFIN_READ(a,b)  CONCAT(bfin_read_TIMER,a,_,b)
+#define CONCAT(a,b,c,d) a ## b ## c ## d
+#define PORT(a,b)  CONCAT(pPORT,a,b,)
+
+#ifndef CONFIG_NAND_GPIO_PORT
+#define CONFIG_NAND_GPIO_PORT F
+#endif
+
 /*
  *	hardware specific access to control-lines
  */
@@ -52,7 +61,7 @@ static void bfin_hwcontrol(struct mtd_info *mtd, int cmd)
 
 int bfin_device_ready(struct mtd_info *mtd)
 {
-        int ret = (*pFIO_FLAG_D & BFIN_NAND_READY)? 1 : 0;
+        int ret = (*PORT(CONFIG_NAND_GPIO_PORT,IO) & BFIN_NAND_READY)? 1 : 0;
         __builtin_bfin_ssync();
         return ret;
 }
@@ -77,9 +86,9 @@ int bfin_device_ready(struct mtd_info *mtd)
  */
 void board_nand_init(struct nand_chip *nand)
 {
-	*pPORTF_FER   &= ~PF3;
-        *pPORTFIO_DIR &= ~PF3;
-        *pPORTFIO_INEN|=  PF3;
+	*PORT(CONFIG_NAND_GPIO_PORT,_FER)  &= ~BFIN_NAND_READY;
+        *PORT(CONFIG_NAND_GPIO_PORT,IO_DIR) &= ~BFIN_NAND_READY;
+        *PORT(CONFIG_NAND_GPIO_PORT,IO_INEN) |=  BFIN_NAND_READY;
 
 	nand->hwcontrol = bfin_hwcontrol;
 	nand->eccmode = NAND_ECC_SOFT;
