@@ -316,6 +316,7 @@ LIST_blackfin=" \
 	bf533-ezkit
 	bf533-stamp
 	bf537-stamp
+	bf537-pnav
 	bf561-ezkit
 "
 
