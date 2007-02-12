@@ -13,7 +13,8 @@
 
 #define CFG_LONGHELP                    1
 #define CONFIG_CMDLINE_EDITING	1
-#define CONFIG_BOOTCOMMAND	"tftp 0x1000000 linux"
+#define CONFIG_LOADADDR		0x01000000      /* default load address */
+#define CONFIG_BOOTCOMMAND	"tftp $(loadaddr) linux"
 //#define CONFIG_BOOTARGS		"root=/dev/mtdblock0 rw"
 
 #define CONFIG_DRIVER_SMC91111	1
@@ -96,7 +97,7 @@
 					 CFG_CMD_I2C	| \
 					 CFG_CMD_JFFS2	| \
 					 CFG_CMD_DATE)
-#define CONFIG_BOOTARGS "root=/dev/mtdblock0 ip=192.168.0.15:192.168.0.2:192.168.0.1:255.255.255.0:ezkit:eth0:off"	
+#define CONFIG_BOOTARGS "root=/dev/mtdblock0 ip=192.168.0.15:192.168.0.2:192.168.0.1:255.255.255.0:ezkit:eth0:off console=ttyBF0,57600"	
 
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>

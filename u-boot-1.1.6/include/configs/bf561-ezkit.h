@@ -118,8 +118,8 @@
 #define CFG_MEMTEST_START	0x00000000	/* memtest works on */
 #define CFG_MEMTEST_END		0x03F7FFFF	/* 1 ... 63.5 MB in DRAM */
 
-#define	CFG_LOAD_ADDR		0x01000000	/* default load address */
-
+#define	CONFIG_LOADADDR		0x01000000	/* default load address */
+#define CFG_LOAD_ADDR		CONFIG_LOADADDR
 #define	CFG_MONITOR_LEN		(256 << 10)	/* Reserve 256 kB for Monitor	*/
 #define CFG_MONITOR_BASE	(CFG_MAX_RAM_SIZE - CFG_MONITOR_LEN)
 
@@ -157,7 +157,7 @@
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required,*/
 					/* currently its disabled */
 #define CONFIG_BOOTCOMMAND	"run ramboot"
-#define CONFIG_BOOTARGS		"root=/dev/mtdblock0 rw"
+#define CONFIG_BOOTARGS		"root=/dev/mtdblock0 rw console=ttyBF0,57600"
 
 #if (CONFIG_DRIVER_SMC91111)
 #define CONFIG_COMMANDS1	(CONFIG_CMD_DFL	| \
@@ -167,19 +167,19 @@
 				 CFG_CMD_JFFS2	| \
 				 CFG_CMD_DHCP)
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" 		\
+	"ramargs=setenv bootargs root=/dev/mtdblock0 rw console=ttyBF0,57600\0" 		\
 	"nfsargs=setenv bootargs root=/dev/nfs rw nfsroot=$(serverip):"	\
-		"$(rootpath)\0"						\
+		"$(rootpath) console=ttyBF0,57600\0"						\
 	"addip=setenv bootargs $(bootargs) ip=$(ipaddr):$(serverip):"	\
 		"$(gatewayip):$(netmask):$(hostname):eth0:off\0"	\
-	"ramboot=tftpboot " STRINGIZE(CFG_LOAD_ADDR) " linux; "		\
+	"ramboot=tftpboot $(loadaddr) linux; "		\
 		"run ramargs; run addip; bootelf\0"			\
-	"nfsboot=tftpboot " STRINGIZE(CFG_LOAD_ADDR) " linux; "		\
+	"nfsboot=tftpboot $(loadaddr) linux; "		\
 		"run nfsargs; run addip; bootelf\0"			\
-	"update=tftpboot " STRINGIZE(CFG_LOAD_ADDR) " u-boot.bin; "	\
+	"update=tftpboot $(loadaddr) u-boot.bin; "	\
 		"protect off 0x20000000 0x2003FFFF; "			\
 		"erase 0x20000000 0x2003FFFF; "				\
-		"cp.b " STRINGIZE(CFG_LOAD_ADDR) " 0x20000000 $(filesize)\0" \
+		"cp.b $(loadaddr) 0x20000000 $(filesize)\0" \
 	""
 #else
 #define CONFIG_COMMANDS1	(CONFIG_CMD_DFL	| \
@@ -187,7 +187,7 @@
 				 CFG_CMD_CACHE	| \
 				 CFG_CMD_JFFS2)
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"		\
+	"ramargs=setenv bootargs root=/dev/mtdblock0 rw console=ttyBF0,57600\0"		\
 	"flashboot=bootm 0x20100000\0"					\
 	""
 #endif

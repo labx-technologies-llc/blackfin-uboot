@@ -179,24 +179,25 @@
 #if (CONFIG_MEM_SIZE == 128 )
 	#define CFG_MAX_RAM_SIZE	0x08000000
 	#define CFG_MEMTEST_END		0x07F7FFFF      /* 1 ... 127.5 MB in DRAM */
-	#define CFG_LOAD_ADDR		0x01000000      /* default load address */
+	#define CONFIG_LOADADDR		0x01000000      /* default load address */
 #endif
 #if (CONFIG_MEM_SIZE == 64 )
 	#define CFG_MAX_RAM_SIZE	0x04000000
         #define CFG_MEMTEST_END         0x04F7FFFF      /* 1 ... 63.5 MB in DRAM */
-        #define CFG_LOAD_ADDR           0x01000000      /* default load address */
+        #define CONFIG_LOADADDR           0x01000000      /* default load address */
 #endif
 #if (CONFIG_MEM_SIZE == 32 )
 	#define CFG_MAX_RAM_SIZE        0x02000000
         #define CFG_MEMTEST_END         0x01F7FFFF      /* 1 ... 31.5 MB in DRAM */
-        #define CFG_LOAD_ADDR           0x01000000      /* default load address */
+        #define CONFIG_LOADADDR           0x01000000      /* default load address */
 #endif
 #if (CONFIG_MEM_SIZE == 16 )
 	#define CFG_MAX_RAM_SIZE        0x01000000
         #define CFG_MEMTEST_END         0x00F7FFFF      /* 1 ... 15.5 MB in DRAM */
-        #define CFG_LOAD_ADDR           0x00800000      /* default load address  */
+        #define CONFIG_LOADADDR           0x00800000      /* default load address  */
 #endif
 
+#define CFG_LOAD_ADDR 			CONFIG_LOADADDR
 #define	CFG_MONITOR_LEN			(256 << 10)	/* Reserve 256 kB for Monitor	*/
 #define CFG_MALLOC_LEN                  (128 << 10)     /* Reserve 128 kB for malloc()  */
 #define CFG_GBL_DATA_SIZE               0x4000		/* Reserve 16k for Global Data  */
@@ -255,7 +256,7 @@
 #define CONFIG_BOOTCOMMAND 		"eeprom read 0x1000000 0x100000 0x180000;icache on;dcache on;bootm 0x1000000"
 #endif
 
-#define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"
+#define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw console=ttyBF0,57600"
 
 #if (CONFIG_DRIVER_SMC91111)
 #define CONFIG_COMMANDS1                (CONFIG_CMD_DFL | \
@@ -279,41 +280,41 @@
 #if (BFIN_BOOT_MODE == BF533_BYPASS_BOOT)
 #if (CONFIG_DRIVER_SMC91111)
 #define CONFIG_EXTRA_ENV_SETTINGS \
-        "ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" \
+        "ramargs=setenv bootargs root=/dev/mtdblock0 rw console=ttyBF0,57600\0" \
         "nfsargs=setenv bootargs root=/dev/nfs rw nfsroot=$(serverip):" \
-                "$(rootpath)\0" \
+                "$(rootpath) console=ttyBF0,57600\0" \
         "addip=setenv bootargs $(bootargs) ip=$(ipaddr):$(serverip):" \
                 "$(gatewayip):$(netmask):$(hostname):eth0:off\0" \
-        "ramboot=tftpboot " STRINGIZE(CFG_LOAD_ADDR) " linux; " \
+        "ramboot=tftpboot $(loadaddr) linux; " \
 		"run ramargs;run addip;bootelf\0" \
-        "nfsboot=tftpboot " STRINGIZE(CFG_LOAD_ADDR) " linux; " \
+        "nfsboot=tftpboot $(loadaddr) linux; " \
 		"run nfsargs;run addip;bootelf\0" \
         "flashboot=bootm 0x20100000\0" \
-        "update=tftpboot " STRINGIZE(CFG_LOAD_ADDR) " u-boot.bin; " \
+        "update=tftpboot $(loadaddr) u-boot.bin; " \
                 "protect off 0x20000000 0x2003FFFF; erase 0x20000000 0x2003FFFF;" \
-                "cp.b " STRINGIZE(CFG_LOAD_ADDR) " 0x20000000 $(filesize)\0" \
+                "cp.b $(loadaddr) 0x20000000 $(filesize)\0" \
         ""
 #else
 #define CONFIG_EXTRA_ENV_SETTINGS \
-        "ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" \
+        "ramargs=setenv bootargs root=/dev/mtdblock0 rw console=ttyBF0,57600\0" \
         "flashboot=bootm 0x20100000\0" \
         ""
 #endif
 
 #elif (BFIN_BOOT_MODE == BF533_SPI_BOOT)
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" \
+	"ramargs=setenv bootargs root=/dev/mtdblock0 rw console=ttyBF0,57600\0" \
 	"nfsargs=setenv bootargs root=/dev/nfs rw nfsroot=$(serverip):" \
-		"$(rootpath)\0"	\
+		"$(rootpath) console=ttyBF0,57600\0"	\
 	"addip=setenv bootargs $(bootargs) ip=$(ipaddr):$(serverip):" \
 		"$(gatewayip):$(netmask):$(hostname):eth0:off\0" \
-        "ramboot=tftpboot " STRINGIZE(CFG_LOAD_ADDR) " linux; " \
+        "ramboot=tftpboot $(loadaddr) linux; " \
 		"run ramargs;run addip;bootelf\0" \
-	"nfsboot=tftpboot " STRINGIZE(CFG_LOAD_ADDR) " linux; "	\
+	"nfsboot=tftpboot $(loadaddr) linux; "	\
 		"run nfsargs;run addip;bootelf\0" \
 	"flashboot=bootm 0x20100000\0" \
-	"update=tftpboot " STRINGIZE(CFG_LOAD_ADDR) " u-boot.ldr;"	\
-		"eeprom write " STRINGIZE(CFG_LOAD_ADDR) " 0x0 $(filesize);\0"\
+	"update=tftpboot $(loadaddr) u-boot.ldr;"	\
+		"eeprom write $(loadaddr) 0x0 $(filesize);\0"\
 	""
 #endif
 

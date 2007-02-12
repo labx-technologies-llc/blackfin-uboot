@@ -192,54 +192,53 @@
 					 CFG_CMD_DATE)
 #endif
 
-#define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"	
+#define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw console=ttyBF0,57600"	
+#define CONFIG_LOADADDR	0x1000000
 
 #if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
 #if (BFIN_CPU != ADSP_BF534)
 #define CONFIG_EXTRA_ENV_SETTINGS                               \
-        "ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"      \
+        "ramargs=setenv bootargs root=/dev/mtdblock0 rw console=ttyBF0,57600\0"      \
         "nfsargs=setenv bootargs root=/dev/nfs rw "             \
-        "nfsroot=$(serverip):$(rootpath)\0"                     \
+        "nfsroot=$(serverip):$(rootpath) console=ttyBF0,57600\0"                     \
         "addip=setenv bootargs $(bootargs) "                    \
         "ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask)"      \
         ":$(hostname):eth0:off\0"                               \
-        "ramboot=tftpboot 0x1000000 linux;"                     \
+        "ramboot=tftpboot $(loadaddr) linux;"                     \
         "run ramargs;run addip;bootelf\0"                       \
-        "nfsboot=tftpboot 0x1000000 linux;"                     \
+        "nfsboot=tftpboot $(loadaddr) linux;"                     \
         "run nfsargs;run addip;bootelf\0"                       \
         "flashboot=bootm 0x20100000\0"                          \
-        "update=tftpboot 0x1000000 u-boot.bin;"                 \
+        "update=tftpboot $(loadaddr) u-boot.bin;"                 \
         "protect off 0x20000000 0x2007FFFF;"                    \
         "erase 0x20000000 0x2007FFFF;cp.b 0x1000000 0x20000000 $(filesize)\0"\
         ""
 #else
 #define CONFIG_EXTRA_ENV_SETTINGS                               \
-        "ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" \
-        "nfsargs=setenv bootargs root=/dev/nfs rw "             \
+        "ramargs=setenv bootargs root=/dev/mtdblock0 rw console=ttyBF0,57600\0" \
         "flashboot=bootm 0x20100000\0" \
         ""
 #endif
 #elif (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
 #if (BFIN_CPU != ADSP_BF534)
 #define CONFIG_EXTRA_ENV_SETTINGS					\
-        "ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"		\
+        "ramargs=setenv bootargs root=/dev/mtdblock0 rw console=ttyBF0,57600\0"		\
         "nfsargs=setenv bootargs root=/dev/nfs rw "			\
-        "nfsroot=$(serverip):$(rootpath)\0"				\
+        "nfsroot=$(serverip):$(rootpath) console=ttyBF0,57600\0"				\
         "addip=setenv bootargs $(bootargs) "				\
         "ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask)"		\
         ":$(hostname):eth0:off\0"					\
-    	"ramboot=tftpboot 0x1000000 linux;"				\
+    	"ramboot=tftpboot $(loadaddr) linux;"				\
         "run ramargs;run addip;bootelf\0"				\
-        "nfsboot=tftpboot 0x1000000 linux;"				\
+        "nfsboot=tftpboot $(loadaddr) linux;"				\
         "run nfsargs;run addip;bootelf\0"				\
         "flashboot=bootm 0x20100000\0"					\
-        "update=tftpboot 0x1000000 u-boot.ldr;"				\
-        "eeprom write 0x1000000 0x0 $(filesize);\0"			\
+        "update=tftpboot $(loadaddr) u-boot.ldr;"				\
+        "eeprom write $(loadaddr) 0x0 $(filesize);\0"			\
         ""
 #else
 #define CONFIG_EXTRA_ENV_SETTINGS                               \
-        "ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" \
-        "nfsargs=setenv bootargs root=/dev/nfs rw "             \
+        "ramargs=setenv bootargs root=/dev/mtdblock0 rw console=ttyBF0,57600\0" \
         "flashboot=bootm 0x20100000\0" \
         ""
 #endif
@@ -276,7 +275,7 @@
 #define CFG_BARGSIZE		CFG_CBSIZE	/* Boot Argument Buffer Size */
 #define CFG_MEMTEST_START	0x00100000	/* memtest works on */
 #define CFG_MEMTEST_END		0x03F00000	/* 1 ... 63 MB in DRAM */
-#define	CFG_LOAD_ADDR		0x01000000	/* default load address */
+#define	CFG_LOAD_ADDR		CONFIG_LOADADDR	/* default load address */
 #define	CFG_HZ			1000	/* decrementer freq: 10 ms ticks */
 #define CFG_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 #define	CFG_SDRAM_BASE		0x00000000
