@@ -410,9 +410,6 @@
 #define CFG_I2C_SPEED			50000
 #define CFG_I2C_SLAVE			0xFE
 
-#define __ADSPLPBLACKFIN__	1
-#define __ADSPBF537__		1
-
 /* 0xFF, 0x7BB07BB0, 0x22547BB0 */
 /* #define AMGCTLVAL            (AMBEN_P0 | AMBEN_P1 | AMBEN_P2 | AMCKEN)
 #define AMBCTL0VAL              (B1WAT_7 | B1RAT_11 | B1HT_2 | B1ST_3 | B1TT_4 | ~B1RDYPOL |    \

@@ -5,8 +5,6 @@
 #ifndef __CONFIG_EZKIT561_H__
 #define __CONFIG_EZKIT561_H__
 
-#define __ADSPLPBLACKFIN__	1
-#define __ADSPBF561__		1
 #define CONFIG_VDSP		1
 
 #define CFG_LONGHELP		1

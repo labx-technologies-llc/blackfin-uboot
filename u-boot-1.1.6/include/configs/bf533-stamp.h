@@ -5,8 +5,6 @@
 #ifndef __CONFIG_STAMP_H__
 #define __CONFIG_STAMP_H__
 
-#define __ADSPLPBLACKFIN__		1
-#define __ADSPBF533__			1
 #define CONFIG_STAMP			1
 #define CONFIG_RTC_BF533		1
 

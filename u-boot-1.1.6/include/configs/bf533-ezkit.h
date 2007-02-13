@@ -199,9 +199,6 @@
 
 #define CFG_BOOTM_LEN		0x4000000	/* Large Image Length, set to 64 Meg */
 
-#define __ADSPLPBLACKFIN__	1
-#define __ADSPBF533__		1
-
 /* 0xFF, 0x7BB07BB0, 0x22547BB0 */
 /* #define AMGCTLVAL            (AMBEN_P0 | AMBEN_P1 | AMBEN_P2 | AMCKEN)
 #define AMBCTL0VAL              (B1WAT_7 | B1RAT_11 | B1HT_2 | B1ST_3 | B1TT_4 | ~B1RDYPOL |    \
