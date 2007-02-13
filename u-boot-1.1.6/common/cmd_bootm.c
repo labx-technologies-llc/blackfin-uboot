@@ -481,7 +481,7 @@ static void
 fixup_silent_linux ()
 {
 # ifndef CONFIG_SILENT_LINUX
-	return
+	return;
 # else
 	char buf[256], *start, *end;
 	char *cmdline = getenv ("bootargs");
