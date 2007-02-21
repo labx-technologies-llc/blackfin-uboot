@@ -257,8 +257,8 @@ postcopy:
         R2 = R1 - R0;           /* Count */
 	R0.H = _etext;
 	R0.L = _etext;
-	R1.H = (TEXT_BASE >> 16);
-	R1.L = (TEXT_BASE & 0xFFFF);
+	R1.H = (CFG_MONITOR_BASE >> 16);
+	R1.L = (CFG_MONITOR_BASE & 0xFFFF);
 	R0 = R0 - R1;
 	R1.H = (CFG_FLASH_BASE >> 16);
 	R1.L = (CFG_FLASH_BASE & 0xFFFF);
@@ -303,8 +303,8 @@ POST_DMA_DONE:
         R2 = R1 - R0;           /* Count */
         R0.H = _erodata;
         R0.L = _erodata;
-        R1.H = (TEXT_BASE >> 16);
-        R1.L = (TEXT_BASE & 0xFFFF);
+        R1.H = (CFG_MONITOR_BASE >> 16);
+        R1.L = (CFG_MONITOR_BASE & 0xFFFF);
         R0 = R0 - R1;
         R1.H = (CFG_FLASH_BASE >> 16);
         R1.L = (CFG_FLASH_BASE & 0xFFFF);
