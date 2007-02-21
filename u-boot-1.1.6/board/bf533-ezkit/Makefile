@@ -1,7 +1,7 @@
 #
 # U-boot - Makefile
 #
-# Copyright (c) 2005 blackfin.uclinux.org
+# Copyright (c) 2005-2007 Analog Device Inc.
 #
 # (C) Copyright 2000-2004
 # Wolfgang Denk, DENX Software Engineering, wd@denx.de.
@@ -31,8 +31,12 @@ LIB	= lib$(BOARD).a
 
 OBJS	= $(BOARD).o flash.o
 
-$(LIB):	.depend $(OBJS)
+$(LIB):	.depend $(OBJS) u-boot.lds
 	$(AR) cr $@ $(OBJS)
+
+u-boot.lds: u-boot.lds.S
+	$(CPP) $(CPPFLAGS) -P -Ubfin $^ > $@.tmp
+	mv -f $@.tmp $@
 
 #########################################################################
 

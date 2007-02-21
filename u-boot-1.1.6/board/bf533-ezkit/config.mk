@@ -21,4 +21,5 @@
 # MA 02111-1307 USA
 #
 
-TEXT_BASE = 0x01FC0000
+# This is not actually used for Blackfin boards so do not change it
+TEXT_BASE = do-not-use-me

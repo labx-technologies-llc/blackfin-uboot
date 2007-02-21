@@ -1,7 +1,7 @@
 /*
- * U-boot - u-boot.lds
+ * U-boot - u-boot.lds.S
  *
- * Copyright (c) 2005 blackfin.uclinux.org
+ * Copyright (c) 2005-2007 Analog Device Inc.
  *
  * (C) Copyright 2000-2004
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
@@ -25,6 +25,9 @@
  * MA 02111-1307 USA
  */
 
+#include <config.h>
+
+OUTPUT_ARCH(bfin)
 OUTPUT_ARCH(bfin)
 SEARCH_DIR(/lib); SEARCH_DIR(/usr/lib); SEARCH_DIR(/usr/local/lib);
 /* Do we need any of these for elf?
@@ -55,6 +58,7 @@ SECTIONS
   .rela.plt      : { *(.rela.plt)	}
   .init          : { *(.init)		}
   .plt : { *(.plt) }
+  . = CFG_MONITOR_BASE;
   .text      :
   {
     /* WARNING - the following is hand-optimized to fit within	*/
@@ -62,17 +66,17 @@ SECTIONS
     /* an error during compilation remove an object here to get	*/
     /* it linked after the configuration sector.		*/
 
-    cpu/bf533/start.o		(.text)
-    cpu/bf533/start1.o		(.text)
-    cpu/bf533/traps.o		(.text)
-    cpu/bf533/interrupt.o	(.text)
-    cpu/bf533/serial.o		(.text)
+    cpu/bf561/start.o		(.text)
+    cpu/bf561/start1.o		(.text)
+    cpu/bf561/traps.o		(.text)
+    cpu/bf561/interrupt.o	(.text)
+    cpu/bf561/serial.o		(.text)
     common/dlmalloc.o		(.text)
 /*  lib_blackfin/bf533_string.o	(.text) */
 /*  lib_generic/vsprintf.o	(.text) */
     lib_generic/crc32.o		(.text)
     lib_generic/zlib.o		(.text)
-    board/bf533-ezkit/bf533-ezkit.o		(.text)
+    board/bf561-ezkit/bf561-ezkit.o		(.text)
 
     . = DEFINED(env_offset) ? env_offset : .;
     common/environment.o	(.text)

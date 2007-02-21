@@ -1,7 +1,7 @@
 /*
- * U-boot - u-boot.lds
+ * U-boot - u-boot.lds.S
  *
- * Copyright (c) 2005 blackfin.uclinux.org
+ * Copyright (c) 2005-2007 Analog Device Inc.
  *
  * (C) Copyright 2000-2004
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
@@ -25,14 +25,23 @@
  * MA 02111-1307 USA
  */
 
+#include <config.h>
+
 OUTPUT_ARCH(bfin)
 SEARCH_DIR(/lib); SEARCH_DIR(/usr/lib); SEARCH_DIR(/usr/local/lib);
 /* Do we need any of these for elf?
    __DYNAMIC = 0;    */
+MEMORY
+ {
+ ram : 	   ORIGIN = 0x03FC0000, LENGTH = (256 * 1024)
+ l1_code : ORIGIN = 0xFFA00000, LENGTH = 0xC000
+ l1_data : ORIGIN = 0xFF900000, LENGTH = 0x4000
+ }
+
 SECTIONS
 {
   /* Read-only sections, merged into text segment: */
-  . = + SIZEOF_HEADERS;
+  . = + SIZEOF_HEADERS; /*0x1000;*/
   .interp : { *(.interp) }
   .hash          : { *(.hash)		}
   .dynsym        : { *(.dynsym)		}
@@ -55,6 +64,7 @@ SECTIONS
   .rela.plt      : { *(.rela.plt)	}
   .init          : { *(.init)		}
   .plt : { *(.plt) }
+  . = CFG_MONITOR_BASE;
   .text      :
   {
     /* WARNING - the following is hand-optimized to fit within	*/
@@ -62,33 +72,64 @@ SECTIONS
     /* an error during compilation remove an object here to get	*/
     /* it linked after the configuration sector.		*/
 
-    cpu/bf561/start.o		(.text)
-    cpu/bf561/start1.o		(.text)
-    cpu/bf561/traps.o		(.text)
-    cpu/bf561/interrupt.o	(.text)
-    cpu/bf561/serial.o		(.text)
+    cpu/bf537/start.o		(.text)
+    cpu/bf537/start1.o		(.text)
+    cpu/bf537/traps.o		(.text)
+    cpu/bf537/interrupt.o	(.text)
+    cpu/bf537/serial.o		(.text)
     common/dlmalloc.o		(.text)
 /*  lib_blackfin/bf533_string.o	(.text) */
 /*  lib_generic/vsprintf.o	(.text) */
     lib_generic/crc32.o		(.text)
     lib_generic/zlib.o		(.text)
-    board/bf561-ezkit/bf561-ezkit.o		(.text)
+/*  board/bf537-pnav/bf537-pnav.o		(.text) */
 
     . = DEFINED(env_offset) ? env_offset : .;
     common/environment.o	(.text)
 
-    *(.text)
+    *(EXCLUDE_FILE (board/bf537-pnav/post-memory.o) .text)	
     *(.fixup)
     *(.got1)
-  }
+  }  > ram 
   _etext = .;
   PROVIDE (etext = .);
-  .rodata    :
+  .text_l1	:
   {
-    *(.rodata)
-    *(.rodata1)
-    *(.rodata.str1.4)
-  }
+  . = ALIGN(4) ;
+  _text_l1 = .;
+  PROVIDE (text_l1 = .);
+  board/bf537-pnav/post-memory.o   (.text)
+  . = ALIGN(4) ;
+  _etext_l1 = .;
+  PROVIDE (etext_l1 = .);
+  } > l1_code AT > ram
+
+  .rodata :
+  {
+    . = ALIGN(4);
+    *(EXCLUDE_FILE (board/bf537-pnav/post-memory.o) .rodata)
+    *(EXCLUDE_FILE (board/bf537-pnav/post-memory.o) .rodata1)
+    *(EXCLUDE_FILE (board/bf537-pnav/post-memory.o) .rodata.str1.4)
+    *(.eh_frame)
+    . = ALIGN(4);
+  } > ram
+
+  . = ALIGN(4);
+  _erodata = .;
+  PROVIDE (erodata = .);
+  .rodata_l1 :
+ {
+   . = ALIGN(4) ;
+   _rodata_l1 = .;
+   PROVIDE (rodata_l1 = .);
+   board/bf537-pnav/post-memory.o (.rodata)
+   board/bf537-pnav/post-memory.o (.rodata1)
+   board/bf537-pnav/post-memory.o (.rodata.str1.4)
+   . = ALIGN(4) ;
+   _erodata_l1 = .;
+   PROVIDE(erodata_l1 = .);
+ } > l1_data AT > ram
+
   .fini      : { *(.fini)    } =0
   .ctors     : { *(.ctors)   }
   .dtors     : { *(.dtors)   }
@@ -116,12 +157,12 @@ SECTIONS
     *(.sdata2)
     *(.dynamic)
     CONSTRUCTORS
-  }
+  } > ram
   _edata  =  .;
   PROVIDE (edata = .);
 
   ___u_boot_cmd_start = .;
-  .u_boot_cmd : { *(.u_boot_cmd) }
+  .u_boot_cmd : { *(.u_boot_cmd) } > ram
   ___u_boot_cmd_end = .;
 
 
@@ -136,14 +177,14 @@ SECTIONS
   . = ALIGN(256);
   __init_end = .;
 
-  __bss_start = .;
   .bss       :
   {
+  __bss_start = .;
    *(.sbss) *(.scommon)
    *(.dynbss)
    *(.bss)
    *(COMMON)
-  }
+  } > ram
   _end = . ;
   PROVIDE (end = .);
 }

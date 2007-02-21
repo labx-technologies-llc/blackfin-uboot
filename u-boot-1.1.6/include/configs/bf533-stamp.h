@@ -201,7 +201,7 @@
 #define CFG_GBL_DATA_SIZE               0x4000		/* Reserve 16k for Global Data  */
 #define CONFIG_STACKSIZE                (128*1024)      /* regular stack */
 
-#define CFG_MONITOR_BASE		TEXT_BASE
+#define CFG_MONITOR_BASE		0x07FC0000
 #define CFG_MALLOC_BASE                 (CFG_MONITOR_BASE - CFG_MALLOC_LEN)
 #define CFG_GBL_DATA_ADDR               (CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
 #define CONFIG_STACKBASE                (CFG_GBL_DATA_ADDR  - 4)
