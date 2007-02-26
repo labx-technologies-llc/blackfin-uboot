@@ -150,7 +150,8 @@ int post_key_pressed(void)
 	        if(value != 0){
 		        goto key_pressed;
 	        }
-		for(n=0;n<KEY_DELAY;n++);
+		for(n=0;n<KEY_DELAY;n++)
+		 	asm("nop");
         }
         post_out_buff("\b2\0");
 
@@ -163,7 +164,8 @@ int post_key_pressed(void)
                 if(value != 0){
                         goto key_pressed;
                 }
-		 for(n=0;n<KEY_DELAY;n++);
+		 for(n=0;n<KEY_DELAY;n++)
+		 	asm("nop");
         }
         post_out_buff("\b1\0");
 
@@ -176,7 +178,8 @@ int post_key_pressed(void)
                 if(value != 0){
                         goto key_pressed;
                 }
-		 for(n=0;n<KEY_DELAY;n++);
+		 for(n=0;n<KEY_DELAY;n++)
+		 	asm("nop");
         }
 key_pressed:
         post_out_buff("\b0");

@@ -197,7 +197,7 @@ int misc_init_r(void)
 #endif
 
 #ifdef CONFIG_POST
-#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
+#if (BFIN_BOOT_MODE != BF537_BYPASS_BOOT)
 /* Using sw10-PF5 as the hotkey */
 int post_hotkeys_pressed(void)
 {
