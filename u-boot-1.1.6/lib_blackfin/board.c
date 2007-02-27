@@ -323,7 +323,8 @@ void board_init_r(gd_t * id, ulong dest_addr)
 #endif
 	
 #if ((BFIN_CPU == ADSP_BF537) || (BFIN_CPU == ADSP_BF536))
-	printf("Net:	ADI BF537 EMAC\n");
+	printf("Net:    ");
+	eth_initialize(bd);
 #endif
 
 #ifdef CONFIG_DRIVER_SMC91111

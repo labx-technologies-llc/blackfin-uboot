@@ -27,6 +27,7 @@
 #include <asm/blackfin.h>
 #include <net.h>
 #include <command.h>
+#include <malloc.h>
 #include "ether_bf537.h"
 
 #ifdef CONFIG_POST
@@ -88,8 +89,34 @@ const ADI_DMA_CONFIG_REG txdmacfg ={ 1, 0, 2, 0, 0, 0, 0, 5, 7 };
 ADI_ETHER_BUFFER *SetupRxBuffer(int no);
 ADI_ETHER_BUFFER *SetupTxBuffer(int no);
 
+static int bfin_EMAC_init(struct eth_device *dev, bd_t *bd);
+static void bfin_EMAC_halt(struct eth_device *dev);
+static int bfin_EMAC_send(struct eth_device *dev, volatile void *packet, int length);
+static int bfin_EMAC_recv(struct eth_device *dev);
 
-int eth_send(volatile void *packet, int length)
+int bfin_EMAC_initialize(bd_t *bis)
+{
+	struct eth_device *dev;
+	dev = (struct eth_device *)malloc(sizeof(*dev));
+	if (dev == NULL)
+		hang();
+	
+	memset(dev, 0, sizeof(*dev));
+	sprintf(dev->name, "BF537 ETHERNET");
+
+	dev->iobase = 0;
+	dev->priv   = 0;
+	dev->init   = bfin_EMAC_init;
+	dev->halt   = bfin_EMAC_halt;
+	dev->send   = bfin_EMAC_send;
+	dev->recv   = bfin_EMAC_recv;
+
+	eth_register(dev);
+
+	return 1;
+}
+
+static int bfin_EMAC_send(struct eth_device *dev, volatile void *packet, int length)
 {	
 	int i;
 	int result = 0;
@@ -132,11 +159,12 @@ int eth_send(volatile void *packet, int length)
 	else
 		txIdx++;
 out:
+	DEBUGF("BFIN EMAC send: length = %d\n", length);
 	return result;
 }
 
 
-int eth_rx(void)
+static int bfin_EMAC_recv(struct eth_device *dev)
 {	
 	int length =0;
 	
@@ -177,7 +205,7 @@ int eth_rx(void)
  *
  *************************************************************/
 
-int eth_init(bd_t *bis)
+static int bfin_EMAC_init(struct eth_device *dev, bd_t *bd)
 {
 	u32	opmode;
 	int 	dat;
@@ -242,7 +270,7 @@ int eth_init(bd_t *bis)
 }
 
 
-void eth_halt(void)
+static void bfin_EMAC_halt(struct eth_device *dev)
 {
 	DEBUGF("Eth_halt: ......\n");
 	/* Turn off the EMAC */
@@ -265,9 +293,11 @@ void SetupMacAddr(u8 *MACaddr)
 			if(tmp)
 				tmp = (*end)?end+1:end;
 		}
-	
+
+#ifndef CONFIG_NETCONSOLE	
 		printf("Using MAC Address %02X:%02X:%02X:%02X:%02X:%02X\n",MACaddr[0],MACaddr[1],
 				MACaddr[2],MACaddr[3],MACaddr[4],MACaddr[5]);
+#endif
 		*pEMAC_ADDRLO = MACaddr[0] | MACaddr[1]<<8 | MACaddr[2] <<16 | MACaddr[3] << 24;
 		*pEMAC_ADDRHI = MACaddr[4] | MACaddr[5]<<8;
 	}
@@ -453,7 +483,7 @@ int ether_post_test(int flags)
 	int length;
 	
 	printf("\n--------");
-	eth_init(NULL);
+	bfin_EMAC_init(NULL, NULL);
 	/* construct the package */
 	buf[0] = buf[6] = (unsigned char)(*pEMAC_ADDRLO &0xFF);
         buf[1] = buf[7] = (unsigned char)((*pEMAC_ADDRLO &0xFF00)     >>  8);
@@ -475,7 +505,7 @@ int ether_post_test(int flags)
         for(i=0;i<42;i++)
                 buf[i+22] = i;
 	printf("--------Send 64 bytes......\n");
-	eth_send((volatile void *)buf,64);
+	bfin_EMAC_send(NULL, (volatile void *)buf,64);
 	for(i=0;i<100;i++){
 		udelay(10000);
 		if((rxbuf[rxIdx]->StatusWord & RX_COMP) !=0){
@@ -497,7 +527,7 @@ int ether_post_test(int flags)
                 }
         }
 	printf("--------receive %d bytes, matched\n", length);
-        eth_halt();
+        bfin_EMAC_halt(NULL);
 	return 0;
 }
 #endif

@@ -164,6 +164,9 @@
 #  define ADD_NAND_CMD		0
 #endif
 
+#define CONFIG_NETCONSOLE	1
+#define CONFIG_NET_MULTI	1
+
 #if (BFIN_CPU == ADSP_BF534)
 #define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NET) 
 #else
