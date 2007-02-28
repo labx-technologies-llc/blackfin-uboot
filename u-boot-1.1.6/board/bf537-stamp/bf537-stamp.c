@@ -165,12 +165,14 @@ int misc_init_r(void)
 	u8  SrcAddr[6] = {0x02,0x80,0xAD,0x20,0x31,0xB8};
 
 #if (CONFIG_COMMANDS & CFG_CMD_NET)
-        if ( getenv("ethaddr") == NULL && ((pMACaddr[0] & 0xFF) != 0xFF)) {
-		sprintf (nid, "%02x:%02x:%02x:%02x:%02x:%02x",
-			pMACaddr[0] & 0xFF , pMACaddr[0] >> 8,
-			pMACaddr[1] & 0xFF , pMACaddr[1] >> 8,
-			pMACaddr[2] & 0xFF , pMACaddr[2] >> 8);
-		setenv ("ethaddr", nid);
+	/* The 0xFF check here is to make sure we don't use the address
+	 * in flash if it's simply been erased (aka all 0xFF values) */
+	if (getenv("ethaddr") == NULL && ((pMACaddr[0] & 0xFF) != 0xFF)) {
+		sprintf(nid, "%02x:%02x:%02x:%02x:%02x:%02x",
+			pMACaddr[0] & 0xFF, pMACaddr[0] >> 8,
+			pMACaddr[1] & 0xFF, pMACaddr[1] >> 8,
+			pMACaddr[2] & 0xFF, pMACaddr[2] >> 8);
+		setenv("ethaddr", nid);
 	}
 
 	if ( getenv("ethaddr") ) {
