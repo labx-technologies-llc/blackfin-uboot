@@ -33,6 +33,7 @@
 
 extern void blackfin_icache_flush_range(const void *, const void *);
 extern void blackfin_dcache_flush_range(const void *, const void *);
+extern void * memcpy_ASM(void * dest,const void *src,size_t count);
 
 void *dma_memcpy(void *,const void *,size_t);
 
@@ -132,23 +133,26 @@ void * memcpy(void * dest,const void *src,size_t count)
 {
 	char *tmp = (char *) dest, *s = (char *) src;
 
-	/* Turn off the cache, if destination in the L1 memory */
-	if (((tmp >= (char *)L1_ISRAM) && (tmp < (char *)L1_ISRAM_END))
-	    || ((tmp >= (char *)DATA_BANKA_SRAM) && (tmp < (char *)DATA_BANKA_SRAM_END))
-	    || ((tmp >= (char *)DATA_BANKB_SRAM) && (tmp < (char *)DATA_BANKB_SRAM_END)))
-	{
+	/* L1_ISRAM can only be accessed via dma */
+	if ((tmp >= (char *)L1_ISRAM) && (tmp < (char *)L1_ISRAM_END)) {
+		/* L1 is the destination */
+		dma_memcpy(dest,src,count);
+
 		if (icache_status()) {
 			blackfin_icache_flush_range(src, src+count);
-			icache_disable();
 		}
-		if (dcache_status()) {
-			blackfin_dcache_flush_range(src, src+count);
-			dcache_disable();
-		}
-		dma_memcpy(dest,src,count);
+	} else if ((s >= (char *)L1_ISRAM) && (s < (char *)L1_ISRAM_END)) {
+		/* L1 is the source */
+                dma_memcpy(dest,src,count);
+
+                if (icache_status()) {
+                        blackfin_icache_flush_range(dest, dest+count);
+                }
+                if (dcache_status()) {
+                        blackfin_dcache_flush_range(dest, dest+count);
+                }
 	} else {
-		while (count--)
-			*tmp++ = *s++;
+		memcpy_ASM(dest,src,count);
 	}
 	return dest;
 }

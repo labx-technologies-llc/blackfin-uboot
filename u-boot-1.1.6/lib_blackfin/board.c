@@ -34,11 +34,21 @@
 #include <environment.h>
 #include <i2c.h>
 #include "blackfin_board.h"
+#include <asm/cplb.h>
 #include "../drivers/smc91111.h"
 
 #if defined(CONFIG_BF537)&&defined(CONFIG_POST)
 #include <post.h>
 int post_flag;
+#endif
+
+#ifdef DEBUG
+#define pr_debug(fmt,arg...)  printf(fmt,##arg)
+#else
+static inline int __attribute__ ((format (printf, 1, 2))) pr_debug(const char * fmt, ...)
+{
+        return 0;
+}
 #endif
 
 #ifndef CFG_NO_FLASH
@@ -173,6 +183,69 @@ static void display_global_data(void)
 }
 #endif
 
+/* we cover everything with 4 meg pages, and need an extra for L1 */
+unsigned int icplb_table[page_descriptor_table_size][2] ;
+unsigned int dcplb_table[page_descriptor_table_size][2] ;
+
+void init_cplbtables(void)
+{
+	int i,j;
+
+	j = 0;
+	icplb_table[j][0] = 0xFFA00000;
+	icplb_table[j][1] = L1_IMEMORY;
+	j++;
+
+	for(i=0; i <= CONFIG_MEM_SIZE/4 ; i++){
+		icplb_table[j][0]=(i*4*1024*1024);
+		if (i*4*1024*1024 <= CFG_MONITOR_BASE && (i+1)*4*1024*1024 >= CFG_MONITOR_BASE) {
+			icplb_table[j][1]=SDRAM_IKERNEL;
+		} else {
+			icplb_table[j][1]=SDRAM_IGENERIC;
+		}
+		j++;
+	}
+#if defined(CONFIG_BF561)	
+	/* Async Memory space */
+	for(i=0; i<3; i++){
+		icplb_table[j++][0] = 0x20000000 + i*4*1024*1024;
+		icplb_table[j++][1] = SDRAM_IGENERIC;
+	}
+#else
+	icplb_table[j][0] = 0x20000000;
+	icplb_table[j][1] = SDRAM_IGENERIC;
+#endif
+	j = 0;
+	dcplb_table[j][0] = 0xFF800000;
+	dcplb_table[j][1] = L1_DMEMORY;
+	j++;
+
+        for(i=0; i < CONFIG_MEM_SIZE/4 ; i++){
+                dcplb_table[j][0]=(i*4*1024*1024);
+		if (i*4*1024*1024 <= CFG_MONITOR_BASE && (i+1)*4*1024*1024 >= CFG_MONITOR_BASE) {
+			dcplb_table[j][1]=SDRAM_DKERNEL;
+		} else {
+			dcplb_table[j][1]=SDRAM_DGENERIC;
+		}
+		j++;
+	}
+
+#if defined(CONFIG_BF561)	
+	/* MAC space */
+	dcplb_table[j++][0] = CONFIG_ASYNC_EBIU_BASE;
+	dcplb_table[j++][1] = SDRAM_EBIU;
+	
+	/* Flash space*/
+	for(i=0; i<2; i++){
+		dcplb_table[j++][0] = 0x20000000 + i*4*1024*1024;
+		dcplb_table[j++][1] = SDRAM_EBIU;
+	}
+#else
+	dcplb_table[j][0] = 0x20000000;
+	dcplb_table[j][1] = SDRAM_EBIU;
+#endif
+}
+
 /*
  * All attempts to come up with a "common" initialization sequence
  * that works for all boards and architectures failed: some of the
@@ -191,6 +264,9 @@ void board_init_f(ulong bootflag)
 	DECLARE_GLOBAL_DATA_PTR;
 	ulong addr;
 	bd_t *bd;
+	int i;
+
+	init_cplbtables();
 
 	gd = (gd_t *) (CFG_GBL_DATA_ADDR);
 	memset((void *) gd, 0, sizeof(gd_t));
@@ -210,7 +286,18 @@ void board_init_f(ulong bootflag)
 	init_baudrate();	/* initialze baudrate settings */
 	serial_init();		/* serial communications setup */
 	console_init_f();
+#ifdef CONFIG_ICACHE_ON
+        icache_enable();
+#endif
+#ifdef CONFIG_DCACHE_ON
+        dcache_enable();
+#endif
 	display_banner();	/* say that we are here */
+
+        for(i=0; i <page_descriptor_table_size; i++){
+                pr_debug("data (%02i)= 0x%08x : 0x%08x    intr = 0x%08x : 0x%08x\n",i, dcplb_table[i][0], dcplb_table[i][1],icplb_table[i][0], icplb_table[i][1]);
+	}
+
 	checkboard();
 #if defined(CONFIG_RTC_BF533) && (CONFIG_COMMANDS & CFG_CMD_DATE)
 	rtc_init();
