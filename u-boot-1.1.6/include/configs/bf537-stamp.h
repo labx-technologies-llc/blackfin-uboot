@@ -30,10 +30,16 @@
 #define BFIN_BOOT_MODE		BF537_BYPASS_BOOT
 //#define BFIN_BOOT_MODE		BF537_SPI_MASTER_BOOT
 
+#define CONFIG_PANIC_HANG 1
+
 #define ADSP_BF534		0x34
 #define ADSP_BF536		0x36
 #define ADSP_BF537		0x37
 #define BFIN_CPU		ADSP_BF537
+
+/* This sets the default state of the cache on U-Boot's boot */
+#define CONFIG_ICACHE_ON
+#define CONFIG_DCACHE_ON
 
 /* Define if want to do post memory test */
 #undef CONFIG_POST_TEST
@@ -92,8 +98,8 @@
 #endif
 
 #define CONFIG_MEM_SIZE                 64             /* 128, 64, 32, 16 */
-#define CONFIG_MEM_ADD_WDTH              10             /* 8, 9, 10, 11    */
-#define CONFIG_MEM_MT48LC32M8A2_75    1
+#define CONFIG_MEM_ADD_WDTH            	10             /* 8, 9, 10, 11    */
+#define CONFIG_MEM_MT48LC32M8A2_75    	1
 
 #define CONFIG_LOADS_ECHO	1
 
@@ -273,16 +279,16 @@
 #else
 #define	CFG_CBSIZE		256	/* Console I/O Buffer Size */
 #endif
+#define CFG_MAX_RAM_SIZE       	(CONFIG_MEM_SIZE * 1024*1024)
 #define	CFG_PBSIZE		(CFG_CBSIZE+sizeof(CFG_PROMPT)+16)	/* Print Buffer Size */
 #define	CFG_MAXARGS		16	/* max number of command args */
 #define CFG_BARGSIZE		CFG_CBSIZE	/* Boot Argument Buffer Size */
-#define CFG_MEMTEST_START	0x00100000	/* memtest works on */
-#define CFG_MEMTEST_END		0x03F00000	/* 1 ... 63 MB in DRAM */
+#define CFG_MEMTEST_START	0x0	/* memtest works on */
+#define CFG_MEMTEST_END		( (CONFIG_MEM_SIZE - 1) * 1024*1024)	/* 1 ... 63 MB in DRAM */
 #define	CFG_LOAD_ADDR		CONFIG_LOADADDR	/* default load address */
 #define	CFG_HZ			1000	/* decrementer freq: 10 ms ticks */
 #define CFG_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 #define	CFG_SDRAM_BASE		0x00000000
-#define CFG_MAX_RAM_SIZE	0x04000000
 
 #define CFG_FLASH_BASE		0x20000000
 

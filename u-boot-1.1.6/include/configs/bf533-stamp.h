@@ -7,7 +7,7 @@
 
 #define CONFIG_STAMP			1
 #define CONFIG_RTC_BF533		1
-
+#define CONFIG_BF533			1
 /*
  * Boot Mode Set  
  * Blackfin can support several boot modes
@@ -19,10 +19,16 @@
 #define BFIN_BOOT_MODE		BF533_BYPASS_BOOT
 //#define BFIN_BOOT_MODE		BF533_SPI_BOOT
 
+#define CONFIG_PANIC_HANG 1
+
 #define ADSP_BF531		0x31
 #define ADSP_BF532		0x32
 #define ADSP_BF533		0x33
 #define BFIN_CPU		ADSP_BF533
+
+/* This sets the default state of the cache on U-Boot's boot */
+#define CONFIG_ICACHE_ON
+#define CONFIG_DCACHE_ON
 
 /* Define where the uboot will be loaded by on-chip boot rom */
 #define APP_ENTRY 0x00001000
@@ -174,26 +180,9 @@
 
 #define	CFG_SDRAM_BASE			0x00000000
 
-#if (CONFIG_MEM_SIZE == 128 )
-	#define CFG_MAX_RAM_SIZE	0x08000000
-	#define CFG_MEMTEST_END		0x07F7FFFF      /* 1 ... 127.5 MB in DRAM */
-	#define CONFIG_LOADADDR		0x01000000      /* default load address */
-#endif
-#if (CONFIG_MEM_SIZE == 64 )
-	#define CFG_MAX_RAM_SIZE	0x04000000
-        #define CFG_MEMTEST_END         0x04F7FFFF      /* 1 ... 63.5 MB in DRAM */
-        #define CONFIG_LOADADDR           0x01000000      /* default load address */
-#endif
-#if (CONFIG_MEM_SIZE == 32 )
-	#define CFG_MAX_RAM_SIZE        0x02000000
-        #define CFG_MEMTEST_END         0x01F7FFFF      /* 1 ... 31.5 MB in DRAM */
-        #define CONFIG_LOADADDR           0x01000000      /* default load address */
-#endif
-#if (CONFIG_MEM_SIZE == 16 )
-	#define CFG_MAX_RAM_SIZE        0x01000000
-        #define CFG_MEMTEST_END         0x00F7FFFF      /* 1 ... 15.5 MB in DRAM */
-        #define CONFIG_LOADADDR           0x00800000      /* default load address  */
-#endif
+#define CFG_MAX_RAM_SIZE	(CONFIG_MEM_SIZE * 1024 *1024)
+#define CFG_MEMTEST_END		(CFG_MAX_RAM_SIZE - 0x80000 - 1)
+#define CONFIG_LOADADDR		0x01000000
 
 #define CFG_LOAD_ADDR 			CONFIG_LOADADDR
 #define	CFG_MONITOR_LEN			(256 << 10)	/* Reserve 256 kB for Monitor	*/
@@ -201,7 +190,7 @@
 #define CFG_GBL_DATA_SIZE               0x4000		/* Reserve 16k for Global Data  */
 #define CONFIG_STACKSIZE                (128*1024)      /* regular stack */
 
-#define CFG_MONITOR_BASE		0x07FC0000
+#define CFG_MONITOR_BASE		(CFG_MAX_RAM_SIZE - 0x40000)
 #define CFG_MALLOC_BASE                 (CFG_MONITOR_BASE - CFG_MALLOC_LEN)
 #define CFG_GBL_DATA_ADDR               (CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
 #define CONFIG_STACKBASE                (CFG_GBL_DATA_ADDR  - 4)

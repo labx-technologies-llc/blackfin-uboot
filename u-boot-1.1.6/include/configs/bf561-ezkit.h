@@ -6,6 +6,7 @@
 #define __CONFIG_EZKIT561_H__
 
 #define CONFIG_VDSP		1
+#define CONFIG_BF561		1
 
 #define CFG_LONGHELP		1
 #define CONFIG_CMDLINE_EDITING	1
@@ -14,6 +15,8 @@
 #define CONFIG_UART_CONSOLE	0
 #define CONFIG_EZKIT561		1
 #define CONFIG_BOOTDELAY	5
+
+#define CONFIG_PANIC_HANG 1
 
 /*
 * Boot Mode Set
@@ -24,6 +27,10 @@
 #define BF561_SPI_BOOT		0x24
 /* Define the boot mode */
 #define BFIN_BOOT_MODE	BF561_BYPASS_BOOT
+
+/* This sets the default state of the cache on U-Boot's boot */
+//#define CONFIG_ICACHE_ON
+//#define CONFIG_DCACHE_ON
 
 /* Define where the uboot will be loaded by on-chip boot rom */
 #define APP_ENTRY 0x00001000
@@ -95,7 +102,6 @@
 #define CFG_MAX_FLASH_SECT	135	/* max number of sectors on one chip */
 #define CFG_ENV_ADDR		0x20020000
 #define	CFG_ENV_SECT_SIZE	0x10000	/* Total Size of Environment Sector */
-
 /* JFFS Partition offset set  */
 #define CFG_JFFS2_FIRST_BANK 0
 #define CFG_JFFS2_NUM_BANKS  1
@@ -111,10 +117,10 @@
 #define CONFIG_MEM_MT48LC16M16A2TG_75    1
 
 #define	CFG_SDRAM_BASE		0x00000000
-#define CFG_MAX_RAM_SIZE	0x04000000
+#define CFG_MAX_RAM_SIZE	(CONFIG_MEM_SIZE * 1024 * 1024)
 
-#define CFG_MEMTEST_START	0x00000000	/* memtest works on */
-#define CFG_MEMTEST_END		0x03F7FFFF	/* 1 ... 63.5 MB in DRAM */
+#define CFG_MEMTEST_START	0x0	/* memtest works on */
+#define CFG_MEMTEST_END		( (CONFIG_MEM_SIZE - 1) * 1024*1024)	/* 1 ... 63 MB in DRAM */
 
 #define	CONFIG_LOADADDR		0x01000000	/* default load address */
 #define CFG_LOAD_ADDR		CONFIG_LOADADDR
