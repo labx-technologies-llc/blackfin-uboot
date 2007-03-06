@@ -33,7 +33,6 @@
 
 #define POST_WORD_ADDR 0xFF903FFC
 
-#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
 /*
  * the bootldr command loads an address, checks to see if there
  *   is a Boot stream that the on-chip BOOTROM can understand,
@@ -82,7 +81,6 @@ int do_bootldr (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 U_BOOT_CMD(bootldr,2,0,do_bootldr,
 	"bootldr - boot ldr image from memory\n",
 	"[addr]\n         - boot ldr image stored in memory\n");
-#endif
 
 int checkboard(void)
 {

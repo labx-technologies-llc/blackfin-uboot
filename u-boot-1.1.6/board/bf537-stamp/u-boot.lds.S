@@ -33,7 +33,7 @@ SEARCH_DIR(/lib); SEARCH_DIR(/usr/lib); SEARCH_DIR(/usr/local/lib);
    __DYNAMIC = 0;    */
 MEMORY
  {
- ram : 	   ORIGIN = 0x03FC0000, LENGTH = (256 * 1024)
+ ram : 	   ORIGIN = (CFG_MONITOR_BASE), LENGTH = (256 * 1024)
  l1_code : ORIGIN = 0xFFA00000, LENGTH = 0xC000
  l1_data : ORIGIN = 0xFF900000, LENGTH = 0x4000
  }
@@ -81,7 +81,7 @@ SECTIONS
 /*  lib_blackfin/bf533_string.o	(.text) */
 /*  lib_generic/vsprintf.o	(.text) */
     lib_generic/crc32.o		(.text)
-    lib_generic/zlib.o		(.text)
+/*  lib_generic/zlib.o		(.text) */
 /*  board/bf537-stamp/bf537-stamp.o		(.text) */
 
     . = DEFINED(env_offset) ? env_offset : .;
