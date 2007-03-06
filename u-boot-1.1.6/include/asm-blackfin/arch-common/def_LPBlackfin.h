@@ -92,13 +92,13 @@
 
 /* ** Masks */
 /* Exception cause */
-#define SEQSTAT_EXCAUSE		MK_BMSK_(SEQSTAT_EXCAUSE0_P ) | \
+#define SEQSTAT_EXCAUSE		( MK_BMSK_(SEQSTAT_EXCAUSE0_P ) | \
 				MK_BMSK_(SEQSTAT_EXCAUSE1_P ) | \
 				MK_BMSK_(SEQSTAT_EXCAUSE2_P ) | \
 				MK_BMSK_(SEQSTAT_EXCAUSE3_P ) | \
 				MK_BMSK_(SEQSTAT_EXCAUSE4_P ) | \
 				MK_BMSK_(SEQSTAT_EXCAUSE5_P ) | \
-				0
+				0 )
 
 /* Indicates whether the last reset was a software reset (=1) */
 #define SEQSTAT_SFTRESET	MK_BMSK_(SEQSTAT_SFTRESET_P )

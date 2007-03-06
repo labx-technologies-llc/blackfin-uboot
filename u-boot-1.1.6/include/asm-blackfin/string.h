@@ -39,6 +39,9 @@
 #define __HAVE_ARCH_STRCMP
 #define __HAVE_ARCH_STRNCMP
 #define __HAVE_ARCH_MEMCPY
+#define __HAVE_ARCH_MEMCMP
+#define __HAVE_ARCH_MEMSET
+#define __HAVE_ARCH_MEMMOVE
 
 extern char *strcpy(char *dest, const char *src);
 extern char *strncpy(char *dest, const char *src, size_t n);
@@ -47,6 +50,7 @@ extern int strncmp(const char *cs, const char *ct, size_t count);
 extern void * memcpy(void * dest,const void *src,size_t count);
 extern void *memset(void *s, int c, size_t count);
 extern int memcmp(const void *, const void *, __kernel_size_t);
+extern void * memmove(void * dest,const void *src,size_t count);
 
 #else				/* KERNEL */
 
