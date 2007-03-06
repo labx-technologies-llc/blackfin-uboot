@@ -553,9 +553,6 @@ _clear_bss_skip:
         [p0] = r0;
 #endif
 
-	call _icache_enable;
-	call _dcache_enable;
-
 	p0.l = _start1;
 	p0.h = _start1;
 	jump (p0);
