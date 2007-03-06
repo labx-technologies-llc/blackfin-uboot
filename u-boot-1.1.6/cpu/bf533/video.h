@@ -1,5 +1,5 @@
 #include <video_logo.h>
-#define WriteDestByte(val) {*dest++=val;}
+#define write_dest_byte(val) {*dest++=val;}
 #define BLACK   (0x01800180)            /* black pixel pattern	*/
 #define BLUE    (0x296E29F0)            /* blue pixel pattern   */
 #define RED     (0x51F0515A)            /* red pixel pattern	*/
@@ -11,8 +11,7 @@
 
 #define true 	1
 #define false	0
-                                                                                                                                                             
-                                                                                                                                                             
+
 typedef struct
 {
         unsigned int SAV;
