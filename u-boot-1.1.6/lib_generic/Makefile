@@ -23,6 +23,8 @@
 
 include $(TOPDIR)/config.mk
 
+CFLAGS := $(CFLAGS:-Os=-O2)
+
 LIB	= $(obj)libgeneric.a
 
 COBJS	= bzlib.o bzlib_crctable.o bzlib_decompress.o \

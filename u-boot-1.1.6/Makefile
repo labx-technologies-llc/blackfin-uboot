@@ -181,18 +181,15 @@ OBJS += cpu/$(CPU)/resetvec.o
 endif
 ifeq ($(CPU),bf533)
 OBJS += cpu/$(CPU)/start1.o	cpu/$(CPU)/interrupt.o	cpu/$(CPU)/cache.o
-OBJS += cpu/$(CPU)/cplbhdlr.o	cpu/$(CPU)/cplbmgr.o	cpu/$(CPU)/flush.o
-OBJS += cpu/$(CPU)/init_sdram.o
+OBJS += cpu/$(CPU)/flush.o 	cpu/$(CPU)/init_sdram.o
 endif
 ifeq ($(CPU),bf537)
 OBJS += cpu/$(CPU)/start1.o	cpu/$(CPU)/interrupt.o	cpu/$(CPU)/cache.o
-OBJS += cpu/$(CPU)/cplbhdlr.o	cpu/$(CPU)/cplbmgr.o	cpu/$(CPU)/flush.o
-OBJS += cpu/$(CPU)/init_sdram.o
+OBJS += cpu/$(CPU)/flush.o      cpu/$(CPU)/init_sdram.o
 endif
 ifeq ($(CPU),bf561)
 OBJS += cpu/$(CPU)/start1.o     cpu/$(CPU)/interrupt.o  cpu/$(CPU)/cache.o
-OBJS += cpu/$(CPU)/cplbhdlr.o   cpu/$(CPU)/cplbmgr.o    cpu/$(CPU)/flush.o
-OBJS += cpu/$(CPU)/init_sdram.o
+OBJS += cpu/$(CPU)/flush.o 	cpu/$(CPU)/init_sdram.o
 endif
 
 OBJS := $(addprefix $(obj),$(OBJS))
