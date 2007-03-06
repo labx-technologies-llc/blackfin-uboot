@@ -55,8 +55,6 @@
 .global _exit;
 .global flashdataend;
 .global init_sdram;
-.global _icache_enable;
-.global _dcache_enable;
 
 #if (CONFIG_CCLK_DIV == 1)
 #define CONFIG_CCLK_ACT_DIV   CCLK_DIV1
@@ -287,9 +285,6 @@ _clear_bss:
 _clear_bss_end:
  	[p1++] = r0;
 _clear_bss_skip:
-
-	call _icache_enable;
-	call _dcache_enable;
 
 	p0.l = _start1;
 	p0.h = _start1;
