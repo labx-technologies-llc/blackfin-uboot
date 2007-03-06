@@ -39,10 +39,16 @@
 #define BFIN_BOOT_MODE		BF533_BYPASS_BOOT
 //#define BFIN_BOOT_MODE		BF533_SPI_BOOT
 
+#define CONFIG_PANIC_HANG 1
+
 #define ADSP_BF531		0x31
 #define ADSP_BF532		0x32
 #define ADSP_BF533		0x33
 #define BFIN_CPU		ADSP_BF533
+
+/* This sets the default state of the cache on U-Boot's boot */
+#define CONFIG_ICACHE_ON
+#define CONFIG_DCACHE_ON
 
 /* Define where the uboot will be loaded by on-chip boot rom */
 #define APP_ENTRY 0x00001000
@@ -111,13 +117,13 @@
 #define	CFG_PBSIZE		(CFG_CBSIZE+sizeof(CFG_PROMPT)+16)	/* Print Buffer Size */
 #define	CFG_MAXARGS		16	/* max number of command args */
 #define CFG_BARGSIZE		CFG_CBSIZE	/* Boot Argument Buffer Size */
-#define CFG_MEMTEST_START	0x00100000	/* memtest works on */
-#define CFG_MEMTEST_END		0x01F00000	/* 1 ... 31 MB in DRAM */
+#define CFG_MEMTEST_START	0x00000000	/* memtest works on */
+#define CFG_MEMTEST_END		( (CONFIG_MEM_SIZE - 1) * 1024 * 1024)	/* 1 ... 31 MB in DRAM */
 #define	CFG_LOAD_ADDR		0x01000000	/* default load address */
 #define	CFG_HZ			1000	/* decrementer freq: 10 ms ticks */
 #define CFG_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 #define	CFG_SDRAM_BASE		0x00000000
-#define CFG_MAX_RAM_SIZE	0x02000000
+#define CFG_MAX_RAM_SIZE	(CONFIG_MEM_SIZE * 1024 * 1024)
 #define CFG_FLASH_BASE		0x20000000
 
 #define	CFG_MONITOR_LEN		(256 << 10)	/* Reserve 256 kB for Monitor	*/
