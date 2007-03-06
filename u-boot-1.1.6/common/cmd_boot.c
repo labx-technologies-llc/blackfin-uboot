@@ -43,9 +43,15 @@ int do_go (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	}
 
 	addr = simple_strtoul(argv[1], NULL, 16);
-
 	printf ("## Starting application at 0x%08lX ...\n", addr);
 
+       	if (icache_status()){
+               icache_disable();
+       	}
+       	if (dcache_status()) {
+               dcache_disable();
+       	}
+		
 	/*
 	 * pass address parameter as argv[0] (aka command name),
 	 * and all remaining args
