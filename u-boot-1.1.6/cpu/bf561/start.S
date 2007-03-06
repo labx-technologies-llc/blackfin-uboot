@@ -55,8 +55,6 @@
 .global _exit;
 .global flashdataend;
 .global init_sdram;
-.global _icache_enable;
-.global _dcache_enable;
 #if defined(CONFIG_BF537)&&defined(CONFIG_POST)
 .global memory_post_test;
 .global post_flag;
@@ -159,197 +157,25 @@ no_soft_reset:
 	LSETUP(4,4) lc0 = p1;
 	[ p0 ++ ] = r1;
 	
-#ifndef CONFIG_SERIAL_BF537
 	p0.h = hi(SIC_IWR);
         p0.l = lo(SIC_IWR);
         r0.l = 0x1;
         w[p0] = r0.l;
         SSYNC;
-#endif
 
-#ifdef BF537_UART_BOOT
-
-	p0.h = hi(SIC_IWR);
-	p0.l = lo(SIC_IWR);
-	r0.l = 0x1;
-	w[p0] = r0.l;
-	SSYNC;
-	
-	/*
-	* PLL_LOCKCNT - how many SCLK Cycles to delay while PLL becomes stable
-	*/
-	p0.h = hi(PLL_LOCKCNT);
-	p0.l = lo(PLL_LOCKCNT);
-	r0 = 0x300(Z);
-	w[p0] = r0.l;
-	ssync;
-	
-	/*
-	* Put SDRAM in self-refresh, incase anything is running
-	*/
-	P2.H = hi(EBIU_SDGCTL);
-	P2.L = lo(EBIU_SDGCTL);
-	R0 = [P2];
-	BITSET (R0, 24);
-	[P2] = R0;
-	SSYNC;
-	
-	/*
-	*  Set PLL_CTL with the value that we calculate in R0
-	*   - [14:09] = MSEL[5:0] : CLKIN / VCO multiplication factors
-	*   - [8]     = BYPASS    : BYPASS the PLL, run CLKIN into CCLK/SCLK
-	*   - [7]     = output delay (add 200ps of delay to mem signals)
-	*   - [6]     = input delay (add 200ps of input delay to mem signals)
-	*   - [5]     = PDWN      : 1=All Clocks off
-	*   - [3]     = STOPCK    : 1=Core Clock off
-	*   - [1]     = PLL_OFF   : 1=Disable Power to PLL
-	*   - [0]     = DF        : 1=Pass CLKIN/2 to PLL / 0=Pass CLKIN to PLL
-	*   all other bits set to zero
-	*/
-	
-	r0 = CONFIG_VCO_MULT & 63;      /* Load the VCO multiplier         */
-	r0 = r0 << 9;                   /* Shift it over,                  */
-	r1 = CONFIG_CLKIN_HALF;        /* Do we need to divide CLKIN by 2?*/
-	r0 = r1 | r0;
-	r1 = CONFIG_PLL_BYPASS;         /* Bypass the PLL?                 */
-	r1 = r1 << 8;                   /* Shift it over                   */
-	r0 = r1 | r0;                   /* add them all together           */
-	
-	p0.h = hi(PLL_CTL);
-	p0.l = lo(PLL_CTL);             /* Load the address                */
-	cli r2;                         /* Disable interrupts              */
-		ssync;
-	w[p0] = r0.l;                   /* Set the value                   */
-	idle;                           /* Wait for the PLL to stablize    */
-	sti r2;                         /* Enable interrupts               */
-	
-check_again:
-	p0.h = hi(PLL_STAT);
-	p0.l = lo(PLL_STAT);
-	R0 = W[P0](Z);
-	CC = BITTST(R0,5);
-	if ! CC jump check_again;
-
-	/* Configure SCLK & CCLK Dividers */
-	r0 = (CONFIG_CCLK_ACT_DIV | CONFIG_SCLK_DIV);
-	p0.h = hi(PLL_DIV);
-	p0.l = lo(PLL_DIV);
-	w[p0] = r0.l;
-	ssync;
-#endif
-	
 	sp.l = (0xffb01000 & 0xFFFF);
 	sp.h = (0xffb01000 >> 16);
 
+	/* Check if the code is in SDRAM */
+	/* If the code is in SDRAM, skip SDRAM initializaiton */
+	call get_pc;
+	r3.l = 0x0;
+	r3.h = 0x2000;
+	cc = r0 < r3 (iu);
+	if cc jump sdram_initialized;
 	call init_sdram;
-
-#if defined(CONFIG_BF537)&&defined(CONFIG_POST)
-	/* DMA POST code to Hi of L1 SRAM */
-postcopy:
-        /* P1 Points to the beginning of SYSTEM MMR Space */
-        P1.H = hi(SYSMMR_BASE);
-        P1.L = lo(SYSMMR_BASE);
-
-        R0.H = _text_l1;  
-        R0.L = _text_l1; 
-        R1.H = _etext_l1;
-        R1.L = _etext_l1;
-        R2 = R1 - R0;           /* Count */
-	R0.H = _etext;
-	R0.L = _etext;
-	R1.H = (CFG_MONITOR_BASE >> 16);
-	R1.L = (CFG_MONITOR_BASE & 0xFFFF);
-	R0 = R0 - R1;
-	R1.H = (CFG_FLASH_BASE >> 16);
-	R1.L = (CFG_FLASH_BASE & 0xFFFF);
-	R0 = R0 + R1;		/* Source Address */
-        R1.H = hi(L1_ISRAM);    /* Destination Address (high) */
-        R1.L = lo(L1_ISRAM);    /* Destination Address (low) */
-        R3.L = DMAEN;           /* Source DMAConfig Value (8-bit words) */
-	/* Destination DMAConfig Value (8-bit words) */
-	R4.L = (DI_EN | WNR | DMAEN);
-
-        R6 = 0x1 (Z);
-        W[P1+OFFSET_(MDMA_S0_X_MODIFY)] = R6;   /* Source Modify = 1 */
-        W[P1+OFFSET_(MDMA_D0_X_MODIFY)] = R6;   /* Destination Modify = 1 */
-
-        [P1+OFFSET_(MDMA_S0_START_ADDR)] = R0;  /* Set Source Base Address */
-        W[P1+OFFSET_(MDMA_S0_X_COUNT)] = R2;    /* Set Source Count */
-        /* Set Source  DMAConfig = DMA Enable,
-        Memory Read,  8-Bit Transfers, 1-D DMA, Flow - Stop */
-        W[P1+OFFSET_(MDMA_S0_CONFIG)] = R3;
-
-        [P1+OFFSET_(MDMA_D0_START_ADDR)] = R1;  /* Set Destination Base Address */
-        W[P1+OFFSET_(MDMA_D0_X_COUNT)] = R2;    /* Set Destination Count */
-        /* Set Destination DMAConfig = DMA Enable,
-        Memory Write, 8-Bit Transfers, 1-D DMA, Flow - Stop, IOC */
-        W[P1+OFFSET_(MDMA_D0_CONFIG)] = R4;
-
-POST_DMA_DONE:
-        p0.h = hi(MDMA_D0_IRQ_STATUS);
-        p0.l = lo(MDMA_D0_IRQ_STATUS);
-        R0 = W[P0](Z);
-        CC = BITTST(R0, 0);
-        if ! CC jump POST_DMA_DONE
-
-        R0 = 0x1;
-        W[P1+OFFSET_(MDMA_D0_IRQ_STATUS)] = R0; /* Write 1 to clear DMA interrupt */
-
-	/* DMA POST data to Hi of L1 SRAM */
-        R0.H = _rodata_l1;
-        R0.L = _rodata_l1;
-        R1.H = _erodata_l1;
-        R1.L = _erodata_l1;
-        R2 = R1 - R0;           /* Count */
-        R0.H = _erodata;
-        R0.L = _erodata;
-        R1.H = (CFG_MONITOR_BASE >> 16);
-        R1.L = (CFG_MONITOR_BASE & 0xFFFF);
-        R0 = R0 - R1;
-        R1.H = (CFG_FLASH_BASE >> 16);
-        R1.L = (CFG_FLASH_BASE & 0xFFFF);
-        R0 = R0 + R1;           /* Source Address */
-        R1.H = hi(DATA_BANKB_SRAM);    /* Destination Address (high) */
-        R1.L = lo(DATA_BANKB_SRAM);    /* Destination Address (low) */
-        R3.L = DMAEN;           /* Source DMAConfig Value (8-bit words) */
-        R4.L = (DI_EN | WNR | DMAEN);   /* Destination DMAConfig Value (8-bit words) */
-
-        R6 = 0x1 (Z);
-        W[P1+OFFSET_(MDMA_S0_X_MODIFY)] = R6;   /* Source Modify = 1 */
-        W[P1+OFFSET_(MDMA_D0_X_MODIFY)] = R6;   /* Destination Modify = 1 */
-
-        [P1+OFFSET_(MDMA_S0_START_ADDR)] = R0;  /* Set Source Base Address */
-        W[P1+OFFSET_(MDMA_S0_X_COUNT)] = R2;    /* Set Source Count */
-        /* Set Source  DMAConfig = DMA Enable,
-        Memory Read,  8-Bit Transfers, 1-D DMA, Flow - Stop */
-        W[P1+OFFSET_(MDMA_S0_CONFIG)] = R3;
-
-        [P1+OFFSET_(MDMA_D0_START_ADDR)] = R1;  /* Set Destination Base Address */
-        W[P1+OFFSET_(MDMA_D0_X_COUNT)] = R2;    /* Set Destination Count */
-        /* Set Destination DMAConfig = DMA Enable,
-        Memory Write, 8-Bit Transfers, 1-D DMA, Flow - Stop, IOC */
-        W[P1+OFFSET_(MDMA_D0_CONFIG)] = R4;
-
-POST_DATA_DMA_DONE:
-        p0.h = hi(MDMA_D0_IRQ_STATUS);
-        p0.l = lo(MDMA_D0_IRQ_STATUS);
-        R0 = W[P0](Z);
-        CC = BITTST(R0, 0);
-        if ! CC jump POST_DATA_DMA_DONE
-
-        R0 = 0x1;
-        W[P1+OFFSET_(MDMA_D0_IRQ_STATUS)] = R0; /* Write 1 to clear DMA interrupt */
-
-	p0.l = memory_post_test;
-	p0.h = memory_post_test;
-	r0 = 0x0;
-	call (p0);
-	r7 = r0;				/* save return value */
-
-	call init_sdram; 
-#endif
-
 	/* relocate into to RAM */
+sdram_initialized:
 	call get_pc;
 offset:
 	r2.l = offset;
@@ -532,9 +358,6 @@ _clear_bss_skip:
         r0   = r7;
         [p0] = r0;
 #endif
-
-	call _icache_enable;
-	call _dcache_enable;
 
 	p0.l = _start1;
 	p0.h = _start1;
