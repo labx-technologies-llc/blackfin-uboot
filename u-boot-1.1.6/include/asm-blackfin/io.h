@@ -35,6 +35,10 @@ extern void cf_insw(unsigned short *sect_buf, unsigned short *addr, int words);
 extern unsigned char cf_inb(volatile unsigned char *addr);
 extern void cf_outb(unsigned char val, volatile unsigned char* addr);
 
+static inline void sync(void)
+{
+}
+
 /*
  * These are for ISA/PCI shared memory _only_ and should never be used
  * on any other type of memory, including Zorro memory. They are meant to
