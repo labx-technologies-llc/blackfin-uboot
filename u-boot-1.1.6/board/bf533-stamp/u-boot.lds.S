@@ -74,7 +74,7 @@ SECTIONS
 /*  lib_blackfin/bf533_string.o	(.text)	*/
 /*  lib_generic/vsprintf.o	(.text) */
     lib_generic/crc32.o		(.text)
-    lib_generic/zlib.o		(.text)
+/*  lib_generic/zlib.o		(.text) */
 /*  board/stamp/stamp.o		(.text) */
 
     . = DEFINED(env_offset) ? env_offset : .;
