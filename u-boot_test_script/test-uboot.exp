@@ -95,6 +95,8 @@ set UBOOT_PROMPT             "bf533>"
 
 set L1_INSTRUCT_SRAM_ADDRESS "0xffa0b000"
 
+set BDINFO_MEMSIZE           128*1024*1024
+
 } elseif { $board_type == "BF537-STAMP" } {
 
 set TEST_SPI_FLASH			 0
@@ -104,6 +106,7 @@ set KERNEL_FLASH_END        "0x203EFFFF"
 set BIG_ELF_LOAD_ADDRESS    "0x2000000"
 set UBOOT_PROMPT             "bf537>"
 set L1_INSTRUCT_SRAM_ADDRESS "0xffa0b000"
+set BDINFO_MEMSIZE           64*1024*1024
 
 } elseif { $board_type == "BF561-EZKIT" } {
 
@@ -1379,7 +1382,7 @@ set TEST_BIN_FILE           "testfile.bin"
 
 set BASE_RESULT             [get_uboot_define CFG_SDRAM_BASE $uboot_test_loc ]
 set BDINFO_MEMSTART         [get_uboot_define CFG_SDRAM_BASE $uboot_test_loc ]
-set BDINFO_MEMSIZE          [get_uboot_define CFG_MAX_RAM_SIZE $uboot_test_loc ]
+#set BDINFO_MEMSIZE          [get_uboot_define CFG_MAX_RAM_SIZE $uboot_test_loc ]
 set BDINFO_FLASHSTART       [get_uboot_define CFG_FLASH_BASE $uboot_test_loc ]
 #set BDINFO_FLASHSIZE        [get_uboot_define CFG_FLASH_SIZE $uboot_test_loc ]
 #set BDINFO_FLASHSIZE        "0x00400000"
@@ -4564,7 +4567,7 @@ because tftp never worked"
 	}
 	# Wait for actual kernel prompt.
 	set timeout 20
-	expect $KERNEL_PROMPT
+	expect "root:~>"
 	
 	if { $temp_status_flag == $TEST_PASS } {
 	    step "Make sure kernel is functional"
