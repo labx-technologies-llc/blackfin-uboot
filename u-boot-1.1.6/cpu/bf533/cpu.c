@@ -37,12 +37,11 @@
 extern unsigned int icplb_table[page_descriptor_table_size][2];
 extern unsigned int dcplb_table[page_descriptor_table_size][2];
 
-//#define DEBUG 1
-
 #ifdef DEBUG
 #define pr_debug(fmt,arg...)  printf(fmt,##arg)
 #else
-static inline int __attribute__ ((format (printf, 1, 2))) pr_debug(const char * fmt, ...)
+static inline int
+__attribute__ ((format (printf, 1, 2))) pr_debug(const char * fmt, ...)
 {
         return 0;
 }
@@ -84,7 +83,8 @@ void icache_enable(void)
 	/* make sure the locked ones go in first */
 	for (i=0; i < page_descriptor_table_size; i++) {
 		if ( CPLB_LOCK & icplb_table[i][1] ) {
-			pr_debug("adding %02i %02i 0x%08x 0x%08x\n",i,j,icplb_table[i][0], icplb_table[i][1]);
+			pr_debug("adding %02i %02i 0x%08x 0x%08x\n",i,j,
+				icplb_table[i][0], icplb_table[i][1]);
 			*I0++ = icplb_table[i][0];
 			*I1++ = icplb_table[i][1];
 			j++;
@@ -93,7 +93,8 @@ void icache_enable(void)
 
         for (i=0; i < page_descriptor_table_size ; i++) {
                  if ( ! (CPLB_LOCK & icplb_table[i][1]) ) {
-			pr_debug("adding %02i %02i 0x%08x 0x%08x\n",i,j,icplb_table[i][0], icplb_table[i][1]);
+			pr_debug("adding %02i %02i 0x%08x 0x%08x\n",i,j,
+				icplb_table[i][0], icplb_table[i][1]);
                         *I0++ = icplb_table[i][0];
                         *I1++ = icplb_table[i][1];
                         j++;
@@ -159,18 +160,21 @@ void dcache_enable(void)
 	/* make sure the locked ones go in first */
 	for (i=0; i < page_descriptor_table_size; i++) {
 		if ( CPLB_LOCK & dcplb_table[i][1] ) {
-			pr_debug("adding %02i %02i 0x%08x 0x%08x\n",i,j,dcplb_table[i][0], dcplb_table[i][1]);
+			pr_debug("adding %02i %02i 0x%08x 0x%08x\n",i,j,
+				dcplb_table[i][0], dcplb_table[i][1]);
 			*I0++ = dcplb_table[i][0];
 			*I1++ = dcplb_table[i][1];
 			j++;
 		} else {
-			pr_debug("skip   %02i %02i 0x%08x 0x%08x\n",i,j,dcplb_table[i][0], dcplb_table[i][1]);
+			pr_debug("skip   %02i %02i 0x%08x 0x%08x\n",i,j,
+				dcplb_table[i][0], dcplb_table[i][1]);
 		}
 	}
 
 	for (i=0; i < page_descriptor_table_size; i++) {
 		if ( ! (CPLB_LOCK & dcplb_table[i][1]) ) {
-			pr_debug("adding %02i %02i 0x%08x 0x%08x\n",i,j,dcplb_table[i][0], dcplb_table[i][1]);
+			pr_debug("adding %02i %02i 0x%08x 0x%08x\n",i,j,
+				dcplb_table[i][0], dcplb_table[i][1]);
 			*I0++ = dcplb_table[i][0];
 			*I1++ = dcplb_table[i][1];
 			j++;
@@ -212,7 +216,9 @@ void dcache_disable(void)
 	__builtin_bfin_ssync();
 	sti();
 
-	/* after disable dcache, clear it so we don't confuse the next application */
+	/* after disable dcache,
+	 * clear it so we don't confuse the next application
+	 */
 	I0 = (unsigned int *)DCPLB_ADDR0;
 	I1 = (unsigned int *)DCPLB_DATA0;
 

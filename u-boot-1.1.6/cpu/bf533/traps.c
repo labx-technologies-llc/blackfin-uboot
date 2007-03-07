@@ -45,12 +45,11 @@
 #include <asm/arch/anomaly.h>
 #include <asm/cplb.h>
 
-//#define DEBUG 1
-
 #ifdef DEBUG
 #define pr_debug(fmt,arg...)  printf(fmt,##arg)
 #else
-static inline int __attribute__ ((format (printf, 1, 2))) pr_debug(const char * fmt, ...)
+static inline int 
+__attribute__ ((format (printf, 1, 2))) pr_debug(const char * fmt, ...)
 {
         return 0;
 }
@@ -88,13 +87,14 @@ void trap_c (struct pt_regs *regs)
 
 #ifdef ANOMALY_05000261
 		/*
-		 * Work around an anomaly: if we see a new DCPLB fault, return
-		 * without doing anything.  Then, if we get the same fault again,
-		 * handle it.
+		 * Work around an anomaly: if we see a new DCPLB fault, 
+		 * return without doing anything. Then, 
+		 * if we get the same fault again, handle it.
 		 */
 		addr = last_cplb_fault_retx;
 		last_cplb_fault_retx = regs->retx;
-		printf("this time, curr = 0x%08x last = 0x%08x\n", addr, last_cplb_fault_retx);
+		printf("this time, curr = 0x%08x last = 0x%08x\n",
+				addr, last_cplb_fault_retx);
 		if ( addr != last_cplb_fault_retx ) 
 			goto trap_c_return;
 #endif
@@ -130,7 +130,8 @@ void trap_c (struct pt_regs *regs)
 		if (data) {
 			__builtin_bfin_ssync();
 			asm(" .align 8; ");
-			*(unsigned int *)DMEM_CONTROL &= ~(ACACHE_BCACHE | ENDCPLB | PORT_PREF0);
+			*(unsigned int *)DMEM_CONTROL &= 
+				~(ACACHE_BCACHE | ENDCPLB | PORT_PREF0);
 			__builtin_bfin_ssync();
 		} else {
 			__builtin_bfin_ssync();
@@ -184,7 +185,8 @@ void trap_c (struct pt_regs *regs)
 			j = *(unsigned int *)DMEM_CONTROL;
 			__builtin_bfin_ssync();
 			asm(" .align 8; ");
-			*(unsigned int *)DMEM_CONTROL = ACACHE_BCACHE | ENDCPLB | PORT_PREF0 | j;
+			*(unsigned int *)DMEM_CONTROL = 
+				ACACHE_BCACHE | ENDCPLB | PORT_PREF0 | j;
 			__builtin_bfin_ssync();
 		} else {
 			__builtin_bfin_ssync();
@@ -214,21 +216,33 @@ trap_c_return:
 
 void dump(struct pt_regs *fp)
 {
-        pr_debug("RETE:  %08lx  RETN: %08lx  RETX: %08lx  RETS: %08lx\n", fp->rete, fp->retn, fp->retx, fp->rets);
+        pr_debug("RETE:  %08lx  RETN: %08lx  RETX: %08lx  RETS: %08lx\n",
+			fp->rete, fp->retn, fp->retx, fp->rets);
         pr_debug("IPEND: %04lx  SYSCFG: %04lx\n", fp->ipend, fp->syscfg);
         pr_debug("SEQSTAT: %08lx    SP: %08lx\n", (long)fp->seqstat, (long)fp);
-        pr_debug("R0: %08lx    R1: %08lx    R2: %08lx    R3: %08lx\n", fp->r0, fp->r1, fp->r2, fp->r3);
-        pr_debug("R4: %08lx    R5: %08lx    R6: %08lx    R7: %08lx\n", fp->r4, fp->r5, fp->r6, fp->r7);
-        pr_debug("P0: %08lx    P1: %08lx    P2: %08lx    P3: %08lx\n", fp->p0, fp->p1, fp->p2, fp->p3);
-        pr_debug("P4: %08lx    P5: %08lx    FP: %08lx\n", fp->p4, fp->p5, fp->fp);
-        pr_debug("A0.w: %08lx    A0.x: %08lx    A1.w: %08lx    A1.x: %08lx\n", fp->a0w, fp->a0x, fp->a1w, fp->a1x);
+        pr_debug("R0: %08lx    R1: %08lx    R2: %08lx    R3: %08lx\n",
+			fp->r0, fp->r1, fp->r2, fp->r3);
+        pr_debug("R4: %08lx    R5: %08lx    R6: %08lx    R7: %08lx\n",
+			fp->r4, fp->r5, fp->r6, fp->r7);
+        pr_debug("P0: %08lx    P1: %08lx    P2: %08lx    P3: %08lx\n",
+			fp->p0, fp->p1, fp->p2, fp->p3);
+        pr_debug("P4: %08lx    P5: %08lx    FP: %08lx\n",
+			fp->p4, fp->p5, fp->fp);
+        pr_debug("A0.w: %08lx    A0.x: %08lx    A1.w: %08lx    A1.x: %08lx\n",
+			fp->a0w, fp->a0x, fp->a1w, fp->a1x);
 
-        pr_debug("LB0: %08lx  LT0: %08lx  LC0: %08lx\n", fp->lb0, fp->lt0, fp->lc0);
-        pr_debug("LB1: %08lx  LT1: %08lx  LC1: %08lx\n", fp->lb1, fp->lt1, fp->lc1);
-        pr_debug("B0: %08lx  L0: %08lx  M0: %08lx  I0: %08lx\n", fp->b0, fp->l0, fp->m0, fp->i0);
-        pr_debug("B1: %08lx  L1: %08lx  M1: %08lx  I1: %08lx\n", fp->b1, fp->l1, fp->m1, fp->i1);
-        pr_debug("B2: %08lx  L2: %08lx  M2: %08lx  I2: %08lx\n", fp->b2, fp->l2, fp->m2, fp->i2);
-        pr_debug("B3: %08lx  L3: %08lx  M3: %08lx  I3: %08lx\n", fp->b3, fp->l3, fp->m3, fp->i3);
+        pr_debug("LB0: %08lx  LT0: %08lx  LC0: %08lx\n",
+			fp->lb0, fp->lt0, fp->lc0);
+        pr_debug("LB1: %08lx  LT1: %08lx  LC1: %08lx\n",
+			fp->lb1, fp->lt1, fp->lc1);
+        pr_debug("B0: %08lx  L0: %08lx  M0: %08lx  I0: %08lx\n",
+			fp->b0, fp->l0, fp->m0, fp->i0);
+        pr_debug("B1: %08lx  L1: %08lx  M1: %08lx  I1: %08lx\n",
+			fp->b1, fp->l1, fp->m1, fp->i1);
+        pr_debug("B2: %08lx  L2: %08lx  M2: %08lx  I2: %08lx\n",
+			fp->b2, fp->l2, fp->m2, fp->i2);
+        pr_debug("B3: %08lx  L3: %08lx  M3: %08lx  I3: %08lx\n",
+			fp->b3, fp->l3, fp->m3, fp->i3);
 
 	pr_debug("DCPLB_FAULT_ADDR=%p\n", *pDCPLB_FAULT_ADDR);
 	pr_debug("ICPLB_FAULT_ADDR=%p\n", *pICPLB_FAULT_ADDR);

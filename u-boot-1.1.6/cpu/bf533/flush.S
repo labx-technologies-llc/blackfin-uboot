@@ -85,10 +85,11 @@ ENTRY(_icplb_flush)
 	 */
 
 	R3 = ((12<<8)|2);		/* Extraction pattern */
-	nop;				/*Anamoly 05000209*/
-	R4 = EXTRACT(R0, R3.L) (Z);	/* Extract bits*/
-	R3.H = R4.L << 0 ;		/* Save in extraction pattern for later deposit.*/
+	nop;				/* Anamoly 05000209 */
+	R4 = EXTRACT(R0, R3.L) (Z);	/* Extract bits */
 
+	/* Save in extraction pattern for later deposit. */
+	R3.H = R4.L << 0;
 	
 	/* So:
 	 * R0 = Page start
