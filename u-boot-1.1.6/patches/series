@@ -1,3 +1,4 @@
+net_eth.patch
 Makefile.diff
 common-cmd_bootm.diff
 common-cmd_elf.diff

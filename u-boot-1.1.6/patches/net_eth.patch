@@ -1,0 +1,22 @@
+Index: u-boot-1.1.6/net/eth.c
+===================================================================
+--- u-boot-1.1.6.orig/net/eth.c
++++ u-boot-1.1.6/net/eth.c
+@@ -54,6 +54,7 @@ extern int scc_initialize(bd_t*);
+ extern int skge_initialize(bd_t*);
+ extern int tsec_initialize(bd_t*, int, char *);
+ extern int npe_initialize(bd_t *);
++extern int bfin_EMAC_initialize(bd_t *);
+ 
+ static struct eth_device *eth_devices, *eth_current;
+ 
+@@ -251,6 +252,9 @@ int eth_initialize(bd_t *bis)
+ #if defined(CONFIG_RTL8169)
+ 	rtl8169_initialize(bis);
+ #endif
++#if defined(CONFIG_BF537)
++	bfin_EMAC_initialize(bis);
++#endif
+ 
+ 	if (!eth_devices) {
+ 		puts ("No ethernet found.\n");
