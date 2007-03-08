@@ -41,9 +41,9 @@ extern unsigned int dcplb_table[page_descriptor_table_size][2];
 #define pr_debug(fmt,arg...)  printf(fmt,##arg)
 #else
 static inline int
-__attribute__ ((format (printf, 1, 2))) pr_debug(const char * fmt, ...)
+    __attribute__ ((format(printf, 1, 2))) pr_debug(const char *fmt, ...)
 {
-        return 0;
+	return 0;
 }
 #endif
 
@@ -69,7 +69,7 @@ int cleanup_before_linux(void)
 void icache_enable(void)
 {
 	unsigned int *I0, *I1;
-	int i,j=0;
+	int i, j = 0;
 #ifdef __ADSPBF537__
 	if ((*pCHIPID >> 28) < 2)
 		return;
@@ -81,37 +81,37 @@ void icache_enable(void)
 	I1 = (unsigned int *)ICPLB_DATA0;
 
 	/* make sure the locked ones go in first */
-	for (i=0; i < page_descriptor_table_size; i++) {
-		if ( CPLB_LOCK & icplb_table[i][1] ) {
-			pr_debug("adding %02i %02i 0x%08x 0x%08x\n",i,j,
-				icplb_table[i][0], icplb_table[i][1]);
+	for (i = 0; i < page_descriptor_table_size; i++) {
+		if (CPLB_LOCK & icplb_table[i][1]) {
+			pr_debug("adding %02i %02i 0x%08x 0x%08x\n", i, j,
+				 icplb_table[i][0], icplb_table[i][1]);
 			*I0++ = icplb_table[i][0];
 			*I1++ = icplb_table[i][1];
 			j++;
 		}
- 	}
+	}
 
-        for (i=0; i < page_descriptor_table_size ; i++) {
-                 if ( ! (CPLB_LOCK & icplb_table[i][1]) ) {
-			pr_debug("adding %02i %02i 0x%08x 0x%08x\n",i,j,
-				icplb_table[i][0], icplb_table[i][1]);
-                        *I0++ = icplb_table[i][0];
-                        *I1++ = icplb_table[i][1];
-                        j++;
- 			if( j == 16 ) {
+	for (i = 0; i < page_descriptor_table_size; i++) {
+		if (!(CPLB_LOCK & icplb_table[i][1])) {
+			pr_debug("adding %02i %02i 0x%08x 0x%08x\n", i, j,
+				 icplb_table[i][0], icplb_table[i][1]);
+			*I0++ = icplb_table[i][0];
+			*I1++ = icplb_table[i][1];
+			j++;
+			if (j == 16) {
 				break;
 			}
-                }
-        }
+		}
+	}
 
 	/* Fill the rest with invalid entry */
-	if ( j <= 15 ) {
-		for ( ; j <= 16 ; j++) {
-			pr_debug("filling %i with 0",j);
+	if (j <= 15) {
+		for (; j <= 16; j++) {
+			pr_debug("filling %i with 0", j);
 			*I1++ = 0x0;
 		}
 
-	}	
+	}
 
 	cli();
 	__builtin_bfin_ssync();
@@ -150,7 +150,7 @@ void dcache_enable(void)
 {
 	unsigned int *I0, *I1;
 	unsigned int temp;
-	int i,j=0;
+	int i, j = 0;
 
 	/* Before enable dcache, disable it first */
 	dcache_disable();
@@ -158,39 +158,39 @@ void dcache_enable(void)
 	I1 = (unsigned int *)DCPLB_DATA0;
 
 	/* make sure the locked ones go in first */
-	for (i=0; i < page_descriptor_table_size; i++) {
-		if ( CPLB_LOCK & dcplb_table[i][1] ) {
-			pr_debug("adding %02i %02i 0x%08x 0x%08x\n",i,j,
-				dcplb_table[i][0], dcplb_table[i][1]);
+	for (i = 0; i < page_descriptor_table_size; i++) {
+		if (CPLB_LOCK & dcplb_table[i][1]) {
+			pr_debug("adding %02i %02i 0x%08x 0x%08x\n", i, j,
+				 dcplb_table[i][0], dcplb_table[i][1]);
 			*I0++ = dcplb_table[i][0];
 			*I1++ = dcplb_table[i][1];
 			j++;
 		} else {
-			pr_debug("skip   %02i %02i 0x%08x 0x%08x\n",i,j,
-				dcplb_table[i][0], dcplb_table[i][1]);
+			pr_debug("skip   %02i %02i 0x%08x 0x%08x\n", i, j,
+				 dcplb_table[i][0], dcplb_table[i][1]);
 		}
 	}
 
-	for (i=0; i < page_descriptor_table_size; i++) {
-		if ( ! (CPLB_LOCK & dcplb_table[i][1]) ) {
-			pr_debug("adding %02i %02i 0x%08x 0x%08x\n",i,j,
-				dcplb_table[i][0], dcplb_table[i][1]);
+	for (i = 0; i < page_descriptor_table_size; i++) {
+		if (!(CPLB_LOCK & dcplb_table[i][1])) {
+			pr_debug("adding %02i %02i 0x%08x 0x%08x\n", i, j,
+				 dcplb_table[i][0], dcplb_table[i][1]);
 			*I0++ = dcplb_table[i][0];
 			*I1++ = dcplb_table[i][1];
 			j++;
-			if( j == 16 ) {
+			if (j == 16) {
 				break;
 			}
 		}
 	}
 
 	/* Fill the rest with invalid entry */
-	if ( j <= 15 ) {
-		for ( ; j <= 16 ; j++) {
-			pr_debug("filling %i with 0",j);
+	if (j <= 15) {
+		for (; j <= 16; j++) {
+			pr_debug("filling %i with 0", j);
 			*I1++ = 0x0;
 		}
- 	}
+	}
 
 	cli();
 	temp = *(unsigned int *)DMEM_CONTROL;
@@ -222,7 +222,7 @@ void dcache_disable(void)
 	I0 = (unsigned int *)DCPLB_ADDR0;
 	I1 = (unsigned int *)DCPLB_DATA0;
 
-	for (i=0; i< 16 ; i++) {
+	for (i = 0; i < 16; i++) {
 		*I0++ = 0x0;
 		*I1++ = 0x0;
 	}

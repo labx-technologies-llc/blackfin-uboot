@@ -148,7 +148,7 @@ int serial_getc(void)
 
 	/* Poll for RX Interrupt */
 	while (!((isr_val =
-		 *(volatile unsigned long *)SIC_ISR) & IRQ_UART_RX_BIT));
+		  *(volatile unsigned long *)SIC_ISR) & IRQ_UART_RX_BIT)) ;
 	asm("csync;");
 
 	uart_lsr_val = *pUART_LSR;	/* Clear status bit */
