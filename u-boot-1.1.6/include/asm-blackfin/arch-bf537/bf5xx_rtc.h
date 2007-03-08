@@ -1,5 +1,5 @@
 /*
- * U-boot - bf533_rtc.h
+ * U-boot - bf537_rtc.h
  *
  * Copyright (c) 2005 blackfin.uclinux.org
  *
@@ -22,8 +22,8 @@
  * MA 02111-1307 USA
  */
 
-#ifndef _BF533_RTC_H_
-#define _BF533_RTC_H_
+#ifndef _BF537_RTC_H_
+#define _BF537_RTC_H_
 
 void rtc_init(void);
 void wait_for_complete(void);
