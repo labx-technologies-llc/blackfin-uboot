@@ -22,7 +22,6 @@
  * MA 02111-1307 USA
  */
 
-
 #ifndef _BF533_SERIAL_H_
 #define _BF533_SERIAL_H_
 

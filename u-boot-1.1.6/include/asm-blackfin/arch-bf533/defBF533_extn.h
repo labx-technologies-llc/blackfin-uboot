@@ -19,7 +19,8 @@
 #ifndef _DEF_BF533_EXTN_H
 #define _DEF_BF533_EXTN_H
 
-#define OFFSET_( x )		((x) & 0x0000FFFF) /* define macro for offset */
+/* define macro for offset */
+#define OFFSET_( x )		((x) & 0x0000FFFF)
 /* Delay inserted for PLL transition */
 #define PLL_DELAY			0x1000
 

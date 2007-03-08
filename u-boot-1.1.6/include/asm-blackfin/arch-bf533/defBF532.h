@@ -51,7 +51,7 @@
 #define VR_CTL			0xFFC00008	/* Voltage Regulator Control Register (16-bit) */
 #define PLL_STAT		0xFFC0000C	/* PLL Status register (16-bit) */
 #define PLL_LOCKCNT		0xFFC00010	/* PLL Lock Count register (16-bit) */
-#define	CHIPID			0xFFC00014	/* Chip ID register (32-bit)	*/
+#define	CHIPID			0xFFC00014	/* Chip ID register (32-bit)    */
 #define SWRST			0xFFC00100	/* Software Reset Register (16-bit) */
 #define SYSCR			0xFFC00104	/* System Configuration register */
 
@@ -88,7 +88,7 @@
 #define UART_LCR		0xFFC0040C	/* Line Control Register */
 #define UART_MCR		0xFFC00410	/* Modem Control Register */
 #define UART_LSR		0xFFC00414	/* Line Status Register */
-/* #define UART_MSR 0xFFC00418 */	/* Modem Status Register (UNUSED in ADSP-BF532) */
+/* #define UART_MSR 0xFFC00418 *//* Modem Status Register (UNUSED in ADSP-BF532) */
 #define UART_SCR		0xFFC0041C	/* SCR Scratch Register */
 #define UART_GCTL		0xFFC00424	/* Global Control Register */
 
@@ -405,7 +405,7 @@
 #define BYPASS			0x00000100	/* Bypass the PLL */
 
 /* PLL_DIV Masks */
-#define SCLK_DIV(x)		(x)		/* SCLK = VCO / x */
+#define SCLK_DIV(x)		(x)	/* SCLK = VCO / x */
 
 #define CCLK_DIV1		0x00000000	/* CCLK = VCO / 1 */
 #define CCLK_DIV2		0x00000010	/* CCLK = VCO / 2 */
@@ -420,7 +420,7 @@
  */
 
 /* SIC_IAR0 Masks */
-#define P0_IVG(x)		((x)-7)		/* Peripheral #0 assigned IVG #x */
+#define P0_IVG(x)		((x)-7)	/* Peripheral #0 assigned IVG #x */
 #define P1_IVG(x)		((x)-7) << 0x4	/* Peripheral #1 assigned IVG #x */
 #define P2_IVG(x)		((x)-7) << 0x8	/* Peripheral #2 assigned IVG #x */
 #define P3_IVG(x)		((x)-7) << 0xC	/* Peripheral #3 assigned IVG #x */
@@ -430,7 +430,7 @@
 #define P7_IVG(x)		((x)-7) << 0x1C	/* Peripheral #7 assigned IVG #x */
 
 /* SIC_IAR1 Masks */
-#define P8_IVG(x)		((x)-7)		/* Peripheral #8 assigned IVG #x */
+#define P8_IVG(x)		((x)-7)	/* Peripheral #8 assigned IVG #x */
 #define P9_IVG(x)		((x)-7) << 0x4	/* Peripheral #9 assigned IVG #x */
 #define P10_IVG(x)		((x)-7) << 0x8	/* Peripheral #10 assigned IVG #x */
 #define P11_IVG(x)		((x)-7) << 0xC	/* Peripheral #11 assigned IVG #x */
@@ -440,7 +440,7 @@
 #define P15_IVG(x)		((x)-7) << 0x1C	/* Peripheral #15 assigned IVG #x */
 
 /* SIC_IAR2 Masks */
-#define P16_IVG(x)		((x)-7)		/* Peripheral #16 assigned IVG #x */
+#define P16_IVG(x)		((x)-7)	/* Peripheral #16 assigned IVG #x */
 #define P17_IVG(x)		((x)-7) << 0x4	/* Peripheral #17 assigned IVG #x */
 #define P18_IVG(x)		((x)-7) << 0x8	/* Peripheral #18 assigned IVG #x */
 #define P19_IVG(x)		((x)-7) << 0xC	/* Peripheral #19 assigned IVG #x */
@@ -486,25 +486,25 @@
 #define	RTDAY			0xFFFE0000	/* Real-Time Clock Days */
 
 /* RTC_ICTL register */
-#define	SWIE			0x0001		/* Stopwatch Interrupt Enable */
-#define	AIE			0x0002		/* Alarm Interrupt Enable */
-#define	SIE			0x0004		/* Seconds (1 Hz) Interrupt Enable */
-#define	MIE			0x0008		/* Minutes Interrupt Enable */
-#define	HIE			0x0010		/* Hours Interrupt Enable */
-#define	DIE			0x0020		/* 24 Hours (Days) Interrupt Enable */
-#define	DAIE			0x0040		/* Day Alarm (Day, Hour, Minute, Second) Interrupt Enable */
-#define	WCIE			0x8000		/* Write Complete Interrupt Enable */
+#define	SWIE			0x0001	/* Stopwatch Interrupt Enable */
+#define	AIE			0x0002	/* Alarm Interrupt Enable */
+#define	SIE			0x0004	/* Seconds (1 Hz) Interrupt Enable */
+#define	MIE			0x0008	/* Minutes Interrupt Enable */
+#define	HIE			0x0010	/* Hours Interrupt Enable */
+#define	DIE			0x0020	/* 24 Hours (Days) Interrupt Enable */
+#define	DAIE			0x0040	/* Day Alarm (Day, Hour, Minute, Second) Interrupt Enable */
+#define	WCIE			0x8000	/* Write Complete Interrupt Enable */
 
 /* RTC_ISTAT register */
-#define	SWEF			0x0001		/* Stopwatch Event Flag */
-#define	AEF			0x0002		/* Alarm Event Flag */
-#define	SEF			0x0004		/* Seconds (1 Hz) Event Flag */
-#define	MEF			0x0008		/* Minutes Event Flag */
-#define	HEF			0x0010		/* Hours Event Flag */
-#define	DEF			0x0020		/* 24 Hours (Days) Event Flag */
-#define	DAEF			0x0040		/* Day Alarm (Day, Hour, Minute, Second) Event Flag */
-#define	WPS			0x4000		/* Write Pending Status (RO) */
-#define	WCOM			0x8000		/* Write Complete */
+#define	SWEF			0x0001	/* Stopwatch Event Flag */
+#define	AEF			0x0002	/* Alarm Event Flag */
+#define	SEF			0x0004	/* Seconds (1 Hz) Event Flag */
+#define	MEF			0x0008	/* Minutes Event Flag */
+#define	HEF			0x0010	/* Hours Event Flag */
+#define	DEF			0x0020	/* 24 Hours (Days) Event Flag */
+#define	DAEF			0x0040	/* Day Alarm (Day, Hour, Minute, Second) Event Flag */
+#define	WPS			0x4000	/* Write Pending Status (RO) */
+#define	WCOM			0x8000	/* Write Complete */
 
 /* RTC_FAST Mask (RTC_PREN Mask) */
 #define ENABLE_PRESCALE		0x00000001	/* Enable prescaler so RTC runs at 1 Hz */
@@ -588,50 +588,50 @@
  * SERIAL PORT MASKS
  */
 /* SPORTx_TCR1 Masks */
-#define TSPEN    		0x0001		/* TX enable */
-#define ITCLK    		0x0002		/* Internal TX Clock Select */
-#define TDTYPE			0x000C		/* TX Data Formatting Select */
-#define TLSBIT			0x0010		/* TX Bit Order */
-#define ITFS			0x0200		/* Internal TX Frame Sync Select */
-#define TFSR			0x0400		/* TX Frame Sync Required Select */
-#define DITFS			0x0800		/* Data Independent TX Frame Sync Select */
-#define LTFS			0x1000		/* Low TX Frame Sync Select */
-#define LATFS			0x2000		/* Late TX Frame Sync Select */
-#define TCKFE			0x4000		/* TX Clock Falling Edge Select */
+#define TSPEN    		0x0001	/* TX enable */
+#define ITCLK    		0x0002	/* Internal TX Clock Select */
+#define TDTYPE			0x000C	/* TX Data Formatting Select */
+#define TLSBIT			0x0010	/* TX Bit Order */
+#define ITFS			0x0200	/* Internal TX Frame Sync Select */
+#define TFSR			0x0400	/* TX Frame Sync Required Select */
+#define DITFS			0x0800	/* Data Independent TX Frame Sync Select */
+#define LTFS			0x1000	/* Low TX Frame Sync Select */
+#define LATFS			0x2000	/* Late TX Frame Sync Select */
+#define TCKFE			0x4000	/* TX Clock Falling Edge Select */
 
 /* SPORTx_TCR2 Masks */
-#define SLEN			0x001F		/*TX Word Length */
-#define TXSE			0x0100		/*TX Secondary Enable */
-#define TSFSE			0x0200		/*TX Stereo Frame Sync Enable */
-#define TRFST			0x0400		/*TX Right-First Data Order */
+#define SLEN			0x001F	/*TX Word Length */
+#define TXSE			0x0100	/*TX Secondary Enable */
+#define TSFSE			0x0200	/*TX Stereo Frame Sync Enable */
+#define TRFST			0x0400	/*TX Right-First Data Order */
 
 /* SPORTx_RCR1 Masks */
-#define RSPEN			0x0001		/* RX enable */
-#define IRCLK			0x0002		/* Internal RX Clock Select */
-#define RDTYPE			0x000C		/* RX Data Formatting Select */
-#define RULAW			0x0008		/* u-Law enable */
-#define RALAW			0x000C		/* A-Law enable */
-#define RLSBIT			0x0010		/* RX Bit Order */
-#define IRFS			0x0200		/* Internal RX Frame Sync Select */
-#define RFSR			0x0400		/* RX Frame Sync Required Select */
-#define LRFS			0x1000		/* Low RX Frame Sync Select */
-#define LARFS			0x2000		/* Late RX Frame Sync Select */
-#define RCKFE			0x4000		/* RX Clock Falling Edge Select */
+#define RSPEN			0x0001	/* RX enable */
+#define IRCLK			0x0002	/* Internal RX Clock Select */
+#define RDTYPE			0x000C	/* RX Data Formatting Select */
+#define RULAW			0x0008	/* u-Law enable */
+#define RALAW			0x000C	/* A-Law enable */
+#define RLSBIT			0x0010	/* RX Bit Order */
+#define IRFS			0x0200	/* Internal RX Frame Sync Select */
+#define RFSR			0x0400	/* RX Frame Sync Required Select */
+#define LRFS			0x1000	/* Low RX Frame Sync Select */
+#define LARFS			0x2000	/* Late RX Frame Sync Select */
+#define RCKFE			0x4000	/* RX Clock Falling Edge Select */
 
 /* SPORTx_RCR2 Masks */
-#define SLEN			0x001F		/* RX Word Length */
-#define RXSE			0x0100		/* RX Secondary Enable */
-#define RSFSE			0x0200		/* RX Stereo Frame Sync Enable */
-#define RRFST			0x0400		/* Right-First Data Order */
+#define SLEN			0x001F	/* RX Word Length */
+#define RXSE			0x0100	/* RX Secondary Enable */
+#define RSFSE			0x0200	/* RX Stereo Frame Sync Enable */
+#define RRFST			0x0400	/* Right-First Data Order */
 
 /* SPORTx_STAT Masks */
-#define RXNE			0x0001		/* RX FIFO Not Empty Status */
-#define RUVF			0x0002		/* RX Underflow Status */
-#define ROVF			0x0004		/* RX Overflow Status */
-#define TXF			0x0008		/* TX FIFO Full Status */
-#define TUVF			0x0010		/* TX Underflow Status */
-#define TOVF			0x0020		/* TX Overflow Status */
-#define TXHRE			0x0040		/* TX Hold Register Empty */
+#define RXNE			0x0001	/* RX FIFO Not Empty Status */
+#define RUVF			0x0002	/* RX Underflow Status */
+#define ROVF			0x0004	/* RX Overflow Status */
+#define TXF			0x0008	/* TX FIFO Full Status */
+#define TUVF			0x0010	/* TX Underflow Status */
+#define TOVF			0x0020	/* TX Overflow Status */
+#define TXHRE			0x0040	/* TX Hold Register Empty */
 
 /* SPORTx_MCMC1 Masks */
 #define WSIZE			0x0000F000	/* Multichannel Window Size Field */
@@ -660,7 +660,7 @@
 #define SKIP_EN			0x00000200	/* PPI Skip Element Enable */
 #define SKIP_EO			0x00000400	/* PPI Skip Even/Odd Elements */
 #define DLENGTH			0x00003800	/* PPI Data Length */
-#define DLEN_8			0x0		/* PPI Data Length mask for DLEN=8 */
+#define DLEN_8			0x0	/* PPI Data Length mask for DLEN=8 */
 #define DLEN(x)			(((x-9) & 0x07) << 11)	/* PPI Data Length (only works for x=10-->x=16) */
 #define POL			0x0000C000	/* PPI Signal Polarities */
 
@@ -689,12 +689,12 @@
 #define NDSIZE			0x00000900	/* Next Descriptor Size */
 #define FLOW			0x00007000	/* Flow Control */
 
-#define DMAEN_P			0		/* Channel Enable */
-#define WNR_P			1		/* Channel Direction (W/R*) */
-#define DMA2D_P			4		/* 2D/1D* Mode */
-#define RESTART_P		5		/* Restart */
-#define DI_SEL_P		6		/* Data Interrupt Select */
-#define DI_EN_P			7		/* Data Interrupt Enable */
+#define DMAEN_P			0	/* Channel Enable */
+#define WNR_P			1	/* Channel Direction (W/R*) */
+#define DMA2D_P			4	/* 2D/1D* Mode */
+#define RESTART_P		5	/* Restart */
+#define DI_SEL_P		6	/* Data Interrupt Select */
+#define DI_EN_P			7	/* Data Interrupt Enable */
 
 /* DMAx_IRQ_STATUS, MDMA_yy_IRQ_STATUS Masks */
 #define DMA_DONE		0x00000001	/* DMA Done Indicator */
@@ -702,14 +702,14 @@
 #define DFETCH			0x00000004	/* Descriptor Fetch Indicator */
 #define DMA_RUN			0x00000008	/* DMA Running Indicator */
 
-#define DMA_DONE_P		0		/* DMA Done Indicator */
-#define DMA_ERR_P		1		/* DMA Error Indicator */
-#define DFETCH_P		2		/* Descriptor Fetch Indicator */
-#define DMA_RUN_P		3		/* DMA Running Indicator */
+#define DMA_DONE_P		0	/* DMA Done Indicator */
+#define DMA_ERR_P		1	/* DMA Error Indicator */
+#define DFETCH_P		2	/* Descriptor Fetch Indicator */
+#define DMA_RUN_P		3	/* DMA Running Indicator */
 
 /* DMAx_PERIPHERAL_MAP, MDMA_yy_PERIPHERAL_MAP Masks */
 #define CTYPE			0x00000040	/* DMA Channel Type Indicator */
-#define CTYPE_P			6		/* DMA Channel Type Indicator BIT POSITION */
+#define CTYPE_P			6	/* DMA Channel Type Indicator BIT POSITION */
 #define PCAP8			0x00000080	/* DMA 8-bit Operation Indicator */
 #define PCAP16			0x00000100	/* DMA 16-bit Operation Indicator */
 #define PCAP32			0x00000200	/* DMA 32-bit Operation Indicator */
@@ -1156,4 +1156,4 @@
 #define SDEASE			0x00000010	/* SDRAM EAB sticky error status - W1C */
 #define BGSTAT			0x00000020	/* Bus granted */
 
-#endif /* _DEF_BF532_H */
+#endif	/* _DEF_BF532_H */
