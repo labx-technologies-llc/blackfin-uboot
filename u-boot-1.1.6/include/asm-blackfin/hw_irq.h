@@ -41,4 +41,3 @@
 #ifdef CONFIG_BF537
 #include <asm/arch-bf537/irq.h>
 #endif
-

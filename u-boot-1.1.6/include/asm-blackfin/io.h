@@ -33,7 +33,7 @@
 extern void cf_outsw(unsigned short *addr, unsigned short *sect_buf, int words);
 extern void cf_insw(unsigned short *sect_buf, unsigned short *addr, int words);
 extern unsigned char cf_inb(volatile unsigned char *addr);
-extern void cf_outb(unsigned char val, volatile unsigned char* addr);
+extern void cf_outb(unsigned char val, volatile unsigned char *addr);
 
 static inline void sync(void)
 {
@@ -49,7 +49,6 @@ static inline void sync(void)
  * differently. On the m68k architecture, we just read/write the
  * memory location directly.
  */
-
 
 #define readb(addr)		({ unsigned char __v = (*(volatile unsigned char *) (addr));asm("ssync;"); __v; })
 #define readw(addr)		({ unsigned short __v = (*(volatile unsigned short *) (addr)); asm("ssync;");__v; })
@@ -99,8 +98,7 @@ extern inline void *ioremap(unsigned long physaddr, unsigned long size)
 {
 	return __ioremap(physaddr, size, IOMAP_NOCACHE_SER);
 }
-extern inline void *ioremap_nocache(unsigned long physaddr,
-				    unsigned long size)
+extern inline void *ioremap_nocache(unsigned long physaddr, unsigned long size)
 {
 	return __ioremap(physaddr, size, IOMAP_NOCACHE_SER);
 }

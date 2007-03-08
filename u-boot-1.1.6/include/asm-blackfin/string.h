@@ -47,10 +47,10 @@ extern char *strcpy(char *dest, const char *src);
 extern char *strncpy(char *dest, const char *src, size_t n);
 extern int strcmp(const char *cs, const char *ct);
 extern int strncmp(const char *cs, const char *ct, size_t count);
-extern void * memcpy(void * dest,const void *src,size_t count);
+extern void *memcpy(void *dest, const void *src, size_t count);
 extern void *memset(void *s, int c, size_t count);
 extern int memcmp(const void *, const void *, __kernel_size_t);
-extern void * memmove(void * dest,const void *src,size_t count);
+extern void *memmove(void *dest, const void *src, size_t count);
 
 #else				/* KERNEL */
 
