@@ -49,20 +49,19 @@
  * Flash A Port A Bit definitions
  */
 
-#define	PSDA_PPICLK1	0x20		/* PPI Clock select bit 1		*/
-#define	PSDA_PPICLK0	0x10		/* PPI Clock select bit 0		*/
-#define	PSDA_VDEC_RST	0x08		/* Video decoder reset, 0 = RESET	*/
-#define	PSDA_VENC_RST	0x04		/* Video encoder reset, 0 = RESET	*/
-#define	PSDA_CODEC_RST	0x01		/* Codec reset, 0 = RESET		*/
+#define	PSDA_PPICLK1	0x20	/* PPI Clock select bit 1               */
+#define	PSDA_PPICLK0	0x10	/* PPI Clock select bit 0               */
+#define	PSDA_VDEC_RST	0x08	/* Video decoder reset, 0 = RESET       */
+#define	PSDA_VENC_RST	0x04	/* Video encoder reset, 0 = RESET       */
+#define	PSDA_CODEC_RST	0x01	/* Codec reset, 0 = RESET               */
 
 /*
  * Flash A Port B Bit definitions
  */
 
-#define	PSDA_LED9	0x20		/* LED 9, 1 = LED ON			*/
-#define	PSDA_LED8	0x10		/* LED 8, 1 = LED ON			*/
-#define	PSDA_LED7	0x08		/* LED 7, 1 = LED ON			*/
-#define	PSDA_LED6	0x04		/* LED 6, 1 = LED ON			*/
-#define	PSDA_LED5	0x02		/* LED 5, 1 = LED ON			*/
-#define	PSDA_LED4	0x01		/* LED 4, 1 = LED ON			*/
-
+#define	PSDA_LED9	0x20	/* LED 9, 1 = LED ON                    */
+#define	PSDA_LED8	0x10	/* LED 8, 1 = LED ON                    */
+#define	PSDA_LED7	0x08	/* LED 7, 1 = LED ON                    */
+#define	PSDA_LED6	0x04	/* LED 6, 1 = LED ON                    */
+#define	PSDA_LED5	0x02	/* LED 5, 1 = LED ON                    */
+#define	PSDA_LED4	0x01	/* LED 4, 1 = LED ON                    */

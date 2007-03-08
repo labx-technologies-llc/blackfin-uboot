@@ -58,7 +58,7 @@ int get_codes(void);
 int poll_toggle_bit(long lOffset);
 void reset_flash(void);
 int erase_flash(void);
-int erase_block_flash(int,unsigned long);
+int erase_block_flash(int, unsigned long);
 void unlock_flash(long lOffset);
 int write_data(long lStart, long lCount, long lStride, int *pnData);
 int FillData(long lStart, long lCount, long lStride, int *pnData);
