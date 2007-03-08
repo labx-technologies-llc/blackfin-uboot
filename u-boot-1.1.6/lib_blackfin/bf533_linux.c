@@ -43,7 +43,7 @@
 #define SHOW_BOOT_PROGRESS(arg)
 #endif
 
-#define CMD_LINE_ADDR 0xFF900000  /* L1 scratchpad */
+#define CMD_LINE_ADDR 0xFF900000	/* L1 scratchpad */
 
 #ifdef SHARED_RESOURCES
 extern void swap_to(int device_id);
@@ -55,9 +55,9 @@ extern void flush_data_cache(void);
 static char *make_command_line(void);
 
 void do_bootm_linux(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[],
-                    ulong addr, ulong * len_ptr, int verify)
+		    ulong addr, ulong * len_ptr, int verify)
 {
-	int (*appl)(char *cmdline);
+	int (*appl) (char *cmdline);
 	char *cmdline;
 
 #ifdef SHARED_RESOURCES
@@ -75,12 +75,12 @@ void do_bootm_linux(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[],
 		flush_data_cache();
 		dcache_disable();
 	}
-	(*appl)(cmdline);
+	(*appl) (cmdline);
 }
 
 char *make_command_line(void)
 {
-	char *dest = (char *) CMD_LINE_ADDR;
+	char *dest = (char *)CMD_LINE_ADDR;
 	char *bootargs;
 
 	if ((bootargs = getenv("bootargs")) == NULL)

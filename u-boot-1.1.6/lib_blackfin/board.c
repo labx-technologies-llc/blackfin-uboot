@@ -45,9 +45,10 @@ int post_flag;
 #ifdef DEBUG
 #define pr_debug(fmt,arg...)  printf(fmt,##arg)
 #else
-static inline int __attribute__ ((format (printf, 1, 2))) pr_debug(const char * fmt, ...)
+static inline int
+    __attribute__ ((format(printf, 1, 2))) pr_debug(const char *fmt, ...)
 {
-        return 0;
+	return 0;
 }
 #endif
 
@@ -85,7 +86,6 @@ u_long get_cclk(void)
 	return get_vco() >> csel;
 }
 
-
 /* Get the System clock */
 u_long get_sclk(void)
 {
@@ -99,14 +99,12 @@ u_long get_sclk(void)
 	return get_vco() / ssel;
 }
 
-
 static void mem_malloc_init(void)
 {
 	mem_malloc_start = CFG_MALLOC_BASE;
 	mem_malloc_end = (CFG_MALLOC_BASE + CFG_MALLOC_LEN);
 	mem_malloc_brk = mem_malloc_start;
-	memset((void *) mem_malloc_start, 0,
-	mem_malloc_end - mem_malloc_start);
+	memset((void *)mem_malloc_start, 0, mem_malloc_end - mem_malloc_start);
 }
 
 void *sbrk(ptrdiff_t increment)
@@ -119,7 +117,7 @@ void *sbrk(ptrdiff_t increment)
 	}
 	mem_malloc_brk = new;
 
-	return ((void *) old);
+	return ((void *)old);
 }
 
 static int display_banner(void)
@@ -143,8 +141,8 @@ static int init_baudrate(void)
 	char tmp[64];
 	int i = getenv_r("baudrate", tmp, sizeof(tmp));
 	gd->bd->bi_baudrate = gd->baudrate = (i > 0)
-		? (int) simple_strtoul(tmp, NULL, 10)
-		: CONFIG_BAUDRATE;
+	    ? (int)simple_strtoul(tmp, NULL, 10)
+	    : CONFIG_BAUDRATE;
 	return (0);
 }
 
@@ -166,12 +164,10 @@ static void display_global_data(void)
 	printf("---bi_baudrate:%x\n", bd->bi_baudrate);
 	printf("---bi_ip_addr:%x\n", bd->bi_ip_addr);
 	printf("---bi_enetaddr:%x %x %x %x %x %x\n",
-				bd->bi_enetaddr[0],
-				bd->bi_enetaddr[1],
-				bd->bi_enetaddr[2],
-				bd->bi_enetaddr[3],
-				bd->bi_enetaddr[4],
-				bd->bi_enetaddr[5]);
+	       bd->bi_enetaddr[0],
+	       bd->bi_enetaddr[1],
+	       bd->bi_enetaddr[2],
+	       bd->bi_enetaddr[3], bd->bi_enetaddr[4], bd->bi_enetaddr[5]);
 	printf("---bi_arch_number:%x\n", bd->bi_arch_number);
 	printf("---bi_boot_params:%x\n", bd->bi_boot_params);
 	printf("---bi_memstart:%x\n", bd->bi_memstart);
@@ -184,31 +180,32 @@ static void display_global_data(void)
 #endif
 
 /* we cover everything with 4 meg pages, and need an extra for L1 */
-unsigned int icplb_table[page_descriptor_table_size][2] ;
-unsigned int dcplb_table[page_descriptor_table_size][2] ;
+unsigned int icplb_table[page_descriptor_table_size][2];
+unsigned int dcplb_table[page_descriptor_table_size][2];
 
 void init_cplbtables(void)
 {
-	int i,j;
+	int i, j;
 
 	j = 0;
 	icplb_table[j][0] = 0xFFA00000;
 	icplb_table[j][1] = L1_IMEMORY;
 	j++;
 
-	for(i=0; i <= CONFIG_MEM_SIZE/4 ; i++){
-		icplb_table[j][0]=(i*4*1024*1024);
-		if (i*4*1024*1024 <= CFG_MONITOR_BASE && (i+1)*4*1024*1024 >= CFG_MONITOR_BASE) {
-			icplb_table[j][1]=SDRAM_IKERNEL;
+	for (i = 0; i <= CONFIG_MEM_SIZE / 4; i++) {
+		icplb_table[j][0] = (i * 4 * 1024 * 1024);
+		if (i * 4 * 1024 * 1024 <= CFG_MONITOR_BASE
+		    && (i + 1) * 4 * 1024 * 1024 >= CFG_MONITOR_BASE) {
+			icplb_table[j][1] = SDRAM_IKERNEL;
 		} else {
-			icplb_table[j][1]=SDRAM_IGENERIC;
+			icplb_table[j][1] = SDRAM_IGENERIC;
 		}
 		j++;
 	}
-#if defined(CONFIG_BF561)	
+#if defined(CONFIG_BF561)
 	/* Async Memory space */
-	for(i=0; i<3; i++){
-		icplb_table[j++][0] = 0x20000000 + i*4*1024*1024;
+	for (i = 0; i < 3; i++) {
+		icplb_table[j++][0] = 0x20000000 + i * 4 * 1024 * 1024;
 		icplb_table[j++][1] = SDRAM_IGENERIC;
 	}
 #else
@@ -220,24 +217,25 @@ void init_cplbtables(void)
 	dcplb_table[j][1] = L1_DMEMORY;
 	j++;
 
-        for(i=0; i < CONFIG_MEM_SIZE/4 ; i++){
-                dcplb_table[j][0]=(i*4*1024*1024);
-		if (i*4*1024*1024 <= CFG_MONITOR_BASE && (i+1)*4*1024*1024 >= CFG_MONITOR_BASE) {
-			dcplb_table[j][1]=SDRAM_DKERNEL;
+	for (i = 0; i < CONFIG_MEM_SIZE / 4; i++) {
+		dcplb_table[j][0] = (i * 4 * 1024 * 1024);
+		if (i * 4 * 1024 * 1024 <= CFG_MONITOR_BASE
+		    && (i + 1) * 4 * 1024 * 1024 >= CFG_MONITOR_BASE) {
+			dcplb_table[j][1] = SDRAM_DKERNEL;
 		} else {
-			dcplb_table[j][1]=SDRAM_DGENERIC;
+			dcplb_table[j][1] = SDRAM_DGENERIC;
 		}
 		j++;
 	}
 
-#if defined(CONFIG_BF561)	
+#if defined(CONFIG_BF561)
 	/* MAC space */
 	dcplb_table[j++][0] = CONFIG_ASYNC_EBIU_BASE;
 	dcplb_table[j++][1] = SDRAM_EBIU;
-	
-	/* Flash space*/
-	for(i=0; i<2; i++){
-		dcplb_table[j++][0] = 0x20000000 + i*4*1024*1024;
+
+	/* Flash space */
+	for (i = 0; i < 2; i++) {
+		dcplb_table[j++][0] = 0x20000000 + i * 4 * 1024 * 1024;
 		dcplb_table[j++][1] = SDRAM_EBIU;
 	}
 #else
@@ -269,16 +267,16 @@ void board_init_f(ulong bootflag)
 	init_cplbtables();
 
 	gd = (gd_t *) (CFG_GBL_DATA_ADDR);
-	memset((void *) gd, 0, sizeof(gd_t));
+	memset((void *)gd, 0, sizeof(gd_t));
 
 	/* Board data initialization */
 	addr = (CFG_GBL_DATA_ADDR + sizeof(gd_t));
 
 	/* Align to 4 byte boundary */
 	addr &= ~(4 - 1);
-	bd = (bd_t*)addr;
+	bd = (bd_t *) addr;
 	gd->bd = bd;
-	memset((void *) bd, 0, sizeof(bd_t));
+	memset((void *)bd, 0, sizeof(bd_t));
 
 	/* Initialize */
 	init_IRQ();
@@ -287,15 +285,18 @@ void board_init_f(ulong bootflag)
 	serial_init();		/* serial communications setup */
 	console_init_f();
 #ifdef CONFIG_ICACHE_ON
-        icache_enable();
+	icache_enable();
 #endif
 #ifdef CONFIG_DCACHE_ON
-        dcache_enable();
+	dcache_enable();
 #endif
 	display_banner();	/* say that we are here */
 
-        for(i=0; i <page_descriptor_table_size; i++){
-                pr_debug("data (%02i)= 0x%08x : 0x%08x    intr = 0x%08x : 0x%08x\n",i, dcplb_table[i][0], dcplb_table[i][1],icplb_table[i][0], icplb_table[i][1]);
+	for (i = 0; i < page_descriptor_table_size; i++) {
+		pr_debug
+		    ("data (%02i)= 0x%08x : 0x%08x    intr = 0x%08x : 0x%08x\n",
+		     i, dcplb_table[i][0], dcplb_table[i][1], icplb_table[i][0],
+		     icplb_table[i][1]);
 	}
 
 	checkboard();
@@ -303,8 +304,8 @@ void board_init_f(ulong bootflag)
 	rtc_init();
 #endif
 	timer_init();
-	printf("Clock: VCO: %lu MHz, Core: %lu MHz, System: %lu MHz\n", \
-	get_vco()/1000000, get_cclk()/1000000, get_sclk()/1000000);
+	printf("Clock: VCO: %lu MHz, Core: %lu MHz, System: %lu MHz\n",
+	       get_vco() / 1000000, get_cclk() / 1000000, get_sclk() / 1000000);
 	printf("SDRAM: ");
 	print_size(initdram(0), "\n");
 #if defined(CONFIG_BF537)&&defined(CONFIG_POST)
@@ -347,7 +348,8 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	/* configure available FLASH banks */
 	size = flash_init();
 	display_flash_config(size);
-	flash_protect(FLAG_PROTECT_SET, CFG_FLASH_BASE, CFG_FLASH_BASE + 0x1ffff, &flash_info[0]);
+	flash_protect(FLAG_PROTECT_SET, CFG_FLASH_BASE,
+		      CFG_FLASH_BASE + 0x1ffff, &flash_info[0]);
 	bd->bi_flashstart = CFG_FLASH_BASE;
 	bd->bi_flashsize = size;
 	bd->bi_flashoffset = 0;
@@ -366,7 +368,6 @@ void board_init_r(gd_t * id, ulong dest_addr)
 # endif
 	spi_init_r();
 #endif
-
 
 	/* relocate environment function pointers etc. */
 	env_relocate();
@@ -401,14 +402,14 @@ void board_init_r(gd_t * id, ulong dest_addr)
 
 #if (CONFIG_COMMANDS & CFG_CMD_NAND)
 	puts("NAND:  ");
-	nand_init();            /* go init the NAND */
+	nand_init();		/* go init the NAND */
 #endif
 
 #if defined(CONFIG_MISC_INIT_R)
 	/* miscellaneous platform dependent initialisations */
 	misc_init_r();
 #endif
-	
+
 #if ((BFIN_CPU == ADSP_BF537) || (BFIN_CPU == ADSP_BF536))
 	printf("Net:    ");
 	eth_initialize(bd);
@@ -420,7 +421,8 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	swap_to(ETHERNET);
 #endif
 	if ((SMC_inw(BANK_SELECT) & UPPER_BYTE_MASK) != SMC_IDENT) {
-		printf("ERROR: Can't find SMC91111 at address %x\n", SMC_BASE_ADDRESS);
+		printf("ERROR: Can't find SMC91111 at address %x\n",
+		       SMC_BASE_ADDRESS);
 	} else {
 		printf("Net:   SMC91111 at 0x%08X\n", SMC_BASE_ADDRESS);
 	}
@@ -451,5 +453,5 @@ void board_init_r(gd_t * id, ulong dest_addr)
 void hang(void)
 {
 	puts("### ERROR ### Please RESET the board ###\n");
-	for (;;);
+	for (;;) ;
 }
