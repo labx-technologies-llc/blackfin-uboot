@@ -49,10 +49,10 @@
 #include <command.h>
 #include <rtc.h>
 
-#if defined(CONFIG_RTC_BF533) && (CONFIG_COMMANDS & CFG_CMD_DATE)
+#if defined(CONFIG_RTC_BFIN) && (CONFIG_COMMANDS & CFG_CMD_DATE)
 
 #include <asm/blackfin.h>
-#include <asm/cpu/bf533_rtc.h>
+#include <asm/arch/bf5xx_rtc.h>
 
 void rtc_reset (void)
 {
@@ -142,4 +142,4 @@ void rtc_get (struct rtc_time *tmp)
 		DAYS_TO_SECS (tm_day);
 	to_tm (time_in_sec, tmp);
 }
-#endif /* CONFIG_RTC_BF533 && CFG_CMD_DATE */
+#endif /* CONFIG_RTC_BFIN && CFG_CMD_DATE */

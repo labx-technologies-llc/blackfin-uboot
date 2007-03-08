@@ -47,7 +47,7 @@
 /* Define where the uboot will be loaded by on-chip boot rom */
 #define APP_ENTRY 0x00001000
 
-#define CONFIG_RTC_BF533	1
+#define CONFIG_RTC_BFIN		1
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
 
 /* CONFIG_CLKIN_HZ is any value in Hz                            */

@@ -6,7 +6,7 @@
 #define __CONFIG_STAMP_H__
 
 #define CONFIG_STAMP			1
-#define CONFIG_RTC_BF533		1
+#define CONFIG_RTC_BFIN			1
 #define CONFIG_BF533			1
 /*
  * Boot Mode Set  

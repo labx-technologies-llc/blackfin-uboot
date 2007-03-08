@@ -25,7 +25,7 @@
 #define CFG_DISCOVER_PHY
 #endif
 
-#define CONFIG_RTC_BF533	1
+#define CONFIG_RTC_BFIN		1
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
 
 /*
