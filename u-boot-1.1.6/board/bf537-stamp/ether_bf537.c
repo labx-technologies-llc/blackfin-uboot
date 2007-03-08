@@ -56,10 +56,10 @@ ADI_ETHER_BUFFER *rxbuf[PKTBUFSRX];
 static	u16 txIdx;		/* index of the current RX buffer */
 static  u16 rxIdx;		/* index of the current TX buffer */
 
-u8  SrcAddr[6] = {0x02,0x80,0xAD,0x20,0x31,0xB8};
+u8  SrcAddr[6];
 u16 PHYregs[NO_PHY_REGS];/* u16 PHYADDR; */
 
-// DMAx_CONFIG values at DMA Restart
+/* DMAx_CONFIG values at DMA Restart */
 const ADI_DMA_CONFIG_REG rxdmacfg ={1, 1, 2, 0, 0, 0, 0, 5, 7};
 /*	
 	rxdmacfg.b_DMA_EN = 1;	// enabled
@@ -295,10 +295,13 @@ void SetupMacAddr(u8 *MACaddr)
 		}
 
 #ifndef CONFIG_NETCONSOLE	
-		printf("Using MAC Address %02X:%02X:%02X:%02X:%02X:%02X\n",MACaddr[0],MACaddr[1],
-				MACaddr[2],MACaddr[3],MACaddr[4],MACaddr[5]);
+		printf("Using MAC Address %02X:%02X:%02X:%02X:%02X:%02X\n",
+				MACaddr[0],MACaddr[1],
+				MACaddr[2],MACaddr[3],
+				MACaddr[4],MACaddr[5]);
 #endif
-		*pEMAC_ADDRLO = MACaddr[0] | MACaddr[1]<<8 | MACaddr[2] <<16 | MACaddr[3] << 24;
+		*pEMAC_ADDRLO = MACaddr[0] | MACaddr[1]<<8 |
+				MACaddr[2] <<16 | MACaddr[3] << 24;
 		*pEMAC_ADDRHI = MACaddr[4] | MACaddr[5]<<8;
 	}
 }
