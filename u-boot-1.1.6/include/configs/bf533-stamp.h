@@ -9,7 +9,7 @@
 #define CONFIG_RTC_BFIN			1
 #define CONFIG_BF533			1
 /*
- * Boot Mode Set  
+ * Boot Mode Set
  * Blackfin can support several boot modes
  */
 #define BF533_BYPASS_BOOT	0x0001  /* Bootmode 0: Execute from 16-bit externeal memory ( bypass BOOT ROM) */
@@ -156,8 +156,8 @@
 /* 512k reserved for u-boot */
 #define CFG_JFFS2_FIRST_SECTOR 		11
 
-/* 
- * following timeouts shall be used once the 
+/*
+ * following timeouts shall be used once the
  * Flash real protection is enabled
  */
 #define CFG_FLASH_LOCK_TOUT		5	/* Timeout for Flash Set Lock Bit (in ms) */
@@ -215,7 +215,7 @@
 #endif
 
 #if (BFIN_BOOT_MODE == BF533_SPI_BOOT)
-#if (CONFIG_SCLK_HZ / (2*CONFIG_SPI_BAUD) > 20000000) 
+#if (CONFIG_SCLK_HZ / (2*CONFIG_SPI_BAUD) > 20000000)
 #define CONFIG_SPI_FLASH_FAST_READ 1 /* Needed if SPI_CLK > 20 MHz */
 #else
 #undef CONFIG_SPI_FLASH_FAST_READ
@@ -312,7 +312,7 @@
 #endif
 
 #if (CONFIG_SOFT_I2C)
-#define CONFIG_COMMANDS2   CFG_CMD_I2C 
+#define CONFIG_COMMANDS2   CFG_CMD_I2C
 #else
 #define CONFIG_COMMANDS2 0
 #endif /* CONFIG_SOFT_I2C */
@@ -321,7 +321,7 @@
 #define CONFIG_COMMANDS  ( CONFIG_COMMANDS1 | CONFIG_COMMANDS2 | CFG_CMD_DHCP)
 #elif (BFIN_BOOT_MODE == BF533_SPI_BOOT)
 #define CONFIG_COMMANDS  ( CONFIG_COMMANDS1 | CONFIG_COMMANDS2)
-#endif 
+#endif
 
 /* This must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
@@ -430,7 +430,7 @@
  * Miscellaneous configurable options
  */
 
-#define	CFG_HZ				1000		/* 1ms time tick */ 
+#define	CFG_HZ				1000		/* 1ms time tick */
 
 #define CFG_BOOTM_LEN			0x4000000	/* Large Image Length, set to 64 Meg */
 

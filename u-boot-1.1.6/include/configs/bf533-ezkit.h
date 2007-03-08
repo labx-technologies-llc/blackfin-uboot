@@ -29,7 +29,7 @@
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
 
 /*
- * Boot Mode Set  
+ * Boot Mode Set
  * Blackfin can support several boot modes
  */
 #define BF533_BYPASS_BOOT	0x0001  /* Bootmode 0: Execute from 16-bit externeal memory ( bypass BOOT ROM) */
@@ -103,7 +103,7 @@
 					 CFG_CMD_I2C	| \
 					 CFG_CMD_JFFS2	| \
 					 CFG_CMD_DATE)
-#define CONFIG_BOOTARGS "root=/dev/mtdblock0 ip=192.168.0.15:192.168.0.2:192.168.0.1:255.255.255.0:ezkit:eth0:off console=ttyBF0,57600"	
+#define CONFIG_BOOTARGS "root=/dev/mtdblock0 ip=192.168.0.15:192.168.0.2:192.168.0.1:255.255.255.0:ezkit:eth0:off console=ttyBF0,57600"
 
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
