@@ -1,5 +1,5 @@
 /*
- * U-boot - start.S Startup file of u-boot for BF533/BF561
+ * U-boot - start.S Startup file of u-boot for BF537
  *
  * Copyright (c) 2005 blackfin.uclinux.org
  *
@@ -161,10 +161,10 @@ no_soft_reset:
 	
 #if (BFIN_BOOT_MODE != BF537_SPI_MASTER_BOOT)
 	p0.h = hi(SIC_IWR);
-        p0.l = lo(SIC_IWR);
-        r0.l = 0x1;
-        w[p0] = r0.l;
-        SSYNC;
+	p0.l = lo(SIC_IWR);
+	r0.l = 0x1;
+	w[p0] = r0.l;
+	SSYNC;
 #endif
 
 #if (BFIN_BOOT_MODE == BF537_UART_BOOT)
@@ -239,29 +239,29 @@ check_again:
 #endif
 
 	/*
-         * We now are running at speed, time to set the Async mem bank wait states
+	 * We now are running at speed, time to set the Async mem bank wait states
 	 * This will speed up execution, since we are normally running from FLASH.
 	 * we need to read MAC address from FLASH
 	 */
-        p2.h = (EBIU_AMBCTL1 >> 16);
-        p2.l = (EBIU_AMBCTL1 & 0xFFFF);
-        r0.h = (AMBCTL1VAL >> 16);
-        r0.l = (AMBCTL1VAL & 0xFFFF);
-        [p2] = r0;
-        ssync;
-
-        p2.h = (EBIU_AMBCTL0 >> 16);
-        p2.l = (EBIU_AMBCTL0 & 0xFFFF);
-        r0.h = (AMBCTL0VAL >> 16);
-        r0.l = (AMBCTL0VAL & 0xFFFF);
-        [p2] = r0;
-        ssync;
-
-        p2.h = (EBIU_AMGCTL >> 16);
-        p2.l = (EBIU_AMGCTL & 0xffff);
-        r0 = AMGCTLVAL;
-        w[p2] = r0;
-        ssync;
+	p2.h = (EBIU_AMBCTL1 >> 16);
+	p2.l = (EBIU_AMBCTL1 & 0xFFFF);
+	r0.h = (AMBCTL1VAL >> 16);
+	r0.l = (AMBCTL1VAL & 0xFFFF);
+	[p2] = r0;
+	ssync;
+	
+	p2.h = (EBIU_AMBCTL0 >> 16);
+	p2.l = (EBIU_AMBCTL0 & 0xFFFF);
+	r0.h = (AMBCTL0VAL >> 16);
+	r0.l = (AMBCTL0VAL & 0xFFFF);
+	[p2] = r0;
+	ssync;
+	
+	p2.h = (EBIU_AMGCTL >> 16);
+	p2.l = (EBIU_AMGCTL & 0xffff);
+	r0 = AMGCTLVAL;
+	w[p2] = r0;
+	ssync;
 
 #if ((BFIN_BOOT_MODE != BF537_SPI_MASTER_BOOT) && (BFIN_BOOT_MODE != BF537_UART_BOOT))
 	sp.l = (0xffb01000 & 0xFFFF);
@@ -274,15 +274,15 @@ check_again:
 #if defined(CONFIG_BF537)&&defined(CONFIG_POST)
 	/* DMA POST code to Hi of L1 SRAM */
 postcopy:
-        /* P1 Points to the beginning of SYSTEM MMR Space */
-        P1.H = hi(SYSMMR_BASE);
-        P1.L = lo(SYSMMR_BASE);
-
-        R0.H = _text_l1;  
-        R0.L = _text_l1; 
-        R1.H = _etext_l1;
-        R1.L = _etext_l1;
-        R2 = R1 - R0;           /* Count */
+	/* P1 Points to the beginning of SYSTEM MMR Space */
+	P1.H = hi(SYSMMR_BASE);
+	P1.L = lo(SYSMMR_BASE);
+	
+	R0.H = _text_l1;  
+	R0.L = _text_l1; 
+	R1.H = _etext_l1;
+	R1.L = _etext_l1;
+	R2 = R1 - R0;           /* Count */
 	R0.H = _etext;
 	R0.L = _etext;
 	R1.H = (CFG_MONITOR_BASE >> 16);
@@ -291,82 +291,82 @@ postcopy:
 	R1.H = (CFG_FLASH_BASE >> 16);
 	R1.L = (CFG_FLASH_BASE & 0xFFFF);
 	R0 = R0 + R1;		/* Source Address */
-        R1.H = hi(L1_ISRAM);    /* Destination Address (high) */
-        R1.L = lo(L1_ISRAM);    /* Destination Address (low) */
-        R3.L = DMAEN;           /* Source DMAConfig Value (8-bit words) */
+	R1.H = hi(L1_ISRAM);    /* Destination Address (high) */
+	R1.L = lo(L1_ISRAM);    /* Destination Address (low) */
+	R3.L = DMAEN;           /* Source DMAConfig Value (8-bit words) */
 	/* Destination DMAConfig Value (8-bit words) */
 	R4.L = (DI_EN | WNR | DMAEN);
 
-        R6 = 0x1 (Z);
-        W[P1+OFFSET_(MDMA_S0_X_MODIFY)] = R6;   /* Source Modify = 1 */
-        W[P1+OFFSET_(MDMA_D0_X_MODIFY)] = R6;   /* Destination Modify = 1 */
-
-        [P1+OFFSET_(MDMA_S0_START_ADDR)] = R0;  /* Set Source Base Address */
-        W[P1+OFFSET_(MDMA_S0_X_COUNT)] = R2;    /* Set Source Count */
-        /* Set Source  DMAConfig = DMA Enable,
-        Memory Read,  8-Bit Transfers, 1-D DMA, Flow - Stop */
-        W[P1+OFFSET_(MDMA_S0_CONFIG)] = R3;
-
-        [P1+OFFSET_(MDMA_D0_START_ADDR)] = R1;  /* Set Destination Base Address */
-        W[P1+OFFSET_(MDMA_D0_X_COUNT)] = R2;    /* Set Destination Count */
-        /* Set Destination DMAConfig = DMA Enable,
-        Memory Write, 8-Bit Transfers, 1-D DMA, Flow - Stop, IOC */
-        W[P1+OFFSET_(MDMA_D0_CONFIG)] = R4;
+	R6 = 0x1 (Z);
+	W[P1+OFFSET_(MDMA_S0_X_MODIFY)] = R6;   /* Source Modify = 1 */
+	W[P1+OFFSET_(MDMA_D0_X_MODIFY)] = R6;   /* Destination Modify = 1 */
+	
+	[P1+OFFSET_(MDMA_S0_START_ADDR)] = R0;  /* Set Source Base Address */
+	W[P1+OFFSET_(MDMA_S0_X_COUNT)] = R2;    /* Set Source Count */
+	/* Set Source  DMAConfig = DMA Enable,
+	Memory Read,  8-Bit Transfers, 1-D DMA, Flow - Stop */
+	W[P1+OFFSET_(MDMA_S0_CONFIG)] = R3;
+	
+	[P1+OFFSET_(MDMA_D0_START_ADDR)] = R1;  /* Set Destination Base Address */
+	W[P1+OFFSET_(MDMA_D0_X_COUNT)] = R2;    /* Set Destination Count */
+	/* Set Destination DMAConfig = DMA Enable,
+	Memory Write, 8-Bit Transfers, 1-D DMA, Flow - Stop, IOC */
+	W[P1+OFFSET_(MDMA_D0_CONFIG)] = R4;
 
 POST_DMA_DONE:
-        p0.h = hi(MDMA_D0_IRQ_STATUS);
-        p0.l = lo(MDMA_D0_IRQ_STATUS);
-        R0 = W[P0](Z);
-        CC = BITTST(R0, 0);
-        if ! CC jump POST_DMA_DONE
+	p0.h = hi(MDMA_D0_IRQ_STATUS);
+	p0.l = lo(MDMA_D0_IRQ_STATUS);
+	R0 = W[P0](Z);
+	CC = BITTST(R0, 0);
+	if ! CC jump POST_DMA_DONE
 
-        R0 = 0x1;
-        W[P1+OFFSET_(MDMA_D0_IRQ_STATUS)] = R0; /* Write 1 to clear DMA interrupt */
+	R0 = 0x1;
+	W[P1+OFFSET_(MDMA_D0_IRQ_STATUS)] = R0; /* Write 1 to clear DMA interrupt */
 
 	/* DMA POST data to Hi of L1 SRAM */
-        R0.H = _rodata_l1;
-        R0.L = _rodata_l1;
-        R1.H = _erodata_l1;
-        R1.L = _erodata_l1;
-        R2 = R1 - R0;           /* Count */
-        R0.H = _erodata;
-        R0.L = _erodata;
-        R1.H = (CFG_MONITOR_BASE >> 16);
-        R1.L = (CFG_MONITOR_BASE & 0xFFFF);
-        R0 = R0 - R1;
-        R1.H = (CFG_FLASH_BASE >> 16);
-        R1.L = (CFG_FLASH_BASE & 0xFFFF);
-        R0 = R0 + R1;           /* Source Address */
-        R1.H = hi(DATA_BANKB_SRAM);    /* Destination Address (high) */
-        R1.L = lo(DATA_BANKB_SRAM);    /* Destination Address (low) */
-        R3.L = DMAEN;           /* Source DMAConfig Value (8-bit words) */
-        R4.L = (DI_EN | WNR | DMAEN);   /* Destination DMAConfig Value (8-bit words) */
-
-        R6 = 0x1 (Z);
-        W[P1+OFFSET_(MDMA_S0_X_MODIFY)] = R6;   /* Source Modify = 1 */
-        W[P1+OFFSET_(MDMA_D0_X_MODIFY)] = R6;   /* Destination Modify = 1 */
-
-        [P1+OFFSET_(MDMA_S0_START_ADDR)] = R0;  /* Set Source Base Address */
-        W[P1+OFFSET_(MDMA_S0_X_COUNT)] = R2;    /* Set Source Count */
-        /* Set Source  DMAConfig = DMA Enable,
-        Memory Read,  8-Bit Transfers, 1-D DMA, Flow - Stop */
-        W[P1+OFFSET_(MDMA_S0_CONFIG)] = R3;
-
-        [P1+OFFSET_(MDMA_D0_START_ADDR)] = R1;  /* Set Destination Base Address */
-        W[P1+OFFSET_(MDMA_D0_X_COUNT)] = R2;    /* Set Destination Count */
-        /* Set Destination DMAConfig = DMA Enable,
-        Memory Write, 8-Bit Transfers, 1-D DMA, Flow - Stop, IOC */
-        W[P1+OFFSET_(MDMA_D0_CONFIG)] = R4;
+	R0.H = _rodata_l1;
+	R0.L = _rodata_l1;
+	R1.H = _erodata_l1;
+	R1.L = _erodata_l1;
+	R2 = R1 - R0;           /* Count */
+	R0.H = _erodata;
+	R0.L = _erodata;
+	R1.H = (CFG_MONITOR_BASE >> 16);
+	R1.L = (CFG_MONITOR_BASE & 0xFFFF);
+	R0 = R0 - R1;
+	R1.H = (CFG_FLASH_BASE >> 16);
+	R1.L = (CFG_FLASH_BASE & 0xFFFF);
+	R0 = R0 + R1;           /* Source Address */
+	R1.H = hi(DATA_BANKB_SRAM);    /* Destination Address (high) */
+	R1.L = lo(DATA_BANKB_SRAM);    /* Destination Address (low) */
+	R3.L = DMAEN;           /* Source DMAConfig Value (8-bit words) */
+	R4.L = (DI_EN | WNR | DMAEN);   /* Destination DMAConfig Value (8-bit words) */
+	
+	R6 = 0x1 (Z);
+	W[P1+OFFSET_(MDMA_S0_X_MODIFY)] = R6;   /* Source Modify = 1 */
+	W[P1+OFFSET_(MDMA_D0_X_MODIFY)] = R6;   /* Destination Modify = 1 */
+	
+	[P1+OFFSET_(MDMA_S0_START_ADDR)] = R0;  /* Set Source Base Address */
+	W[P1+OFFSET_(MDMA_S0_X_COUNT)] = R2;    /* Set Source Count */
+	/* Set Source  DMAConfig = DMA Enable,
+	Memory Read,  8-Bit Transfers, 1-D DMA, Flow - Stop */
+	W[P1+OFFSET_(MDMA_S0_CONFIG)] = R3;
+	
+	[P1+OFFSET_(MDMA_D0_START_ADDR)] = R1;  /* Set Destination Base Address */
+	W[P1+OFFSET_(MDMA_D0_X_COUNT)] = R2;    /* Set Destination Count */
+	/* Set Destination DMAConfig = DMA Enable,
+	Memory Write, 8-Bit Transfers, 1-D DMA, Flow - Stop, IOC */
+	W[P1+OFFSET_(MDMA_D0_CONFIG)] = R4;
 
 POST_DATA_DMA_DONE:
-        p0.h = hi(MDMA_D0_IRQ_STATUS);
-        p0.l = lo(MDMA_D0_IRQ_STATUS);
-        R0 = W[P0](Z);
-        CC = BITTST(R0, 0);
-        if ! CC jump POST_DATA_DMA_DONE
-
-        R0 = 0x1;
-        W[P1+OFFSET_(MDMA_D0_IRQ_STATUS)] = R0; /* Write 1 to clear DMA interrupt */
+	p0.h = hi(MDMA_D0_IRQ_STATUS);
+	p0.l = lo(MDMA_D0_IRQ_STATUS);
+	R0 = W[P0](Z);
+	CC = BITTST(R0, 0);
+	if ! CC jump POST_DATA_DMA_DONE
+	
+	R0 = 0x1;
+	W[P1+OFFSET_(MDMA_D0_IRQ_STATUS)] = R0; /* Write 1 to clear DMA interrupt */
 
 	p0.l = _memory_post_test;
 	p0.h = _memory_post_test;
@@ -445,43 +445,43 @@ _real_start:
  * Rev 0.0 Anomaly 05000212 - PORTx_FER, 
  * PORT_MUX Registers Do Not accept "writes" correctly
  */
-        p0.h = hi(PORTF_FER);
-        p0.l = lo(PORTF_FER);
-        R0.L = W[P0]; /* Read */
+	p0.h = hi(PORTF_FER);
+	p0.l = lo(PORTF_FER);
+	R0.L = W[P0]; /* Read */
 	nop;
 	nop;
 	nop;
-        ssync;
-        R0 = 0x000F(Z);
-        W[P0] = R0.L; /* Write */
+	ssync;
+	R0 = 0x000F(Z);
+	W[P0] = R0.L; /* Write */
 	nop;
 	nop;
 	nop;
-        ssync;
-        W[P0] = R0.L; /* Enable peripheral function of PORTF for UART0 and UART1 */
+	ssync;
+	W[P0] = R0.L; /* Enable peripheral function of PORTF for UART0 and UART1 */
 	nop;
 	nop;
 	nop;
-        ssync;
+	ssync;
 
- 	p0.h = hi(PORTH_FER);
-        p0.l = lo(PORTH_FER);
-        R0.L = W[P0]; /* Read */
-        nop;
-        nop;
-        nop;
-        ssync;
-        R0 = 0xFFFF(Z);
-        W[P0] = R0.L; /* Write */
-        nop;
-        nop;
-        nop;
-        ssync;
-        W[P0] = R0.L; /* Enable peripheral function of PORTH for MAC */
-        nop;
-        nop;
-        nop;
-        ssync;
+	p0.h = hi(PORTH_FER);
+	p0.l = lo(PORTH_FER);
+	R0.L = W[P0]; /* Read */
+	nop;
+	nop;
+	nop;
+	ssync;
+	R0 = 0xFFFF(Z);
+	W[P0] = R0.L; /* Write */
+	nop;
+	nop;
+	nop;
+	ssync;
+	W[P0] = R0.L; /* Enable peripheral function of PORTH for MAC */
+	nop;
+	nop;
+	nop;
+	ssync;
 
 #endif
 
@@ -543,14 +543,14 @@ WAIT_DMA_DONE:
 	r0 = 0;
 _clear_bss:
 _clear_bss_end:
- 	[p1++] = r0;
+	[p1++] = r0;
 _clear_bss_skip:
 
 #if defined(CONFIG_BF537)&&defined(CONFIG_POST)
-        p0.l = _post_flag;
-        p0.h = _post_flag;
-        r0   = r7;
-        [p0] = r0;
+	p0.l = _post_flag;
+	p0.h = _post_flag;
+	r0   = r7;
+	[p0] = r0;
 #endif
 
 	p0.l = _start1;
@@ -569,7 +569,8 @@ reset_start:
 reset_wait:
 	jump reset_wait;
 
-reset_end: nop;
+reset_end: 
+	nop;
 
 _exit:
 	jump.s	_exit;

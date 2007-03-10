@@ -85,16 +85,17 @@ ENTRY(_icplb_flush)
 	 */
 
 	R3 = ((12<<8)|2);		/* Extraction pattern */
-	nop;				/*Anamoly 05000209*/
-	R4 = EXTRACT(R0, R3.L) (Z);	/* Extract bits*/
-	R3.H = R4.L << 0 ;		/* Save in extraction pattern for later deposit.*/
+	nop;				/* Anamoly 05000209 */
+	R4 = EXTRACT(R0, R3.L) (Z);	/* Extract bits */
 
+	/* Save in extraction pattern for later deposit. */
+	R3.H = R4.L << 0;
 	
 	/* So:
 	 * R0 = Page start
 	 * R1 = Page length (actually, offset into size/prefix tables)
 	 * R3 = sub-bank deposit values
-  	 *
+	 *
 	 * The cache has 2 Ways, and 64 sets, so we iterate through
 	 * the sets, accessing the tag for each Way, for our Bank and
 	 * sub-bank, looking for dirty, valid tags that match our
@@ -221,7 +222,7 @@ skip:	R6 += -1;
 
 /* This is an internal function to flush all pending
  * writes in the cache associated with a particular DCPLB.
- * 
+ *
  * R0 -  page's start address
  * R1 -  CPLB's data field.
  */
@@ -297,7 +298,7 @@ bank_chosen:
 	 * R1 = Page length (actually, offset into size/prefix tables)
 	 * R2 = Bank select mask
 	 * R3 = sub-bank deposit values
-  	 *
+	 *
 	 * The cache has 2 Ways, and 64 sets, so we iterate through
 	 * the sets, accessing the tag for each Way, for our Bank and
 	 * sub-bank, looking for dirty, valid tags that match our

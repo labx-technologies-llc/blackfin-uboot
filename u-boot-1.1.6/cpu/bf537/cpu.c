@@ -37,8 +37,6 @@
 extern unsigned int icplb_table[page_descriptor_table_size][2];
 extern unsigned int dcplb_table[page_descriptor_table_size][2];
 
-//#define DEBUG 0
-
 #ifdef DEBUG
 #define pr_debug(fmt,arg...)  printf(fmt,##arg)
 #else
@@ -72,6 +70,7 @@ void icache_enable(void)
 {
 	unsigned int *I0, *I1;
 	int i, j = 0;
+
 #ifdef __ADSPBF537__
 	if ((*pCHIPID >> 28) < 2)
 		return;
@@ -218,7 +217,9 @@ void dcache_disable(void)
 	__builtin_bfin_ssync();
 	sti();
 
-	/* after disable dcache, clear it so we don't confuse the next application */
+	/* after disable dcache,
+	 * clear it so we don't confuse the next application
+	 */
 	I0 = (unsigned int *)DCPLB_ADDR0;
 	I1 = (unsigned int *)DCPLB_DATA0;
 
@@ -232,6 +233,7 @@ int dcache_status(void)
 {
 	unsigned int value;
 	value = *(unsigned int *)DMEM_CONTROL;
+
 	if (value & (ENDCPLB))
 		return CACHE_ON;
 	else

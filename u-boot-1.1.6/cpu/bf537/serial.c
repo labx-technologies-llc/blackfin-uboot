@@ -1,10 +1,10 @@
 /*
- * U-boot - serial.c Serial driver for BF533
+ * U-boot - serial.c Serial driver for BF537
  *
  * Copyright (c) 2005 blackfin.uclinux.org
  *
  * This file is based on
- * bf533_serial.c: Serial driver for BlackFin BF533 DSP internal UART.
+ * bf537_serial.c: Serial driver for BlackFin BF537 internal UART.
  * Copyright (c) 2003	Bas Vermeulen <bas@buyways.nl>,
  * 			BuyWays B.V. (www.buyways.nl)
  *
@@ -49,7 +49,7 @@
 #include <asm/bitops.h>
 #include <asm/delay.h>
 #include <asm/uaccess.h>
-#include "bf533_serial.h"
+#include "serial.h"
 
 unsigned long pll_div_fact;
 
@@ -148,7 +148,7 @@ int serial_getc(void)
 
 	/* Poll for RX Interrupt */
 	while (!((isr_val =
-		 *(volatile unsigned long *)SIC_ISR) & IRQ_UART_RX_BIT));
+		  *(volatile unsigned long *)SIC_ISR) & IRQ_UART_RX_BIT)) ;
 	asm("csync;");
 
 	uart_lsr_val = *pUART_LSR;	/* Clear status bit */
