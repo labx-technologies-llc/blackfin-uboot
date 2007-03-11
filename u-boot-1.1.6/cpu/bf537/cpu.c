@@ -30,6 +30,7 @@
 #include <command.h>
 #include <asm/entry.h>
 #include <asm/cplb.h>
+#include <asm/io.h>
 
 #define CACHE_ON 1
 #define CACHE_OFF 0
@@ -115,10 +116,10 @@ void icache_enable(void)
 	}
 
 	cli();
-	__builtin_bfin_ssync();
+	sync();
 	asm(" .align 8; ");
 	*(unsigned int *)IMEM_CONTROL = IMC | ENICPLB;
-	__builtin_bfin_ssync();
+	sync();
 	sti();
 }
 
@@ -129,10 +130,10 @@ void icache_disable(void)
 		return;
 #endif
 	cli();
-	__builtin_bfin_ssync();
+	sync();
 	asm(" .align 8; ");
 	*(unsigned int *)IMEM_CONTROL &= ~(IMC | ENICPLB);
-	__builtin_bfin_ssync();
+	sync();
 	sti();
 }
 
@@ -195,11 +196,11 @@ void dcache_enable(void)
 
 	cli();
 	temp = *(unsigned int *)DMEM_CONTROL;
-	__builtin_bfin_ssync();
+	sync();
 	asm(" .align 8; ");
 	*(unsigned int *)DMEM_CONTROL =
 	    ACACHE_BCACHE | ENDCPLB | PORT_PREF0 | temp;
-	__builtin_bfin_ssync();
+	sync();
 	sti();
 }
 
@@ -210,11 +211,11 @@ void dcache_disable(void)
 	int i;
 
 	cli();
-	__builtin_bfin_ssync();
+	sync();
 	asm(" .align 8; ");
 	*(unsigned int *)DMEM_CONTROL &=
 	    ~(ACACHE_BCACHE | ENDCPLB | PORT_PREF0);
-	__builtin_bfin_ssync();
+	sync();
 	sti();
 
 	/* after disable dcache,

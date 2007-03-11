@@ -49,6 +49,7 @@
 #include <asm/bitops.h>
 #include <asm/delay.h>
 #include <asm/uaccess.h>
+#include <asm/io.h>
 #include "serial.h"
 
 unsigned long pll_div_fact;
@@ -84,29 +85,29 @@ void serial_setbrg(void)
 
 	/* Enable UART */
 	*pUART_GCTL |= UART_GCTL_UCEN;
-	__builtin_bfin_ssync();
+	sync();
 
 	/* Set DLAB in LCR to Access DLL and DLH */
 	ACCESS_LATCH;
-	__builtin_bfin_ssync();
+	sync();
 
 	*pUART_DLL = hw_baud_table[i].dl_low;
-	__builtin_bfin_ssync();
+	sync();
 	*pUART_DLH = hw_baud_table[i].dl_high;
-	__builtin_bfin_ssync();
+	sync();
 
 	/* Clear DLAB in LCR to Access THR RBR IER */
 	ACCESS_PORT_IER;
-	__builtin_bfin_ssync();
+	sync();
 
 	/* Enable  ERBFI and ELSI interrupts
 	 * to poll SIC_ISR register*/
 	*pUART_IER = UART_IER_ELSI | UART_IER_ERBFI | UART_IER_ETBEI;
-	__builtin_bfin_ssync();
+	sync();
 
 	/* Set LCR to Word Lengh 8-bit word select */
 	*pUART_LCR = UART_LCR_WLS8;
-	__builtin_bfin_ssync();
+	sync();
 
 	return;
 }

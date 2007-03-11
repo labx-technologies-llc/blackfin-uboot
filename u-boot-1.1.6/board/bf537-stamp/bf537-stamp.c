@@ -29,6 +29,7 @@
 #include <config.h>
 #include <command.h>
 #include <asm/blackfin.h>
+#include <asm/io.h>
 #include "ether_bf537.h"
 
 #define POST_WORD_ADDR 0xFF903FFC
@@ -97,7 +98,7 @@ int checkboard(void)
 void cf_outb(unsigned char val, volatile unsigned char *addr)
 {
 	*(addr) = val;
-	__builtin_bfin_ssync();
+	sync();
 }
 
 unsigned char cf_inb(volatile unsigned char *addr)
@@ -105,7 +106,7 @@ unsigned char cf_inb(volatile unsigned char *addr)
 	volatile unsigned char c;
 
 	c = *(addr);
-	__builtin_bfin_ssync();
+	sync();
 
 	return c;
 }
@@ -116,7 +117,7 @@ void cf_insw(unsigned short *sect_buf, unsigned short *addr, int words)
 
 	for (i = 0; i < words; i++)
 		*(sect_buf + i) = *(addr);
-	__builtin_bfin_ssync();
+	sync();
 }
 
 void cf_outsw(unsigned short *addr, unsigned short *sect_buf, int words)
@@ -125,7 +126,7 @@ void cf_outsw(unsigned short *addr, unsigned short *sect_buf, int words)
 
 	for (i = 0; i < words; i++)
 		*(addr) = *(sect_buf + i);
-	__builtin_bfin_ssync();
+	sync();
 }
 #endif				/* CONFIG_BFIN_IDE */
 

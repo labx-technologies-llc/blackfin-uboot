@@ -81,13 +81,13 @@ SECTIONS
 /*  lib_blackfin/bf533_string.o	(.text) */
 /*  lib_generic/vsprintf.o	(.text) */
     lib_generic/crc32.o		(.text)
-    lib_generic/zlib.o		(.text)
+/*  lib_generic/zlib.o		(.text) */
 /*  board/bf537-pnav/bf537-pnav.o		(.text) */
 
     . = DEFINED(env_offset) ? env_offset : .;
     common/environment.o	(.text)
 
-    *(EXCLUDE_FILE (board/bf537-pnav/post-memory.o) .text)	
+    *(EXCLUDE_FILE (board/bf537-pnav/post-memory.o) .text)
     *(.fixup)
     *(.got1)
   }  > ram 
@@ -188,4 +188,3 @@ SECTIONS
   _end = . ;
   PROVIDE (end = .);
 }
-

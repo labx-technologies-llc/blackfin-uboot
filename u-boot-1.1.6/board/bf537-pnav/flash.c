@@ -28,7 +28,7 @@
 
 #include <malloc.h>
 #include <config.h>
-
+#include <asm/io.h>
 #include "flash-defines.h"
 
 void flash_reset(void)
@@ -250,7 +250,7 @@ int write_flash(long nOffset, int nValue)
 
 	addr = (CFG_FLASH_BASE + nOffset);
 	*(unsigned volatile short *) addr = nValue;
-	__builtin_bfin_ssync();
+	sync();
 #if (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
 	if(icache_status())
 		udelay(CONFIG_CCLK_HZ/1000000);

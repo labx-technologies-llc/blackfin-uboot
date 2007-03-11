@@ -1,4 +1,5 @@
 #include <common.h>
+#include <asm/io.h>
 
 #ifdef CONFIG_POST
 
@@ -102,15 +103,15 @@ void post_init_uart(int sclk) {
 
         *pUART_GCTL = 0x00;
         *pUART_LCR = 0x83;
-        __builtin_bfin_ssync();
+        sync();
         *pUART_DLL = (divisor & 0xFF);
-        __builtin_bfin_ssync();
+        sync();
         *pUART_DLH = ((divisor >> 8) & 0xFF);
-        __builtin_bfin_ssync();
+        sync();
         *pUART_LCR = 0x03;
-        __builtin_bfin_ssync();
+        sync();
         *pUART_GCTL = 0x01;
-        __builtin_bfin_ssync();
+        sync();
 }
 
 void post_out_buff (char *buff) {
@@ -121,7 +122,7 @@ void post_out_buff (char *buff) {
         while ( (buff[i] != '\0') && ( i != 100 ) ) {
                 while ( ! (*pUART_LSR & 0x20) ) ;
                 *pUART_THR=buff[i];
-		__builtin_bfin_ssync();
+		sync();
                 i++;
         }
 	for(i=0;i< 0x80000;i++);
@@ -138,7 +139,7 @@ int post_key_pressed(void)
         *pPORTF_FER   &= ~PF5;
         *pPORTFIO_DIR &= ~PF5;
         *pPORTFIO_INEN|=  PF5;
-	__builtin_bfin_ssync();
+	sync();
 
         post_out_buff("########Press SW10 to enter Memory POST########: 3\0");
         for(i=0;i<KEY_LOOP;i++){
@@ -290,7 +291,7 @@ if (( sclk > 119402985 )) {
 	/* Enable SCLK Out */
 	mem_SDGCTL = ( SCTLE | SDRAM_CL | SDRAM_tRAS | SDRAM_tRP | SDRAM_tRCD | SDRAM_tWR | PSS );
 
-	__builtin_bfin_ssync();
+	sync();
 	
 	*pEBIU_SDGCTL |= 0x1000000;
 	/* Set the SDRAM Refresh Rate control register based on SSCLK value */
@@ -301,7 +302,7 @@ if (( sclk > 119402985 )) {
 					  
 	//SDRAM Memory Global Control Register
 	*pEBIU_SDGCTL= mem_SDGCTL;
-	__builtin_bfin_ssync();
+	sync();
 	return mem_SDRRC;
 }
 

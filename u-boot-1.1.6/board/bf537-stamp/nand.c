@@ -21,7 +21,7 @@
  */
 
 #include <common.h>
-
+#include <asm/io.h>
 
 #if (CONFIG_COMMANDS & CFG_CMD_NAND)
 
@@ -56,13 +56,13 @@ static void bfin_hwcontrol(struct mtd_info *mtd, int cmd)
         this->IO_ADDR_R = this->IO_ADDR_W;
 
         /* Drain the writebuffer */
-        __builtin_bfin_ssync();
+        sync();
 }
 
 int bfin_device_ready(struct mtd_info *mtd)
 {
         int ret = (*PORT(CONFIG_NAND_GPIO_PORT,IO) & BFIN_NAND_READY)? 1 : 0;
-        __builtin_bfin_ssync();
+        sync();
         return ret;
 }
 

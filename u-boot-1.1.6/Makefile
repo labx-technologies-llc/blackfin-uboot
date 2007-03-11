@@ -2296,12 +2296,14 @@ clean:
 	rm -f $(obj)tools/env/fw_printenv $(obj)tools/env/fw_setenv
 	rm -f $(obj)tools/bin2ldr/app.bin $(obj)tools/bin2ldr/app.hex $(obj)tools/bin2ldr/app.ldr
 	rm -f $(obj)tools/bin2ldr/init_sdram* $(obj)tools/bin2ldr/jump $(obj)tools/bin2ldr/bin2ldr
-	rm -f $(obj)board/bf*/u-boot.lds
 	rm -f $(obj)board/cray/L1/bootscript.c $(obj)board/cray/L1/bootscript.image
 	rm -f $(obj)board/netstar/eeprom $(obj)board/netstar/crcek $(obj)board/netstar/crcit
 	rm -f $(obj)board/netstar/*.srec $(obj)board/netstar/*.bin
 	rm -f $(obj)board/trab/trab_fkt $(obj)board/voiceblue/eeprom
 	rm -f $(obj)board/integratorap/u-boot.lds $(obj)board/integratorcp/u-boot.lds
+	rm -f $(obj)board/bf533-ezkit/u-boot.lds $(obj)board/bf533-stamp/u-boot.lds
+	rm -f $(obj)board/bf537-stamp/u-boot.lds $(obj)board/bf537-pnav/u-boot.lds
+	rm -f $(obj)board/bf561-ezkit/u-boot.lds
 	rm -f $(obj)include/bmp_logo.h
 	rm -f $(obj)nand_spl/u-boot-spl $(obj)nand_spl/u-boot-spl.map
 

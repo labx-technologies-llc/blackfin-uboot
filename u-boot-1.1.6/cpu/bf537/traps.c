@@ -44,6 +44,7 @@
 #include "cpu.h"
 #include <asm/arch/anomaly.h>
 #include <asm/cplb.h>
+#include <asm/io.h>
 
 #ifdef DEBUG
 #define pr_debug(fmt,arg...)  printf(fmt,##arg)
@@ -128,16 +129,16 @@ void trap_c(struct pt_regs *regs)
 
 		/* Turn the cache off */
 		if (data) {
-			__builtin_bfin_ssync();
+			sync();
 			asm(" .align 8; ");
 			*(unsigned int *)DMEM_CONTROL &=
 			    ~(ACACHE_BCACHE | ENDCPLB | PORT_PREF0);
-			__builtin_bfin_ssync();
+			sync();
 		} else {
-			__builtin_bfin_ssync();
+			sync();
 			asm(" .align 8; ");
 			*(unsigned int *)IMEM_CONTROL &= ~(IMC | ENICPLB);
-			__builtin_bfin_ssync();
+			sync();
 		}
 
 		if (data) {
@@ -183,16 +184,16 @@ void trap_c(struct pt_regs *regs)
 		/* Turn the cache back on */
 		if (data) {
 			j = *(unsigned int *)DMEM_CONTROL;
-			__builtin_bfin_ssync();
+			sync();
 			asm(" .align 8; ");
 			*(unsigned int *)DMEM_CONTROL =
 			    ACACHE_BCACHE | ENDCPLB | PORT_PREF0 | j;
-			__builtin_bfin_ssync();
+			sync();
 		} else {
-			__builtin_bfin_ssync();
+			sync();
 			asm(" .align 8; ");
 			*(unsigned int *)IMEM_CONTROL = IMC | ENICPLB;
-			__builtin_bfin_ssync();
+			sync();
 		}
 
 		break;

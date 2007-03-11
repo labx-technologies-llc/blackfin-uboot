@@ -20,6 +20,7 @@
 
 #include <asm/blackfin.h>
 #include <i2c.h>
+#include <asm/io.h>
 
 #define bfin_read16(addr) ({ unsigned __v; \
 			__asm__ __volatile__ (\
@@ -98,7 +99,7 @@ static void i2c_reset(void)
 {
 	/* Disable TWI */
 	bfin_write_TWI_CONTROL(0);
-	__builtin_bfin_ssync();
+	sync();
 
 	/* Set TWI internal clock as 10MHz */
 	bfin_write_TWI_CONTROL(((get_sclk() / 1024 / 1024 + 5) / 10) & 0x7F);
@@ -115,7 +116,7 @@ static void i2c_reset(void)
 
 	/* Enable TWI */
 	bfin_write_TWI_CONTROL(bfin_read_TWI_CONTROL() | TWI_ENA);
-	__builtin_bfin_ssync();
+	sync();
 }
 
 int wait_for_completion(struct i2c_msg *msg, int timeout_count)
@@ -136,10 +137,10 @@ int wait_for_completion(struct i2c_msg *msg, int timeout_count)
 			} else if (msg->flags & I2C_M_STOP)
 				bfin_write_TWI_MASTER_CTL
 				    (bfin_read_TWI_MASTER_CTL() | STOP);
-			__builtin_bfin_ssync();
+			sync();
 			/* Clear status */
 			bfin_write_TWI_INT_STAT(XMTSERV);
-			__builtin_bfin_ssync();
+			sync();
 			i = 0;
 		}
 		if (RCVSERV & twi_int_stat) {
@@ -150,11 +151,11 @@ int wait_for_completion(struct i2c_msg *msg, int timeout_count)
 			} else if (msg->flags & I2C_M_STOP) {
 				bfin_write_TWI_MASTER_CTL
 				    (bfin_read_TWI_MASTER_CTL() | STOP);
-				__builtin_bfin_ssync();
+				sync();
 			}
 			/* Clear interrupt source */
 			bfin_write_TWI_INT_STAT(RCVSERV);
-			__builtin_bfin_ssync();
+			sync();
 			i = 0;
 		}
 		if (MERR & twi_int_stat) {
@@ -162,7 +163,7 @@ int wait_for_completion(struct i2c_msg *msg, int timeout_count)
 			bfin_write_TWI_INT_MASK(0);
 			bfin_write_TWI_MASTER_STAT(0x3e);
 			bfin_write_TWI_MASTER_CTL(0);
-			__builtin_bfin_ssync();
+			sync();
 			/*
 			 * if both err and complete int stats are set,
 			 * return proper results.
@@ -171,7 +172,7 @@ int wait_for_completion(struct i2c_msg *msg, int timeout_count)
 				bfin_write_TWI_INT_STAT(MCOMP);
 				bfin_write_TWI_INT_MASK(0);
 				bfin_write_TWI_MASTER_CTL(0);
-				__builtin_bfin_ssync();
+				sync();
 				/*
 				 * If it is a quick transfer,
 				 * only address bug no data, not an err.
@@ -191,10 +192,10 @@ int wait_for_completion(struct i2c_msg *msg, int timeout_count)
 		}
 		if (MCOMP & twi_int_stat) {
 			bfin_write_TWI_INT_STAT(MCOMP);
-			__builtin_bfin_ssync();
+			sync();
 			bfin_write_TWI_INT_MASK(0);
 			bfin_write_TWI_MASTER_CTL(0);
-			__builtin_bfin_ssync();
+			sync();
 			return 0;
 		}
 	}
@@ -238,9 +239,9 @@ int i2c_transfer(struct i2c_msg *msg)
 	 * Data in FIFO should be discarded before start a new operation.
 	 */
 	bfin_write_TWI_FIFO_CTL(0x3);
-	__builtin_bfin_ssync();
+	sync();
 	bfin_write_TWI_FIFO_CTL(0);
-	__builtin_bfin_ssync();
+	sync();
 
 	if (!(msg->flags & I2C_M_RD)) {
 		/* Transmit first data */
@@ -249,7 +250,7 @@ int i2c_transfer(struct i2c_msg *msg)
 			       len);
 			bfin_write_TWI_XMT_DATA8(*(msg->buf++));
 			msg->len--;
-			__builtin_bfin_ssync();
+			sync();
 		}
 	}
 
@@ -259,7 +260,7 @@ int i2c_transfer(struct i2c_msg *msg)
 	/* Interrupt mask . Enable XMT, RCV interrupt */
 	bfin_write_TWI_INT_MASK(MCOMP | MERR |
 			((msg->flags & I2C_M_RD) ? RCVSERV : XMTSERV));
-	__builtin_bfin_ssync();
+	sync();
 
 	if (len > 0 && len <= 255)
 		bfin_write_TWI_MASTER_CTL((len << 6));
@@ -274,7 +275,7 @@ int i2c_transfer(struct i2c_msg *msg)
 			((msg->flags & I2C_M_RD)
 			 ? MDIR : 0) | ((CONFIG_TWICLK_KHZ >
 					 100) ? FAST : 0));
-	__builtin_bfin_ssync();
+	sync();
 
 	ret = wait_for_completion(msg, timeout_count);
 	PRINTD("3 in i2c_transfer: ret=%d\n", ret);

@@ -30,13 +30,13 @@
 #include <command.h>
 #include <asm/entry.h>
 #include <asm/cplb.h>
+#include <asm/io.h>
 
 #define CACHE_ON 1
 #define CACHE_OFF 0
 
 extern unsigned int icplb_table[page_descriptor_table_size][2] ;
 extern unsigned int dcplb_table[page_descriptor_table_size][2] ;
-//#define DEBUG 0
 
 #ifdef DEBUG
 #define pr_debug(fmt,arg...)  printf(fmt,##arg)
@@ -111,10 +111,10 @@ void icache_enable(void)
 	}	
 
 	cli();
-	__builtin_bfin_ssync();
+	sync();
 	asm(" .align 8; ");
 	*(unsigned int *)IMEM_CONTROL = IMC | ENICPLB;
-	__builtin_bfin_ssync();
+	sync();
 	sti();
 }
 
@@ -125,10 +125,10 @@ void icache_disable(void)
 		return;
 #endif
 	cli();
-	__builtin_bfin_ssync();
+	sync();
 	asm(" .align 8; ");
 	*(unsigned int *)IMEM_CONTROL &= ~(IMC | ENICPLB);
-	__builtin_bfin_ssync();
+	sync();
 	sti();
 }
 
@@ -188,11 +188,11 @@ void dcache_enable(void)
 
 	cli();
 	temp = *(unsigned int *)DMEM_CONTROL;
-	__builtin_bfin_ssync();
+	sync();
 	asm(" .align 8; ");
 	*(unsigned int *)DMEM_CONTROL =
 	    ACACHE_BCACHE | ENDCPLB | PORT_PREF0 | temp;
-	__builtin_bfin_ssync();
+	sync();
 	sti();
 }
 
@@ -203,11 +203,11 @@ void dcache_disable(void)
 	int i;
 
 	cli();
-	__builtin_bfin_ssync();
+	sync();
 	asm(" .align 8; ");
 	*(unsigned int *)DMEM_CONTROL &=
 	    ~(ACACHE_BCACHE | ENDCPLB | PORT_PREF0);
-	__builtin_bfin_ssync();
+	sync();
 	sti();
 
 	/* after disable dcache, clear it so we don't confuse the next application */
