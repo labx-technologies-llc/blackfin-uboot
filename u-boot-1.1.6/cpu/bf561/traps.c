@@ -46,15 +46,6 @@
 #include <asm/cplb.h>
 #include <asm/io.h>
 
-#ifdef DEBUG
-#define pr_debug(fmt,arg...)  printf(fmt,##arg)
-#else
-static inline int __attribute__ ((format (printf, 1, 2))) pr_debug(const char * fmt, ...)
-{
-        return 0;
-}
-#endif
-
 void init_IRQ(void)
 {
 	blackfin_init_IRQ();
@@ -115,7 +106,7 @@ void trap_c (struct pt_regs *regs)
 				j = icplb_table[i][0];
 			}
 			if ((j <= addr) && ((j+size) > addr )) {
-				pr_debug("found %i 0x%08x\n",i,j);
+				debug("found %i 0x%08x\n",i,j);
 				break;
 			}
 		}
@@ -147,16 +138,16 @@ void trap_c (struct pt_regs *regs)
 
 		j = 0;
 		while ( *I1 & CPLB_LOCK) {
-			pr_debug("skipping %i %08p - %08x\n", j, I1, *I1);
+			debug("skipping %i %08p - %08x\n", j, I1, *I1);
 			*I0++;
 			*I1++;
 			j++;
 		}
 
-		pr_debug("remove %i 0x%08x  0x%08x\n",j, *I0, *I1);	
+		debug("remove %i 0x%08x  0x%08x\n",j, *I0, *I1);	
 
 		for ( ; j < 15 ; j++ ) {
-			pr_debug("replace %i 0x%08x  0x%08x\n",j, I0, I0+1);
+			debug("replace %i 0x%08x  0x%08x\n",j, I0, I0+1);
 			*I0++ = *(I0+1);
 			*I1++ = *(I1+1);
 		}
@@ -174,7 +165,7 @@ void trap_c (struct pt_regs *regs)
 		}
 
 		for (j = 0; j < 16 ; j++) {
-			pr_debug("%i 0x%08x  0x%08x\n",j, *I0++, *I1++);
+			debug("%i 0x%08x  0x%08x\n",j, *I0++, *I1++);
 		}
 
 		/* Turn the cache back on */	
@@ -212,23 +203,23 @@ trap_c_return:
 
 void dump(struct pt_regs *fp)
 {
-        pr_debug("RETE:  %08lx  RETN: %08lx  RETX: %08lx  RETS: %08lx\n", fp->rete, fp->retn, fp->retx, fp->rets);
-        pr_debug("IPEND: %04lx  SYSCFG: %04lx\n", fp->ipend, fp->syscfg);
-        pr_debug("SEQSTAT: %08lx    SP: %08lx\n", (long)fp->seqstat, (long)fp);
-        pr_debug("R0: %08lx    R1: %08lx    R2: %08lx    R3: %08lx\n", fp->r0, fp->r1, fp->r2, fp->r3);
-        pr_debug("R4: %08lx    R5: %08lx    R6: %08lx    R7: %08lx\n", fp->r4, fp->r5, fp->r6, fp->r7);
-        pr_debug("P0: %08lx    P1: %08lx    P2: %08lx    P3: %08lx\n", fp->p0, fp->p1, fp->p2, fp->p3);
-        pr_debug("P4: %08lx    P5: %08lx    FP: %08lx\n", fp->p4, fp->p5, fp->fp);
-        pr_debug("A0.w: %08lx    A0.x: %08lx    A1.w: %08lx    A1.x: %08lx\n", fp->a0w, fp->a0x, fp->a1w, fp->a1x);
+        debug("RETE:  %08lx  RETN: %08lx  RETX: %08lx  RETS: %08lx\n", fp->rete, fp->retn, fp->retx, fp->rets);
+        debug("IPEND: %04lx  SYSCFG: %04lx\n", fp->ipend, fp->syscfg);
+        debug("SEQSTAT: %08lx    SP: %08lx\n", (long)fp->seqstat, (long)fp);
+        debug("R0: %08lx    R1: %08lx    R2: %08lx    R3: %08lx\n", fp->r0, fp->r1, fp->r2, fp->r3);
+        debug("R4: %08lx    R5: %08lx    R6: %08lx    R7: %08lx\n", fp->r4, fp->r5, fp->r6, fp->r7);
+        debug("P0: %08lx    P1: %08lx    P2: %08lx    P3: %08lx\n", fp->p0, fp->p1, fp->p2, fp->p3);
+        debug("P4: %08lx    P5: %08lx    FP: %08lx\n", fp->p4, fp->p5, fp->fp);
+        debug("A0.w: %08lx    A0.x: %08lx    A1.w: %08lx    A1.x: %08lx\n", fp->a0w, fp->a0x, fp->a1w, fp->a1x);
 
-        pr_debug("LB0: %08lx  LT0: %08lx  LC0: %08lx\n", fp->lb0, fp->lt0, fp->lc0);
-        pr_debug("LB1: %08lx  LT1: %08lx  LC1: %08lx\n", fp->lb1, fp->lt1, fp->lc1);
-        pr_debug("B0: %08lx  L0: %08lx  M0: %08lx  I0: %08lx\n", fp->b0, fp->l0, fp->m0, fp->i0);
-        pr_debug("B1: %08lx  L1: %08lx  M1: %08lx  I1: %08lx\n", fp->b1, fp->l1, fp->m1, fp->i1);
-        pr_debug("B2: %08lx  L2: %08lx  M2: %08lx  I2: %08lx\n", fp->b2, fp->l2, fp->m2, fp->i2);
-        pr_debug("B3: %08lx  L3: %08lx  M3: %08lx  I3: %08lx\n", fp->b3, fp->l3, fp->m3, fp->i3);
+        debug("LB0: %08lx  LT0: %08lx  LC0: %08lx\n", fp->lb0, fp->lt0, fp->lc0);
+        debug("LB1: %08lx  LT1: %08lx  LC1: %08lx\n", fp->lb1, fp->lt1, fp->lc1);
+        debug("B0: %08lx  L0: %08lx  M0: %08lx  I0: %08lx\n", fp->b0, fp->l0, fp->m0, fp->i0);
+        debug("B1: %08lx  L1: %08lx  M1: %08lx  I1: %08lx\n", fp->b1, fp->l1, fp->m1, fp->i1);
+        debug("B2: %08lx  L2: %08lx  M2: %08lx  I2: %08lx\n", fp->b2, fp->l2, fp->m2, fp->i2);
+        debug("B3: %08lx  L3: %08lx  M3: %08lx  I3: %08lx\n", fp->b3, fp->l3, fp->m3, fp->i3);
 
-	pr_debug("DCPLB_FAULT_ADDR=%p\n", *pDCPLB_FAULT_ADDR);
-	pr_debug("ICPLB_FAULT_ADDR=%p\n", *pICPLB_FAULT_ADDR);
+	debug("DCPLB_FAULT_ADDR=%p\n", *pDCPLB_FAULT_ADDR);
+	debug("ICPLB_FAULT_ADDR=%p\n", *pICPLB_FAULT_ADDR);
 
 }
