@@ -83,13 +83,13 @@ void trap_c(struct pt_regs *regs)
 	unsigned short data = 0;
 
 	switch (trapnr) {
-		/* 0x26 - Data CPLB Miss */
+	/* 0x26 - Data CPLB Miss */
 	case VEC_CPLB_M:
 
 #ifdef ANOMALY_05000261
 		/*
-		 * Work around an anomaly: if we see a new DCPLB fault, 
-		 * return without doing anything. Then, 
+		 * Work around an anomaly: if we see a new DCPLB fault,
+		 * return without doing anything. Then,
 		 * if we get the same fault again, handle it.
 		 */
 		addr = last_cplb_fault_retx;
