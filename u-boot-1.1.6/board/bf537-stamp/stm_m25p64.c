@@ -173,9 +173,12 @@ void SetupSPI( const int spi_setting )
                 udelay(CONFIG_CCLK_HZ/50000000);
 	/*sets up the PF10 to be the slave select of the SPI */
 	*pPORTF_FER |= ( PF10 | PF11| PF12 | PF13);
-	*pSPI_FLG = 0xFD02;
+	*pSPI_FLG = 0xFF02;
 	*pSPI_BAUD = CONFIG_SPI_BAUD;
 	*pSPI_CTL = spi_setting;
+	 sync();
+	 
+	*pSPI_FLG = 0xFD02;
 	 sync();
 }
 
