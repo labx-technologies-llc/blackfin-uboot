@@ -79,8 +79,8 @@ void trap_c(struct pt_regs *regs)
 
 #ifdef ANOMALY_05000261
 		/*
-		 * Work around an anomaly: if we see a new DCPLB fault, 
-		 * return without doing anything. Then, 
+		 * Work around an anomaly: if we see a new DCPLB fault,
+		 * return without doing anything. Then,
 		 * if we get the same fault again, handle it.
 		 */
 		addr = last_cplb_fault_retx;

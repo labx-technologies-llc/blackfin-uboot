@@ -32,7 +32,7 @@
 
 /*
  * Note: A change in this file subsequently requires a change in
- *       board/$(board_name)/config.mk for a valid u-boot.bin 
+ *       board/$(board_name)/config.mk for a valid u-boot.bin
  */
 
 #define ASSEMBLY
@@ -60,7 +60,7 @@
 #if defined(CONFIG_BF537)&&defined(CONFIG_POST)
 .global _memory_post_test;
 .global _post_flag;
-#endif 
+#endif
 
 #if (BFIN_BOOT_MODE == BF537_UART_BOOT)
 #if (CONFIG_CCLK_DIV == 1)
@@ -90,7 +90,7 @@ _stext:
 	SSYNC;
 
 	/* As per HW reference manual DAG registers,
-	 * DATA and Address resgister shall be zero'd 
+	 * DATA and Address resgister shall be zero'd
 	 * in initialization, after a reset state
 	 */
 	r1 = 0;	/* Data registers zero'd */
@@ -107,7 +107,7 @@ _stext:
 	p3 = 0;
 	p4 = 0;
 	p5 = 0;
-	
+
 	i0 = 0; /* DAG Registers zero'd */
 	i1 = 0;
 	i2 = 0;
@@ -158,7 +158,7 @@ no_soft_reset:
 	r1 = 0;
 	LSETUP(4,4) lc0 = p1;
 	[ p0 ++ ] = r1;
-	
+
 #if (BFIN_BOOT_MODE != BF537_SPI_MASTER_BOOT)
 	p0.h = hi(SIC_IWR);
 	p0.l = lo(SIC_IWR);
@@ -174,7 +174,7 @@ no_soft_reset:
 	r0.l = 0x1;
 	w[p0] = r0.l;
 	SSYNC;
-	
+
 	/*
 	* PLL_LOCKCNT - how many SCLK Cycles to delay while PLL becomes stable
 	*/
@@ -183,7 +183,7 @@ no_soft_reset:
 	r0 = 0x300(Z);
 	w[p0] = r0.l;
 	ssync;
-	
+
 	/*
 	* Put SDRAM in self-refresh, incase anything is running
 	*/
@@ -193,7 +193,7 @@ no_soft_reset:
 	BITSET (R0, 24);
 	[P2] = R0;
 	SSYNC;
-	
+
 	/*
 	*  Set PLL_CTL with the value that we calculate in R0
 	*   - [14:09] = MSEL[5:0] : CLKIN / VCO multiplication factors
@@ -206,7 +206,7 @@ no_soft_reset:
 	*   - [0]     = DF        : 1=Pass CLKIN/2 to PLL / 0=Pass CLKIN to PLL
 	*   all other bits set to zero
 	*/
-	
+
 	r0 = CONFIG_VCO_MULT & 63;      /* Load the VCO multiplier         */
 	r0 = r0 << 9;                   /* Shift it over,                  */
 	r1 = CONFIG_CLKIN_HALF;        /* Do we need to divide CLKIN by 2?*/
@@ -214,7 +214,7 @@ no_soft_reset:
 	r1 = CONFIG_PLL_BYPASS;         /* Bypass the PLL?                 */
 	r1 = r1 << 8;                   /* Shift it over                   */
 	r0 = r1 | r0;                   /* add them all together           */
-	
+
 	p0.h = hi(PLL_CTL);
 	p0.l = lo(PLL_CTL);             /* Load the address                */
 	cli r2;                         /* Disable interrupts              */
@@ -222,7 +222,7 @@ no_soft_reset:
 	w[p0] = r0.l;                   /* Set the value                   */
 	idle;                           /* Wait for the PLL to stablize    */
 	sti r2;                         /* Enable interrupts               */
-	
+
 check_again:
 	p0.h = hi(PLL_STAT);
 	p0.l = lo(PLL_STAT);
@@ -249,14 +249,14 @@ check_again:
 	r0.l = (AMBCTL1VAL & 0xFFFF);
 	[p2] = r0;
 	ssync;
-	
+
 	p2.h = (EBIU_AMBCTL0 >> 16);
 	p2.l = (EBIU_AMBCTL0 & 0xFFFF);
 	r0.h = (AMBCTL0VAL >> 16);
 	r0.l = (AMBCTL0VAL & 0xFFFF);
 	[p2] = r0;
 	ssync;
-	
+
 	p2.h = (EBIU_AMGCTL >> 16);
 	p2.l = (EBIU_AMGCTL & 0xffff);
 	r0 = AMGCTLVAL;
@@ -277,9 +277,9 @@ postcopy:
 	/* P1 Points to the beginning of SYSTEM MMR Space */
 	P1.H = hi(SYSMMR_BASE);
 	P1.L = lo(SYSMMR_BASE);
-	
-	R0.H = _text_l1;  
-	R0.L = _text_l1; 
+
+	R0.H = _text_l1;
+	R0.L = _text_l1;
 	R1.H = _etext_l1;
 	R1.L = _etext_l1;
 	R2 = R1 - R0;           /* Count */
@@ -300,13 +300,13 @@ postcopy:
 	R6 = 0x1 (Z);
 	W[P1+OFFSET_(MDMA_S0_X_MODIFY)] = R6;   /* Source Modify = 1 */
 	W[P1+OFFSET_(MDMA_D0_X_MODIFY)] = R6;   /* Destination Modify = 1 */
-	
+
 	[P1+OFFSET_(MDMA_S0_START_ADDR)] = R0;  /* Set Source Base Address */
 	W[P1+OFFSET_(MDMA_S0_X_COUNT)] = R2;    /* Set Source Count */
 	/* Set Source  DMAConfig = DMA Enable,
 	Memory Read,  8-Bit Transfers, 1-D DMA, Flow - Stop */
 	W[P1+OFFSET_(MDMA_S0_CONFIG)] = R3;
-	
+
 	[P1+OFFSET_(MDMA_D0_START_ADDR)] = R1;  /* Set Destination Base Address */
 	W[P1+OFFSET_(MDMA_D0_X_COUNT)] = R2;    /* Set Destination Count */
 	/* Set Destination DMAConfig = DMA Enable,
@@ -341,17 +341,17 @@ POST_DMA_DONE:
 	R1.L = lo(DATA_BANKB_SRAM);    /* Destination Address (low) */
 	R3.L = DMAEN;           /* Source DMAConfig Value (8-bit words) */
 	R4.L = (DI_EN | WNR | DMAEN);   /* Destination DMAConfig Value (8-bit words) */
-	
+
 	R6 = 0x1 (Z);
 	W[P1+OFFSET_(MDMA_S0_X_MODIFY)] = R6;   /* Source Modify = 1 */
 	W[P1+OFFSET_(MDMA_D0_X_MODIFY)] = R6;   /* Destination Modify = 1 */
-	
+
 	[P1+OFFSET_(MDMA_S0_START_ADDR)] = R0;  /* Set Source Base Address */
 	W[P1+OFFSET_(MDMA_S0_X_COUNT)] = R2;    /* Set Source Count */
 	/* Set Source  DMAConfig = DMA Enable,
 	Memory Read,  8-Bit Transfers, 1-D DMA, Flow - Stop */
 	W[P1+OFFSET_(MDMA_S0_CONFIG)] = R3;
-	
+
 	[P1+OFFSET_(MDMA_D0_START_ADDR)] = R1;  /* Set Destination Base Address */
 	W[P1+OFFSET_(MDMA_D0_X_COUNT)] = R2;    /* Set Destination Count */
 	/* Set Destination DMAConfig = DMA Enable,
@@ -364,7 +364,7 @@ POST_DATA_DMA_DONE:
 	R0 = W[P0](Z);
 	CC = BITTST(R0, 0);
 	if ! CC jump POST_DATA_DMA_DONE
-	
+
 	R0 = 0x1;
 	W[P1+OFFSET_(MDMA_D0_IRQ_STATUS)] = R0; /* Write 1 to clear DMA interrupt */
 
@@ -374,7 +374,7 @@ POST_DATA_DMA_DONE:
 	call (p0);
 	r7 = r0;				/* save return value */
 
-	call init_sdram; 
+	call init_sdram;
 #endif
 
 	/* relocate into to RAM */
@@ -441,8 +441,8 @@ _real_start:
 	[ -- sp ] = reti;
 
 #ifdef CONFIG_BF537
-/* Initialise General-Purpose I/O Modules on BF537 
- * Rev 0.0 Anomaly 05000212 - PORTx_FER, 
+/* Initialise General-Purpose I/O Modules on BF537
+ * Rev 0.0 Anomaly 05000212 - PORTx_FER,
  * PORT_MUX Registers Do Not accept "writes" correctly
  */
 	p0.h = hi(PORTF_FER);
@@ -516,8 +516,8 @@ DMA:
 	/* Set Destination DMAConfig = DMA Enable,
 	Memory Write, 8-Bit Transfers, 1-D DMA, Flow - Stop, IOC */
 	W[P1+OFFSET_(MDMA_D0_CONFIG)] = R4;
-	
-WAIT_DMA_DONE:	
+
+WAIT_DMA_DONE:
 	p0.h = hi(MDMA_D0_IRQ_STATUS);
 	p0.l = lo(MDMA_D0_IRQ_STATUS);
 	R0 = W[P0](Z);
@@ -569,7 +569,7 @@ reset_start:
 reset_wait:
 	jump reset_wait;
 
-reset_end: 
+reset_end:
 	nop;
 
 _exit:
