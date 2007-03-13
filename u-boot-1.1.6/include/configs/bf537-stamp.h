@@ -16,7 +16,7 @@
 /*#define CONFIG_BF537_STAMP_LEDCMD	1*/
 
 /*
- * Boot Mode Set  
+ * Boot Mode Set
  * Blackfin can support several boot modes
  */
 #define BF537_BYPASS_BOOT	0x0011  /* Bootmode 0: Execute from 16-bit externeal memory ( bypass BOOT ROM) 	*/
@@ -27,8 +27,7 @@
 #define BF537_TWI_SLAVE_BOOT	0x0017	/* Bootmode 6: TWI slave mode boot from EEPROM				*/
 #define BF537_UART_BOOT		0x0018	/* Bootmode 7: UART slave mdoe boot via UART host			*/
 /* Define the boot mode */
-//#define BFIN_BOOT_MODE		BF537_BYPASS_BOOT
-#define BFIN_BOOT_MODE		BF537_SPI_MASTER_BOOT
+#define BFIN_BOOT_MODE		BF537_BYPASS_BOOT
 
 #define CONFIG_PANIC_HANG 1
 
@@ -90,7 +89,7 @@
 #endif
 
 #if (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
-#if (CONFIG_SCLK_HZ / (2*CONFIG_SPI_BAUD) > 20000000) 
+#if (CONFIG_SCLK_HZ / (2*CONFIG_SPI_BAUD) > 20000000)
 #define CONFIG_SPI_FLASH_FAST_READ 1 /* Needed if SPI_CLK > 20 MHz */
 #else
 #undef CONFIG_SPI_FLASH_FAST_READ
@@ -121,7 +120,7 @@
 
 #define CONFIG_ROOTPATH		/romfs
 /* Uncomment next line to use fixed MAC address */
-//#define CONFIG_ETHADDR          02:80:ad:20:31:e8 
+//#define CONFIG_ETHADDR          02:80:ad:20:31:e8
 /* This is the routine that copies the MAC in Flash to the 'ethaddr' setting */
 
 #define CFG_LONGHELP			1
@@ -137,7 +136,7 @@
 				  CFG_POST_ETHER  | \
 				  CFG_POST_LED	  | \
 				  CFG_POST_BUTTON)
-#else 
+#else
 #undef CONFIG_POST
 #endif
 
@@ -156,7 +155,7 @@
 //#define CONFIG_BFIN_HDD_IDE   /* Add IDE Disk Drive (HDD) support */
 
 
-#if defined(CONFIG_BFIN_CF_IDE) || defined(CONFIG_BFIN_HDD_IDE) || defined(CONFIG_BFIN_TRUE_IDE) 
+#if defined(CONFIG_BFIN_CF_IDE) || defined(CONFIG_BFIN_HDD_IDE) || defined(CONFIG_BFIN_TRUE_IDE)
 #  define CONFIG_BFIN_IDE	1
 #  define ADD_IDE_CMD           CFG_CMD_IDE
 #else
@@ -175,7 +174,7 @@
 #define CONFIG_NET_MULTI	1
 
 #if (BFIN_CPU == ADSP_BF534)
-#define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NET) 
+#define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NET)
 #else
 #define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL | CFG_CMD_PING)
 #endif
@@ -203,7 +202,7 @@
 					 CFG_CMD_DATE)
 #endif
 
-#define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw console=ttyBF0,57600"	
+#define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw console=ttyBF0,57600"
 #define CONFIG_LOADADDR	0x1000000
 
 #if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
@@ -480,7 +479,7 @@
 #define CFG_ATA_ALT_OFFSET              0x000E  /* Offset for alternate registers */
 #define CFG_ATA_STRIDE                  1 	/* CF.A0 --> Blackfin.Ax */
 #endif /* CONFIG_BFIN_CF_IDE */
- 
+
 #if defined(CONFIG_BFIN_HDD_IDE) /* USE TRUE IDE */
 #define CFG_ATA_BASE_ADDR               0x20314000
 #define CFG_ATA_IDE0_OFFSET             0x0000
