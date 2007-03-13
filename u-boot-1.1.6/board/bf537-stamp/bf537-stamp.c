@@ -152,9 +152,9 @@ long int initdram(int board_type)
 
 #if defined(CONFIG_MISC_INIT_R)
 /* miscellaneous platform dependent initialisations */
-#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
 int misc_init_r(void)
 {
+#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
 	char nid[32];
 	unsigned char *pMACaddr = (unsigned char *)0x203F0000;
 	u8 SrcAddr[6] = { 0x02, 0x80, 0xAD, 0x20, 0x31, 0xB8 };
@@ -171,25 +171,28 @@ int misc_init_r(void)
 	if (getenv("ethaddr")) {
 		SetupMacAddr(SrcAddr);
 	}
-#endif
+#endif /* CONFIG_COMMANDS & CFG_CMD_NET */
+#endif /* BFIN_BOOT_MODE == BF537_BYPASS_BOOT */	
 
 #if defined(CONFIG_BFIN_IDE)
-#if defined(CONFIG_BFIN_CF_IDE)
-	/*Disable ATASEL when we're in Common Memory Mode */
-	cf_outb(0, CONFIG_CF_ATASEL_DIS);
+#if defined(CONFIG_BFIN_TRUE_IDE)
+	/* Enable ATASEL when in True IDE mode */
+	printf("Using CF True IDE Mode\n");
+	cf_outb(0, (unsigned char *)CONFIG_CF_ATASEL_ENA);
 	udelay(1000);
+#elif defined(CONFIG_BFIN_CF_IDE)
+	/* Disable ATASEL when we're in Common Memory Mode */
+	printf("Using CF Common Memory Mode\n");
+	cf_outb(0, (unsigned char *)CONFIG_CF_ATASEL_DIS);
+	udelay(1000);
+#elif defined(CONFIG_BFIN_HDD_IDE)
+	printf("Using HDD IDE Mode\n");	
 #endif
 	ide_init();
-#endif
+#endif /* CONFIG_BFIN_IDE */	
 	return 0;
 }
-#else
-int misc_init_r(void)
-{
-	return 0;
-}
-#endif
-#endif
+#endif /* CONFIG_MISC_INIT_R */
 
 #ifdef CONFIG_POST
 #if (BFIN_BOOT_MODE != BF537_BYPASS_BOOT)

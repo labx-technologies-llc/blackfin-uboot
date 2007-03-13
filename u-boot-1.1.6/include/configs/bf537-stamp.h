@@ -27,8 +27,8 @@
 #define BF537_TWI_SLAVE_BOOT	0x0017	/* Bootmode 6: TWI slave mode boot from EEPROM				*/
 #define BF537_UART_BOOT		0x0018	/* Bootmode 7: UART slave mdoe boot via UART host			*/
 /* Define the boot mode */
-#define BFIN_BOOT_MODE		BF537_BYPASS_BOOT
-//#define BFIN_BOOT_MODE		BF537_SPI_MASTER_BOOT
+//#define BFIN_BOOT_MODE		BF537_BYPASS_BOOT
+#define BFIN_BOOT_MODE		BF537_SPI_MASTER_BOOT
 
 #define CONFIG_PANIC_HANG 1
 
@@ -151,11 +151,12 @@
 
 /* CF-CARD IDE-HDD Support */
 
+//#define CONFIG_BFIN_TRUE_IDE    /* Add CF flash card support */
 //#define CONFIG_BFIN_CF_IDE    /* Add CF flash card support */
 //#define CONFIG_BFIN_HDD_IDE   /* Add IDE Disk Drive (HDD) support */
 
 
-#if defined(CONFIG_BFIN_CF_IDE) || defined(CONFIG_BFIN_HDD_IDE) 
+#if defined(CONFIG_BFIN_CF_IDE) || defined(CONFIG_BFIN_HDD_IDE) || defined(CONFIG_BFIN_TRUE_IDE) 
 #  define CONFIG_BFIN_IDE	1
 #  define ADD_IDE_CMD           CFG_CMD_IDE
 #else
@@ -198,6 +199,7 @@
 					 CFG_CMD_CACHE  | \
 					 CFG_CMD_JFFS2	| \
 					 CFG_CMD_EEPROM | \
+					 ADD_IDE_CMD	| \
 					 CFG_CMD_DATE)
 #endif
 
@@ -457,6 +459,18 @@
 #define AMBCTL1VAL			0xFFC3FFC3
 
 #define CONFIG_CF_ATASEL_DIS 	0x20311800
+#define CONFIG_CF_ATASEL_ENA    0x20311802
+
+#if defined(CONFIG_BFIN_TRUE_IDE)
+// Note that these settings aren't for the most part used in include/ata.h
+// when all of the ATA registers are setup
+#define CFG_ATA_BASE_ADDR               0x2031C000
+#define CFG_ATA_IDE0_OFFSET             0x0000
+#define CFG_ATA_DATA_OFFSET             0x0020  /* Offset for data I/O */
+#define CFG_ATA_REG_OFFSET              0x0020  /* Offset for normal register accesses */
+#define CFG_ATA_ALT_OFFSET              0x001C  /* Offset for alternate registers */
+#define CFG_ATA_STRIDE                  2 	/* CF.A0 --> Blackfin.Ax */
+#endif /* CONFIG_BFIN_TRUE_IDE */
 
 #if defined(CONFIG_BFIN_CF_IDE) /* USE CompactFlash Storage Card in the common memory space */
 #define CFG_ATA_BASE_ADDR               0x20211800
