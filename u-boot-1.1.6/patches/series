@@ -1,3 +1,4 @@
+include-ata.patch
 net_eth.patch
 Makefile.diff
 common-cmd_bootm.diff

@@ -1,0 +1,38 @@
+Index: u-boot-1.1.6/include/ata.h
+===================================================================
+--- u-boot-1.1.6.orig/include/ata.h	2007-03-13 11:17:15.000000000 +0800
++++ u-boot-1.1.6/include/ata.h	2007-03-13 11:13:46.000000000 +0800
+@@ -41,6 +41,25 @@
+ #define CFG_ATA_STRIDE	1
+ #endif
+ 
++#if defined (CONFIG_BFIN_TRUE_IDE) && defined (CONFIG_BF537)
++// Correct for what is probably a board layout problem on the 537???
++// (It looks like bit 13 should be mapped to bit 0?)
++#define ATA_DATA_REG    0x0020
++#define ATA_ERROR_REG   0x2020
++#define ATA_SECT_CNT    0x0022
++#define ATA_SECT_NUM    0x2022
++#define ATA_CYL_LOW     0x0024
++#define ATA_CYL_HIGH    0x2024
++#define ATA_DEV_HD      0x0026
++#define ATA_COMMAND     0x2026
++#define ATA_STATUS      ATA_COMMAND
++#define ATA_DEV_CTL     0x001C
++#define ATA_LBA_LOW     ATA_SECT_NUM
++#define ATA_LBA_MID     ATA_CYL_LOW
++#define ATA_LBA_HIGH    ATA_CYL_HIGH
++#define ATA_LBA_SEL     ATA_DEV_CTL
++
++#else
+ #define ATA_IO_DATA(x)	(CFG_ATA_DATA_OFFSET+((x) * CFG_ATA_STRIDE))
+ #define ATA_IO_REG(x)	(CFG_ATA_REG_OFFSET +((x) * CFG_ATA_STRIDE))
+ #define ATA_IO_ALT(x)	(CFG_ATA_ALT_OFFSET +((x) * CFG_ATA_STRIDE))
+@@ -64,6 +83,7 @@
+ #define ATA_LBA_MID	ATA_CYL_LOW
+ #define ATA_LBA_HIGH	ATA_CYL_HIGH
+ #define ATA_LBA_SEL	ATA_DEV_CTL
++#endif
+ 
+ /*
+  * Status register bits
