@@ -19,7 +19,7 @@
 /*#define CONFIG_BF537_STAMP_LEDCMD	1*/
 
 /*
- * Boot Mode Set  
+ * Boot Mode Set
  * Blackfin can support several boot modes
  */
 #define BF537_BYPASS_BOOT	0x0011  /* Bootmode 0: Execute from 16-bit externeal memory ( bypass BOOT ROM) 	*/
@@ -87,7 +87,7 @@
 #endif
 
 #if (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
-#if (CONFIG_SCLK_HZ / (2*CONFIG_SPI_BAUD) > 20000000) 
+#if (CONFIG_SCLK_HZ / (2*CONFIG_SPI_BAUD) > 20000000)
 #define CONFIG_SPI_FLASH_FAST_READ 1 /* Needed if SPI_CLK > 20 MHz */
 #else
 #undef CONFIG_SPI_FLASH_FAST_READ
@@ -118,7 +118,7 @@
 
 #define CONFIG_ROOTPATH		/romfs
 /* Uncomment next line to use fixed MAC address */
-#define CONFIG_ETHADDR          02:80:ad:24:21:18 
+#define CONFIG_ETHADDR          02:80:ad:24:21:18
 /* This is the routine that copies the MAC in Flash to the 'ethaddr' setting */
 
 #define CFG_LONGHELP			1
@@ -134,7 +134,7 @@
 				  CFG_POST_ETHER  | \
 				  CFG_POST_LED	  | \
 				  CFG_POST_BUTTON)
-#else 
+#else
 #undef CONFIG_POST
 #endif
 
@@ -152,7 +152,7 @@
 //#define CONFIG_BFIN_HDD_IDE   /* Add IDE Disk Drive (HDD) support */
 
 
-#if defined(CONFIG_BFIN_CF_IDE) || defined(CONFIG_BFIN_HDD_IDE) 
+#if defined(CONFIG_BFIN_CF_IDE) || defined(CONFIG_BFIN_HDD_IDE)
 #  define CONFIG_BFIN_IDE	1
 #  define ADD_IDE_CMD           CFG_CMD_IDE
 #else
@@ -168,7 +168,7 @@
 #endif
 
 #if (BFIN_CPU == ADSP_BF534)
-#define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NET) 
+#define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NET)
 #else
 #define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NFS & ~CFG_CMD_DISPLAY & ~CFG_CMD_IMI & ~CFG_CMD_LOADB & ~CFG_CMD_LOADS)
 #endif
@@ -193,7 +193,7 @@
 					 CFG_CMD_EEPROM)
 #endif
 
-#define CONFIG_BOOTARGS "root=/dev/mtdblock1 rw rootfstype=yaffs"	
+#define CONFIG_BOOTARGS "root=/dev/mtdblock1 rw rootfstype=yaffs"
 
 #if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
 #if (BFIN_CPU != ADSP_BF534)
@@ -462,7 +462,7 @@
 #define CFG_ATA_ALT_OFFSET              0x000E  /* Offset for alternate registers */
 #define CFG_ATA_STRIDE                  1 	/* CF.A0 --> Blackfin.Ax */
 #endif /* CONFIG_BFIN_CF_IDE */
- 
+
 #if defined(CONFIG_BFIN_HDD_IDE) /* USE TRUE IDE */
 #define CFG_ATA_BASE_ADDR               0x20314000
 #define CFG_ATA_IDE0_OFFSET             0x0000
