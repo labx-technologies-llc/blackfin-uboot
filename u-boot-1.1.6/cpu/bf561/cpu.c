@@ -96,7 +96,7 @@ void icache_enable(void)
 			*I1++ = 0x0;
 		}
 
-	}	
+	}
 
 	cli();
 	sync();

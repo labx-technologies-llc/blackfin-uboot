@@ -180,7 +180,7 @@ skip:
         SSYNC;
 	nop;
 
-	
+
 	(P5:0) = [SP++];
 	(R7:0) = [SP++];
 	RETS   = [SP++];

@@ -32,7 +32,7 @@
 
 /*
  * Note: A change in this file subsequently requires a change in
- *       board/$(board_name)/config.mk for a valid u-boot.bin 
+ *       board/$(board_name)/config.mk for a valid u-boot.bin
  */
 
 #define ASSEMBLY
@@ -58,7 +58,7 @@
 #if defined(CONFIG_BF537)&&defined(CONFIG_POST)
 .global memory_post_test;
 .global post_flag;
-#endif 
+#endif
 
 #ifdef BF537_UART_BOOT
 #if (CONFIG_CCLK_DIV == 1)
@@ -88,7 +88,7 @@ _stext:
 	SSYNC;
 
 	/* As per HW reference manual DAG registers,
-	 * DATA and Address resgister shall be zero'd 
+	 * DATA and Address resgister shall be zero'd
 	 * in initialization, after a reset state
 	 */
 	r1 = 0;	/* Data registers zero'd */
@@ -105,7 +105,7 @@ _stext:
 	p3 = 0;
 	p4 = 0;
 	p5 = 0;
-	
+
 	i0 = 0; /* DAG Registers zero'd */
 	i1 = 0;
 	i2 = 0;
@@ -156,7 +156,7 @@ no_soft_reset:
 	r1 = 0;
 	LSETUP(4,4) lc0 = p1;
 	[ p0 ++ ] = r1;
-	
+
 	p0.h = hi(SIC_IWR);
         p0.l = lo(SIC_IWR);
         r0.l = 0x1;
@@ -247,8 +247,8 @@ _real_start:
 
 
 #ifdef CONFIG_BF537
-/* Initialise General-Purpose I/O Modules on BF537 
- * Rev 0.0 Anomaly 05000212 - PORTx_FER, 
+/* Initialise General-Purpose I/O Modules on BF537
+ * Rev 0.0 Anomaly 05000212 - PORTx_FER,
  * PORT_MUX Registers Do Not accept "writes" correctly
  */
         p0.h = hi(PORTF_FER);
@@ -322,8 +322,8 @@ DMA:
 	/* Set Destination DMAConfig = DMA Enable,
 	Memory Write, 8-Bit Transfers, 1-D DMA, Flow - Stop, IOC */
 	W[P1+OFFSET_(MDMA_D0_CONFIG)] = R4;
-	
-WAIT_DMA_DONE:	
+
+WAIT_DMA_DONE:
 	p0.h = hi(MDMA_D0_IRQ_STATUS);
 	p0.l = lo(MDMA_D0_IRQ_STATUS);
 	R0 = W[P0](Z);

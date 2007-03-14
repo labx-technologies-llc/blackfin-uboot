@@ -85,14 +85,14 @@ void trap_c (struct pt_regs *regs)
 		addr = last_cplb_fault_retx;
 		last_cplb_fault_retx = regs->retx;
 		printf("this time, curr = 0x%08x last = 0x%08x\n", addr, last_cplb_fault_retx);
-		if ( addr != last_cplb_fault_retx ) 
+		if ( addr != last_cplb_fault_retx )
 			goto trap_c_return;
 #endif
 		data=1;
 
 	case VEC_CPLB_I_M:
 
-		if (data) 
+		if (data)
 			addr = *pDCPLB_FAULT_ADDR;
 		else
 			addr = *pICPLB_FAULT_ADDR;
@@ -144,7 +144,7 @@ void trap_c (struct pt_regs *regs)
 			j++;
 		}
 
-		debug("remove %i 0x%08x  0x%08x\n",j, *I0, *I1);	
+		debug("remove %i 0x%08x  0x%08x\n",j, *I0, *I1);
 
 		for ( ; j < 15 ; j++ ) {
 			debug("replace %i 0x%08x  0x%08x\n",j, I0, I0+1);
@@ -168,7 +168,7 @@ void trap_c (struct pt_regs *regs)
 			debug("%i 0x%08x  0x%08x\n",j, *I0++, *I1++);
 		}
 
-		/* Turn the cache back on */	
+		/* Turn the cache back on */
 		if (data) {
 			j = *(unsigned int *)DMEM_CONTROL;
 			sync();
@@ -181,7 +181,7 @@ void trap_c (struct pt_regs *regs)
 			*(unsigned int *)IMEM_CONTROL = IMC | ENICPLB;
 			sync();
 		}
-		
+
 		break;
 	default:
 		/* All traps come here */
