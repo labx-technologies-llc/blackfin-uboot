@@ -91,7 +91,7 @@ void icache_enable(void)
 
 	/* Fill the rest with invalid entry */
 	if ( j <= 15 ) {
-		for ( ; j <= 16 ; j++) {
+		for ( ; j < 16 ; j++) {
 			debug("filling %i with 0",j);
 			*I1++ = 0x0;
 		}
@@ -164,7 +164,7 @@ void dcache_enable(void)
 
 	/* Fill the rest with invalid entry */
 	if ( j <= 15 ) {
-		for ( ; j <= 16 ; j++) {
+		for ( ; j < 16 ; j++) {
 			debug("filling %i with 0",j);
 			*I1++ = 0x0;
 		}
