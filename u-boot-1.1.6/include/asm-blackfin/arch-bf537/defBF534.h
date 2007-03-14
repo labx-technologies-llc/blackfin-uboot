@@ -5,12 +5,12 @@
 **
 ** This include file contains a list of macro "defines" to enable the programmer
 ** to use symbolic names for register-access and bit-manipulation.
-**  
+**
 **   ----------------------------
 **   revision 0.1
 **   date: 2004/03/01 21:23:01;  author: joeb
 **   Initial revision
-**   
+**
 **/
 #ifndef _DEF_BF534_H
 #define _DEF_BF534_H
@@ -128,7 +128,7 @@
 #define TIMER7_CONFIG		0xFFC00670	/* Timer 7 Configuration Register  			*/
 #define TIMER7_COUNTER		0xFFC00674	/* Timer 7 Counter Register        			*/
 #define TIMER7_PERIOD		0xFFC00678	/* Timer 7 Period Register         			*/
-#define TIMER7_WIDTH		0xFFC0067C	/* Timer 7 Width Register       			*/   
+#define TIMER7_WIDTH		0xFFC0067C	/* Timer 7 Width Register       			*/
 
 #define TIMER_ENABLE		0xFFC00680	/* Timer Enable Register					*/
 #define TIMER_DISABLE		0xFFC00684	/* Timer Disable Register					*/
@@ -542,7 +542,7 @@
 #define CAN_MBIM1			0xFFC02A28	/* Mailbox Interrupt Mask reg 1					*/
 #define CAN_RFH1			0xFFC02A2C	/* Remote Frame Handling reg 1					*/
 #define CAN_OPSS1			0xFFC02A30	/* Overwrite Protection Single Shot Xmit reg 1	*/
-			   
+
 /* For Mailboxes 16-31   																*/
 #define CAN_MC2				0xFFC02A40	/* Mailbox config reg 2							*/
 #define CAN_MD2				0xFFC02A44	/* Mailbox direction reg 2						*/
@@ -665,7 +665,7 @@
 #define CAN_MB01_DATA3		0xFFC02C2C	/* Mailbox 1 Data Word 3 [63:48] Register	*/
 #define CAN_MB01_LENGTH		0xFFC02C30	/* Mailbox 1 Data Length Code Register   	*/
 #define CAN_MB01_TIMESTAMP	0xFFC02C34	/* Mailbox 1 Time Stamp Value Register   	*/
-#define CAN_MB01_ID0		0xFFC02C38	/* Mailbox 1 Identifier Low Register    	*/ 
+#define CAN_MB01_ID0		0xFFC02C38	/* Mailbox 1 Identifier Low Register    	*/
 #define CAN_MB01_ID1		0xFFC02C3C	/* Mailbox 1 Identifier High Register    	*/
 
 #define CAN_MB02_DATA0		0xFFC02C40	/* Mailbox 2 Data Word 0 [15:0] Register 	*/
@@ -1069,16 +1069,16 @@
 #define IRQ_PLL_WAKEUP	0x00000001	/* PLL Wakeup Interrupt			 					*/
 #define IRQ_ERROR1      0x00000002  /* Error Interrupt (DMA, DMARx Block, DMARx Overflow) */
 #define IRQ_ERROR2      0x00000004  /* Error Interrupt (CAN, Ethernet, SPORTx, PPI, SPI, UARTx) */
-#define IRQ_RTC			0x00000008	/* Real Time Clock Interrupt 						*/ 
-#define IRQ_DMA0		0x00000010	/* DMA Channel 0 (PPI) Interrupt 					*/ 
-#define IRQ_DMA3		0x00000020	/* DMA Channel 3 (SPORT0 RX) Interrupt 				*/ 
+#define IRQ_RTC			0x00000008	/* Real Time Clock Interrupt 						*/
+#define IRQ_DMA0		0x00000010	/* DMA Channel 0 (PPI) Interrupt 					*/
+#define IRQ_DMA3		0x00000020	/* DMA Channel 3 (SPORT0 RX) Interrupt 				*/
 #define IRQ_DMA4		0x00000040	/* DMA Channel 4 (SPORT0 TX) Interrupt 				*/
 #define IRQ_DMA5		0x00000080	/* DMA Channel 5 (SPORT1 RX) Interrupt 				*/
 
 #define IRQ_DMA6		0x00000100	/* DMA Channel 6 (SPORT1 TX) Interrupt 		 		*/
 #define IRQ_TWI			0x00000200	/* TWI Interrupt									*/
 #define IRQ_DMA7		0x00000400	/* DMA Channel 7 (SPI) Interrupt 					*/
-#define IRQ_DMA8		0x00000800	/* DMA Channel 8 (UART0 RX) Interrupt 				*/ 
+#define IRQ_DMA8		0x00000800	/* DMA Channel 8 (UART0 RX) Interrupt 				*/
 #define IRQ_DMA9		0x00001000	/* DMA Channel 9 (UART0 TX) Interrupt 				*/
 #define IRQ_DMA10		0x00002000	/* DMA Channel 10 (UART1 RX) Interrupt 				*/
 #define IRQ_DMA11		0x00004000	/* DMA Channel 11 (UART1 TX) Interrupt 				*/
@@ -1172,7 +1172,7 @@
 #define WDEV_NONE 0x0006 /* no event on roll over */
 #define WDEN 0x0FF0 /* enable watchdog */
 #define WDDIS 0x0AD0 /* disable watchdog */
-#define WDRO 0x8000 /* watchdog rolled over latch */ 
+#define WDRO 0x8000 /* watchdog rolled over latch */
 
 /* depreciated WDOG_CTL Register Masks for legacy code */
 

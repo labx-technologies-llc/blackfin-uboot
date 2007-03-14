@@ -5,32 +5,32 @@
 **
 ** This include file contains a list of macro "defines" to enable the programmer
 ** to use symbolic names for register-access.
-**  
+**
 **   ----------------------------
 **   revision 0.1
 **   date: 2004/03/01 21:23:01;  author: joeb
 **   Initial revision
-**   
+**
 **   ----------------------------
 **   revision 0.2
 **   date: 2004/05/15 16:30:00;  author: joeb
 **   comments: removed I2C/IIC references to TWI, changed GPIO sections
-**   
+**
 **   ----------------------------
 **   revision 0.3
 **   date: 2004/06/08 12:25:00;  author: joeb
 **   comments: renamed some TWI and GPIO registers
-**   
+**
 **   ----------------------------
 **   revision 0.4
 **   date: 2004/06/09 14:25:00;  author: joeb
 **   comments: changed Timer status register to 32-bit, renamed EMAC count registers
-**   
+**
 **   ----------------------------
 **   revision 0.5
 **   date: 2004/08/10 10:25:00;  author: joeb
 **   comments: Renamed EMAC wake-up registers, changed bit-names in EMAC registers
-**   
+**
 **   ----------------------------
 **   revision 0.6
 **   date: 2004/08/17 16:25:00;  author: joeb

@@ -17,7 +17,7 @@
  *
  * Adapted for BlackFin BF533 by Bas Vermeulen <bas@buyways.nl>
  * Copyright (c) 2003 BuyWays B.V. (www.buyways.nl)
- * Copyright (c) 2004 LG Soft India. 
+ * Copyright (c) 2004 LG Soft India.
  * Copyright (c) 2004 HHTech.
  *
  * Adapted for BlackFin BF561 by Bas Vermeulen <bas@buyways.nl>
@@ -63,7 +63,7 @@
 	    DMA1 9  Interrupt	                IVG8	    27
 	    DMA1 10 Interrupt	                IVG8	    28
 	    DMA1 11 Interrupt	                IVG8	    29
-                         
+
 	    DMA2 0  (SPORT0 RX)		        IVG9	    30
 	    DMA2 1  (SPORT0 TX)	                IVG9	    31
 	    DMA2 2  (SPORT1 RX)	                IVG9	    32
@@ -76,7 +76,7 @@
 	    DMA2 9  Interrupt	                IVG9	    39
 	    DMA2 10 Interrupt	                IVG9	    40
 	    DMA2 11 Interrupt	                IVG9	    41
-                         
+
 	    TIMER 0  Interrupt		        IVG10	    42
 	    TIMER 1  Interrupt	                IVG10	    43
 	    TIMER 2  Interrupt	                IVG10	    44
@@ -89,20 +89,20 @@
 	    TIMER 9  Interrupt	                IVG10	    51
 	    TIMER 10 Interrupt	                IVG10	    52
 	    TIMER 11 Interrupt	                IVG10	    53
-                         
+
 	    Programmable Flags0 A (8)	        IVG11	    54
 	    Programmable Flags0 B (8)           IVG11	    55
 	    Programmable Flags1 A (8)           IVG11	    56
 	    Programmable Flags1 B (8)           IVG11	    57
 	    Programmable Flags2 A (8)           IVG11	    58
 	    Programmable Flags2 B (8)           IVG11	    59
-                         
+
 	    MDMA1 0 write/read INT		IVG8	    60
 	    MDMA1 1 write/read INT		IVG8	    61
-	                             
+
 	    MDMA2 0 write/read INT		IVG9	    62
 	    MDMA2 1 write/read INT		IVG9	    63
-                         
+
 	    IMDMA 0 write/read INT		IVG12	    64
 	    IMDMA 1 write/read INT		IVG12	    65
 
@@ -119,8 +119,8 @@
  **********************************************************************/
 
 /*
- * The ABSTRACT IRQ definitions 
- *  the first seven of the following are fixed, 
+ * The ABSTRACT IRQ definitions
+ *  the first seven of the following are fixed,
  *  the rest you change if you need to.
  */
 /* IVG 0-6*/
