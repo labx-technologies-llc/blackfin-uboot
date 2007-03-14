@@ -172,7 +172,7 @@ int misc_init_r(void)
 		SetupMacAddr(SrcAddr);
 	}
 #endif /* CONFIG_COMMANDS & CFG_CMD_NET */
-#endif /* BFIN_BOOT_MODE == BF537_BYPASS_BOOT */	
+#endif /* BFIN_BOOT_MODE == BF537_BYPASS_BOOT */
 
 #if defined(CONFIG_BFIN_IDE)
 #if defined(CONFIG_BFIN_TRUE_IDE)
@@ -186,10 +186,10 @@ int misc_init_r(void)
 	cf_outb(0, (unsigned char *)CONFIG_CF_ATASEL_DIS);
 	udelay(1000);
 #elif defined(CONFIG_BFIN_HDD_IDE)
-	printf("Using HDD IDE Mode\n");	
+	printf("Using HDD IDE Mode\n");
 #endif
 	ide_init();
-#endif /* CONFIG_BFIN_IDE */	
+#endif /* CONFIG_BFIN_IDE */
 	return 0;
 }
 #endif /* CONFIG_MISC_INIT_R */

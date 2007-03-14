@@ -64,7 +64,7 @@ int atoi(char *string)
     int i;
     int sign = 1;
 
-    length = strlen(string); 
+    length = strlen(string);
     for(i = 0; i < length; i++)
         {
         if(0 == i && string[0] == '-')

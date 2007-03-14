@@ -87,10 +87,10 @@ SECTIONS
     . = DEFINED(env_offset) ? env_offset : .;
     common/environment.o	(.text)
 
-    *(EXCLUDE_FILE (board/bf537-stamp/post-memory.o) .text)	
+    *(EXCLUDE_FILE (board/bf537-stamp/post-memory.o) .text)
     *(.fixup)
     *(.got1)
-  }  > ram 
+  }  > ram
   _etext = .;
   PROVIDE (etext = .);
   .text_l1	:

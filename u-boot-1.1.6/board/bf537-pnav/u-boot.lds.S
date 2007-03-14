@@ -90,7 +90,7 @@ SECTIONS
     *(EXCLUDE_FILE (board/bf537-pnav/post-memory.o) .text)
     *(.fixup)
     *(.got1)
-  }  > ram 
+  }  > ram
   _etext = .;
   PROVIDE (etext = .);
   .text_l1	:

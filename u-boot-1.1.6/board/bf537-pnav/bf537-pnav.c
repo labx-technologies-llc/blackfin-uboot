@@ -87,11 +87,11 @@ U_BOOT_CMD(bootldr,2,0,do_bootldr,
 
 int checkboard(void)
 {
-#if (BFIN_CPU == ADSP_BF534)	
+#if (BFIN_CPU == ADSP_BF534)
 	printf("CPU:   ADSP BF534 Rev.: 0.%d\n", *pCHIPID >>28);
-#elif (BFIN_CPU == ADSP_BF536)	
+#elif (BFIN_CPU == ADSP_BF536)
 	printf("CPU:   ADSP BF536 Rev.: 0.%d\n", *pCHIPID >>28);
-#else	
+#else
 	printf("CPU:   ADSP BF537 Rev.: 0.%d\n", *pCHIPID >>28);
 #endif
 	printf("Board: ADI BF537 PNAV board\n");
@@ -211,19 +211,19 @@ int post_hotkeys_pressed(void)
 	int delay = 3;
 	int i;
 	unsigned short value;
-	
+
 	*pPORTF_FER   &= ~PF5;
 	*pPORTFIO_DIR &= ~PF5;
 	*pPORTFIO_INEN|=  PF5;
-	
-	printf("########Press SW10 to enter Memory POST########: %2d ",delay);	
+
+	printf("########Press SW10 to enter Memory POST########: %2d ",delay);
 	while(delay--){
 		for(i=0;i<100;i++){
 			value = *pPORTFIO & PF5;
 			if(value != 0){
 				break;
 				}
-			udelay(10000);		
+			udelay(10000);
 			}
 		printf("\b\b\b%2d ",delay);
 	}
@@ -250,7 +250,7 @@ void post_word_store(ulong a)
 
 ulong post_word_load(void)
 {
-	volatile ulong *save_addr = 
+	volatile ulong *save_addr =
 		(volatile ulong *)POST_WORD_ADDR;
 	return *save_addr;
 }
@@ -298,7 +298,7 @@ int flash_post_test(int flags)
 		temp = pbuf;
 		value = 0;
 	}
-	printf("\n");		
+	printf("\n");
 	if(result)
 		return -1;
 	else
@@ -314,7 +314,7 @@ int led_post_test(int flags)
 {
 	*pPORTF_FER   	&= ~(PF6|PF7|PF8|PF9|PF10|PF11);
         *pPORTFIO_DIR 	|= PF6|PF7|PF8|PF9|PF10|PF11;
-        *pPORTFIO_INEN	&= ~(PF6|PF7|PF8|PF9|PF10|PF11);	
+        *pPORTFIO_INEN	&= ~(PF6|PF7|PF8|PF9|PF10|PF11);
 	*pPORTFIO 	&= ~(PF6|PF7|PF8|PF9|PF10|PF11);
 	udelay(1000000);
 	printf("LED1 on");
@@ -350,7 +350,7 @@ int led_post_test(int flags)
 int button_post_test(int flags)
 {
 	int i,delay = 5;
-	unsigned short value = 0;	
+	unsigned short value = 0;
 	int result = 0;
 
         *pPORTF_FER   &= ~(PF5|PF4|PF3|PF2);
@@ -373,7 +373,7 @@ int button_post_test(int flags)
 	else{
 		result = -1;
 		printf("\b\bfailed");
-	}	
+	}
 
 	delay = 5;
 	printf("\n--------Press SW11: %2d ",delay);

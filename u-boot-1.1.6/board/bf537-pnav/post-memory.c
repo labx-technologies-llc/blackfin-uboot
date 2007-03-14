@@ -59,13 +59,13 @@ int memory_post_test (int flags)
 
         for(m=0;m<CCLK_NUM; m++){
 		for(n=0;n< SCLK_NUM; n++){
-			/* Calculate the sclk */	
+			/* Calculate the sclk */
 			sclk_temp = CLKIN/1000000;
 			sclk_temp = sclk_temp*pll[m][n][0];
 			for(sclk=0;sclk_temp>0;sclk++)
 				sclk_temp -= pll[m][n][1];
 			sclk = sclk * 1000000;
-			
+
 			post_init_pll(pll[m][n][0],pll[m][n][1]);
 			post_init_sdram(sclk);
 			post_init_uart(sclk);
@@ -97,7 +97,7 @@ void post_init_uart(int sclk) {
 
 	for(divisor =0;sclk > 0;divisor ++)
 		sclk -= 57600*16;
-  
+
 	*pPORTF_FER = 0x000F;
         *pPORTH_FER = 0xFFFF;
 
@@ -202,7 +202,7 @@ void post_init_pll(int mult, int div) {
 int post_init_sdram(int sclk) {
 	int SDRAM_tRP, SDRAM_tRP_num, SDRAM_tRAS, SDRAM_tRAS_num, SDRAM_tRCD, SDRAM_tWR;
 	int SDRAM_Tref, SDRAM_NRA, SDRAM_CL, SDRAM_SIZE, SDRAM_WIDTH, mem_SDGCTL, mem_SDBCTL, mem_SDRRC;
-	
+
 if (( sclk > 119402985 )) {
 	SDRAM_tRP      = TRP_2;
 	SDRAM_tRP_num  = 2;
@@ -283,7 +283,7 @@ if (( sclk > 119402985 )) {
 	SDRAM_WIDTH	= EBCAW_10;
 
 
-	mem_SDBCTL = SDRAM_WIDTH | SDRAM_SIZE | EBE; 
+	mem_SDBCTL = SDRAM_WIDTH | SDRAM_SIZE | EBE;
 
 	/* Equation from section 17 (p17-46) of BF533 HRM */
 	mem_SDRRC = ((( CONFIG_SCLK_HZ / 1000) * SDRAM_Tref)  / SDRAM_NRA) - (SDRAM_tRAS_num + SDRAM_tRP_num);
@@ -292,14 +292,14 @@ if (( sclk > 119402985 )) {
 	mem_SDGCTL = ( SCTLE | SDRAM_CL | SDRAM_tRAS | SDRAM_tRP | SDRAM_tRCD | SDRAM_tWR | PSS );
 
 	sync();
-	
+
 	*pEBIU_SDGCTL |= 0x1000000;
 	/* Set the SDRAM Refresh Rate control register based on SSCLK value */
-	*pEBIU_SDRRC = mem_SDRRC;		
+	*pEBIU_SDRRC = mem_SDRRC;
 
 	//SDRAM Memory Bank Control Register
 	*pEBIU_SDBCTL= mem_SDBCTL;
-					  
+
 	//SDRAM Memory Global Control Register
 	*pEBIU_SDGCTL= mem_SDGCTL;
 	sync();

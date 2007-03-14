@@ -1,7 +1,7 @@
 /*
  * ADI Blackfin 537 MAC Ethernet
  *
- * Copyright (c) 2005 Analog Device, Inc. 
+ * Copyright (c) 2005 Analog Device, Inc.
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -61,7 +61,7 @@ u16 PHYregs[NO_PHY_REGS];/* u16 PHYADDR; */
 
 /* DMAx_CONFIG values at DMA Restart */
 const ADI_DMA_CONFIG_REG rxdmacfg ={1, 1, 2, 0, 0, 0, 0, 5, 7};
-/*	
+/*
 	rxdmacfg.b_DMA_EN = 1;	// enabled
 	rxdmacfg.b_WNR    = 1;	// write to memory
 	rxdmacfg.b_WDSIZE = 2;	// wordsize is 32 bits
@@ -74,7 +74,7 @@ const ADI_DMA_CONFIG_REG rxdmacfg ={1, 1, 2, 0, 0, 0, 0, 5, 7};
 */
 
 const ADI_DMA_CONFIG_REG txdmacfg ={ 1, 0, 2, 0, 0, 0, 0, 5, 7 };
-/*	
+/*
 	txdmacfg.b_DMA_EN = 1;	// enabled
 	txdmacfg.b_WNR    = 0;	// read from memory
 	txdmacfg.b_WDSIZE = 2;	// wordsize is 32 bits
@@ -100,7 +100,7 @@ int bfin_EMAC_initialize(bd_t *bis)
 	dev = (struct eth_device *)malloc(sizeof(*dev));
 	if (dev == NULL)
 		hang();
-	
+
 	memset(dev, 0, sizeof(*dev));
 	sprintf(dev->name, "BF537 ETHERNET");
 
@@ -117,7 +117,7 @@ int bfin_EMAC_initialize(bd_t *bis)
 }
 
 static int bfin_EMAC_send(struct eth_device *dev, volatile void *packet, int length)
-{	
+{
 	int i;
 	int result = 0;
 	unsigned int *buf;
@@ -127,12 +127,12 @@ static int bfin_EMAC_send(struct eth_device *dev, volatile void *packet, int len
 		printf("Ethernet: bad packet size: %d\n",length);
 		goto out;
 	}
-	
+
 	if((*pDMA2_IRQ_STATUS & DMA_ERR)!=0){
 			printf("Ethernet: tx DMA error\n");
 			goto out;
 	}
-	
+
 	for(i=0;(*pDMA2_IRQ_STATUS & DMA_RUN) != 0; i++){
 		if(i>TOUT_LOOP){
 			puts("Ethernet: tx time out\n");
@@ -145,7 +145,7 @@ static int bfin_EMAC_send(struct eth_device *dev, volatile void *packet, int len
 	*pDMA2_NEXT_DESC_PTR = &txbuf[txIdx]->Dma[0];
 	*pDMA2_CONFIG  = *(u16 *)(void *)(&txdmacfg);
 	*pEMAC_OPMODE |= TE;
-	
+
 	for(i=0;(txbuf[txIdx]->StatusWord & TX_COMP) ==0; i++){
 		if(i>TOUT_LOOP){
 			puts("Ethernet: tx error\n");
@@ -165,9 +165,9 @@ out:
 
 
 static int bfin_EMAC_recv(struct eth_device *dev)
-{	
+{
 	int length =0;
-	
+
 	for(;;){
 	if((rxbuf[rxIdx]->StatusWord & RX_COMP) == 0){
 		length = -1;
@@ -195,7 +195,7 @@ static int bfin_EMAC_recv(struct eth_device *dev)
 	else
 		rxIdx ++;
 	}
-	
+
 	return length;
 }
 
@@ -242,7 +242,7 @@ static int bfin_EMAC_init(struct eth_device *dev, bd_t *bd)
 				}
 		}
 
-/* Set RX DMA */	
+/* Set RX DMA */
 	*pDMA1_NEXT_DESC_PTR = &rxbuf[0]->Dma[0];
 	*pDMA1_CONFIG = *((u16*)(void *)&rxbuf[0]->Dma[0].CONFIG);
 
@@ -294,7 +294,7 @@ void SetupMacAddr(u8 *MACaddr)
 				tmp = (*end)?end+1:end;
 		}
 
-#ifndef CONFIG_NETCONSOLE	
+#ifndef CONFIG_NETCONSOLE
 		printf("Using MAC Address %02X:%02X:%02X:%02X:%02X:%02X\n",
 				MACaddr[0],MACaddr[1],
 				MACaddr[2],MACaddr[3],
@@ -315,7 +315,7 @@ void PollMdcDone(void)
 void WrPHYReg(u16 PHYAddr, u16 RegAddr, u16 Data)
 {
 	PollMdcDone();
-	
+
 	*pEMAC_STADAT = Data;
 
 	*pEMAC_STAADD = SET_PHYAD(PHYAddr) | SET_REGAD(RegAddr) |
@@ -333,11 +333,11 @@ u16  RdPHYReg(u16 PHYAddr, u16 RegAddr)
 
 	*pEMAC_STAADD = SET_PHYAD(PHYAddr) | SET_REGAD(RegAddr) |
 				STAIE | STABUSY;
-	
+
 	PollMdcDone();
-	
+
 	Data = (u16)*pEMAC_STADAT;
-	
+
 	PHYregs[RegAddr] = Data;	/* save shadow copy */
 
 	return Data;
@@ -382,7 +382,7 @@ int SetupSystemRegs(int *opmode)
 		}
 	count++;
 	}while(!(phydat & 0x0004));
-	
+
 	phydat = RdPHYReg(PHYADDR, PHY_ANLPAR);
 
 	if((phydat & 0x0100) || (phydat & 0x0040))
@@ -391,20 +391,20 @@ int SetupSystemRegs(int *opmode)
 		*opmode = 0;
 
 	*pEMAC_MMC_CTL = RSTC | CROLL;
-	
+
 	/* Initialize the TX DMA channel registers */
 	*pDMA2_X_COUNT	= 0;
 	*pDMA2_X_MODIFY = 4;
 	*pDMA2_Y_COUNT  = 0;
 	*pDMA2_Y_MODIFY = 0;
-	
+
 	/* Initialize the RX DMA channel registers */
 	*pDMA1_X_COUNT	= 0;
 	*pDMA1_X_MODIFY = 4;
 	*pDMA1_Y_COUNT  = 0;
 	*pDMA1_Y_MODIFY = 0;
 	return 0;
-}	
+}
 
 ADI_ETHER_BUFFER *SetupRxBuffer(int no)
 {
@@ -412,14 +412,14 @@ ADI_ETHER_BUFFER *SetupRxBuffer(int no)
 	ADI_ETHER_BUFFER	*buf;
 	int nobytes_buffer = sizeof(ADI_ETHER_BUFFER[2])/2;	/* ensure a multi. of 4 */
 	int total_size  = nobytes_buffer+RECV_BUFSIZE;
-	
+
 	buf = (ADI_ETHER_BUFFER *)(RXBUF_BASE_ADDR + no*total_size);
 	frmbuf = (ADI_ETHER_FRAME_BUFFER *)(RXBUF_BASE_ADDR + no*total_size + nobytes_buffer);
-	
+
 	memset(buf, 0x00, nobytes_buffer);
 	buf->FrmData = frmbuf;
 	memset(frmbuf, 0xfe, RECV_BUFSIZE);
-	
+
 	/* set up first desc to point to receive frame buffer */
 	buf->Dma[0].NEXT_DESC_PTR = &(buf->Dma[1]);
 	buf->Dma[0].START_ADDR    = (u32)buf->FrmData;
@@ -428,7 +428,7 @@ ADI_ETHER_BUFFER *SetupRxBuffer(int no)
 	buf->Dma[0].CONFIG.b_WDSIZE = 2;	/* wordsize is 32 bits */
 	buf->Dma[0].CONFIG.b_NDSIZE = 5;	/* 5 half words is desc size. */
 	buf->Dma[0].CONFIG.b_FLOW   = 7;	/* large desc flow */
-	
+
 	/* set up second desc to point to status word */
 	buf->Dma[1].NEXT_DESC_PTR = &(buf->Dma[0]);
 	buf->Dma[1].START_ADDR    = (u32)&buf->IPHdrChksum;
@@ -436,11 +436,11 @@ ADI_ETHER_BUFFER *SetupRxBuffer(int no)
 	buf->Dma[1].CONFIG.b_WNR    = 1;	/* Write to memory */
 	buf->Dma[1].CONFIG.b_WDSIZE = 2;	/* wordsize is 32 bits */
 	buf->Dma[1].CONFIG.b_DI_EN  = 1;	/* enable interrupt */
-	buf->Dma[1].CONFIG.b_NDSIZE = 5;	/* must be 0 when FLOW is 0 */ 
+	buf->Dma[1].CONFIG.b_NDSIZE = 5;	/* must be 0 when FLOW is 0 */
 	buf->Dma[1].CONFIG.b_FLOW   = 7;	/* stop */
-	
+
 	return buf;
-}	
+}
 
 ADI_ETHER_BUFFER *SetupTxBuffer(int no)
 {
@@ -448,14 +448,14 @@ ADI_ETHER_BUFFER *SetupTxBuffer(int no)
 	ADI_ETHER_BUFFER        *buf;
         int nobytes_buffer = sizeof(ADI_ETHER_BUFFER[2])/2;     /* ensure a multi. of 4 */
         int total_size  = nobytes_buffer+RECV_BUFSIZE;
-                                                                                                                                                             
+
         buf = (ADI_ETHER_BUFFER *)(TXBUF_BASE_ADDR + no*total_size);
 	frmbuf = (ADI_ETHER_FRAME_BUFFER *)(TXBUF_BASE_ADDR + no*total_size + nobytes_buffer);
-	
+
         memset(buf, 0x00, nobytes_buffer);
 	buf->FrmData = frmbuf;
 	memset(frmbuf, 0x00, RECV_BUFSIZE);
-                                                                                                                                                             
+
         /* set up first desc to point to receive frame buffer */
         buf->Dma[0].NEXT_DESC_PTR = &(buf->Dma[1]);
         buf->Dma[0].START_ADDR    = (u32)buf->FrmData;
@@ -464,7 +464,7 @@ ADI_ETHER_BUFFER *SetupTxBuffer(int no)
         buf->Dma[0].CONFIG.b_WDSIZE = 2;        /* wordsize is 32 bits */
         buf->Dma[0].CONFIG.b_NDSIZE = 5;        /* 5 half words is desc size. */
         buf->Dma[0].CONFIG.b_FLOW   = 7;        /* large desc flow */
-                                                                                                                                                             
+
         /* set up second desc to point to status word */
         buf->Dma[1].NEXT_DESC_PTR = &(buf->Dma[0]);
         buf->Dma[1].START_ADDR    = (u32)&buf->StatusWord;
@@ -474,7 +474,7 @@ ADI_ETHER_BUFFER *SetupTxBuffer(int no)
         buf->Dma[1].CONFIG.b_DI_EN  = 1;        /* enable interrupt */
         buf->Dma[1].CONFIG.b_NDSIZE = 0;        /* must be 0 when FLOW is 0 */
         buf->Dma[1].CONFIG.b_FLOW   = 0;        /* stop */
-                                                                                                                                                             
+
         return buf;
 }
 
@@ -484,7 +484,7 @@ int ether_post_test(int flags)
 	uchar buf[64];
 	int i, value = 0;
 	int length;
-	
+
 	printf("\n--------");
 	bfin_EMAC_init(NULL, NULL);
 	/* construct the package */
@@ -504,7 +504,7 @@ int ether_post_test(int flags)
 	buf[19] = 0x04;		/* Protocol size    */
 	buf[20] = 0x00;		/* Opcode: request  */
 	buf[21] = 0x01;
-	
+
         for(i=0;i<42;i++)
                 buf[i+22] = i;
 	printf("--------Send 64 bytes......\n");

@@ -110,7 +110,7 @@ void flash_print_info(flash_info_t * info)
 		printf("missing or unknown FLASH type\n");
 		return;
 	}
-	
+
 	switch (info->flash_id) {
 	case (STM_ID_29W320EB & 0xFFFF):
 	case (STM_ID_29W320DB & 0xFFFF):
@@ -144,7 +144,7 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 	if (prot)
                 printf ("- Warning: %d protected sectors will not be erased!\n", prot);
         else
-                printf ("\n");	
+                printf ("\n");
 
 	cnt = s_last - s_first + 1;
 
@@ -205,10 +205,10 @@ int write_data(long lStart, long lCount, uchar *pnData)
 	int flag = 0;
 
 	if(lCount%2){
-		flag = 1;	
+		flag = 1;
 		lCount = lCount -1;
 		}
-	
+
 	for(i = 0; i< lCount-1;i+=2,ulOffset+=2){
 		get_sector_number(ulOffset, &nSector);
 		read_flash(ulOffset, &d);
@@ -218,7 +218,7 @@ int write_data(long lStart, long lCount, uchar *pnData)
                         	}
 		unlock_flash(ulOffset);
 		d = (int)(pnData[i]|pnData[i+1]<<8);
-		write_flash(ulOffset,d); 
+		write_flash(ulOffset,d);
 		if(poll_toggle_bit(ulOffset) < 0){
                                 printf("Error programming the flash \n");
                                 return FLASH_FAIL;
@@ -322,17 +322,17 @@ int erase_block_flash(int nBlock)
 
 	if ((nBlock < 0) || (nBlock > AFP_NumSectors))
 		return FALSE;
-		
+
 	// figure out the offset of the block in flash
 	if(  (nBlock >=0) && (nBlock <SecFlashABegin))
 		ulSectorOff = nBlock * AFP_SectorSize1;
 
 	else if( (nBlock >= SecFlashABegin) && (nBlock < NUM_SECTORS) )
-		ulSectorOff = SecFlashAOff + (nBlock-SecFlashABegin)* AFP_SectorSize2;			
+		ulSectorOff = SecFlashAOff + (nBlock-SecFlashABegin)* AFP_SectorSize2;
 	// no such sector
 	else
 		return FLASH_FAIL;
-	
+
 	write_flash((WRITESEQ1 | ulSectorOff), WRITEDATA1);
 	write_flash((WRITESEQ2 | ulSectorOff), WRITEDATA2);
 	write_flash((WRITESEQ3 | ulSectorOff), WRITEDATA3);
@@ -365,8 +365,8 @@ int get_codes()
 	write_flash(WRITESEQ1, GETCODEDATA1);
 	write_flash(WRITESEQ2, GETCODEDATA2);
 	write_flash(WRITESEQ3, GETCODEDATA3);
-	
-	
+
+
 
 	read_flash(0x0402, &dev_id);
 	dev_id &= 0x0000FFFF;
