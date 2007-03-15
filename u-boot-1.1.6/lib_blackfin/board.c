@@ -195,8 +195,9 @@ void init_cplbtables(void)
 #if defined(CONFIG_BF561)
 	/* Async Memory space */
 	for (i = 0; i < 3; i++) {
-		icplb_table[j++][0] = 0x20000000 + i * 4 * 1024 * 1024;
-		icplb_table[j++][1] = SDRAM_IGENERIC;
+		icplb_table[j][0] = 0x20000000 + i * 4 * 1024 * 1024;
+		icplb_table[j][1] = SDRAM_IGENERIC;
+		j++;
 	}
 #else
 	icplb_table[j][0] = 0x20000000;
@@ -220,13 +221,15 @@ void init_cplbtables(void)
 
 #if defined(CONFIG_BF561)
 	/* MAC space */
-	dcplb_table[j++][0] = CONFIG_ASYNC_EBIU_BASE;
-	dcplb_table[j++][1] = SDRAM_EBIU;
+	dcplb_table[j][0] = CONFIG_ASYNC_EBIU_BASE;
+	dcplb_table[j][1] = SDRAM_EBIU;
+	j++;
 
 	/* Flash space */
 	for (i = 0; i < 2; i++) {
-		dcplb_table[j++][0] = 0x20000000 + i * 4 * 1024 * 1024;
-		dcplb_table[j++][1] = SDRAM_EBIU;
+		dcplb_table[j][0] = 0x20000000 + i * 4 * 1024 * 1024;
+		dcplb_table[j][1] = SDRAM_EBIU;
+		j++;
 	}
 #else
 	dcplb_table[j][0] = 0x20000000;

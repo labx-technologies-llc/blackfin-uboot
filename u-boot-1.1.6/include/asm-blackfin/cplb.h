@@ -73,8 +73,8 @@
 #endif
 
 #if defined(CONFIG_BF561)
-#define page_descriptor_table_size (CONFIG_MEM_SIZE/4 + 2)	/* SDRAM +L1 + ASYNC_Memory */
+#define page_descriptor_table_size (CONFIG_MEM_SIZE/4 + 1 + 3)	/* SDRAM +L1 + ASYNC_Memory */
 #else
-#define page_descriptor_table_size (CONFIG_MEM_SIZE/4 + 1 + 3)	/* SDRAM + L1 + ASYNC_Memory */
+#define page_descriptor_table_size (CONFIG_MEM_SIZE/4 + 2)	/* SDRAM + L1 + ASYNC_Memory */
 #endif
 #endif				/* _CPLB_H */

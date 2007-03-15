@@ -97,7 +97,7 @@ void trap_c (struct pt_regs *regs)
 		else
 			addr = *pICPLB_FAULT_ADDR;
 
-		for (i = 0 ; i <= page_descriptor_table_size; i++) {
+		for (i = 0 ; i < page_descriptor_table_size; i++) {
 			if (data) {
 				size=cplb_sizes[dcplb_table[i][1]>>16];
 				j = dcplb_table[i][0];
