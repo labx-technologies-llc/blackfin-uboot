@@ -1,5 +1,7 @@
---- u-boot-1.1.6/common/cmd_elf.c	2006-11-02 22:15:01.000000000 +0800
-+++ u-boot-blackfin/common/cmd_elf.c	2006-12-06 18:00:11.000000000 +0800
+Index: u-boot-1.1.6-mainline/common/cmd_elf.c
+===================================================================
+--- u-boot-1.1.6-mainline.orig/common/cmd_elf.c	2007-03-15 15:42:28.000000000 +0800
++++ u-boot-1.1.6-mainline/common/cmd_elf.c	2007-03-15 15:43:13.000000000 +0800
 @@ -19,6 +19,9 @@
  #include <net.h>
  #include <elf.h>
@@ -53,7 +55,7 @@
  /* ======================================================================
   * Interpreter command to boot VxWorks from a memory image.  The image can
   * be either an ELF image or a raw binary.  Will attempt to setup the
-@@ -265,9 +280,11 @@
+@@ -265,13 +280,17 @@
  {
  	Elf32_Ehdr *ehdr;		/* Elf header structure pointer     */
  	Elf32_Shdr *shdr;		/* Section header structure pointer */
@@ -63,17 +65,23 @@
 -	int i;				/* Loop counter                     */
 +	int i, j;			/* Loop counter                     */
 +	unsigned char match;
++	unsigned int entry;
  
  	/* -------------------------------------------------- */
  
-@@ -280,6 +297,17 @@
+ 	ehdr = (Elf32_Ehdr *) addr;
++	entry = ehdr->e_entry;
+ 
+ 	/* Find the section header string table for output info */
+ 	shdr = (Elf32_Shdr *) (addr + ehdr->e_shoff +
+@@ -280,6 +299,17 @@
  	if (shdr->sh_type == SHT_STRTAB)
  		strtab = (unsigned char *) (addr + shdr->sh_offset);
  
 +#if 0
 +	printf("Number of phdr: %d, size: %d\n", ehdr->e_phnum, ehdr->e_phentsize);
 +	printf("Number of shdr: %d, size: %d\n", ehdr->e_shnum, ehdr->e_shentsize);
-+	
++
 +	for (i = 0; i < ehdr->e_phnum; i++)
 +	{
 +		phdr = addr + ehdr->e_phoff + (i * sizeof (Elf32_Phdr));
@@ -84,12 +92,12 @@
  	/* Load each appropriate section */
  	for (i = 0; i < ehdr->e_shnum; ++i) {
  		shdr = (Elf32_Shdr *) (addr + ehdr->e_shoff +
-@@ -302,10 +330,28 @@
+@@ -302,15 +332,33 @@
  		if (shdr->sh_type == SHT_NOBITS) {
  			memset ((void *)shdr->sh_addr, 0, shdr->sh_size);
  		} else {
 +			for (j = 0, match = 0; j < ehdr->e_phnum; j++) {
-+				phdr = addr + ehdr->e_phoff + (j * sizeof (Elf32_Phdr));
++				phdr = (Elf32_Phdr *)(addr + ehdr->e_phoff + (j * sizeof (Elf32_Phdr)));
 +				if ((phdr->p_vaddr == shdr->sh_addr) && (phdr->p_paddr != phdr->p_vaddr)) {
 +					printf("sh_addr: %08X, p_paddr: %08X\n",
 +						shdr->sh_addr, phdr->p_paddr);
@@ -116,3 +124,9 @@
  		}
  		flush_cache (shdr->sh_addr, shdr->sh_size);
  	}
+ 
+-	return ehdr->e_entry;
++	return entry;
+ }
+ 
+ /* ====================================================================== */
