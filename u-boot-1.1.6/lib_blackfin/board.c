@@ -193,8 +193,12 @@ void init_cplbtables(void)
 		j++;
 	}
 #if defined(CONFIG_BF561)
+	/* MAC space */
+	dcplb_table[j][0] = CONFIG_ASYNC_EBIU_BASE;
+	dcplb_table[j][1] = SDRAM_IGENERIC;
+	j++;
 	/* Async Memory space */
-	for (i = 0; i < 3; i++) {
+	for (i = 0; i < 2; i++) {
 		icplb_table[j][0] = 0x20000000 + i * 4 * 1024 * 1024;
 		icplb_table[j][1] = SDRAM_IGENERIC;
 		j++;
