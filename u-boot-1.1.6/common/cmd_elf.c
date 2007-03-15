@@ -285,10 +285,12 @@ unsigned long load_elf_image (unsigned long addr)
 	unsigned char *image;		/* Binary image pointer             */
 	int i, j;			/* Loop counter                     */
 	unsigned char match;
+	unsigned int entry;
 
 	/* -------------------------------------------------- */
 
 	ehdr = (Elf32_Ehdr *) addr;
+	entry = ehdr->e_entry; 
 
 	/* Find the section header string table for output info */
 	shdr = (Elf32_Shdr *) (addr + ehdr->e_shoff +
@@ -356,7 +358,7 @@ unsigned long load_elf_image (unsigned long addr)
 		flush_cache (shdr->sh_addr, shdr->sh_size);
 	}
 
-	return ehdr->e_entry;
+	return entry;
 }
 
 /* ====================================================================== */
