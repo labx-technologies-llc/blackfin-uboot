@@ -203,7 +203,7 @@ no_soft_reset:
 	*   - [5]     = PDWN      : 1=All Clocks off
 	*   - [3]     = STOPCK    : 1=Core Clock off
 	*   - [1]     = PLL_OFF   : 1=Disable Power to PLL
-	*   - [0]     = DF        : 1=Pass CLKIN/2 to PLL / 0=Pass CLKIN to PLL
+	*   - [0]     = DF	  : 1=Pass CLKIN/2 to PLL / 0=Pass CLKIN to PLL
 	*   all other bits set to zero
 	*/
 

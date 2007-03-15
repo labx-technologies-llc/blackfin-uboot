@@ -200,7 +200,7 @@ void trap_c(struct pt_regs *regs)
 		do_reset(NULL, 0, 0, NULL);
 	}
 
-      trap_c_return:
+trap_c_return:
 	return;
 
 }

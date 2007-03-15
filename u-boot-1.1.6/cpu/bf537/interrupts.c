@@ -170,5 +170,5 @@ ulong get_timer(ulong base)
 
 void reset_timer (void)
 {
-        timestamp = 0;
+	timestamp = 0;
 }

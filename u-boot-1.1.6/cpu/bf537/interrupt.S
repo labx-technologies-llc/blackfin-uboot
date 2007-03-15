@@ -78,7 +78,7 @@ _evt_nmi_exit:
 .global _trap
 _trap:
 	SAVE_ALL_SYS
-	r0 = sp;        /* stack frame pt_regs pointer argument ==> r0 */
+	r0 = sp;	/* stack frame pt_regs pointer argument ==> r0 */
 	sp += -12;
 	call _trap_c
 	sp += 12;

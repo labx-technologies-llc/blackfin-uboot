@@ -1,17 +1,17 @@
 /****************************************************************
- * $ID: i2c.c      24 Oct 2006 12:00:00 +0800        $ *
- *                                                              *
- * Description:                                                 *
- *                                                              *
- * Maintainer:  sonicz  <sonic.zhang@analog.com>                *
- *                                                              *
- * CopyRight (c)  2006  Analog Device                           *
- * All rights reserved.                                         *
- *                                                              *
- * This file is free software;                                  *
- *   you are free to modify and/or redistribute it   	        *
- *   under the terms of the GNU General Public Licence (GPL).   *
- *                                                              *
+ * $ID: i2c.c	24 Oct 2006 12:00:00 +0800 $ 			*
+ *								*
+ * Description:							*
+ *								*
+ * Maintainer:  sonicz  <sonic.zhang@analog.com>		*
+ *								*
+ * CopyRight (c)  2006  Analog Device				*
+ * All rights reserved.						*
+ *								*
+ * This file is free software;					*
+ *	you are free to modify and/or redistribute it		*
+ *	under the terms of the GNU General Public Licence (GPL).*
+ *								*
  ****************************************************************/
 
 #include <common.h>
@@ -33,38 +33,38 @@
 			: : "a"(addr) , "d"(val) : "memory");})
 
 /* Two-Wire Interface		(0xFFC01400 - 0xFFC014FF) */
-#define bfin_read_TWI_CLKDIV()               bfin_read16(TWI_CLKDIV)
-#define bfin_write_TWI_CLKDIV(val)           bfin_write16(TWI_CLKDIV,val)
-#define bfin_read_TWI_CONTROL()              bfin_read16(TWI_CONTROL)
-#define bfin_write_TWI_CONTROL(val)          bfin_write16(TWI_CONTROL,val)
-#define bfin_read_TWI_SLAVE_CTL()            bfin_read16(TWI_SLAVE_CTL)
-#define bfin_write_TWI_SLAVE_CTL(val)        bfin_write16(TWI_SLAVE_CTL,val)
-#define bfin_read_TWI_SLAVE_STAT()           bfin_read16(TWI_SLAVE_STAT)
-#define bfin_write_TWI_SLAVE_STAT(val)       bfin_write16(TWI_SLAVE_STAT,val)
-#define bfin_read_TWI_SLAVE_ADDR()           bfin_read16(TWI_SLAVE_ADDR)
-#define bfin_write_TWI_SLAVE_ADDR(val)       bfin_write16(TWI_SLAVE_ADDR,val)
-#define bfin_read_TWI_MASTER_CTL()           bfin_read16(TWI_MASTER_CTL)
-#define bfin_write_TWI_MASTER_CTL(val)       bfin_write16(TWI_MASTER_CTL,val)
-#define bfin_read_TWI_MASTER_STAT()          bfin_read16(TWI_MASTER_STAT)
-#define bfin_write_TWI_MASTER_STAT(val)      bfin_write16(TWI_MASTER_STAT,val)
-#define bfin_read_TWI_MASTER_ADDR()          bfin_read16(TWI_MASTER_ADDR)
-#define bfin_write_TWI_MASTER_ADDR(val)      bfin_write16(TWI_MASTER_ADDR,val)
-#define bfin_read_TWI_INT_STAT()             bfin_read16(TWI_INT_STAT)
-#define bfin_write_TWI_INT_STAT(val)         bfin_write16(TWI_INT_STAT,val)
-#define bfin_read_TWI_INT_MASK()             bfin_read16(TWI_INT_MASK)
-#define bfin_write_TWI_INT_MASK(val)         bfin_write16(TWI_INT_MASK,val)
-#define bfin_read_TWI_FIFO_CTL()             bfin_read16(TWI_FIFO_CTL)
-#define bfin_write_TWI_FIFO_CTL(val)         bfin_write16(TWI_FIFO_CTL,val)
-#define bfin_read_TWI_FIFO_STAT()            bfin_read16(TWI_FIFO_STAT)
-#define bfin_write_TWI_FIFO_STAT(val)        bfin_write16(TWI_FIFO_STAT,val)
-#define bfin_read_TWI_XMT_DATA8()            bfin_read16(TWI_XMT_DATA8)
-#define bfin_write_TWI_XMT_DATA8(val)        bfin_write16(TWI_XMT_DATA8,val)
-#define bfin_read_TWI_XMT_DATA16()           bfin_read16(TWI_XMT_DATA16)
-#define bfin_write_TWI_XMT_DATA16(val)       bfin_write16(TWI_XMT_DATA16,val)
-#define bfin_read_TWI_RCV_DATA8()            bfin_read16(TWI_RCV_DATA8)
-#define bfin_write_TWI_RCV_DATA8(val)        bfin_write16(TWI_RCV_DATA8,val)
-#define bfin_read_TWI_RCV_DATA16()           bfin_read16(TWI_RCV_DATA16)
-#define bfin_write_TWI_RCV_DATA16(val)       bfin_write16(TWI_RCV_DATA16,val)
+#define bfin_read_TWI_CLKDIV()		bfin_read16(TWI_CLKDIV)
+#define bfin_write_TWI_CLKDIV(val)	bfin_write16(TWI_CLKDIV,val)
+#define bfin_read_TWI_CONTROL()		bfin_read16(TWI_CONTROL)
+#define bfin_write_TWI_CONTROL(val)	bfin_write16(TWI_CONTROL,val)
+#define bfin_read_TWI_SLAVE_CTL()	bfin_read16(TWI_SLAVE_CTL)
+#define bfin_write_TWI_SLAVE_CTL(val)	bfin_write16(TWI_SLAVE_CTL,val)
+#define bfin_read_TWI_SLAVE_STAT()	bfin_read16(TWI_SLAVE_STAT)
+#define bfin_write_TWI_SLAVE_STAT(val)	bfin_write16(TWI_SLAVE_STAT,val)
+#define bfin_read_TWI_SLAVE_ADDR()	bfin_read16(TWI_SLAVE_ADDR)
+#define bfin_write_TWI_SLAVE_ADDR(val)	bfin_write16(TWI_SLAVE_ADDR,val)
+#define bfin_read_TWI_MASTER_CTL()	bfin_read16(TWI_MASTER_CTL)
+#define bfin_write_TWI_MASTER_CTL(val)	bfin_write16(TWI_MASTER_CTL,val)
+#define bfin_read_TWI_MASTER_STAT()	bfin_read16(TWI_MASTER_STAT)
+#define bfin_write_TWI_MASTER_STAT(val)	bfin_write16(TWI_MASTER_STAT,val)
+#define bfin_read_TWI_MASTER_ADDR()	bfin_read16(TWI_MASTER_ADDR)
+#define bfin_write_TWI_MASTER_ADDR(val)	bfin_write16(TWI_MASTER_ADDR,val)
+#define bfin_read_TWI_INT_STAT()	bfin_read16(TWI_INT_STAT)
+#define bfin_write_TWI_INT_STAT(val)	bfin_write16(TWI_INT_STAT,val)
+#define bfin_read_TWI_INT_MASK()	bfin_read16(TWI_INT_MASK)
+#define bfin_write_TWI_INT_MASK(val)	bfin_write16(TWI_INT_MASK,val)
+#define bfin_read_TWI_FIFO_CTL()	bfin_read16(TWI_FIFO_CTL)
+#define bfin_write_TWI_FIFO_CTL(val)	bfin_write16(TWI_FIFO_CTL,val)
+#define bfin_read_TWI_FIFO_STAT()	bfin_read16(TWI_FIFO_STAT)
+#define bfin_write_TWI_FIFO_STAT(val)	bfin_write16(TWI_FIFO_STAT,val)
+#define bfin_read_TWI_XMT_DATA8()	bfin_read16(TWI_XMT_DATA8)
+#define bfin_write_TWI_XMT_DATA8(val)	bfin_write16(TWI_XMT_DATA8,val)
+#define bfin_read_TWI_XMT_DATA16()	bfin_read16(TWI_XMT_DATA16)
+#define bfin_write_TWI_XMT_DATA16(val)	bfin_write16(TWI_XMT_DATA16,val)
+#define bfin_read_TWI_RCV_DATA8()	bfin_read16(TWI_RCV_DATA8)
+#define bfin_write_TWI_RCV_DATA8(val)	bfin_write16(TWI_RCV_DATA8,val)
+#define bfin_read_TWI_RCV_DATA16()	bfin_read16(TWI_RCV_DATA16)
+#define bfin_write_TWI_RCV_DATA16(val)	bfin_write16(TWI_RCV_DATA16,val)
 
 #ifdef DEBUG_I2C
 #define PRINTD(fmt,args...)	do {	\
@@ -211,12 +211,12 @@ int wait_for_completion(struct i2c_msg *msg, int timeout_count)
  * This function can tranfer a byte over the i2c bus in both directions.
  * It is used by the public API functions.
  *
- * @return:  0: transfer successful
- *          -1: transfer fail
- *          -2: transmit timeout
- *          -3: ACK missing
- *          -4: receive timeout
- *          -5: controller not ready
+ * @return:	 0: transfer successful
+ *		-1: transfer fail
+ *		-2: transmit timeout
+ *		-3: ACK missing
+ *		-4: receive timeout
+ *		-5: controller not ready
  */
 int i2c_transfer(struct i2c_msg *msg)
 {
@@ -305,9 +305,9 @@ transfer_error:
 
 }
 
-/* ------------------------------------------------------------------------ */
-/* API Functions                                                            */
-/* ------------------------------------------------------------------------ */
+/* ---------------------------------------------------------------------*/
+/* API Functions							*/
+/* ---------------------------------------------------------------------*/
 
 void i2c_init(int speed, int slaveaddr)
 {
@@ -352,8 +352,8 @@ int i2c_probe(uchar chip)
  *   chip:    I2C chip address, range 0..127
  *   addr:    Memory (register) address within the chip
  *   alen:    Number of bytes to use for addr (typically 1, 2 for larger
- *              memories, 0 for register type devices with only one
- *              register)
+ *		memories, 0 for register type devices with only one
+ *		register)
  *   buffer:  Where to read/write the data
  *   len:     How many bytes to read/write
  *
@@ -398,8 +398,8 @@ int i2c_read(uchar chip, uint addr, int alen, uchar * buffer, int len)
  *   chip:    I2C chip address, range 0..127
  *   addr:    Memory (register) address within the chip
  *   alen:    Number of bytes to use for addr (typically 1, 2 for larger
- *              memories, 0 for register type devices with only one
- *              register)
+ *		memories, 0 for register type devices with only one
+ *		register)
  *   buffer:  Where to read/write the data
  *   len:     How many bytes to read/write
  *

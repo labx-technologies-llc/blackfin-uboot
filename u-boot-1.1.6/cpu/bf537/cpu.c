@@ -62,10 +62,8 @@ void icache_enable(void)
 	unsigned int *I0, *I1;
 	int i, j = 0;
 
-#ifdef __ADSPBF537__
 	if ((*pCHIPID >> 28) < 2)
 		return;
-#endif
 
 	/* Before enable icache, disable it first */
 	icache_disable();
@@ -115,10 +113,8 @@ void icache_enable(void)
 
 void icache_disable(void)
 {
-#ifdef __ADSPBF537__
 	if ((*pCHIPID >> 28) < 2)
 		return;
-#endif
 	cli();
 	sync();
 	asm(" .align 8; ");
@@ -196,7 +192,6 @@ void dcache_enable(void)
 
 void dcache_disable(void)
 {
-
 	unsigned int *I0, *I1;
 	int i;
 
