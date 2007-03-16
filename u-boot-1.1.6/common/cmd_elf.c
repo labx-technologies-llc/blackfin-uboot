@@ -285,7 +285,7 @@ unsigned long load_elf_image (unsigned long addr)
 	unsigned char *image;		/* Binary image pointer             */
 	int i, j;			/* Loop counter                     */
 	unsigned char match;
-	unsigned int entry;
+	unsigned long entry;
 
 	/* -------------------------------------------------- */
 

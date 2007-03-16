@@ -65,7 +65,7 @@ Index: u-boot-1.1.6-mainline/common/cmd_elf.c
 -	int i;				/* Loop counter                     */
 +	int i, j;			/* Loop counter                     */
 +	unsigned char match;
-+	unsigned int entry;
++	unsigned long entry;
  
  	/* -------------------------------------------------- */
  
