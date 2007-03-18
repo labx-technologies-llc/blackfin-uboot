@@ -1,5 +1,5 @@
 /*
- * U-boot bf533_serial.h
+ * U-boot bf537_serial.h
  *
  * Copyright (c) 2005 blackfin.uclinux.org
  *
@@ -22,9 +22,8 @@
  * MA 02111-1307 USA
  */
 
-
-#ifndef _BF533_SERIAL_H_
-#define _BF533_SERIAL_H_
+#ifndef _BF537_SERIAL_H_
+#define _BF537_SERIAL_H_
 
 #define BYTE_REF(addr)		(*((volatile char*)addr))
 #define HALFWORD_REF(addr)	(*((volatile short*)addr))

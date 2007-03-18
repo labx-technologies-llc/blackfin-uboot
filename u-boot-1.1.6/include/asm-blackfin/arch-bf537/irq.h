@@ -1,5 +1,5 @@
 /*
- * U-boot bf533_irq.h
+ * U-boot bf537_irq.h
  *
  * Copyright (c) 2005 blackfin.uclinux.org
  *
@@ -15,7 +15,7 @@
  * Copyright (c) 2002 Arcturus Networks Inc. (www.arcturusnetworks.com)
  * Copyright (c) 2002 Lineo, Inc. <mattw@lineo.com>
  *
- * Adapted for BlackFin BF533 by Bas Vermeulen <bas@buyways.nl>
+ * Adapted for BlackFin BF537 by Bas Vermeulen <bas@buyways.nl>
  * Copyright (c) 2003 BuyWays B.V. (www.buyways.nl)
 
  * See file CREDITS for list of people who contributed to this
@@ -37,8 +37,8 @@
  * MA 02111-1307 USA
  */
 
-#ifndef _BF533_IRQ_H_
-#define _BF533_IRQ_H_
+#ifndef _BF537_IRQ_H_
+#define _BF537_IRQ_H_
 
 /*
  * Interrupt source definitions
@@ -79,14 +79,13 @@
  * (lowest priority)		IVG15			32
  */
 
-#define IRQ_EMU                 0       /* Emulation */
-#define IRQ_RST                 1       /* reset */
-#define IRQ_NMI                 2       /* Non Maskable */
-#define IRQ_EVX                 3       /* Exception */
-#define IRQ_UNUSED              4       /*  - unused interrupt */
-#define IRQ_HWERR               5       /* Hardware Error */
-#define IRQ_CORETMR             6       /* Core timer */
-
+#define IRQ_EMU			0	/* Emulation */
+#define IRQ_RST			1	/* reset */
+#define IRQ_NMI			2	/* Non Maskable */
+#define IRQ_EVX			3	/* Exception */
+#define IRQ_UNUSED		4	/*  - unused interrupt */
+#define IRQ_HWERR		5	/* Hardware Error */
+#define IRQ_CORETMR		6	/* Core timer */
 
 #define IRQ_UART_RX_BIT		0x0800
 #define IRQ_UART_TX_BIT		0x1000
