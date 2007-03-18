@@ -57,7 +57,7 @@ void reset_flash(void);
 int erase_flash(void);
 int erase_block_flash(int);
 void unlock_flash(long lOffset);
-int write_data(long lStart, long lCount, uchar *pnData);
+int write_data(long lStart, long lCount, uchar * pnData);
 int read_flash(long nOffset, int *pnValue);
 int write_flash(long nOffset, int nValue);
 void get_sector_number(long lOffset, int *pnSector);
@@ -66,7 +66,6 @@ int GetOffset(int nBlock);
 int AFP_NumSectors = 71;
 long AFP_SectorSize2 = 0x10000;
 int AFP_SectorSize1 = 0x2000;
-
 
 #define NUM_SECTORS		71
 

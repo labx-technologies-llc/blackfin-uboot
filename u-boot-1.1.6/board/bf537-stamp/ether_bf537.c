@@ -61,31 +61,31 @@ u16 PHYregs[NO_PHY_REGS];	/* u16 PHYADDR; */
 /* DMAx_CONFIG values at DMA Restart */
 const ADI_DMA_CONFIG_REG rxdmacfg = { 1, 1, 2, 0, 0, 0, 0, 5, 7 };
 
-/*
-	rxdmacfg.b_DMA_EN = 1;	// enabled
-	rxdmacfg.b_WNR    = 1;	// write to memory
-	rxdmacfg.b_WDSIZE = 2;	// wordsize is 32 bits
-	rxdmacfg.b_DMA2D  = 0;	// N/A
-	rxdmacfg.b_RESTART= 0;	// N/A
-	rxdmacfg.b_DI_SEL = 0;	// N/A
-	rxdmacfg.b_DI_EN  = 0;	// no interrupt
-	rxdmacfg.b_NDSIZE = 5;	// 5 half words is desc size.
-	rxdmacfg.b_FLOW   = 7;	// large desc flow
-*/
+#if 0
+	rxdmacfg.b_DMA_EN = 1;	/* enabled */
+	rxdmacfg.b_WNR    = 1;	/* write to memory */
+	rxdmacfg.b_WDSIZE = 2;	/* wordsize is 32 bits */
+	rxdmacfg.b_DMA2D  = 0;	/* N/A */
+	rxdmacfg.b_RESTART= 0;	/* N/A */
+	rxdmacfg.b_DI_SEL = 0;	/* N/A */
+	rxdmacfg.b_DI_EN  = 0;	/* no interrupt */
+	rxdmacfg.b_NDSIZE = 5;	/* 5 half words is desc size. */
+	rxdmacfg.b_FLOW   = 7;	/* large desc flow  */
+#endif
 
 const ADI_DMA_CONFIG_REG txdmacfg = { 1, 0, 2, 0, 0, 0, 0, 5, 7 };
 
-/*
-	txdmacfg.b_DMA_EN = 1;	// enabled
-	txdmacfg.b_WNR    = 0;	// read from memory
-	txdmacfg.b_WDSIZE = 2;	// wordsize is 32 bits
-	txdmacfg.b_DMA2D  = 0;	// N/A
-	txdmacfg.b_RESTART= 0;	// N/A
-	txdmacfg.b_DI_SEL = 0;	// N/A
-	txdmacfg.b_DI_EN  = 0;	// no interrupt
-	txdmacfg.b_NDSIZE = 5;	// 5 half words is desc size.
-	txdmacfg.b_FLOW   = 7;	// large desc flow
-*/
+#if 0
+	txdmacfg.b_DMA_EN = 1;	/* enabled */
+	txdmacfg.b_WNR    = 0;	/* read from memory */
+	txdmacfg.b_WDSIZE = 2;	/* wordsize is 32 bits */
+	txdmacfg.b_DMA2D  = 0;	/* N/A */
+	txdmacfg.b_RESTART= 0;	/* N/A */
+	txdmacfg.b_DI_SEL = 0;	/* N/A */
+	txdmacfg.b_DI_EN  = 0;	/* no interrupt */
+	txdmacfg.b_NDSIZE = 5;	/* 5 half words is desc size. */
+	txdmacfg.b_FLOW   = 7;	/* large desc flow */
+#endif
 
 ADI_ETHER_BUFFER *SetupRxBuffer(int no);
 ADI_ETHER_BUFFER *SetupTxBuffer(int no);
@@ -247,20 +247,20 @@ static int bfin_EMAC_init(struct eth_device *dev, bd_t * bd)
 		}
 	}
 
-/* Set RX DMA */
+	/* Set RX DMA */
 	*pDMA1_NEXT_DESC_PTR = &rxbuf[0]->Dma[0];
 	*pDMA1_CONFIG = *((u16 *) (void *)&rxbuf[0]->Dma[0].CONFIG);
 
-/* Wait MII done */
+	/* Wait MII done */
 	PollMdcDone();
 
-/* We enable only RX here */
-/* ASTP   : Enable Automatic Pad Stripping
-   PR     : Promiscuous Mode for test
-   PSF    : Receive frames with total length less than 64 bytes.
-   FDMODE : Full Duplex Mode
-   LB	  : Internal Loopback for test
-   RE     : Receiver Enable */
+	/* We enable only RX here */
+	/* ASTP   : Enable Automatic Pad Stripping
+	   PR     : Promiscuous Mode for test
+	   PSF    : Receive frames with total length less than 64 bytes.
+	   FDMODE : Full Duplex Mode
+	   LB	  : Internal Loopback for test
+	   RE     : Receiver Enable */
 	if (dat == FDMODE)
 		opmode = ASTP | FDMODE | PSF;
 	else
@@ -372,8 +372,8 @@ int SetupSystemRegs(int *opmode)
 	sysctl |= RXDWA | RXCKS;
 	*pEMAC_SYSCTL = sysctl;
 	/* auto negotiation on  */
-	/* full duplex          */
-	/* 100 Mbps             */
+	/* full duplex */
+	/* 100 Mbps */
 	phydat = PHY_ANEG_EN | PHY_DUPLEX | PHY_SPD_SET;
 	WrPHYReg(PHYADDR, PHY_MODECTL, phydat);
 	do {

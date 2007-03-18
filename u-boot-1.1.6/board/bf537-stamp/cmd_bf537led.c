@@ -33,12 +33,12 @@
 	"led <number> <action>\n" \
 	"    <number>  - Index (0-5) of LED to change, or \"all\"\n" \
 	"    <action>  - Must be one of:\n" \
-	"                on off toggle\n"
+	"		on off toggle\n"
 
 /* Number of LEDs supported by the board */
-#define NUMBER_LEDS	6
+#define NUMBER_LEDS     6
 /* The BF537 stamp has 6 LEDs.  This mask indicates that all should be lit. */
-#define LED_ALL_MASK	0x003F
+#define LED_ALL_MASK    0x003F
 
 void show_cmd_usage(void);
 void set_led_state(int index, int state);
@@ -49,12 +49,12 @@ void configure_GPIO_to_output(int index);
  */
 int led_ports[] = { PF6, PF7, PF8, PF9, PF10, PF11 };
 
-#define ACTION_TOGGLE	-1
-#define ACTION_OFF	0
-#define ACTION_ON	1
+#define ACTION_TOGGLE   -1
+#define ACTION_OFF      0
+#define ACTION_ON       1
 
-#define LED_STATE_OFF	0
-#define LED_STATE_ON	1
+#define LED_STATE_OFF   0
+#define LED_STATE_ON    1
 
 /* This is a trivial atoi implementation since we don't have one available */
 int atoi(char *string)

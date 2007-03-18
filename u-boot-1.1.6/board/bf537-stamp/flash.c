@@ -36,14 +36,13 @@ void flash_reset(void)
 	reset_flash();
 }
 
-unsigned long flash_get_size(ulong baseaddr, flash_info_t * info,
-			     int bank_flag)
+unsigned long flash_get_size(ulong baseaddr, flash_info_t * info, int bank_flag)
 {
 	int id = 0, i = 0;
 	static int FlagDev = 1;
 
 	id = get_codes();
-	if(FlagDev)	{
+	if (FlagDev) {
 		FlagDev = 0;
 	}
 	info->flash_id = id;
@@ -52,7 +51,9 @@ unsigned long flash_get_size(ulong baseaddr, flash_info_t * info,
 		for (i = PriFlashABegin; i < SecFlashABegin; i++)
 			info->start[i] = (baseaddr + (i * AFP_SectorSize1));
 		for (i = SecFlashABegin; i < NUM_SECTORS; i++)
-			info->start[i] = (baseaddr + SecFlashAOff + ((i-SecFlashABegin) * AFP_SectorSize2));
+			info->start[i] =
+			    (baseaddr + SecFlashAOff +
+			     ((i - SecFlashABegin) * AFP_SectorSize2));
 		info->size = 0x400000;
 		info->sector_count = NUM_SECTORS;
 		break;
@@ -90,13 +91,15 @@ unsigned long flash_init(void)
 
 	if (flash_info[0].flash_id == FLASH_UNKNOWN || size_b == 0) {
 		printf("## Unknown FLASH on Bank 0 - Size = 0x%08lx = %ld MB\n",
-			size_b, size_b >> 20);
+		       size_b, size_b >> 20);
 	}
 
 	/* flash_protect (int flag, ulong from, ulong to, flash_info_t *info) */
-	(void)flash_protect(FLAG_PROTECT_SET,CFG_FLASH_BASE,(flash_info[0].start[2] - 1),&flash_info[0]);
+	(void)flash_protect(FLAG_PROTECT_SET, CFG_FLASH_BASE,
+			    (flash_info[0].start[2] - 1), &flash_info[0]);
 #if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
-	(void)flash_protect(FLAG_PROTECT_SET, 0x203F0000, 0x203FFFFF, &flash_info[0]);
+	(void)flash_protect(FLAG_PROTECT_SET, 0x203F0000, 0x203FFFFF,
+			    &flash_info[0]);
 #endif
 
 	return (size_b);
@@ -124,8 +127,7 @@ void flash_print_info(flash_info_t * info)
 		if ((i % 5) == 0)
 			printf("\n   ");
 		printf(" %08lX%s",
-			info->start[i],
-			info->protect[i] ? " (RO)" : "     ");
+		       info->start[i], info->protect[i] ? " (RO)" : "     ");
 	}
 	printf("\n");
 	return;
@@ -133,18 +135,19 @@ void flash_print_info(flash_info_t * info)
 
 int flash_erase(flash_info_t * info, int s_first, int s_last)
 {
-	int cnt = 0,i;
-	int prot,sect;
+	int cnt = 0, i;
+	int prot, sect;
 
 	prot = 0;
-        for (sect = s_first; sect <= s_last; ++sect) {
-                if (info->protect[sect])
-                        prot++;
-        }
+	for (sect = s_first; sect <= s_last; ++sect) {
+		if (info->protect[sect])
+			prot++;
+	}
 	if (prot)
-                printf ("- Warning: %d protected sectors will not be erased!\n", prot);
-        else
-                printf ("\n");
+		printf("- Warning: %d protected sectors will not be erased!\n",
+		       prot);
+	else
+		printf("\n");
 
 	cnt = s_last - s_first + 1;
 
@@ -152,7 +155,7 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 	printf("Erasing Flash locations, Please Wait\n");
 	for (i = s_first; i <= s_last; i++) {
 		if (info->protect[i] == 0) {	/* not protected */
-			if(erase_block_flash(i) < 0) {
+			if (erase_block_flash(i) < 0) {
 				printf("Error Sector erasing \n");
 				return FLASH_FAIL;
 			}
@@ -161,7 +164,7 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 #elif (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
 	if (cnt == FLASH_TOT_SECT) {
 		printf("Erasing flash, Please Wait \n");
-		if(erase_flash() < 0) {
+		if (erase_flash() < 0) {
 			printf("Erasing flash failed \n");
 			return FLASH_FAIL;
 		}
@@ -169,7 +172,7 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 		printf("Erasing Flash locations, Please Wait\n");
 		for (i = s_first; i <= s_last; i++) {
 			if (info->protect[i] == 0) {	/* not protected */
-				if(erase_block_flash(i) < 0) {
+				if (erase_block_flash(i) < 0) {
 					printf("Error Sector erasing \n");
 					return FLASH_FAIL;
 				}
@@ -177,26 +180,24 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 		}
 	}
 #endif
-	printf ("\n");
+	printf("\n");
 	return FLASH_SUCCESS;
 }
 
 int write_buff(flash_info_t * info, uchar * src, ulong addr, ulong cnt)
 {
 	int d;
-	if(addr%2){
-		read_flash(addr-1-CFG_FLASH_BASE,&d);
-		d = (int)((d&0x00FF)|(*src++<<8));
-		write_data(addr-1,2,(uchar *)&d);
-		write_data(addr+1,cnt-1,src);
-		}
-	else
+	if (addr % 2) {
+		read_flash(addr - 1 - CFG_FLASH_BASE, &d);
+		d = (int)((d & 0x00FF) | (*src++ << 8));
+		write_data(addr - 1, 2, (uchar *) & d);
+		write_data(addr + 1, cnt - 1, src);
+	} else
 		write_data(addr, cnt, src);
 	return FLASH_SUCCESS;
 }
 
-
-int write_data(long lStart, long lCount, uchar *pnData)
+int write_data(long lStart, long lCount, uchar * pnData)
 {
 	long i = 0;
 	unsigned long ulOffset = lStart - CFG_FLASH_BASE;
@@ -204,43 +205,47 @@ int write_data(long lStart, long lCount, uchar *pnData)
 	int nSector = 0;
 	int flag = 0;
 
-	if(lCount%2){
+	if (lCount % 2) {
 		flag = 1;
-		lCount = lCount -1;
-		}
+		lCount = lCount - 1;
+	}
 
-	for(i = 0; i< lCount-1;i+=2,ulOffset+=2){
+	for (i = 0; i < lCount - 1; i += 2, ulOffset += 2) {
 		get_sector_number(ulOffset, &nSector);
 		read_flash(ulOffset, &d);
-		if(d != 0xffff) {
-                                printf("Flash not erased at offset 0x%x Please erase to reprogram \n",ulOffset);
-                	        return FLASH_FAIL;
-                        	}
-		unlock_flash(ulOffset);
-		d = (int)(pnData[i]|pnData[i+1]<<8);
-		write_flash(ulOffset,d);
-		if(poll_toggle_bit(ulOffset) < 0){
-                                printf("Error programming the flash \n");
-                                return FLASH_FAIL;
-                        	}
-	if((i>0)&&(!(i%AFP_SectorSize2)))
-		printf(".");
-	}
-	if(flag){
-		get_sector_number(ulOffset, &nSector);
-                read_flash(ulOffset, &d);
-                if(d != 0xffff) {
-                                printf("Flash not erased at offset 0x%x Please erase to reprogram \n",ulOffset);
-                                return FLASH_FAIL;
-                                }
-                unlock_flash(ulOffset);
-                d = (int)(pnData[i]|(d&0xFF00));
-                write_flash(ulOffset,d);
-                if(poll_toggle_bit(ulOffset) < 0){
-                                printf("Error programming the flash \n");
-                                return FLASH_FAIL;
-                                }
+		if (d != 0xffff) {
+			printf
+			    ("Flash not erased at offset 0x%x Please erase to reprogram \n",
+			     ulOffset);
+			return FLASH_FAIL;
 		}
+		unlock_flash(ulOffset);
+		d = (int)(pnData[i] | pnData[i + 1] << 8);
+		write_flash(ulOffset, d);
+		if (poll_toggle_bit(ulOffset) < 0) {
+			printf("Error programming the flash \n");
+			return FLASH_FAIL;
+		}
+		if ((i > 0) && (!(i % AFP_SectorSize2)))
+			printf(".");
+	}
+	if (flag) {
+		get_sector_number(ulOffset, &nSector);
+		read_flash(ulOffset, &d);
+		if (d != 0xffff) {
+			printf
+			    ("Flash not erased at offset 0x%x Please erase to reprogram \n",
+			     ulOffset);
+			return FLASH_FAIL;
+		}
+		unlock_flash(ulOffset);
+		d = (int)(pnData[i] | (d & 0xFF00));
+		write_flash(ulOffset, d);
+		if (poll_toggle_bit(ulOffset) < 0) {
+			printf("Error programming the flash \n");
+			return FLASH_FAIL;
+		}
+	}
 	return FLASH_SUCCESS;
 }
 
@@ -249,18 +254,19 @@ int write_flash(long nOffset, int nValue)
 	long addr;
 
 	addr = (CFG_FLASH_BASE + nOffset);
-	*(unsigned volatile short *) addr = nValue;
+	*(unsigned volatile short *)addr = nValue;
 	sync();
 #if (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
-	if(icache_status())
-		udelay(CONFIG_CCLK_HZ/1000000);
+	if (icache_status())
+		udelay(CONFIG_CCLK_HZ / 1000000);
 #endif
 	return FLASH_SUCCESS;
 }
 
 int read_flash(long nOffset, int *pnValue)
 {
-	unsigned short *pFlashAddr = (unsigned short *)(CFG_FLASH_BASE + nOffset);
+	unsigned short *pFlashAddr =
+	    (unsigned short *)(CFG_FLASH_BASE + nOffset);
 
 	*pnValue = *pFlashAddr;
 
@@ -269,28 +275,29 @@ int read_flash(long nOffset, int *pnValue)
 
 int poll_toggle_bit(long lOffset)
 {
-	unsigned int u1,u2;
-	volatile unsigned long *FB = (volatile unsigned long *)(CFG_FLASH_BASE + lOffset);
-	while(1) {
+	unsigned int u1, u2;
+	volatile unsigned long *FB =
+	    (volatile unsigned long *)(CFG_FLASH_BASE + lOffset);
+	while (1) {
 		u1 = *(volatile unsigned short *)FB;
 		u2 = *(volatile unsigned short *)FB;
-		u1^= u2;
-		if( !(u1 & 0x0040))
+		u1 ^= u2;
+		if (!(u1 & 0x0040))
 			break;
-		if( !(u2 & 0x0020))
+		if (!(u2 & 0x0020))
 			continue;
-		else{
-			 u1 = *(volatile unsigned short *)FB;
-	                 u2 = *(volatile unsigned short *)FB;
-			 u1^= u2;
-			 if( !(u1 & 0x0040))
-                        	break;
-			 else{
+		else {
+			u1 = *(volatile unsigned short *)FB;
+			u2 = *(volatile unsigned short *)FB;
+			u1 ^= u2;
+			if (!(u1 & 0x0040))
+				break;
+			else {
 				reset_flash();
 				return FLASH_FAIL;
-				}
 			}
 		}
+	}
 	return FLASH_SUCCESS;
 }
 
@@ -310,7 +317,7 @@ int erase_flash(void)
 	write_flash(WRITESEQ5, WRITEDATA5);
 	write_flash(WRITESEQ6, WRITEDATA6);
 
-	if(poll_toggle_bit(0x0000) < 0)
+	if (poll_toggle_bit(0x0000) < 0)
 		return FLASH_FAIL;
 
 	return FLASH_SUCCESS;
@@ -324,11 +331,12 @@ int erase_block_flash(int nBlock)
 		return FALSE;
 
 	// figure out the offset of the block in flash
-	if(  (nBlock >=0) && (nBlock <SecFlashABegin))
+	if ((nBlock >= 0) && (nBlock < SecFlashABegin))
 		ulSectorOff = nBlock * AFP_SectorSize1;
 
-	else if( (nBlock >= SecFlashABegin) && (nBlock < NUM_SECTORS) )
-		ulSectorOff = SecFlashAOff + (nBlock-SecFlashABegin)* AFP_SectorSize2;
+	else if ((nBlock >= SecFlashABegin) && (nBlock < NUM_SECTORS))
+		ulSectorOff =
+		    SecFlashAOff + (nBlock - SecFlashABegin) * AFP_SectorSize2;
 	// no such sector
 	else
 		return FLASH_FAIL;
@@ -341,7 +349,7 @@ int erase_block_flash(int nBlock)
 
 	write_flash(ulSectorOff, BlockEraseVal);
 
-	if(poll_toggle_bit(ulSectorOff) < 0)
+	if (poll_toggle_bit(ulSectorOff) < 0)
 		return FLASH_FAIL;
 	printf(".");
 
@@ -366,8 +374,6 @@ int get_codes()
 	write_flash(WRITESEQ2, GETCODEDATA2);
 	write_flash(WRITESEQ3, GETCODEDATA3);
 
-
-
 	read_flash(0x0402, &dev_id);
 	dev_id &= 0x0000FFFF;
 
@@ -383,18 +389,15 @@ void get_sector_number(long ulOffset, int *pnSector)
 	long lBootEnd = 0x10000;
 
 	// sector numbers for the FLASH A boot sectors
-	if(ulOffset < lBootEnd)
-	{
-		nSector = (int)ulOffset / AFP_SectorSize1 ;
+	if (ulOffset < lBootEnd) {
+		nSector = (int)ulOffset / AFP_SectorSize1;
 	}
 	// sector numbers for the FLASH B boot sectors
-	else if( ( ulOffset >= lBootEnd ) && ( ulOffset < lMainEnd ) )
-	{
-		nSector = (( ulOffset / (AFP_SectorSize2) ) + 7 );
+	else if ((ulOffset >= lBootEnd) && (ulOffset < lMainEnd)) {
+		nSector = ((ulOffset / (AFP_SectorSize2)) + 7);
 	}
-
 	// if it is a valid sector, set it
-	if ( (nSector >= 0) && (nSector < AFP_NumSectors) )
+	if ((nSector >= 0) && (nSector < AFP_NumSectors))
 		*pnSector = nSector;
 
 }
