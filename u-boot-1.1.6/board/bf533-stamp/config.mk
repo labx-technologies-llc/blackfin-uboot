@@ -22,4 +22,4 @@
 #
 
 # This is not actually used for Blackfin boards so do not change it
-TEXT_BASE = do-not-use-me
+#TEXT_BASE = do-not-use-me
