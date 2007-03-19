@@ -182,7 +182,7 @@ void init_cplbtables(void)
 	icplb_table[j][1] = L1_IMEMORY;
 	j++;
 
-	for (i = 0; i <= CONFIG_MEM_SIZE / 4; i++) {
+	for (i = 0; i < CONFIG_MEM_SIZE / 4; i++) {
 		icplb_table[j][0] = (i * 4 * 1024 * 1024);
 		if (i * 4 * 1024 * 1024 <= CFG_MONITOR_BASE
 		    && (i + 1) * 4 * 1024 * 1024 >= CFG_MONITOR_BASE) {
@@ -194,18 +194,18 @@ void init_cplbtables(void)
 	}
 #if defined(CONFIG_BF561)
 	/* MAC space */
-	dcplb_table[j][0] = CONFIG_ASYNC_EBIU_BASE;
-	dcplb_table[j][1] = SDRAM_IGENERIC;
+	icplb_table[j][0] = 0x2C000000;
+	icplb_table[j][1] = SDRAM_INON_CHBL;
 	j++;
 	/* Async Memory space */
-	for (i = 0; i < 2; i++) {
+	for (i = 0; i < 3; i++) {
 		icplb_table[j][0] = 0x20000000 + i * 4 * 1024 * 1024;
-		icplb_table[j][1] = SDRAM_IGENERIC;
+		icplb_table[j][1] = SDRAM_INON_CHBL;
 		j++;
 	}
 #else
 	icplb_table[j][0] = 0x20000000;
-	icplb_table[j][1] = SDRAM_IGENERIC;
+	icplb_table[j][1] = SDRAM_INON_CHBL;
 #endif
 	j = 0;
 	dcplb_table[j][0] = 0xFF800000;
@@ -225,12 +225,12 @@ void init_cplbtables(void)
 
 #if defined(CONFIG_BF561)
 	/* MAC space */
-	dcplb_table[j][0] = CONFIG_ASYNC_EBIU_BASE;
+	dcplb_table[j][0] = 0x2C000000;
 	dcplb_table[j][1] = SDRAM_EBIU;
 	j++;
 
 	/* Flash space */
-	for (i = 0; i < 2; i++) {
+	for (i = 0; i < 3; i++) {
 		dcplb_table[j][0] = 0x20000000 + i * 4 * 1024 * 1024;
 		dcplb_table[j][1] = SDRAM_EBIU;
 		j++;

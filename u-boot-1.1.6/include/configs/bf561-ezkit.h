@@ -29,8 +29,8 @@
 #define BFIN_BOOT_MODE	BF561_BYPASS_BOOT
 
 /* This sets the default state of the cache on U-Boot's boot */
-//#define CONFIG_ICACHE_ON
-//#define CONFIG_DCACHE_ON
+#define CONFIG_ICACHE_ON
+#define CONFIG_DCACHE_ON
 
 /* Define where the uboot will be loaded by on-chip boot rom */
 #define APP_ENTRY 0x00001000
