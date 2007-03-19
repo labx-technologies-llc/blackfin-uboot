@@ -6,7 +6,9 @@ if [ ! -e bin2ldr ] ; then
 	make all || exit 1
 fi
 
-if [ -e ../../u-boot.bin ] ; then
+[ -z "${OBJTREE}" ] && OBJTREE="../.."
+
+if [ -e ${OBJTREE}/u-boot.bin ] ; then
 	./bin2ldr --proc bf537 || exit 1
 	bfin-uclinux-objcopy -I binary -O ihex app.ldr app.hex || exit 1
 	exit 0

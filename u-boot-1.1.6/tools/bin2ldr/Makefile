@@ -1,7 +1,9 @@
-#!/bin/sh
+OBJTREE ?= ../..
+SRCTREE ?= ../..
+
 CC = gcc
-CFLAG = -Wall -g -I../../include
-APP_FILE = ../../u-boot.bin
+CFLAG = -Wall -g -I$(OBJTREE)/include -I$(SRCTREE)/include
+APP_FILE = $(OBJTREE)/u-boot.bin
 
 all: app.ldr
 

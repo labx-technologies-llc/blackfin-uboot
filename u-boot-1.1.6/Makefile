@@ -256,7 +256,7 @@ $(obj)u-boot.srec:	$(obj)u-boot
 $(obj)u-boot.bin:	$(obj)u-boot
 		$(OBJCOPY) ${OBJCFLAGS} -O binary $< $@
 
-$(obj)u-boot.ldr: u-boot.bin u-boot
+$(obj)u-boot.ldr:	$(obj)u-boot.bin $(obj)u-boot
 		$(MAKE) -C tools/bin2ldr
 		cp tools/bin2ldr/app.ldr u-boot.ldr
 
