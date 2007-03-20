@@ -133,7 +133,7 @@
 #define CFG_GBL_DATA_SIZE	0x4000
 #define CFG_GBL_DATA_ADDR	(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
 #define CONFIG_STACKBASE	(CFG_GBL_DATA_ADDR  - 4)
-#define CONFIG_STACKSIZE        (128*1024)	/* regular stack */
+#define CONFIG_STACKSIZE	(128*1024)	/* regular stack */
 
 #if ( CONFIG_CLKIN_HALF == 0 )
 #define CONFIG_VCO_HZ		( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT )
@@ -153,11 +153,11 @@
  * Command settings
  */
 
-#define CFG_AUTOLOAD	"no"	/* rarpb, bootp, dhcp commands will  */
-				/* only perform a configuration      */
-				/* lookup from the BOOTP/DHCP server */
-				/* but not try to load any image     */
-				/* using TFTP                        */
+#define CFG_AUTOLOAD	"no"	/* rarpb, bootp, dhcp commands will	*/
+				/* only perform a configuration		*/
+				/* lookup from the BOOTP/DHCP server	*/
+				/* but not try to load any image	*/
+				/* using TFTP				*/
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, */
 					/* currently its disabled */
 #define CONFIG_BOOTCOMMAND	"run ramboot"
