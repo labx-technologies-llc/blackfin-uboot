@@ -283,7 +283,7 @@ WAIT_DMA_DONE:
 	r0 = 0;
 _clear_bss:
 _clear_bss_end:
- 	[p1++] = r0;
+	[p1++] = r0;
 _clear_bss_skip:
 
 	p0.l = _start1;
