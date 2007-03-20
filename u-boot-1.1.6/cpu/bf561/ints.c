@@ -6,7 +6,7 @@
  * This file is based on ints.c
  *
  * Apr18 2003, Changed by HuTao to support interrupt cascading for Blackfin
- *             drivers
+ *	drivers
  *
  * Copyright 1996 Roman Zippel
  * Copyright 1999 D. Jeff Dionne <jeff@uclinux.org>

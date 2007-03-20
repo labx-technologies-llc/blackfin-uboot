@@ -8,11 +8,11 @@
  *
  * This file is based on interrupt.S
  *
- * Copyright (C) 2003  Metrowerks, Inc. <mwaddel@metrowerks.com>
- * Copyright (C) 2002  Arcturus Networks Ltd. Ted Ma <mated@sympatico.ca>
- * Copyright (C) 1998  D. Jeff Dionne <jeff@ryeham.ee.ryerson.ca>,
- *                     Kenneth Albanowski <kjahds@kjahds.com>,
- *                     The Silver Hammer Group, Ltd.
+ * Copyright (C) 2003	Metrowerks, Inc. <mwaddel@metrowerks.com>
+ * Copyright (C) 2002	Arcturus Networks Ltd. Ted Ma <mated@sympatico.ca>
+ * Copyright (C) 1998	D. Jeff Dionne <jeff@ryeham.ee.ryerson.ca>,
+ *			Kenneth Albanowski <kjahds@kjahds.com>,
+ *			The Silver Hammer Group, Ltd.
  *
  * (c) 1995, Dionne & Associates
  * (c) 1995, DKG Display Tech.
@@ -78,7 +78,7 @@ _evt_nmi_exit:
 .global _trap
 _trap:
 	SAVE_ALL_SYS
-	r0 = sp;        /* stack frame pt_regs pointer argument ==> r0 */
+	r0 = sp;	/* stack frame pt_regs pointer argument ==> r0 */
 	sp += -12;
 	call _trap_c
 	sp += 12;
