@@ -37,26 +37,26 @@ SECTIONS
   /* Read-only sections, merged into text segment: */
   . = + SIZEOF_HEADERS;
   .interp : { *(.interp) }
-  .hash          : { *(.hash)		}
-  .dynsym        : { *(.dynsym)		}
-  .dynstr        : { *(.dynstr)		}
-  .rel.text      : { *(.rel.text)	}
-  .rela.text     : { *(.rela.text) 	}
-  .rel.data      : { *(.rel.data)	}
-  .rela.data     : { *(.rela.data) 	}
-  .rel.rodata    : { *(.rel.rodata) 	}
-  .rela.rodata   : { *(.rela.rodata) 	}
-  .rel.got       : { *(.rel.got)	}
-  .rela.got      : { *(.rela.got)	}
-  .rel.ctors     : { *(.rel.ctors)	}
-  .rela.ctors    : { *(.rela.ctors)	}
-  .rel.dtors     : { *(.rel.dtors)	}
-  .rela.dtors    : { *(.rela.dtors)	}
-  .rel.bss       : { *(.rel.bss)	}
-  .rela.bss      : { *(.rela.bss)	}
-  .rel.plt       : { *(.rel.plt)	}
-  .rela.plt      : { *(.rela.plt)	}
-  .init          : { *(.init)		}
+  .hash		: { *(.hash)		}
+  .dynsym	: { *(.dynsym)		}
+  .dynstr	: { *(.dynstr)		}
+  .rel.text	: { *(.rel.text)	}
+  .rela.text	: { *(.rela.text) 	}
+  .rel.data	: { *(.rel.data)	}
+  .rela.data	: { *(.rela.data) 	}
+  .rel.rodata	: { *(.rel.rodata) 	}
+  .rela.rodata	: { *(.rela.rodata) 	}
+  .rel.got	: { *(.rel.got)		}
+  .rela.got	: { *(.rela.got)	}
+  .rel.ctors	: { *(.rel.ctors)	}
+  .rela.ctors	: { *(.rela.ctors)	}
+  .rel.dtors	: { *(.rel.dtors)	}
+  .rela.dtors	: { *(.rela.dtors)	}
+  .rel.bss	: { *(.rel.bss)	}
+  .rela.bss	: { *(.rela.bss)	}
+  .rel.plt	: { *(.rel.plt)	}
+  .rela.plt	: { *(.rela.plt)	}
+  .init		: { *(.init)		}
   .plt : { *(.plt) }
   . = CFG_MONITOR_BASE;
   .text      :
