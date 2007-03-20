@@ -1,5 +1,5 @@
 /*
- * U-boot - bf533_serial.h Serial Driver defines
+ * U-boot - bf561_serial.h Serial Driver defines
  *
  * Copyright (c) 2005 blackfin.uclinux.org
  *
@@ -42,8 +42,8 @@
  * MA 02111-1307 USA
  */
 
-#ifndef _Bf533_SERIAL_H
-#define _Bf533_SERIAL_H
+#ifndef _Bf561_SERIAL_H
+#define _Bf561_SERIAL_H
 
 #include <linux/config.h>
 #include <asm/blackfin.h>
