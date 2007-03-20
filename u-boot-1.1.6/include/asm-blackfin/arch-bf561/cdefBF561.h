@@ -1,10 +1,9 @@
-/************************************************************************
- *
+/*
  * cdefBF561.h
  *
  * (c) Copyright 2001-2004 Analog Devices, Inc.  All rights reserved.
  *
- ************************************************************************/
+ */
 
 /* C POINTERS TO SYSTEM MMR REGISTER AND MEMORY MAP FOR ADSP-BF561 */
 
@@ -17,7 +16,7 @@
  * #endif
  */
 
-// include all Core registers and bit definitions
+/* include all Core registers and bit definitions */
 #include <asm/arch-bf561/defBF561.h>
 #include <asm/arch-common/cdef_LPBlackfin.h>
 
@@ -786,7 +785,6 @@
 #define pIMDMA_S1_CURR_Y_COUNT	(volatile unsigned short *)IMDMA_S1_CURR_Y_COUNT
 #define pIMDMA_S1_IRQ_STATUS	(volatile unsigned short *)IMDMA_S1_IRQ_STATUS
 
-#if 1				/* comment by mhfan */
 /*
  * System Reset and Interrupt Controller registers for
  * core A (0xFFC0 0100-0xFFC0 01FF)
@@ -808,7 +806,6 @@
 #define pWDOG_CTL		(volatile unsigned short *)WDOGA_CTL
 #define pWDOG_CNT		(volatile unsigned long *)WDOGA_CNT
 #define pWDOG_STAT		(volatile unsigned long *)WDOGA_STAT
-#endif /* comment by mhfan */
 
 /* Programmable Flag 0 registers (0xFFC0 0700-0xFFC0 07FF) */
 #define pFIO_FLAG_D		(volatile unsigned short *)FIO0_FLAG_D
@@ -998,4 +995,4 @@
 #define pDMA7_IRQ_STATUS	(volatile unsigned short *)DMA2_6_IRQ_STATUS
 #define pDMA7_PERIPHERAL_MAP	(volatile unsigned short *)DMA2_6_PERIPHERAL_MAP
 
-#endif /* _CDEF_BF561_H */
+#endif				/* _CDEF_BF561_H */

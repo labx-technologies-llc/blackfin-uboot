@@ -1,5 +1,5 @@
 /*
- * U-boot - serial.c Serial driver for BF533
+ * U-boot - serial.c Serial driver for BF561
  *
  * Copyright (c) 2005 blackfin.uclinux.org
  *
@@ -49,7 +49,7 @@
 #include <asm/bitops.h>
 #include <asm/delay.h>
 #include <asm/uaccess.h>
-#include "bf533_serial.h"
+#include "serial.h"
 #include <asm/io.h>
 
 unsigned long pll_div_fact;
@@ -100,8 +100,10 @@ void serial_setbrg(void)
 	ACCESS_PORT_IER;
 	sync();
 
-	/* Enable  ERBFI and ELSI interrupts
-	 * to poll SIC_ISR register*/
+	/*
+	 * Enable  ERBFI and ELSI interrupts
+	 * to poll SIC_ISR register
+	 */
 	*pUART_IER = UART_IER_ELSI | UART_IER_ERBFI | UART_IER_ETBEI;
 	sync();
 
@@ -149,7 +151,7 @@ int serial_getc(void)
 
 	/* Poll for RX Interrupt */
 	while (!((isr_val =
-		 *(volatile unsigned long *)SIC_ISR) & IRQ_UART_RX_BIT));
+		  *(volatile unsigned long *)SIC_ISR) & IRQ_UART_RX_BIT)) ;
 	asm("csync;");
 
 	uart_lsr_val = *pUART_LSR;	/* Clear status bit */

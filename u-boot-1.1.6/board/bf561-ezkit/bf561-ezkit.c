@@ -44,7 +44,7 @@ long int initdram(int board_type)
 	int brate;
 	char *tmp = getenv("baudrate");
 	brate = simple_strtoul(tmp, NULL, 16);
-	printf("Serial Port initialized with Baud rate = %x\n",brate);
+	printf("Serial Port initialized with Baud rate = %x\n", brate);
 	printf("SDRAM attributes:\n");
 	printf("tRCD %d SCLK Cycles,tRP %d SCLK Cycles,tRAS %d SCLK Cycles"
 	       "tWR %d SCLK Cycles,CAS Latency %d SCLK cycles \n",
@@ -63,7 +63,7 @@ int misc_init_r(void)
 {
 	/* Keep PF12 low to be able to drive the USB-LAN Extender */
 	*pFIO0_DIR = 0x0000;
-	*pFIO0_FLAG_C = 0x1000; /* Clear PF12 */
+	*pFIO0_FLAG_C = 0x1000;	/* Clear PF12 */
 	sync();
 	*pFIO0_POLAR = 0x0000;
 	sync();

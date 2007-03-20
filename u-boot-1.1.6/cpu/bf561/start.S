@@ -6,8 +6,8 @@
  * This file is based on head.S
  * Copyright (c) 2003  Metrowerks/Motorola
  * Copyright (C) 1998  D. Jeff Dionne <jeff@ryeham.ee.ryerson.ca>,
- *                     Kenneth Albanowski <kjahds@kjahds.com>,
- *                     The Silver Hammer Group, Ltd.
+ *		       Kenneth Albanowski <kjahds@kjahds.com>,
+ *		       The Silver Hammer Group, Ltd.
  * (c) 1995, Dionne & Associates
  * (c) 1995, DKG Display Tech.
  *
@@ -48,35 +48,11 @@
 .global _rambase;
 .global _ramstart;
 .global _ramend;
-.global _bf533_data_dest;
-.global _bf533_data_size;
 .global edata;
 .global _initialize;
 .global _exit;
 .global flashdataend;
 .global init_sdram;
-#if defined(CONFIG_BF537)&&defined(CONFIG_POST)
-.global memory_post_test;
-.global post_flag;
-#endif
-
-#ifdef BF537_UART_BOOT
-#if (CONFIG_CCLK_DIV == 1)
-#define CONFIG_CCLK_ACT_DIV   CCLK_DIV1
-#endif
-#if (CONFIG_CCLK_DIV == 2)
-#define CONFIG_CCLK_ACT_DIV   CCLK_DIV2
-#endif
-#if (CONFIG_CCLK_DIV == 4)
-#define CONFIG_CCLK_ACT_DIV   CCLK_DIV4
-#endif
-#if (CONFIG_CCLK_DIV == 8)
-#define CONFIG_CCLK_ACT_DIV   CCLK_DIV8
-#endif
-#ifndef CONFIG_CCLK_ACT_DIV
-#define CONFIG_CCLK_ACT_DIV   CONFIG_CCLK_DIV_not_defined_properly
-#endif
-#endif
 
 .text
 _start:
@@ -87,7 +63,8 @@ _stext:
 	SYSCFG = R0;
 	SSYNC;
 
-	/* As per HW reference manual DAG registers,
+	/*
+	 * As per HW reference manual DAG registers,
 	 * DATA and Address resgister shall be zero'd
 	 * in initialization, after a reset state
 	 */
@@ -123,7 +100,8 @@ _stext:
 	b2 = 0;
 	b3 = 0;
 
-	/* Set loop counters to zero, to make sure that
+	/*
+	 * Set loop counters to zero, to make sure that
 	 * hw loops are disabled.
 	 */
 	r0  = 0;
@@ -158,16 +136,18 @@ no_soft_reset:
 	[ p0 ++ ] = r1;
 
 	p0.h = hi(SIC_IWR);
-        p0.l = lo(SIC_IWR);
-        r0.l = 0x1;
-        w[p0] = r0.l;
-        SSYNC;
+	p0.l = lo(SIC_IWR);
+	r0.l = 0x1;
+	w[p0] = r0.l;
+	SSYNC;
 
 	sp.l = (0xffb01000 & 0xFFFF);
 	sp.h = (0xffb01000 >> 16);
 
-	/* Check if the code is in SDRAM */
-	/* If the code is in SDRAM, skip SDRAM initializaiton */
+	/*
+	 * Check if the code is in SDRAM
+	 * If the code is in SDRAM, skip SDRAM initializaiton
+	 */
 	call get_pc;
 	r3.l = 0x0;
 	r3.h = 0x2000;
@@ -238,57 +218,11 @@ WAIT_HERE:
 _real_start:
 	[ -- sp ] = reti;
 
-#if defined(CONFIG_EZKIT533) || defined(CONFIG_EZKIT561)
+#ifdef CONFIG_EZKIT561
 	p0.l = (WDOG_CTL & 0xFFFF);
 	p0.h = (WDOG_CTL >> 16);
 	r0 = WATCHDOG_DISABLE(z);
 	w[p0] = r0;
-#endif
-
-
-#ifdef CONFIG_BF537
-/* Initialise General-Purpose I/O Modules on BF537
- * Rev 0.0 Anomaly 05000212 - PORTx_FER,
- * PORT_MUX Registers Do Not accept "writes" correctly
- */
-        p0.h = hi(PORTF_FER);
-        p0.l = lo(PORTF_FER);
-        R0.L = W[P0]; /* Read */
-	nop;
-	nop;
-	nop;
-        ssync;
-        R0 = 0x000F(Z);
-        W[P0] = R0.L; /* Write */
-	nop;
-	nop;
-	nop;
-        ssync;
-        W[P0] = R0.L; /* Enable peripheral function of PORTF for UART0 and UART1 */
-	nop;
-	nop;
-	nop;
-        ssync;
-
- 	p0.h = hi(PORTH_FER);
-        p0.l = lo(PORTH_FER);
-        R0.L = W[P0]; /* Read */
-        nop;
-        nop;
-        nop;
-        ssync;
-        R0 = 0xFFFF(Z);
-        W[P0] = R0.L; /* Write */
-        nop;
-        nop;
-        nop;
-        ssync;
-        W[P0] = R0.L; /* Enable peripheral function of PORTH for MAC */
-        nop;
-        nop;
-        nop;
-        ssync;
-
 #endif
 
 	/* DMA reset code to Hi of L1 SRAM */
@@ -351,13 +285,6 @@ _clear_bss:
 _clear_bss_end:
  	[p1++] = r0;
 _clear_bss_skip:
-
-#if defined(CONFIG_BF537)&&defined(CONFIG_POST)
-        p0.l = post_flag;
-        p0.h = post_flag;
-        r0   = r7;
-        [p0] = r0;
-#endif
 
 	p0.l = _start1;
 	p0.h = _start1;

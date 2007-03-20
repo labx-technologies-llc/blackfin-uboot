@@ -45,13 +45,13 @@ static ulong timestamp;
 static ulong last_time;
 static int int_flag;
 
-int irq_flags; /* needed by asm-blackfin/system.h */
+int irq_flags;			/* needed by asm-blackfin/system.h */
 
 /* Functions just to satisfy the linker */
 
 /*
  * This function is derived from PowerPC code (read timebase as long long).
- * On BF533 it just returns the timer value.
+ * On BF561 it just returns the timer value.
  */
 unsigned long long get_ticks(void)
 {
@@ -60,9 +60,9 @@ unsigned long long get_ticks(void)
 
 /*
  * This function is derived from PowerPC code (timebase clock frequency).
- * On BF533 it returns the number of timer ticks per second.
+ * On BF561 it returns the number of timer ticks per second.
  */
-ulong get_tbclk (void)
+ulong get_tbclk(void)
 {
 	ulong tbclk;
 
@@ -92,22 +92,22 @@ void udelay(unsigned long usec)
 	unsigned long cclk;
 	cclk = (CONFIG_CCLK_HZ);
 
-	while ( usec > 1 ) {
-	       /*
-		* how many clock ticks to delay?
-		*  - request(in useconds) * clock_ticks(Hz) / useconds/second
-		*/
+	while (usec > 1) {
+		/*
+		 * how many clock ticks to delay?
+		 *  - request(in useconds) * clock_ticks(Hz) / useconds/second
+		 */
 		if (usec < 1000) {
-			delay = (usec * (cclk/244)) >> 12 ;
+			delay = (usec * (cclk / 244)) >> 12;
 			usec = 0;
 		} else {
-			delay = (1000 * (cclk/244)) >> 12 ;
+			delay = (1000 * (cclk / 244)) >> 12;
 			usec -= 1000;
 		}
 
-		asm volatile (" %0 = CYCLES;": "=r"(start));
+		asm volatile (" %0 = CYCLES;":"=r" (start));
 		do {
-			asm volatile (" %0 = CYCLES; ": "=r"(stop));
+			asm volatile (" %0 = CYCLES; ":"=r" (stop));
 		} while (stop - start < delay);
 	}
 
@@ -118,7 +118,7 @@ void timer_init(void)
 {
 	*pTCNTL = 0x1;
 	*pTSCALE = 0x0;
-	*pTCOUNT  = MAX_TIM_LOAD;
+	*pTCOUNT = MAX_TIM_LOAD;
 	*pTPERIOD = MAX_TIM_LOAD;
 	*pTCNTL = 0x7;
 	asm("CSYNC;");
@@ -127,7 +127,8 @@ void timer_init(void)
 	last_time = 0;
 }
 
-/* Any network command or flash
+/*
+ * Any network command or flash
  * command is started get_timer shall
  * be called before TCOUNT gets reset,
  * to implement the accurate timeouts.
@@ -136,9 +137,9 @@ void timer_init(void)
  * the number that has been elapsed from
  * the last reset.
  *
- *  As get_timer is used in the u-boot
- *  only for timeouts this should be
- *  sufficient
+ * As get_timer is used in the u-boot
+ * only for timeouts this should be
+ * sufficient
  */
 ulong get_timer(ulong base)
 {
@@ -147,20 +148,24 @@ ulong get_timer(ulong base)
 	/* Number of clocks elapsed */
 	ulong clocks = (MAX_TIM_LOAD - (*pTCOUNT));
 
-	/* Find if the TCOUNT is reset
-	timestamp gives the number of times
-	TCOUNT got reset */
-	if(clocks < last_time)
+	/*
+	 * Find if the TCOUNT is reset
+	 * timestamp gives the number of times
+	 * TCOUNT got reset
+	 */
+	if (clocks < last_time)
 		timestamp++;
 	last_time = clocks;
 
 	/* Get the number of milliseconds */
-	milisec = clocks/(CONFIG_CCLK_HZ / 1000);
+	milisec = clocks / (CONFIG_CCLK_HZ / 1000);
 
-	/* Find the number of millisonds
-	that got elapsed before this TCOUNT
-	cycle */
-	milisec += timestamp * (MAX_TIM_LOAD/(CONFIG_CCLK_HZ / 1000));
+	/*
+	 * Find the number of millisonds
+	 * that got elapsed before this TCOUNT
+	 * cycle
+	 */
+	milisec += timestamp * (MAX_TIM_LOAD / (CONFIG_CCLK_HZ / 1000));
 
 	return (milisec - base);
 }

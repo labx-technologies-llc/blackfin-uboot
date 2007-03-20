@@ -94,7 +94,7 @@ ENTRY(_icplb_flush)
 	 * R0 = Page start
 	 * R1 = Page length (actually, offset into size/prefix tables)
 	 * R3 = sub-bank deposit values
-  	 *
+	 *
 	 * The cache has 2 Ways, and 64 sets, so we iterate through
 	 * the sets, accessing the tag for each Way, for our Bank and
 	 * sub-bank, looking for dirty, valid tags that match our
@@ -297,7 +297,7 @@ bank_chosen:
 	 * R1 = Page length (actually, offset into size/prefix tables)
 	 * R2 = Bank select mask
 	 * R3 = sub-bank deposit values
-  	 *
+	 *
 	 * The cache has 2 Ways, and 64 sets, so we iterate through
 	 * the sets, accessing the tag for each Way, for our Bank and
 	 * sub-bank, looking for dirty, valid tags that match our

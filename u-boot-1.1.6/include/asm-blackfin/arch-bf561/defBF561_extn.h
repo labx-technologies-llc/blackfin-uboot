@@ -1,5 +1,5 @@
 /*
- * defBF533_extn.h
+ * defBF561_extn.h
  *
  * This file is subject to the terms and conditions of the GNU Public
  * License. See the file "COPYING" in the main directory of this archive
@@ -16,12 +16,12 @@
  *
  */
 
-#ifndef _DEF_BF533_EXTN_H
-#define _DEF_BF533_EXTN_H
+#ifndef _DEF_BF561_EXTN_H
+#define _DEF_BF561_EXTN_H
 
 #define OFFSET_( x )		((x) & 0x0000FFFF) /* define macro for offset */
 /* Delay inserted for PLL transition */
-#define PLL_DELAY			0x1000
+#define PLL_DELAY		0x1000
 
 #define L1_ISRAM		0xFFA00000
 #define L1_ISRAM_END		0xFFA10000
@@ -73,4 +73,4 @@
 /* Watch Dog timer values setup */
 #define WATCHDOG_DISABLE	WDOG_TMR_DISABLE | ICTL_DISABLE
 
-#endif	/* _DEF_BF533_EXTN_H */
+#endif	/* _DEF_BF561_EXTN_H */
