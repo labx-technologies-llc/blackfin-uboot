@@ -130,26 +130,15 @@ void *memcpy(void *dest, const void *src, size_t count)
 {
 	char *tmp = (char *)dest, *s = (char *)src;
 
-	/* L1_ISRAM can only be accessed via dma */
-	if ((tmp >= (char *)L1_ISRAM) && (tmp < (char *)L1_ISRAM_END)) {
-		/* L1 is the destination */
-		dma_memcpy(dest, src, count);
-
-		if (icache_status()) {
-			blackfin_icache_flush_range(src, src + count);
-		}
-	} else if ((s >= (char *)L1_ISRAM) && (s < (char *)L1_ISRAM_END)) {
-		/* L1 is the source */
-		dma_memcpy(dest, src, count);
-
-		if (icache_status()) {
-			blackfin_icache_flush_range(dest, dest + count);
-		}
-		if (dcache_status()) {
-			blackfin_dcache_flush_range(dest, dest + count);
-		}
-	} else {
-		memcpy_ASM(dest, src, count);
+        if (dcache_status()) {
+                blackfin_dcache_flush_range(src, src+count);
+        }
+	dma_memcpy(dest,src,count);
+        if (icache_status()) {
+		blackfin_icache_flush_range(dest, dest+count);
+	}
+        if (dcache_status()) {
+                blackfin_dcache_invalidate_range(dest, dest+count);
 	}
 	return dest;
 }
