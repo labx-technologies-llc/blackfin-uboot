@@ -1,7 +1,7 @@
 /*
  * U-boot - prototypes for cache handling functions.
  *
- * Copyright (c) 2005-2007 blackfin.uclinux.org
+ * Copyright (c) 2005-2007 Analog Devices Inc.
  *
  * (C) Copyright 2000-2004
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
