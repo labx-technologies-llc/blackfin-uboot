@@ -1,3 +1,4 @@
+driver-smc91111.diff
 include-ata.patch
 net_eth.patch
 Makefile.diff
