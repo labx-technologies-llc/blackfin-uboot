@@ -115,20 +115,20 @@ set TEST_DATE_SET                        0
 set TEST_DATE_SET_AFTER_POWER_CYCLE      0
 set TEST_SPI_FLASH			 0
 
-set UBOOT_PROMPT            ">"
+set UBOOT_PROMPT            "ezkit>"
 set BDINFO_FLASHSIZE        "0x00800000"
 set KERNEL_FLASH_LOC        "0x20100000"
 set KERNEL_FLASH_END        "0x207FFFFF"
 set L1_INSTRUCT_SRAM_ADDRESS "0xffa03000"
 set BIG_ELF_LOAD_ADDRESS    "0x2000000"
-
+set BDINFO_MEMSIZE           64*1024*1024
 
 
 } elseif { $board_type == "BF533-EZKIT" } {
 
 set TEST_SPI_FLASH			 0
 
-set UBOOT_PROMPT               ">"
+set UBOOT_PROMPT               "ezkit>"
 set BDINFO_FLASHSIZE           "0x00220000"
 set KERNEL_FLASH_LOC           "0x20040000"
 set KERNEL_FLASH_END           "0x2021ffff"
@@ -137,6 +137,7 @@ set L1_INSTRUCT_SRAM_ADDRESS   "0xffa03000"
 set BIG_ELF_LOAD_ADDRESS        "0x1000000"
 
 set TEST_JFFS2				 0
+set BDINFO_MEMSIZE           32*1024*1024
 
 
 } elseif { $board_type == "BF537-EZKIT" } {
@@ -1404,7 +1405,7 @@ set RESET_RETRIES           5
 
 #set UBOOT_PROMPT [get_uboot_define CFG_PROMPT $uboot_test_loc ]
 send_user "UBOOT_PROMPT = $UBOOT_PROMPT\n"
-set KERNEL_PROMPT           ">"
+set KERNEL_PROMPT           "~>"
 set AUTOBOOT_PROMPT         "Hit any key to stop"
 
 # tftp_errors is important for counting any errors in tftp seen anywhere.
@@ -4489,11 +4490,12 @@ because tftp never worked"
     }
     
     sleep 1
-    set timeout 1200
-    send_user "\nAbout to copy the kernel to flash.\n"
-    send -s "cp.b $CFG_LOAD_ADDR $KERNEL_FLASH_LOC 0x$uimage_size\r"
-    set temp_status_flag $FAILURE
-    while 1 {
+
+   set timeout 1200
+   send_user "\nAbout to copy the kernel to flash.\n"
+   send -s "cp.b $CFG_LOAD_ADDR $KERNEL_FLASH_LOC 0x$uimage_size\r"
+   set temp_status_flag $FAILURE
+   while 1 {
 	expect {
 	    
 	    "done" {
