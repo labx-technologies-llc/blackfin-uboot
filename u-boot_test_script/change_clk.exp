@@ -23,7 +23,7 @@ proc usage {} {
     send_user "\n 0   500        100         20          1         5        \n"
     send_user "\n 1   100         50         16          4         8        \n"
     send_user "\n 2   500         50         20          1         10       \n"
-    send_user "\n 3   100        100         16          4         4        \n"
+    send_user "\n 3   200        100         16          2         4        \n"
     send_user "\n********************************************************************\n"
 
     send_user "\n********************************************************************\n"
@@ -93,7 +93,7 @@ if { $board_type == "BF533-STAMP" } {
 	   set sclk_div  10
 	} elseif { $num == "3" } {
 	   set vco_mult  16
-	   set cclk_div  4 
+	   set cclk_div  2 
 	   set sclk_div  4
 	} 	
 } elseif { $board_type == "BF537-EZKIT" } {
@@ -112,7 +112,7 @@ if { $board_type == "BF533-STAMP" } {
 	   set sclk_div  10
 	} elseif { $num == "3" } {
 	   set vco_mult  16
-	   set cclk_div  4 
+	   set cclk_div  2 
 	   set sclk_div  4
 	} 	
 	
