@@ -163,7 +163,7 @@ global TEST_PASS
 global BIG_ELF_LOAD_ADDRESS
 
 spawn su
-sleep .5
+sleep 1.5
 while 1 {
    expect {
       "Password:" {
@@ -4412,28 +4412,12 @@ for {set i 0} {$i < $TFTP_ITERATIONS} {incr i} {
 		break
 	    }
 	    
-	    "# T" {
-		send_user "tftp timeout detected"
-		send_log "TFTP-ERROR\n"
-		incr tftp_errors
-		break
-	    }
-	    
 	    "TFTP error" {
 		send_user "TFTP error detected"
 		send_log "TFTP-ERROR\n"
 		incr tftp_errors
 		break
 	    }
-	    
-	    "T #" {
-		send_user "tftp timeout detected"
-		send_log "TFTP-ERROR\n"
-		incr tftp_errors
-		break
-	    }
-	    
-	    
 	    
 	    timeout {
 		send_user "ERROR: tftp timed out"

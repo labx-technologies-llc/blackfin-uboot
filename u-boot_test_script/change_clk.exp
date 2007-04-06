@@ -31,8 +31,8 @@ proc usage {} {
     send_user "\n NUM CCLK(Mhz)  SCLK (Mhz)   VCO_MULT  CCLK_DIV  SCLK_DIV  \n"
     send_user "\n 0   594        118         22          1         5        \n"
     send_user "\n 1   594         50         22          1        12        \n"
-    send_user "\n 2    50         50         15          8         8        \n"
-    send_user "\n 3   100        100         22          4         4        \n"
+    send_user "\n 2   100         50         15          4         8        \n"
+    send_user "\n 3   200        100         15          2         4        \n"
     send_user "\n********************************************************************\n"
 
     send_user "\n********************************************************************\n"
@@ -40,8 +40,8 @@ proc usage {} {
     send_user "\n NUM CCLK(Mhz)  SCLK (Mhz)   VCO_MULT  CCLK_DIV  SCLK_DIV  \n"
     send_user "\n 0   600        120         20          1         5        \n"
     send_user "\n 1   600         50         20          1        12        \n"
-    send_user "\n 2    48         48         13          8         8        \n"
-    send_user "\n 3    97         97         13          4         4        \n"
+    send_user "\n 2    96         48         13          4         8        \n"
+    send_user "\n 3   196         97         13          2         4        \n"
     send_user "\n********************************************************************\n"
     exit
 }
@@ -128,11 +128,11 @@ if { $board_type == "BF533-STAMP" } {
 	   set sclk_div  12
 	} elseif { $num == "2" } {
 	   set vco_mult  15
-	   set cclk_div  8 
+	   set cclk_div  4 
 	   set sclk_div  8
 	} elseif { $num == "3" } {
-	   set vco_mult  22
-	   set cclk_div  4 
+	   set vco_mult  15
+	   set cclk_div  2 
 	   set sclk_div  4
 	} 	
 } elseif { $board_type == "BF561-EZKIT" } {
@@ -147,11 +147,11 @@ if { $board_type == "BF533-STAMP" } {
 	   set sclk_div  12
 	} elseif { $num == "2" } {
 	   set vco_mult  13
-	   set cclk_div  8 
+	   set cclk_div  4 
 	   set sclk_div  8
 	} elseif { $num == "3" } {
 	   set vco_mult  13
-	   set cclk_div  4 
+	   set cclk_div  2 
 	   set sclk_div  4
 	} 	
 } else { 
