@@ -1,0 +1,21 @@
+#!/bin/sh
+USER=/home/test
+CHECKOUT=$USER/checkouts
+UBOOT_SCRIPTS=$USER/test_scripts/u-boot
+SVN_SERVER=10.99.22.20
+
+## check out uboot
+if [ ! -d $CHECKOUT ] ; then
+  mkdir -p $CHECKOUT
+fi
+if [ ! -d $CHECKOUT/u-boot ] ; then
+  mkdir -p $CHECKOUT/u-boot
+fi
+
+  echo -n "Removing checkouts   " ; date
+  
+  rm -rf $CHECKOUT/u-boot
+  cd $CHECKOUT/
+  echo -n "Checking out uboot     " ; date
+  svn checkout --username anonymous svn://$SVN_SERVER/u-boot/trunk u-boot 1>/dev/null 2>/dev/null 
+  

@@ -1,0 +1,20 @@
+#!/bin/sh
+USER=/home/test
+CHECKOUT=$USER/checkouts
+UBOOT_SCRIPTS=$USER/test_scripts/u-boot
+
+QUIT=2
+
+while [ $QUIT -gt 1 ]
+do
+
+$UBOOT_SCRIPTS/uboot-test-checkout
+$UBOOT_SCRIPTS/uboot-test  BF561-EZKIT 3
+$UBOOT_SCRIPTS/uboot-test  BF561-EZKIT 1
+$UBOOT_SCRIPTS/uboot-test  BF561-EZKIT 2
+$UBOOT_SCRIPTS/uboot-test  BF561-EZKIT 0
+
+
+sleep 1000
+
+done
