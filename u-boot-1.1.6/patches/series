@@ -1,7 +1,6 @@
 MACOSX-uboot-porting.patch
 driver-smc91111.diff
 include-ata.patch
-net_eth.patch
 Makefile.diff
 common-cmd_elf.diff
 common-environment.diff
