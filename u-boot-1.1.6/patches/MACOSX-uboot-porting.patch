@@ -1,0 +1,35 @@
+Index: u-boot-1.1.6/tools/Makefile
+===================================================================
+--- u-boot-1.1.6.orig/tools/Makefile	2007-04-26 11:09:33.000000000 +0800
++++ u-boot-1.1.6/tools/Makefile	2007-04-26 11:10:00.000000000 +0800
+@@ -74,7 +74,7 @@
+ ifeq ($(HOSTOS)-$(HOSTARCH),darwin-ppc)
+ HOST_CFLAGS = -traditional-cpp -Wall
+ HOST_LDFLAGS =-multiply_defined suppress
+-HOST_ENVIRO_CFLAGS = -traditional-cpp
++HOST_ENVIRO_CFLAGS =
+ 
+ else
+ ifeq ($(HOSTOS)-$(HOSTARCH),netbsd-ppc)
+Index: u-boot-1.1.6/tools/mkimage.c
+===================================================================
+--- u-boot-1.1.6.orig/tools/mkimage.c	2007-04-26 11:09:39.000000000 +0800
++++ u-boot-1.1.6/tools/mkimage.c	2007-04-26 11:10:12.000000000 +0800
+@@ -446,7 +446,7 @@
+ 	}
+ 
+ 	/* We're a bit of paranoid */
+-#if defined(_POSIX_SYNCHRONIZED_IO) && !defined(__sun__) && !defined(__FreeBSD__)
++#if defined(_POSIX_SYNCHRONIZED_IO) && !defined(__sun__) && !defined(__FreeBSD__) && !defined(__APPLE__)
+ 	(void) fdatasync (ifd);
+ #else
+ 	(void) fsync (ifd);
+@@ -496,7 +496,7 @@
+ 	(void) munmap((void *)ptr, sbuf.st_size);
+ 
+ 	/* We're a bit of paranoid */
+-#if defined(_POSIX_SYNCHRONIZED_IO) && !defined(__sun__) && !defined(__FreeBSD__)
++#if defined(_POSIX_SYNCHRONIZED_IO) && !defined(__sun__) && !defined(__FreeBSD__) && !defined(__APPLE__)
+ 	(void) fdatasync (ifd);
+ #else
+ 	(void) fsync (ifd);
