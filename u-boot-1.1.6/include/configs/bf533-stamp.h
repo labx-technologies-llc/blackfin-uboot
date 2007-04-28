@@ -279,7 +279,7 @@
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"ramargs=setenv bootargs root=/dev/mtdblock0 rw console=ttyBF0,57600\0" \
 	"flashboot=bootm 0x20100000\0" \
-	"
+	""
 #endif
 
 #elif (BFIN_BOOT_MODE == BF533_SPI_BOOT)
