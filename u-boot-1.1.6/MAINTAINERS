@@ -568,5 +568,21 @@ Haavard Skinnemoen <hskinnemoen@atmel.com>
 	ATSTK1000		AT32AP7000
 
 #########################################################################
+# Blackfin Systems:							#
+#									#
+# Maintainer Name, Email Address					#
+#	Board			CPU					#
+#########################################################################
+
+Aubrey Li <aubrey.li@analog.com>
+Blackfin Team <u-boot-devel@blackfin.uclinux.org>
+
+	BF533-EZKIT		BF533
+	BF533-STAMP		BF533
+	BF537-PNAV		BF537
+	BF537-STAMP		BF537
+	BF561-EZKIT		BF561
+
+#########################################################################
 # End of MAINTAINERS list						#
 #########################################################################
