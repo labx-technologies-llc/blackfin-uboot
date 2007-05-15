@@ -191,7 +191,7 @@
 
 /* Check to make sure everything fits in SDRAM */
 #if ((CFG_MONITOR_BASE + CFG_MONITOR_LEN) > CFG_MAX_RAM_SIZE)
-	#error Memory Map does not fit into configuration
+# error Memory Map does not fit into configuration
 #endif
 
 #if ( CONFIG_CLKIN_HALF == 0 )
