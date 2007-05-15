@@ -782,6 +782,8 @@ proc all_done { } {
     send_user "=====================================\n"
     send_user "  board type = $board_type\n"
     send_user "  tty = $ttydev\n"
+    send_user "  icache_status = $icache_status\n"
+    send_user "  dcache_status = $dcache_status\n"
     send_user "\n"
     
     # End of results
