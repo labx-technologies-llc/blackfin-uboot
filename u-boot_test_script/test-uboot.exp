@@ -643,6 +643,8 @@ proc all_done { } {
     global test_started
     global compare_file
     global starting_dir
+    global icache_status
+    global dcache_status
     
     # First, check if we need to compare with previous results.
     # Later, we will save the current result overwriting the old results.
