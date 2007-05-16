@@ -643,6 +643,8 @@ proc all_done { } {
     global test_started
     global compare_file
     global starting_dir
+    global core_clk
+    global system_clk
     global icache_status
     global dcache_status
     
@@ -784,6 +786,8 @@ proc all_done { } {
     send_user "=====================================\n"
     send_user "  board type = $board_type\n"
     send_user "  tty = $ttydev\n"
+    send_user "  Core Clock = $core_clk Mhz\n"    
+    send_user "  System Clock = $system_clk Mhz\n"
     send_user "  icache_status = $icache_status\n"
     send_user "  dcache_status = $dcache_status\n"
     send_user "\n"
@@ -1606,6 +1610,13 @@ if { $where_are_we == "uboot" } {
 for {set i 0} {$i < $RESET_RETRIES} {incr i} {
     set timeout 25
     expect {
+
+        -re "Clock.*Core: (\[0-9]+) MHz, System: (\[0-9]+) MHz" {
+                set core_clk $expect_out(1,string)
+                set system_clk $expect_out(2,string)
+                expect $AUTOBOOT_PROMPT
+                break
+        }
 
 	$AUTOBOOT_PROMPT {
 	    send_user "got autoboot prompt\n"
