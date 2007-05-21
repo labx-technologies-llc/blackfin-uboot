@@ -417,6 +417,9 @@ proc recover {} {
     global UBOOT_PROMPT
     global KERNEL_PROMPT
     global AUTOBOOT_PROMPT
+    global uboot_scripts_dir
+    global kermit_spawn_id
+
 
     send_user "Attempting to recover to u-boot prompt\n"
     for {set i 0} {$i < 5} {incr i} {
@@ -478,7 +481,8 @@ proc recover {} {
 		}
 		
 		timeout {
-		    send "\3"
+                    source ./reset_board.exp
+                    set spawn_id $kermit_spawn_id
 		    sleep 1
 		    break
 		}

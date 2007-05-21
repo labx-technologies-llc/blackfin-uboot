@@ -31,7 +31,7 @@ set password                "blackfin"
 set logcore  [exec date +%b-%d-%G-%H-%M]
 
 # directories and file locations
-set user                    test
+set user                    test/work/cruise
 set uboot_scripts_dir       "/home/$user/test_scripts/u-boot"
 set log_dir                 "/home/$user/test_scripts/u-boot/logs"
 set default_test_dir        "/home/$user/test_scripts/u-boot/under_test"
@@ -62,7 +62,7 @@ set step_sequence_number    1
 # directory and file locations
 set config_loc  "include/config.h"
 set configs_loc  "include/configs"
-set uboot_test_dirname  "/home/test/checkouts/u-boot"
+set uboot_test_dirname  "/home/$user/checkouts/u-boot"
 set uboot_basename  "u-boot-1.1.6"
 set uboot_test_loc  "$uboot_test_dirname/$uboot_basename"
 set uboot_bin_loc   "$uboot_test_loc/u-boot.bin"

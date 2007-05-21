@@ -1,0 +1,56 @@
+#!/usr/bin/expect
+send_user "Starting reset_board_test.exp\n"
+
+cd $uboot_scripts_dir
+
+set send_slow {1 0.1}
+set password "blackfin"
+
+spawn su 
+sleep .5
+while 1 {
+   expect {
+      "Password:" {
+         send "$password\r"
+         break
+      }
+
+      timeout {
+            puts "Fail . " 
+            break
+         }
+     }
+}
+ 
+while 1 {
+   expect {
+      "#" {
+         puts "su success.\n"
+         break
+      }
+
+      timeout {
+            puts "Fail su as root. "
+            break
+         }
+     }
+}
+set su_id $spawn_id
+  
+
+send -s "./reset_board 2\r"
+while 1 {
+   expect {
+      "#" { 
+     break
+      }
+
+      timeout {
+            break
+         }
+     }
+}
+
+send_user "Ending reset_board_test.exp\n"
+
+
