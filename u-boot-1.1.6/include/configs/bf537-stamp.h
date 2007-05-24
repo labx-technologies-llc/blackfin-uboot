@@ -181,7 +181,7 @@
 #define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL | CFG_CMD_PING)
 #endif
 
-#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
+#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT) || (BFIN_BOOT_MODE == BF537_UART_BOOT)
 #define CONFIG_COMMANDS		(CONFIG_BFIN_CMD| \
 				 CFG_CMD_ELF	| \
 				 CFG_CMD_I2C	| \
@@ -207,7 +207,7 @@
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw console=ttyBF0,57600"
 #define CONFIG_LOADADDR	0x1000000
 
-#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
+#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT) || (BFIN_BOOT_MODE == BF537_UART_BOOT)
 #if (BFIN_CPU != ADSP_BF534)
 #define CONFIG_EXTRA_ENV_SETTINGS				\
 	"ramargs=setenv bootargs root=/dev/mtdblock0 rw console=ttyBF0,57600\0"	\
