@@ -177,6 +177,7 @@ void init_cplbtables(void)
 {
 	int i, j;
 
+	/* Instruction CPLB table */
 	j = 0;
 	icplb_table[j][0] = 0xFFA00000;
 	icplb_table[j][1] = L1_IMEMORY;
@@ -203,10 +204,37 @@ void init_cplbtables(void)
 		icplb_table[j][1] = SDRAM_INON_CHBL;
 		j++;
 	}
+#elif defined(CONFIG_BF548)	
+	/* Async memory */
+	/* Bank0 */
+	for (i = 0; i < CONFIG_ASYNC_BANK0_SIZE / 4; i++) {
+		icplb_table[j][0] = 0x20000000 + i * 4 * 1024 * 1024;
+		icplb_table[j][1] = SDRAM_INON_CHBL;
+		j++;
+	}
+	/* Bank1 */
+	for (i = 0; i < CONFIG_ASYNC_BANK1_SIZE / 4; i++) {
+		icplb_table[j][0] = 0x24000000 + i * 4 * 1024 * 1024;
+		icplb_table[j][1] = SDRAM_INON_CHBL;
+		j++;
+	}
+	/* Bank2 */
+	for (i = 0; i < CONFIG_ASYNC_BANK2_SIZE / 4; i++) {
+		icplb_table[j][0] = 0x28000000 + i * 4 * 1024 * 1024;
+		icplb_table[j][1] = SDRAM_INON_CHBL;
+		j++;
+	}
+	/* Bank3 */
+	for (i = 0; i < CONFIG_ASYNC_BANK3_SIZE / 4; i++) {
+		icplb_table[j][0] = 0x2C000000 + i * 4 * 1024 * 1024;
+		icplb_table[j][1] = SDRAM_INON_CHBL;
+		j++;
+	}
 #else
 	icplb_table[j][0] = 0x20000000;
 	icplb_table[j][1] = SDRAM_INON_CHBL;
 #endif
+	/* data CPLB table */
 	j = 0;
 	dcplb_table[j][0] = 0xFF800000;
 	dcplb_table[j][1] = L1_DMEMORY;
@@ -222,16 +250,40 @@ void init_cplbtables(void)
 		}
 		j++;
 	}
-
 #if defined(CONFIG_BF561)
 	/* MAC space */
 	dcplb_table[j][0] = 0x2C000000;
 	dcplb_table[j][1] = SDRAM_EBIU;
 	j++;
-
 	/* Flash space */
 	for (i = 0; i < 3; i++) {
 		dcplb_table[j][0] = 0x20000000 + i * 4 * 1024 * 1024;
+		dcplb_table[j][1] = SDRAM_EBIU;
+		j++;
+	}
+#elif defined(CONFIG_BF548)
+	/* Async memory */
+	/* Bank0 */
+	for (i = 0; i < CONFIG_ASYNC_BANK0_SIZE / 4; i++) {
+		dcplb_table[j][0] = 0x20000000 + i * 4 * 1024 * 1024;
+		dcplb_table[j][1] = SDRAM_EBIU;
+		j++;
+	}
+	/* Bank1 */
+	for (i = 0; i < CONFIG_ASYNC_BANK1_SIZE / 4; i++) {
+		dcplb_table[j][0] = 0x24000000 + i * 4 * 1024 * 1024;
+		dcplb_table[j][1] = SDRAM_EBIU;
+		j++;
+	}
+	/* Bank2 */
+	for (i = 0; i < CONFIG_ASYNC_BANK2_SIZE / 4; i++) {
+		dcplb_table[j][0] = 0x28000000 + i * 4 * 1024 * 1024;
+		dcplb_table[j][1] = SDRAM_EBIU;
+		j++;
+	}
+	/* Bank3 */
+	for (i = 0; i < CONFIG_ASYNC_BANK3_SIZE / 4; i++) {
+		dcplb_table[j][0] = 0x2C000000 + i * 4 * 1024 * 1024;
 		dcplb_table[j][1] = SDRAM_EBIU;
 		j++;
 	}
@@ -340,6 +392,7 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	post_reloc();
 #endif
 
+/*#if	(CONFIG_STAMP || CONFIG_BF537 || CONFIG_EZKIT561 || CONFIG_EZKIT548) && !defined(CFG_NO_FLASH)*/
 #if	(CONFIG_STAMP || CONFIG_BF537 || CONFIG_EZKIT561) && !defined(CFG_NO_FLASH)
 	/* There are some other pointer constants we must deal with */
 	/* configure available FLASH banks */
