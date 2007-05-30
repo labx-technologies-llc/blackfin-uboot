@@ -41,3 +41,6 @@
 #ifdef CONFIG_BF537
 #include <asm/arch-bf537/irq.h>
 #endif
+#ifdef CONFIG_EZKIT548
+#include <asm/arch-bf548/irq.h>
+#endif
