@@ -25,6 +25,10 @@
 	#include <asm/arch-bf561/cdefBF561.h>
 	#include <asm/arch-bf561/defBF561_extn.h>
 	#include <asm/arch-bf561/bf561_serial.h>
+#elif defined(__ADSPBF54x__)
+	#include <asm/arch-bf548/cdefBF549.h>
+	#include <asm/arch-bf548/defBF54x_extn.h>
+	#include <asm/arch-bf548/bf54x_serial.h>
 #elif defined(__ADSPBF535__)
 	#include <asm/cpu/cdefBF5d35.h>
 #elif defined(__AD6532__)
