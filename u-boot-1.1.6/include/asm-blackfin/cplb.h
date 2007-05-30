@@ -74,6 +74,8 @@
 
 #if defined(CONFIG_BF561)
 #define page_descriptor_table_size (CONFIG_MEM_SIZE/4 + 1 + 4)	/* SDRAM +L1 + ASYNC_Memory */
+#elif defined(CONFIG_BF548)
+#define page_descriptor_table_size (CONFIG_MEM_SIZE/4 + 1 + CONFIG_ASYNC_BANK0_SIZE/4 + CONFIG_ASYNC_BANK1_SIZE/4 + CONFIG_ASYNC_BANK2_SIZE/4 + CONFIG_ASYNC_BANK3_SIZE/4)	/* SDRAM + L1 + ASYNC_Memory */
 #else
 #define page_descriptor_table_size (CONFIG_MEM_SIZE/4 + 2)	/* SDRAM + L1 + ASYNC_Memory */
 #endif
