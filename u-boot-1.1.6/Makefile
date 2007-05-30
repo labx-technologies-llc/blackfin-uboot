@@ -191,6 +191,10 @@ ifeq ($(CPU),bf561)
 OBJS += cpu/$(CPU)/start1.o     cpu/$(CPU)/interrupt.o  cpu/$(CPU)/cache.o
 OBJS += cpu/$(CPU)/flush.o 	cpu/$(CPU)/init_sdram.o
 endif
+ifeq ($(CPU),bf548)
+OBJS += cpu/$(CPU)/start1.o	cpu/$(CPU)/interrupt.o	cpu/$(CPU)/cache.o
+OBJS += cpu/$(CPU)/flush.o      cpu/$(CPU)/init_sdram.o
+endif
 
 OBJS := $(addprefix $(obj),$(OBJS))
 
@@ -2264,6 +2268,9 @@ bf561-ezkit_config	:	unconfig
 bf537-pnav_config	:	unconfig
 	@$(MKCONFIG) $(@:_config=) blackfin bf537 bf537-pnav
 
+bf548-ezkit_config	:	unconfig
+	@$(MKCONFIG) $(@:_config=) blackfin bf548 bf548-ezkit
+
 #========================================================================
 # AVR32
 #========================================================================
@@ -2304,6 +2311,7 @@ clean:
 	rm -f $(obj)board/bf533-ezkit/u-boot.lds $(obj)board/bf533-stamp/u-boot.lds
 	rm -f $(obj)board/bf537-stamp/u-boot.lds $(obj)board/bf537-pnav/u-boot.lds
 	rm -f $(obj)board/bf561-ezkit/u-boot.lds
+	rm -f $(obj)board/bf548-ezkit/u-boot.lds
 	rm -f $(obj)include/bmp_logo.h
 	rm -f $(obj)nand_spl/u-boot-spl $(obj)nand_spl/u-boot-spl.map
 
