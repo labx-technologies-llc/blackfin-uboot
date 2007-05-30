@@ -161,7 +161,7 @@
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, */
 					/* currently its disabled */
 #define CONFIG_BOOTCOMMAND	"run ramboot"
-#define CONFIG_BOOTARGS		"root=/dev/mtdblock0 rw console=ttyBF0,57600"
+#define CONFIG_BOOTARGS		"root=/dev/mtdblock0 rw"
 
 #if (CONFIG_DRIVER_SMC91111)
 #define CONFIG_COMMANDS1	(CONFIG_CMD_DFL	| \
@@ -171,9 +171,9 @@
 				 CFG_CMD_JFFS2	| \
 				 CFG_CMD_DHCP)
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw console=ttyBF0,57600\0" 		\
+	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" 		\
 	"nfsargs=setenv bootargs root=/dev/nfs rw nfsroot=$(serverip):"	\
-		"$(rootpath) console=ttyBF0,57600\0"						\
+		"$(rootpath)\0"						\
 	"addip=setenv bootargs $(bootargs) ip=$(ipaddr):$(serverip):"	\
 		"$(gatewayip):$(netmask):$(hostname):eth0:off\0"	\
 	"ramboot=tftpboot $(loadaddr) linux; "		\
@@ -191,7 +191,7 @@
 				 CFG_CMD_CACHE	| \
 				 CFG_CMD_JFFS2)
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw console=ttyBF0,57600\0"		\
+	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"		\
 	"flashboot=bootm 0x20100000\0"					\
 	""
 #endif

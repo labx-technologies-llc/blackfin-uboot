@@ -238,7 +238,7 @@
 #define CONFIG_BOOTCOMMAND 	"eeprom read 0x1000000 0x100000 0x180000;icache on;dcache on;bootm 0x1000000"
 #endif
 
-#define CONFIG_BOOTARGS		"root=/dev/mtdblock0 rw console=ttyBF0,57600"
+#define CONFIG_BOOTARGS		"root=/dev/mtdblock0 rw"
 
 #if (CONFIG_DRIVER_SMC91111)
 #define CONFIG_COMMANDS1	(CONFIG_CMD_DFL | \
@@ -261,9 +261,9 @@
 #if (BFIN_BOOT_MODE == BF533_BYPASS_BOOT)
 #if (CONFIG_DRIVER_SMC91111)
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw console=ttyBF0,57600\0" \
+	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" \
 	"nfsargs=setenv bootargs root=/dev/nfs rw nfsroot=$(serverip):" \
-		"$(rootpath) console=ttyBF0,57600\0" \
+		"$(rootpath)\0" \
 	"addip=setenv bootargs $(bootargs) ip=$(ipaddr):$(serverip):" \
 		"$(gatewayip):$(netmask):$(hostname):eth0:off\0" \
 	"ramboot=tftpboot $(loadaddr) linux; " \
@@ -277,16 +277,16 @@
 	""
 #else
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw console=ttyBF0,57600\0" \
+	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" \
 	"flashboot=bootm 0x20100000\0" \
 	""
 #endif
 
 #elif (BFIN_BOOT_MODE == BF533_SPI_BOOT)
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw console=ttyBF0,57600\0" \
+	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" \
 	"nfsargs=setenv bootargs root=/dev/nfs rw nfsroot=$(serverip):" \
-		"$(rootpath) console=ttyBF0,57600\0"	\
+		"$(rootpath)\0"	\
 	"addip=setenv bootargs $(bootargs) ip=$(ipaddr):$(serverip):" \
 		"$(gatewayip):$(netmask):$(hostname):eth0:off\0" \
 	"ramboot=tftpboot $(loadaddr) linux; " \

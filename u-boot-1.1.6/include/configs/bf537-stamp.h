@@ -204,15 +204,15 @@
 				 CFG_CMD_DATE)
 #endif
 
-#define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw console=ttyBF0,57600"
+#define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"
 #define CONFIG_LOADADDR	0x1000000
 
 #if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT) || (BFIN_BOOT_MODE == BF537_UART_BOOT)
 #if (BFIN_CPU != ADSP_BF534)
 #define CONFIG_EXTRA_ENV_SETTINGS				\
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw console=ttyBF0,57600\0"	\
+	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"	\
 	"nfsargs=setenv bootargs root=/dev/nfs rw "		\
-	"nfsroot=$(serverip):$(rootpath) console=ttyBF0,57600\0"\
+	"nfsroot=$(serverip):$(rootpath)\0"\
 	"addip=setenv bootargs $(bootargs) "			\
 	"ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask)"	\
 	":$(hostname):eth0:off\0"				\
@@ -227,16 +227,16 @@
 	""
 #else
 #define CONFIG_EXTRA_ENV_SETTINGS				\
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw console=ttyBF0,57600\0"	\
+	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"	\
 	"flashboot=bootm 0x20100000\0"				\
 	""
 #endif
 #elif (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
 #if (BFIN_CPU != ADSP_BF534)
 #define CONFIG_EXTRA_ENV_SETTINGS				\
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw console=ttyBF0,57600\0"	\
+	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"	\
 	"nfsargs=setenv bootargs root=/dev/nfs rw "		\
-	"nfsroot=$(serverip):$(rootpath) console=ttyBF0,57600\0"\
+	"nfsroot=$(serverip):$(rootpath)\0"\
 	"addip=setenv bootargs $(bootargs) "			\
 	"ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask)"	\
 	":$(hostname):eth0:off\0"				\
@@ -250,7 +250,7 @@
 	""
 #else
 #define CONFIG_EXTRA_ENV_SETTINGS				\
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw console=ttyBF0,57600\0"	\
+	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"	\
 	"flashboot=bootm 0x20100000\0"				\
 	""
 #endif
