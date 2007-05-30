@@ -1,0 +1,2924 @@
+# 1 "start.S"
+# 1 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/cpu/bf548//"
+# 1 "<built-in>"
+#define __STDC__ 1
+# 1 "<built-in>"
+#define __ASSEMBLER__ 1
+# 1 "<built-in>"
+#define __STDC_HOSTED__ 0
+# 1 "<built-in>"
+#define __GNUC__ 4
+# 1 "<built-in>"
+#define __GNUC_MINOR__ 1
+# 1 "<built-in>"
+#define __GNUC_PATCHLEVEL__ 1
+# 1 "<built-in>"
+#define __SIZE_TYPE__ long unsigned int
+# 1 "<built-in>"
+#define __PTRDIFF_TYPE__ long int
+# 1 "<built-in>"
+#define __WCHAR_TYPE__ int
+# 1 "<built-in>"
+#define __WINT_TYPE__ unsigned int
+# 1 "<built-in>"
+#define __INTMAX_TYPE__ long long int
+# 1 "<built-in>"
+#define __UINTMAX_TYPE__ long long unsigned int
+# 1 "<built-in>"
+#define __GXX_ABI_VERSION 1002
+# 1 "<built-in>"
+#define __SCHAR_MAX__ 127
+# 1 "<built-in>"
+#define __SHRT_MAX__ 32767
+# 1 "<built-in>"
+#define __INT_MAX__ 2147483647
+# 1 "<built-in>"
+#define __LONG_MAX__ 2147483647L
+# 1 "<built-in>"
+#define __LONG_LONG_MAX__ 9223372036854775807LL
+# 1 "<built-in>"
+#define __WCHAR_MAX__ 2147483647
+# 1 "<built-in>"
+#define __CHAR_BIT__ 8
+# 1 "<built-in>"
+#define __INTMAX_MAX__ 9223372036854775807LL
+# 1 "<built-in>"
+#define __FLT_EVAL_METHOD__ 0
+# 1 "<built-in>"
+#define __FLT_RADIX__ 2
+# 1 "<built-in>"
+#define __FLT_MANT_DIG__ 24
+# 1 "<built-in>"
+#define __FLT_DIG__ 6
+# 1 "<built-in>"
+#define __FLT_MIN_EXP__ (-125)
+# 1 "<built-in>"
+#define __FLT_MIN_10_EXP__ (-37)
+# 1 "<built-in>"
+#define __FLT_MAX_EXP__ 128
+# 1 "<built-in>"
+#define __FLT_MAX_10_EXP__ 38
+# 1 "<built-in>"
+#define __FLT_MAX__ 3.40282347e+38F
+# 1 "<built-in>"
+#define __FLT_MIN__ 1.17549435e-38F
+# 1 "<built-in>"
+#define __FLT_EPSILON__ 1.19209290e-7F
+# 1 "<built-in>"
+#define __FLT_DENORM_MIN__ 1.40129846e-45F
+# 1 "<built-in>"
+#define __FLT_HAS_INFINITY__ 1
+# 1 "<built-in>"
+#define __FLT_HAS_QUIET_NAN__ 1
+# 1 "<built-in>"
+#define __DBL_MANT_DIG__ 53
+# 1 "<built-in>"
+#define __DBL_DIG__ 15
+# 1 "<built-in>"
+#define __DBL_MIN_EXP__ (-1021)
+# 1 "<built-in>"
+#define __DBL_MIN_10_EXP__ (-307)
+# 1 "<built-in>"
+#define __DBL_MAX_EXP__ 1024
+# 1 "<built-in>"
+#define __DBL_MAX_10_EXP__ 308
+# 1 "<built-in>"
+#define __DBL_MAX__ 1.7976931348623157e+308
+# 1 "<built-in>"
+#define __DBL_MIN__ 2.2250738585072014e-308
+# 1 "<built-in>"
+#define __DBL_EPSILON__ 2.2204460492503131e-16
+# 1 "<built-in>"
+#define __DBL_DENORM_MIN__ 4.9406564584124654e-324
+# 1 "<built-in>"
+#define __DBL_HAS_INFINITY__ 1
+# 1 "<built-in>"
+#define __DBL_HAS_QUIET_NAN__ 1
+# 1 "<built-in>"
+#define __LDBL_MANT_DIG__ 53
+# 1 "<built-in>"
+#define __LDBL_DIG__ 15
+# 1 "<built-in>"
+#define __LDBL_MIN_EXP__ (-1021)
+# 1 "<built-in>"
+#define __LDBL_MIN_10_EXP__ (-307)
+# 1 "<built-in>"
+#define __LDBL_MAX_EXP__ 1024
+# 1 "<built-in>"
+#define __LDBL_MAX_10_EXP__ 308
+# 1 "<built-in>"
+#define __DECIMAL_DIG__ 17
+# 1 "<built-in>"
+#define __LDBL_MAX__ 1.7976931348623157e+308L
+# 1 "<built-in>"
+#define __LDBL_MIN__ 2.2250738585072014e-308L
+# 1 "<built-in>"
+#define __LDBL_EPSILON__ 2.2204460492503131e-16L
+# 1 "<built-in>"
+#define __LDBL_DENORM_MIN__ 4.9406564584124654e-324L
+# 1 "<built-in>"
+#define __LDBL_HAS_INFINITY__ 1
+# 1 "<built-in>"
+#define __LDBL_HAS_QUIET_NAN__ 1
+# 1 "<built-in>"
+#define __REGISTER_PREFIX__ 
+# 1 "<built-in>"
+#define __USER_LABEL_PREFIX__ _
+# 1 "<built-in>"
+#define __VERSION__ "4.1.1 (ADI 07R1)"
+# 1 "<built-in>"
+#define __OPTIMIZE_SIZE__ 1
+# 1 "<built-in>"
+#define __OPTIMIZE__ 1
+# 1 "<built-in>"
+#define __FINITE_MATH_ONLY__ 0
+# 1 "<built-in>"
+#define __bfin 1
+# 1 "<built-in>"
+#define __bfin__ 1
+# 1 "<built-in>"
+#define bfin 1
+# 1 "<built-in>"
+#define __BFIN 1
+# 1 "<built-in>"
+#define __BFIN__ 1
+# 1 "<built-in>"
+#define BFIN 1
+# 1 "<built-in>"
+#define __ADSPBLACKFIN__ 1
+# 1 "<built-in>"
+#define __ADSPLPBLACKFIN__ 1
+# 1 "<built-in>"
+#define __ADSPBF532__ 1
+# 1 "<built-in>"
+#define __gnu_linux__ 1
+# 1 "<built-in>"
+#define __linux 1
+# 1 "<built-in>"
+#define __linux__ 1
+# 1 "<built-in>"
+#define linux 1
+# 1 "<built-in>"
+#define __unix 1
+# 1 "<built-in>"
+#define __unix__ 1
+# 1 "<built-in>"
+#define unix 1
+# 1 "<built-in>"
+#define __ELF__ 1
+# 1 "<command line>"
+#define __ASSEMBLY__ 1
+# 1 "<command line>"
+#define __KERNEL__ 1
+# 1 "<command line>"
+#define TEXT_BASE 0x03FC0000
+# 1 "<command line>"
+#define CONFIG_BLACKFIN 1
+# 1 "start.S"
+# 38 "start.S"
+#define ASSEMBLY 
+
+# 1 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/linux/config.h" 1
+
+#define _LINUX_CONFIG_H 
+# 41 "start.S" 2
+# 1 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/config.h" 1
+
+# 1 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/configs/bf548-ezkit.h" 1
+
+
+
+
+
+#define __CONFIG_BF548_H__ 
+
+#define CFG_LONGHELP 1
+#define CONFIG_CMDLINE_EDITING 1
+#define CONFIG_BAUDRATE 57600
+
+#define CONFIG_UART_CONSOLE 0
+#define CONFIG_BF548 1
+#define CONFIG_BOOTDELAY 5
+
+
+#define CFG_ENV_IS_IN_NOWHERE 1
+
+
+
+
+
+#define BFIN_IDLE 0x0040
+#define BFIN_PARA_BOOT 0x0041
+#define BFIN_FIFO_BOOT 0x0042
+#define BFIN_SPI_MASTER_BOOT 0x0043
+#define BFIN_SPI_SLAVE_BOOT 0x0044
+#define BFIN_TWI_MASTER_BOOT 0x0045
+#define BFIN_TWI_SLAVE_BOOT 0x0046
+#define BFIN_UART_BOOT 0x0047
+#define BFIN_MEM_BOOT 0x004A
+#define BFIN_16HOST_BOOT 0x004E
+#define BFIN_8HOST_BOOT 0x004F
+
+#define BFIN_BOOT_MODE BFIN_PARA_BOOT
+
+#define ADSP_BF542 0x42
+#define ADSP_BF544 0x44
+#define ADSP_BF548 0x48
+#define ADSP_BF549 0x49
+#define BFIN_CPU ADSP_BF549
+
+
+#undef CONFIG_POST_TEST
+
+
+#define APP_ENTRY 0x00001000
+
+#define CONFIG_RTC_BF533 1
+#define CONFIG_BOOT_RETRY_TIME -1
+
+
+#define CONFIG_CLKIN_HZ 25000000
+
+
+#define CONFIG_CLKIN_HALF 0
+
+
+#define CONFIG_PLL_BYPASS 0
+
+
+#define CONFIG_VCO_MULT 20
+
+
+#define CONFIG_CCLK_DIV 1
+
+
+#define CONFIG_SCLK_DIV 5
+
+
+
+#define CONFIG_SPI_BAUD 2
+
+
+
+
+
+#define CONFIG_VCO_HZ ( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT )
+
+
+
+
+
+#define CONFIG_CCLK_HZ ( CONFIG_VCO_HZ / CONFIG_CCLK_DIV )
+#define CONFIG_SCLK_HZ ( CONFIG_VCO_HZ / CONFIG_SCLK_DIV )
+# 99 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/configs/bf548-ezkit.h"
+#define CONFIG_MEM_SIZE 64
+#define CONFIG_MEM_ADD_WDTH 10
+#define CONFIG_MEM_MT46V32M16P_6T 1
+
+#define CONFIG_LOADS_ECHO 1
+
+#define CFG_AUTOLOAD "no"
+
+
+
+
+
+
+#define CONFIG_DRIVER_SMSC9118 1
+#define CONFIG_SMSC9118_BASE 0x24000000
+
+
+
+
+
+#define CONFIG_IPADDR 192.168.0.15
+#define CONFIG_NETMASK 255.255.255.0
+#define CONFIG_GATEWAYIP 192.168.0.1
+#define CONFIG_SERVERIP 192.168.0.2
+#define CONFIG_HOSTNAME BF549
+
+#define CONFIG_ROOTPATH /romfs
+
+#define CONFIG_ETHADDR 02:80:ad:24:31:e8
+
+
+#define CFG_LONGHELP 1
+#define CONFIG_BOOTDELAY 5
+#define CONFIG_BOOT_RETRY_TIME -1
+#define CONFIG_BOOTCOMMAND "run ramboot"
+# 144 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/configs/bf548-ezkit.h"
+#undef CONFIG_POST
+
+
+
+
+
+
+
+#define CFG_CMD_POST_DIAG 0
+# 165 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/configs/bf548-ezkit.h"
+#define ADD_IDE_CMD 0
+
+
+
+
+
+
+
+#define ADD_NAND_CMD 0
+
+
+
+
+
+#define CONFIG_BFIN_CMD (CONFIG_CMD_DFL | CFG_CMD_PING)
+# 200 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/configs/bf548-ezkit.h"
+#define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"
+
+
+#define CONFIG_EXTRA_ENV_SETTINGS "ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" "nfsargs=setenv bootargs root=/dev/nfs rw " "nfsroot=$(serverip):$(rootpath)\0" "addip=setenv bootargs $(bootargs) " "ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask)" ":$(hostname):eth0:off\0" "ramboot=tftpboot 0x1000000 linux;" "run ramargs;run addip;bootelf\0" "nfsboot=tftpboot 0x1000000 linux;" "run nfsargs;run addip;bootelf\0" "flashboot=bootm 0x20100000\0" "update=tftpboot 0x1000000 u-boot.bin;" "protect off 0x20000000 0x2007FFFF;" "erase 0x20000000 0x2007FFFF;cp.b 0x1000000 0x20000000 $(filesize)\0" ""
+# 238 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/configs/bf548-ezkit.h"
+# 1 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/cmd_confdefs.h" 1
+# 28 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/cmd_confdefs.h"
+#define _CMD_CONFIG_H 
+
+
+
+
+#define CFG_CMD_BDI 0x00000001ULL
+#define CFG_CMD_LOADS 0x00000002ULL
+#define CFG_CMD_LOADB 0x00000004ULL
+#define CFG_CMD_IMI 0x00000008ULL
+#define CFG_CMD_CACHE 0x00000010ULL
+#define CFG_CMD_FLASH 0x00000020ULL
+#define CFG_CMD_MEMORY 0x00000040ULL
+
+#define CFG_CMD_NET 0x00000080ULL
+#define CFG_CMD_ENV 0x00000100ULL
+#define CFG_CMD_KGDB 0x0000000000000200ULL
+#define CFG_CMD_PCMCIA 0x00000400ULL
+#define CFG_CMD_IDE 0x00000800ULL
+#define CFG_CMD_PCI 0x00001000ULL
+#define CFG_CMD_IRQ 0x00002000ULL
+#define CFG_CMD_BOOTD 0x00004000ULL
+#define CFG_CMD_CONSOLE 0x00008000ULL
+#define CFG_CMD_EEPROM 0x00010000ULL
+#define CFG_CMD_ASKENV 0x00020000ULL
+#define CFG_CMD_RUN 0x00040000ULL
+#define CFG_CMD_ECHO 0x00080000ULL
+#define CFG_CMD_I2C 0x00100000ULL
+#define CFG_CMD_REGINFO 0x00200000ULL
+#define CFG_CMD_IMMAP 0x00400000ULL
+#define CFG_CMD_DATE 0x00800000ULL
+#define CFG_CMD_DHCP 0x01000000ULL
+#define CFG_CMD_BEDBUG 0x02000000ULL
+#define CFG_CMD_FDC 0x04000000ULL
+#define CFG_CMD_SCSI 0x08000000ULL
+#define CFG_CMD_AUTOSCRIPT 0x10000000ULL
+#define CFG_CMD_MII 0x20000000ULL
+#define CFG_CMD_SETGETDCR 0x40000000ULL
+#define CFG_CMD_BSP 0x80000000ULL
+
+#define CFG_CMD_ELF 0x0000000100000000ULL
+#define CFG_CMD_MISC 0x0000000200000000ULL
+#define CFG_CMD_USB 0x0000000400000000ULL
+#define CFG_CMD_DOC 0x0000000800000000ULL
+#define CFG_CMD_JFFS2 0x0000001000000000ULL
+#define CFG_CMD_DTT 0x0000002000000000ULL
+#define CFG_CMD_SDRAM 0x0000004000000000ULL
+#define CFG_CMD_DIAG 0x0000008000000000ULL
+#define CFG_CMD_FPGA 0x0000010000000000ULL
+#define CFG_CMD_HWFLOW 0x0000020000000000ULL
+#define CFG_CMD_SAVES 0x0000040000000000ULL
+#define CFG_CMD_SPI 0x0000100000000000ULL
+#define CFG_CMD_FDOS 0x0000200000000000ULL
+#define CFG_CMD_VFD 0x0000400000000000ULL
+#define CFG_CMD_NAND 0x0000800000000000ULL
+#define CFG_CMD_BMP 0x0001000000000000ULL
+#define CFG_CMD_PORTIO 0x0002000000000000ULL
+#define CFG_CMD_PING 0x0004000000000000ULL
+#define CFG_CMD_MMC 0x0008000000000000ULL
+#define CFG_CMD_FAT 0x0010000000000000ULL
+#define CFG_CMD_IMLS 0x0020000000000000ULL
+#define CFG_CMD_ITEST 0x0040000000000000ULL
+#define CFG_CMD_NFS 0x0080000000000000ULL
+#define CFG_CMD_REISER 0x0100000000000000ULL
+#define CFG_CMD_CDP 0x0200000000000000ULL
+#define CFG_CMD_XIMG 0x0400000000000000ULL
+#define CFG_CMD_UNIVERSE 0x0800000000000000ULL
+#define CFG_CMD_EXT2 0x1000000000000000ULL
+#define CFG_CMD_SNTP 0x2000000000000000ULL
+#define CFG_CMD_DISPLAY 0x4000000000000000ULL
+
+#define CFG_CMD_ALL 0xFFFFFFFFFFFFFFFFULL
+
+
+
+
+#define CFG_CMD_NONSTD (CFG_CMD_ASKENV | CFG_CMD_BEDBUG | CFG_CMD_BMP | CFG_CMD_BSP | CFG_CMD_CACHE | CFG_CMD_CDP | CFG_CMD_DATE | CFG_CMD_DHCP | CFG_CMD_DIAG | CFG_CMD_DISPLAY | CFG_CMD_DOC | CFG_CMD_DTT | CFG_CMD_EEPROM | CFG_CMD_ELF | CFG_CMD_EXT2 | CFG_CMD_FDC | CFG_CMD_FAT | CFG_CMD_FDOS | CFG_CMD_HWFLOW | CFG_CMD_I2C | CFG_CMD_IDE | CFG_CMD_IMMAP | CFG_CMD_IRQ | CFG_CMD_JFFS2 | CFG_CMD_KGDB | CFG_CMD_MII | CFG_CMD_MMC | CFG_CMD_NAND | CFG_CMD_PCI | CFG_CMD_PCMCIA | CFG_CMD_PING | CFG_CMD_PORTIO | CFG_CMD_REGINFO | CFG_CMD_REISER | CFG_CMD_SAVES | CFG_CMD_SCSI | CFG_CMD_SDRAM | CFG_CMD_SNTP | CFG_CMD_SPI | CFG_CMD_UNIVERSE | CFG_CMD_USB | CFG_CMD_VFD )
+# 148 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/cmd_confdefs.h"
+#define CONFIG_CMD_DFL (CFG_CMD_ALL & ~CFG_CMD_NONSTD)
+
+
+#define CONFIG_COMMANDS CONFIG_CMD_DFL
+
+
+
+
+
+
+
+#define CONFIG_BOOTP_SUBNETMASK 0x00000001
+#define CONFIG_BOOTP_GATEWAY 0x00000002
+#define CONFIG_BOOTP_HOSTNAME 0x00000004
+#define CONFIG_BOOTP_NISDOMAIN 0x00000008
+#define CONFIG_BOOTP_BOOTPATH 0x00000010
+#define CONFIG_BOOTP_BOOTFILESIZE 0x00000020
+#define CONFIG_BOOTP_DNS 0x00000040
+#define CONFIG_BOOTP_DNS2 0x00000080
+#define CONFIG_BOOTP_SEND_HOSTNAME 0x00000100
+#define CONFIG_BOOTP_NTPSERVER 0x00000200
+#define CONFIG_BOOTP_TIMEOFFSET 0x00000400
+
+#define CONFIG_BOOTP_VENDOREX 0x80000000
+
+#define CONFIG_BOOTP_ALL (~CONFIG_BOOTP_VENDOREX)
+
+
+#define CONFIG_BOOTP_DEFAULT (CONFIG_BOOTP_SUBNETMASK | CONFIG_BOOTP_GATEWAY | CONFIG_BOOTP_HOSTNAME | CONFIG_BOOTP_BOOTPATH)
+
+
+
+
+
+#define CONFIG_BOOTP_MASK CONFIG_BOOTP_DEFAULT
+# 239 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/configs/bf548-ezkit.h" 2
+# 258 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/configs/bf548-ezkit.h"
+#define CFG_PROMPT "bf549> "
+
+
+
+
+
+
+#define CFG_CBSIZE 256
+
+#define CFG_PBSIZE (CFG_CBSIZE+sizeof(CFG_PROMPT)+16)
+#define CFG_MAXARGS 16
+#define CFG_BARGSIZE CFG_CBSIZE
+#define CFG_MEMTEST_START 0x00100000
+#define CFG_MEMTEST_END 0x03F00000
+#define CFG_LOAD_ADDR 0x01000000
+#define CFG_HZ 1000
+#define CFG_BAUDRATE_TABLE { 9600, 19200, 38400, 57600, 115200 }
+#define CFG_SDRAM_BASE 0x00000000
+#define CFG_MAX_RAM_SIZE 0x04000000
+
+#define CFG_FLASH_BASE 0x20000000
+
+#define CFG_MONITOR_LEN (256 << 10)
+#define CFG_MONITOR_BASE (CFG_MAX_RAM_SIZE - CFG_MONITOR_LEN)
+#define CFG_MALLOC_LEN (128 << 10)
+#define CFG_MALLOC_BASE (CFG_MONITOR_BASE - CFG_MALLOC_LEN)
+#define CFG_GBL_DATA_SIZE 0x4000
+#define CFG_GBL_DATA_ADDR (CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
+#define CONFIG_STACKBASE (CFG_GBL_DATA_ADDR - 4)
+
+#define CFG_BOOTMAPSZ (8 << 20)
+#define CFG_MAX_FLASH_BANKS 1
+#define CFG_MAX_FLASH_SECT 71
+
+
+#define CFG_ENV_IS_IN_FLASH 1
+#define CFG_ENV_ADDR 0x20004000
+#define CFG_ENV_OFFSET (CFG_ENV_ADDR - CFG_FLASH_BASE)
+
+
+
+
+
+#define CFG_ENV_SIZE 0x2000
+#define CFG_ENV_SECT_SIZE 0x2000
+
+#define ENV_IS_EMBEDDED 
+
+
+
+#define CFG_JFFS2_FIRST_BANK 0
+#define CFG_JFFS2_NUM_BANKS 1
+
+#define CFG_JFFS2_FIRST_SECTOR 15
+
+
+
+
+
+
+#define CONFIG_STACKSIZE (128*1024)
+
+#define POLL_MODE 1
+#define FLASH_TOT_SECT 71
+#define FLASH_SIZE 0x400000
+#define CFG_FLASH_SIZE 0x400000
+
+
+
+
+
+#define CFG_NAND_ADDR 0x20212000
+#define CFG_NAND_BASE CFG_NAND_ADDR
+#define CFG_MAX_NAND_DEVICE 1
+#define SECTORSIZE 512
+#define ADDR_COLUMN 1
+#define ADDR_PAGE 2
+#define ADDR_COLUMN_PAGE 3
+#define NAND_ChipID_UNKNOWN 0x00
+#define NAND_MAX_FLOORS 1
+#define NAND_MAX_CHIPS 1
+#define BFIN_NAND_READY PF3
+
+#define NAND_WAIT_READY(nand) do { int timeout = 0; while(!(*pPORTFIO & PF3)) if (timeout++ > 100000) break; } while (0)
+
+
+
+
+
+
+
+#define BFIN_NAND_CLE (1<<2)
+#define BFIN_NAND_ALE (1<<1)
+
+#define WRITE_NAND_COMMAND(d,adr) do{ *(volatile __u8 *)((unsigned long)adr | BFIN_NAND_CLE) = (__u8)(d); } while(0)
+#define WRITE_NAND_ADDRESS(d,adr) do{ *(volatile __u8 *)((unsigned long)adr | BFIN_NAND_ALE) = (__u8)(d); } while(0)
+#define WRITE_NAND(d,adr) do{ *(volatile __u8 *)((unsigned long)adr) = (__u8)d; } while(0)
+#define READ_NAND(adr) ((volatile unsigned char)(*(volatile __u8 *)(unsigned long)adr))
+
+
+
+
+#define CONFIG_MISC_INIT_R 
+
+#define CFG_BOOTM_LEN 0x4000000
+
+
+
+
+
+
+#undef CONFIG_SOFT_I2C
+# 405 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/configs/bf548-ezkit.h"
+#define CFG_I2C_SPEED 50000
+#define CFG_I2C_SLAVE 0xFE
+
+#define __ADSPLPBLACKFIN__ 1
+#define __ADSPBF54x__ 1
+# 419 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/configs/bf548-ezkit.h"
+#define AMGCTLVAL 0xFF
+#define AMBCTL0VAL 0x7BB07BB0
+#define AMBCTL1VAL 0xFFC27BB0
+
+#define CONFIG_VDSP 1
+
+
+#define ET_EXEC_VDSP 0x8
+#define SHT_STRTAB_VDSP 0x1
+#define ELFSHDRSIZE_VDSP 0x2C
+#define VDSP_ENTRY_ADDR 0xFFA00000
+# 2 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/config.h" 2
+# 42 "start.S" 2
+# 1 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/blackfin.h" 1
+# 26 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/blackfin.h"
+#define _BLACKFIN_H_ 
+# 38 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/blackfin.h"
+# 1 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-common/cdefBF5xx.h" 1
+# 10 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-common/cdefBF5xx.h"
+#define _CDEFBF53x_H 
+
+
+
+
+# 1 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-bf533/cdefBF532.h" 1
+# 20 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-bf533/cdefBF532.h"
+#define _CDEF_BF532_H 
+# 29 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-bf533/cdefBF532.h"
+# 1 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-bf533/defBF532.h" 1
+# 22 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-bf533/defBF532.h"
+#define _DEF_BF532_H 
+# 31 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-bf533/defBF532.h"
+# 1 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-common/def_LPBlackfin.h" 1
+# 22 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-common/def_LPBlackfin.h"
+#define _DEF_LPBLACKFIN_H 
+
+
+
+
+
+
+
+#define MK_BMSK_(x) (1<<x)
+# 41 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-common/def_LPBlackfin.h"
+#define ASTAT_AZ_P 0x00000000
+#define ASTAT_AN_P 0x00000001
+#define ASTAT_CC_P 0x00000005
+#define ASTAT_AQ_P 0x00000006
+#define ASTAT_RND_MOD_P 0x00000008
+#define ASTAT_AC0_P 0x0000000C
+#define ASTAT_AC0_COPY_P 0x00000002
+#define ASTAT_AC1_P 0x0000000D
+#define ASTAT_AV0_P 0x00000010
+#define ASTAT_AV0S_P 0x00000011
+#define ASTAT_AV1_P 0x00000012
+#define ASTAT_AV1S_P 0x00000013
+#define ASTAT_V_P 0x00000018
+#define ASTAT_V_COPY_P 0x00000003
+#define ASTAT_VS_P 0x00000019
+
+
+#define ASTAT_AZ MK_BMSK_(ASTAT_AZ_P)
+#define ASTAT_AN MK_BMSK_(ASTAT_AN_P)
+#define ASTAT_AC0 MK_BMSK_(ASTAT_AC0_P)
+#define ASTAT_AC0_COPY MK_BMSK_(ASTAT_AC0_COPY_P)
+#define ASTAT_AC1 MK_BMSK_(ASTAT_AC1_P)
+#define ASTAT_AV0 MK_BMSK_(ASTAT_AV0_P)
+#define ASTAT_AV1 MK_BMSK_(ASTAT_AV1_P)
+#define ASTAT_CC MK_BMSK_(ASTAT_CC_P)
+#define ASTAT_AQ MK_BMSK_(ASTAT_AQ_P)
+#define ASTAT_RND_MOD MK_BMSK_(ASTAT_RND_MOD_P)
+#define ASTAT_V MK_BMSK_(ASTAT_V_P)
+#define ASTAT_V_COPY MK_BMSK_(ASTAT_V_COPY_P)
+
+
+
+
+
+
+#define SEQSTAT_EXCAUSE0_P 0x00000000
+#define SEQSTAT_EXCAUSE1_P 0x00000001
+#define SEQSTAT_EXCAUSE2_P 0x00000002
+#define SEQSTAT_EXCAUSE3_P 0x00000003
+#define SEQSTAT_EXCAUSE4_P 0x00000004
+#define SEQSTAT_EXCAUSE5_P 0x00000005
+#define SEQSTAT_IDLE_REQ_P 0x0000000C
+#define SEQSTAT_SFTRESET_P 0x0000000D
+#define SEQSTAT_HWERRCAUSE0_P 0x0000000E
+#define SEQSTAT_HWERRCAUSE1_P 0x0000000F
+#define SEQSTAT_HWERRCAUSE2_P 0x00000010
+#define SEQSTAT_HWERRCAUSE3_P 0x00000011
+#define SEQSTAT_HWERRCAUSE4_P 0x00000012
+#define SEQSTAT_HWERRCAUSE5_P 0x00000013
+#define SEQSTAT_HWERRCAUSE6_P 0x00000014
+#define SEQSTAT_HWERRCAUSE7_P 0x00000015
+
+
+
+#define SEQSTAT_EXCAUSE ( MK_BMSK_(SEQSTAT_EXCAUSE0_P ) | MK_BMSK_(SEQSTAT_EXCAUSE1_P ) | MK_BMSK_(SEQSTAT_EXCAUSE2_P ) | MK_BMSK_(SEQSTAT_EXCAUSE3_P ) | MK_BMSK_(SEQSTAT_EXCAUSE4_P ) | MK_BMSK_(SEQSTAT_EXCAUSE5_P ) | 0 )
+# 104 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-common/def_LPBlackfin.h"
+#define SEQSTAT_SFTRESET MK_BMSK_(SEQSTAT_SFTRESET_P )
+
+
+#define SEQSTAT_HWERRCAUSE MK_BMSK_(SEQSTAT_HWERRCAUSE0_P ) | MK_BMSK_(SEQSTAT_HWERRCAUSE1_P ) | MK_BMSK_(SEQSTAT_HWERRCAUSE2_P ) | MK_BMSK_(SEQSTAT_HWERRCAUSE3_P ) | MK_BMSK_(SEQSTAT_HWERRCAUSE4_P ) | 0
+# 119 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-common/def_LPBlackfin.h"
+#define SYSCFG_SSSTEP_P 0x00000000
+#define SYSCFG_CCEN_P 0x00000001
+#define SYSCFG_SNEN_P 0x00000002
+
+
+#define SYSCFG_SSSTEP MK_BMSK_(SYSCFG_SSSTEP_P)
+#define SYSCFG_CCEN MK_BMSK_(SYSCFG_CCEN_P)
+#define SYSCFG_SNEN MK_BMSK_(SYSCFG_SNEN_P
+
+
+#define SYSCFG_SSSSTEP SYSCFG_SSSTEP
+#define SYSCFG_CCCEN SYSCFG_CCEN
+
+
+
+
+
+
+#define SRAM_BASE_ADDRESS 0xFFE00000
+#define DMEM_CONTROL 0xFFE00004
+#define DCPLB_STATUS 0xFFE00008
+#define DCPLB_FAULT_STATUS 0xFFE00008
+#define DCPLB_FAULT_ADDR 0xFFE0000C
+#define DCPLB_ADDR0 0xFFE00100
+#define DCPLB_ADDR1 0xFFE00104
+#define DCPLB_ADDR2 0xFFE00108
+#define DCPLB_ADDR3 0xFFE0010C
+#define DCPLB_ADDR4 0xFFE00110
+#define DCPLB_ADDR5 0xFFE00114
+#define DCPLB_ADDR6 0xFFE00118
+#define DCPLB_ADDR7 0xFFE0011C
+#define DCPLB_ADDR8 0xFFE00120
+#define DCPLB_ADDR9 0xFFE00124
+#define DCPLB_ADDR10 0xFFE00128
+#define DCPLB_ADDR11 0xFFE0012C
+#define DCPLB_ADDR12 0xFFE00130
+#define DCPLB_ADDR13 0xFFE00134
+#define DCPLB_ADDR14 0xFFE00138
+#define DCPLB_ADDR15 0xFFE0013C
+#define DCPLB_DATA0 0xFFE00200
+#define DCPLB_DATA1 0xFFE00204
+#define DCPLB_DATA2 0xFFE00208
+#define DCPLB_DATA3 0xFFE0020C
+#define DCPLB_DATA4 0xFFE00210
+#define DCPLB_DATA5 0xFFE00214
+#define DCPLB_DATA6 0xFFE00218
+#define DCPLB_DATA7 0xFFE0021C
+#define DCPLB_DATA8 0xFFE00220
+#define DCPLB_DATA9 0xFFE00224
+#define DCPLB_DATA10 0xFFE00228
+#define DCPLB_DATA11 0xFFE0022C
+#define DCPLB_DATA12 0xFFE00230
+#define DCPLB_DATA13 0xFFE00234
+#define DCPLB_DATA14 0xFFE00238
+#define DCPLB_DATA15 0xFFE0023C
+#define DTEST_COMMAND 0xFFE00300
+#define DTEST_DATA0 0xFFE00400
+#define DTEST_DATA1 0xFFE00404
+
+
+#define IMEM_CONTROL 0xFFE01004
+#define ICPLB_STATUS 0xFFE01008
+#define CODE_FAULT_STATUS 0xFFE01008
+#define ICPLB_FAULT_ADDR 0xFFE0100C
+#define CODE_FAULT_ADDR 0xFFE0100C
+#define ICPLB_ADDR0 0xFFE01100
+#define ICPLB_ADDR1 0xFFE01104
+#define ICPLB_ADDR2 0xFFE01108
+#define ICPLB_ADDR3 0xFFE0110C
+#define ICPLB_ADDR4 0xFFE01110
+#define ICPLB_ADDR5 0xFFE01114
+#define ICPLB_ADDR6 0xFFE01118
+#define ICPLB_ADDR7 0xFFE0111C
+#define ICPLB_ADDR8 0xFFE01120
+#define ICPLB_ADDR9 0xFFE01124
+#define ICPLB_ADDR10 0xFFE01128
+#define ICPLB_ADDR11 0xFFE0112C
+#define ICPLB_ADDR12 0xFFE01130
+#define ICPLB_ADDR13 0xFFE01134
+#define ICPLB_ADDR14 0xFFE01138
+#define ICPLB_ADDR15 0xFFE0113C
+#define ICPLB_DATA0 0xFFE01200
+#define ICPLB_DATA1 0xFFE01204
+#define ICPLB_DATA2 0xFFE01208
+#define ICPLB_DATA3 0xFFE0120C
+#define ICPLB_DATA4 0xFFE01210
+#define ICPLB_DATA5 0xFFE01214
+#define ICPLB_DATA6 0xFFE01218
+#define ICPLB_DATA7 0xFFE0121C
+#define ICPLB_DATA8 0xFFE01220
+#define ICPLB_DATA9 0xFFE01224
+#define ICPLB_DATA10 0xFFE01228
+#define ICPLB_DATA11 0xFFE0122C
+#define ICPLB_DATA12 0xFFE01230
+#define ICPLB_DATA13 0xFFE01234
+#define ICPLB_DATA14 0xFFE01238
+#define ICPLB_DATA15 0xFFE0123C
+#define ITEST_COMMAND 0xFFE01300
+#define ITEST_DATA0 0xFFE01400
+#define ITEST_DATA1 0xFFE01404
+
+
+#define EVT0 0xFFE02000
+#define EVT1 0xFFE02004
+#define EVT2 0xFFE02008
+#define EVT3 0xFFE0200C
+#define EVT4 0xFFE02010
+#define EVT5 0xFFE02014
+#define EVT6 0xFFE02018
+#define EVT7 0xFFE0201C
+#define EVT8 0xFFE02020
+#define EVT9 0xFFE02024
+#define EVT10 0xFFE02028
+#define EVT11 0xFFE0202C
+#define EVT12 0xFFE02030
+#define EVT13 0xFFE02034
+#define EVT14 0xFFE02038
+#define EVT15 0xFFE0203C
+#define IMASK 0xFFE02104
+#define IPEND 0xFFE02108
+#define ILAT 0xFFE0210C
+#define IPRIO 0xFFE02110
+
+
+#define TCNTL 0xFFE03000
+#define TPERIOD 0xFFE03004
+#define TSCALE 0xFFE03008
+#define TCOUNT 0xFFE0300C
+
+
+#define DSPID 0xFFE05000
+#define DBGSTAT 0xFFE05008
+
+
+#define TBUFCTL 0xFFE06000
+#define TBUFSTAT 0xFFE06004
+#define TBUF 0xFFE06100
+
+
+#define WPIACTL 0xFFE07000
+#define WPIA0 0xFFE07040
+#define WPIA1 0xFFE07044
+#define WPIA2 0xFFE07048
+#define WPIA3 0xFFE0704C
+#define WPIA4 0xFFE07050
+#define WPIA5 0xFFE07054
+#define WPIACNT0 0xFFE07080
+#define WPIACNT1 0xFFE07084
+#define WPIACNT2 0xFFE07088
+#define WPIACNT3 0xFFE0708C
+#define WPIACNT4 0xFFE07090
+#define WPIACNT5 0xFFE07094
+#define WPDACTL 0xFFE07100
+#define WPDA0 0xFFE07140
+#define WPDA1 0xFFE07144
+#define WPDACNT0 0xFFE07180
+#define WPDACNT1 0xFFE07184
+#define WPSTAT 0xFFE07200
+
+
+#define PFCTL 0xFFE08000
+#define PFCNTR0 0xFFE08100
+#define PFCNTR1 0xFFE08104
+# 292 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-common/def_LPBlackfin.h"
+#define EVT_EMU_P 0x00000000
+#define EVT_RST_P 0x00000001
+#define EVT_NMI_P 0x00000002
+#define EVT_EVX_P 0x00000003
+#define EVT_IRPTEN_P 0x00000004
+#define EVT_IVHW_P 0x00000005
+#define EVT_IVTMR_P 0x00000006
+#define EVT_IVG7_P 0x00000007
+#define EVT_IVG8_P 0x00000008
+#define EVT_IVG9_P 0x00000009
+#define EVT_IVG10_P 0x0000000a
+#define EVT_IVG11_P 0x0000000b
+#define EVT_IVG12_P 0x0000000c
+#define EVT_IVG13_P 0x0000000d
+#define EVT_IVG14_P 0x0000000e
+#define EVT_IVG15_P 0x0000000f
+
+
+#define EVT_EMU MK_BMSK_(EVT_EMU_P )
+#define EVT_RST MK_BMSK_(EVT_RST_P )
+#define EVT_NMI MK_BMSK_(EVT_NMI_P )
+#define EVT_EVX MK_BMSK_(EVT_EVX_P )
+#define EVT_IRPTEN MK_BMSK_(EVT_IRPTEN_P)
+#define EVT_IVHW MK_BMSK_(EVT_IVHW_P )
+#define EVT_IVTMR MK_BMSK_(EVT_IVTMR_P )
+#define EVT_IVG7 MK_BMSK_(EVT_IVG7_P )
+#define EVT_IVG8 MK_BMSK_(EVT_IVG8_P )
+#define EVT_IVG9 MK_BMSK_(EVT_IVG9_P )
+#define EVT_IVG10 MK_BMSK_(EVT_IVG10_P )
+#define EVT_IVG11 MK_BMSK_(EVT_IVG11_P )
+#define EVT_IVG12 MK_BMSK_(EVT_IVG12_P )
+#define EVT_IVG13 MK_BMSK_(EVT_IVG13_P )
+#define EVT_IVG14 MK_BMSK_(EVT_IVG14_P )
+#define EVT_IVG15 MK_BMSK_(EVT_IVG15_P )
+
+
+
+
+
+
+#define ENDM_P 0x00
+#define DMCTL_ENDM_P 0x00
+#define DMC0_P 0x01
+#define DMCTL_DMC0_P 0x01
+#define DMC1_P 0x02
+#define DMCTL_DMC1_P 0x02
+#define DMC2_P 0x03
+#define DMCTL_DMC2_P 0x03
+#define DCBS_P 0x04
+#define PORT_PREF0_P 0x12
+#define PORT_PREF1_P 0x13
+
+
+#define ENDM 0x00000001
+#define ENDCPLB 0x00000002
+#define ASRAM_BSRAM 0x00000000
+#define ACACHE_BSRAM 0x00000008
+#define ACACHE_BCACHE 0x0000000C
+#define DCBS 0x00000010
+#define PORT_PREF0 0x00001000
+#define PORT_PREF1 0x00002000
+
+
+
+#define ENIM_P 0x00
+#define IMCTL_ENIM_P 0x00
+#define ENICPLB_P 0x01
+#define IMCTL_ENICPLB_P 0x01
+#define IMC_P 0x02
+#define IMCTL_IMC_P 0x02
+#define ILOC0_P 0x03
+#define ILOC1_P 0x04
+#define ILOC2_P 0x05
+#define ILOC3_P 0x06
+#define LRUPRIORST_P 0x0D
+
+
+#define ENIM 0x00000001
+#define ENICPLB 0x00000002
+#define IMC 0x00000004
+#define ILOC0 0x00000008
+#define ILOC1 0x00000010
+#define ILOC2 0x00000020
+#define ILOC3 0x00000040
+#define LRUPRIORST 0x00002000
+
+
+#define TMPWR 0x00000001
+#define TMREN 0x00000002
+#define TAUTORLD 0x00000004
+#define TINT 0x00000008
+
+
+#define TMPWR_P 0x00000000
+#define TMREN_P 0x00000001
+#define TAUTORLD_P 0x00000002
+#define TINT_P 0x00000003
+
+
+
+#define CPLB_VALID_P 0x00000000
+#define CPLB_LOCK_P 0x00000001
+#define CPLB_USER_RD_P 0x00000002
+
+
+#define CPLB_VALID 0x00000001
+#define CPLB_LOCK 0x00000002
+#define CPLB_USER_RD 0x00000004
+#define PAGE_SIZE_1KB 0x00000000
+#define PAGE_SIZE_4KB 0x00010000
+#define PAGE_SIZE_1MB 0x00020000
+#define PAGE_SIZE_4MB 0x00030000
+#define CPLB_L1SRAM 0x00000020
+#define CPLB_PORTPRIO 0x00000200
+#define CPLB_L1_CHBL 0x00001000
+
+
+#define CPLB_LRUPRIO 0x00000100
+
+
+#define CPLB_USER_WR 0x00000008
+#define CPLB_SUPV_WR 0x00000010
+#define CPLB_DIRTY 0x00000080
+#define CPLB_L1_AOW 0x00008000
+
+#define CPLB_WT 0x00004000
+
+
+
+#define TEST_READ 0x00000000
+#define TEST_WRITE 0x00000002
+#define TEST_TAG 0x00000000
+#define TEST_DATA 0x00000004
+#define TEST_DW0 0x00000000
+#define TEST_DW1 0x00000008
+#define TEST_DW2 0x00000010
+#define TEST_DW3 0x00000018
+#define TEST_MB0 0x00000000
+#define TEST_MB1 0x00010000
+#define TEST_MB2 0x00020000
+#define TEST_MB3 0x00030000
+#define TEST_SET(x) ((x << 5) & 0x03E0)
+#define TEST_WAY0 0x00000000
+#define TEST_WAY1 0x04000000
+
+
+#define TEST_WAY2 0x08000000
+#define TEST_WAY3 0x0C000000
+
+
+#define TEST_BNKSELA 0x00000000
+#define TEST_BNKSELB 0x00800000
+# 32 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-bf533/defBF532.h" 2
+
+
+
+
+
+
+
+#define LO(con32) ((con32) & 0xFFFF)
+#define lo(con32) ((con32) & 0xFFFF)
+#define HI(con32) (((con32) >> 16) & 0xFFFF)
+#define hi(con32) (((con32) >> 16) & 0xFFFF)
+
+
+
+
+
+
+#define PLL_CTL 0xFFC00000
+#define PLL_DIV 0xFFC00004
+#define VR_CTL 0xFFC00008
+#define PLL_STAT 0xFFC0000C
+#define PLL_LOCKCNT 0xFFC00010
+#define CHIPID 0xFFC00014
+#define SWRST 0xFFC00100
+#define SYSCR 0xFFC00104
+
+
+#define SIC_RVECT 0xFFC00108
+#define SIC_IMASK 0xFFC0010C
+#define SIC_IAR0 0xFFC00110
+#define SIC_IAR1 0xFFC00114
+#define SIC_IAR2 0xFFC00118
+#define SIC_ISR 0xFFC00120
+#define SIC_IWR 0xFFC00124
+
+
+#define WDOG_CTL 0xFFC00200
+#define WDOG_CNT 0xFFC00204
+#define WDOG_STAT 0xFFC00208
+
+
+#define RTC_STAT 0xFFC00300
+#define RTC_ICTL 0xFFC00304
+#define RTC_ISTAT 0xFFC00308
+#define RTC_SWCNT 0xFFC0030C
+#define RTC_ALARM 0xFFC00310
+#define RTC_FAST 0xFFC00314
+#define RTC_PREN 0xFFC00314
+
+
+#define UART_THR 0xFFC00400
+#define UART_RBR 0xFFC00400
+#define UART_DLL 0xFFC00400
+#define UART_IER 0xFFC00404
+#define UART_DLH 0xFFC00404
+#define UART_IIR 0xFFC00408
+#define UART_LCR 0xFFC0040C
+#define UART_MCR 0xFFC00410
+#define UART_LSR 0xFFC00414
+
+#define UART_SCR 0xFFC0041C
+#define UART_GCTL 0xFFC00424
+
+
+#define SPI_CTL 0xFFC00500
+#define SPI_FLG 0xFFC00504
+#define SPI_STAT 0xFFC00508
+#define SPI_TDBR 0xFFC0050C
+#define SPI_RDBR 0xFFC00510
+#define SPI_BAUD 0xFFC00514
+#define SPI_SHADOW 0xFFC00518
+
+
+#define TIMER0_CONFIG 0xFFC00600
+#define TIMER0_COUNTER 0xFFC00604
+#define TIMER0_PERIOD 0xFFC00608
+#define TIMER0_WIDTH 0xFFC0060C
+
+#define TIMER1_CONFIG 0xFFC00610
+#define TIMER1_COUNTER 0xFFC00614
+#define TIMER1_PERIOD 0xFFC00618
+#define TIMER1_WIDTH 0xFFC0061C
+
+#define TIMER2_CONFIG 0xFFC00620
+#define TIMER2_COUNTER 0xFFC00624
+#define TIMER2_PERIOD 0xFFC00628
+#define TIMER2_WIDTH 0xFFC0062C
+
+#define TIMER_ENABLE 0xFFC00640
+#define TIMER_DISABLE 0xFFC00644
+#define TIMER_STATUS 0xFFC00648
+
+
+#define FIO_FLAG_D 0xFFC00700
+#define FIO_FLAG_C 0xFFC00704
+#define FIO_FLAG_S 0xFFC00708
+#define FIO_FLAG_T 0xFFC0070C
+#define FIO_MASKA_D 0xFFC00710
+#define FIO_MASKA_C 0xFFC00714
+#define FIO_MASKA_S 0xFFC00718
+#define FIO_MASKA_T 0xFFC0071C
+#define FIO_MASKB_D 0xFFC00720
+#define FIO_MASKB_C 0xFFC00724
+#define FIO_MASKB_S 0xFFC00728
+#define FIO_MASKB_T 0xFFC0072C
+#define FIO_DIR 0xFFC00730
+#define FIO_POLAR 0xFFC00734
+#define FIO_EDGE 0xFFC00738
+#define FIO_BOTH 0xFFC0073C
+#define FIO_INEN 0xFFC00740
+
+
+#define SPORT0_TCR1 0xFFC00800
+#define SPORT0_TCR2 0xFFC00804
+#define SPORT0_TCLKDIV 0xFFC00808
+#define SPORT0_TFSDIV 0xFFC0080C
+#define SPORT0_TX 0xFFC00810
+#define SPORT0_RX 0xFFC00818
+#define SPORT0_RCR1 0xFFC00820
+#define SPORT0_RCR2 0xFFC00824
+#define SPORT0_RCLKDIV 0xFFC00828
+#define SPORT0_RFSDIV 0xFFC0082C
+#define SPORT0_STAT 0xFFC00830
+#define SPORT0_CHNL 0xFFC00834
+#define SPORT0_MCMC1 0xFFC00838
+#define SPORT0_MCMC2 0xFFC0083C
+#define SPORT0_MTCS0 0xFFC00840
+#define SPORT0_MTCS1 0xFFC00844
+#define SPORT0_MTCS2 0xFFC00848
+#define SPORT0_MTCS3 0xFFC0084C
+#define SPORT0_MRCS0 0xFFC00850
+#define SPORT0_MRCS1 0xFFC00854
+#define SPORT0_MRCS2 0xFFC00858
+#define SPORT0_MRCS3 0xFFC0085C
+
+
+#define SPORT1_TCR1 0xFFC00900
+#define SPORT1_TCR2 0xFFC00904
+#define SPORT1_TCLKDIV 0xFFC00908
+#define SPORT1_TFSDIV 0xFFC0090C
+#define SPORT1_TX 0xFFC00910
+#define SPORT1_RX 0xFFC00918
+#define SPORT1_RCR1 0xFFC00920
+#define SPORT1_RCR2 0xFFC00924
+#define SPORT1_RCLKDIV 0xFFC00928
+#define SPORT1_RFSDIV 0xFFC0092C
+#define SPORT1_STAT 0xFFC00930
+#define SPORT1_CHNL 0xFFC00934
+#define SPORT1_MCMC1 0xFFC00938
+#define SPORT1_MCMC2 0xFFC0093C
+#define SPORT1_MTCS0 0xFFC00940
+#define SPORT1_MTCS1 0xFFC00944
+#define SPORT1_MTCS2 0xFFC00948
+#define SPORT1_MTCS3 0xFFC0094C
+#define SPORT1_MRCS0 0xFFC00950
+#define SPORT1_MRCS1 0xFFC00954
+#define SPORT1_MRCS2 0xFFC00958
+#define SPORT1_MRCS3 0xFFC0095C
+
+
+#define EBIU_AMGCTL 0xFFC00A00
+#define EBIU_AMBCTL0 0xFFC00A04
+#define EBIU_AMBCTL1 0xFFC00A08
+
+
+#define EBIU_SDGCTL 0xFFC00A10
+#define EBIU_SDBCTL 0xFFC00A14
+#define EBIU_SDRRC 0xFFC00A18
+#define EBIU_SDSTAT 0xFFC00A1C
+
+
+#define DMA_CCOMP 0xFFC00B04
+#define DMA_ACOMP 0xFFC00B00
+#define DMA_MISR 0xFFC00B08
+#define DMA_TCPER 0xFFC00B0C
+#define DMA_TCCNT 0xFFC00B10
+#define DMA_TMODE 0xFFC00B14
+#define DMA_TMCHAN 0xFFC00B18
+#define DMA_TMSTAT 0xFFC00B1C
+#define DMA_TMBD 0xFFC00B20
+#define DMA_TMM0D 0xFFC00B24
+#define DMA_TMM1D 0xFFC00B28
+#define DMA_TMMA 0xFFC00B2C
+
+
+#define DMA0_CONFIG 0xFFC00C08
+#define DMA0_NEXT_DESC_PTR 0xFFC00C00
+#define DMA0_START_ADDR 0xFFC00C04
+#define DMA0_X_COUNT 0xFFC00C10
+#define DMA0_Y_COUNT 0xFFC00C18
+#define DMA0_X_MODIFY 0xFFC00C14
+#define DMA0_Y_MODIFY 0xFFC00C1C
+#define DMA0_CURR_DESC_PTR 0xFFC00C20
+#define DMA0_CURR_ADDR 0xFFC00C24
+#define DMA0_CURR_X_COUNT 0xFFC00C30
+#define DMA0_CURR_Y_COUNT 0xFFC00C38
+#define DMA0_IRQ_STATUS 0xFFC00C28
+#define DMA0_PERIPHERAL_MAP 0xFFC00C2C
+
+#define DMA1_CONFIG 0xFFC00C48
+#define DMA1_NEXT_DESC_PTR 0xFFC00C40
+#define DMA1_START_ADDR 0xFFC00C44
+#define DMA1_X_COUNT 0xFFC00C50
+#define DMA1_Y_COUNT 0xFFC00C58
+#define DMA1_X_MODIFY 0xFFC00C54
+#define DMA1_Y_MODIFY 0xFFC00C5C
+#define DMA1_CURR_DESC_PTR 0xFFC00C60
+#define DMA1_CURR_ADDR 0xFFC00C64
+#define DMA1_CURR_X_COUNT 0xFFC00C70
+#define DMA1_CURR_Y_COUNT 0xFFC00C78
+#define DMA1_IRQ_STATUS 0xFFC00C68
+#define DMA1_PERIPHERAL_MAP 0xFFC00C6C
+
+#define DMA2_CONFIG 0xFFC00C88
+#define DMA2_NEXT_DESC_PTR 0xFFC00C80
+#define DMA2_START_ADDR 0xFFC00C84
+#define DMA2_X_COUNT 0xFFC00C90
+#define DMA2_Y_COUNT 0xFFC00C98
+#define DMA2_X_MODIFY 0xFFC00C94
+#define DMA2_Y_MODIFY 0xFFC00C9C
+#define DMA2_CURR_DESC_PTR 0xFFC00CA0
+#define DMA2_CURR_ADDR 0xFFC00CA4
+#define DMA2_CURR_X_COUNT 0xFFC00CB0
+#define DMA2_CURR_Y_COUNT 0xFFC00CB8
+#define DMA2_IRQ_STATUS 0xFFC00CA8
+#define DMA2_PERIPHERAL_MAP 0xFFC00CAC
+
+#define DMA3_CONFIG 0xFFC00CC8
+#define DMA3_NEXT_DESC_PTR 0xFFC00CC0
+#define DMA3_START_ADDR 0xFFC00CC4
+#define DMA3_X_COUNT 0xFFC00CD0
+#define DMA3_Y_COUNT 0xFFC00CD8
+#define DMA3_X_MODIFY 0xFFC00CD4
+#define DMA3_Y_MODIFY 0xFFC00CDC
+#define DMA3_CURR_DESC_PTR 0xFFC00CE0
+#define DMA3_CURR_ADDR 0xFFC00CE4
+#define DMA3_CURR_X_COUNT 0xFFC00CF0
+#define DMA3_CURR_Y_COUNT 0xFFC00CF8
+#define DMA3_IRQ_STATUS 0xFFC00CE8
+#define DMA3_PERIPHERAL_MAP 0xFFC00CEC
+
+#define DMA4_CONFIG 0xFFC00D08
+#define DMA4_NEXT_DESC_PTR 0xFFC00D00
+#define DMA4_START_ADDR 0xFFC00D04
+#define DMA4_X_COUNT 0xFFC00D10
+#define DMA4_Y_COUNT 0xFFC00D18
+#define DMA4_X_MODIFY 0xFFC00D14
+#define DMA4_Y_MODIFY 0xFFC00D1C
+#define DMA4_CURR_DESC_PTR 0xFFC00D20
+#define DMA4_CURR_ADDR 0xFFC00D24
+#define DMA4_CURR_X_COUNT 0xFFC00D30
+#define DMA4_CURR_Y_COUNT 0xFFC00D38
+#define DMA4_IRQ_STATUS 0xFFC00D28
+#define DMA4_PERIPHERAL_MAP 0xFFC00D2C
+
+#define DMA5_CONFIG 0xFFC00D48
+#define DMA5_NEXT_DESC_PTR 0xFFC00D40
+#define DMA5_START_ADDR 0xFFC00D44
+#define DMA5_X_COUNT 0xFFC00D50
+#define DMA5_Y_COUNT 0xFFC00D58
+#define DMA5_X_MODIFY 0xFFC00D54
+#define DMA5_Y_MODIFY 0xFFC00D5C
+#define DMA5_CURR_DESC_PTR 0xFFC00D60
+#define DMA5_CURR_ADDR 0xFFC00D64
+#define DMA5_CURR_X_COUNT 0xFFC00D70
+#define DMA5_CURR_Y_COUNT 0xFFC00D78
+#define DMA5_IRQ_STATUS 0xFFC00D68
+#define DMA5_PERIPHERAL_MAP 0xFFC00D6C
+
+#define DMA6_CONFIG 0xFFC00D88
+#define DMA6_NEXT_DESC_PTR 0xFFC00D80
+#define DMA6_START_ADDR 0xFFC00D84
+#define DMA6_X_COUNT 0xFFC00D90
+#define DMA6_Y_COUNT 0xFFC00D98
+#define DMA6_X_MODIFY 0xFFC00D94
+#define DMA6_Y_MODIFY 0xFFC00D9C
+#define DMA6_CURR_DESC_PTR 0xFFC00DA0
+#define DMA6_CURR_ADDR 0xFFC00DA4
+#define DMA6_CURR_X_COUNT 0xFFC00DB0
+#define DMA6_CURR_Y_COUNT 0xFFC00DB8
+#define DMA6_IRQ_STATUS 0xFFC00DA8
+#define DMA6_PERIPHERAL_MAP 0xFFC00DAC
+
+#define DMA7_CONFIG 0xFFC00DC8
+#define DMA7_NEXT_DESC_PTR 0xFFC00DC0
+#define DMA7_START_ADDR 0xFFC00DC4
+#define DMA7_X_COUNT 0xFFC00DD0
+#define DMA7_Y_COUNT 0xFFC00DD8
+#define DMA7_X_MODIFY 0xFFC00DD4
+#define DMA7_Y_MODIFY 0xFFC00DDC
+#define DMA7_CURR_DESC_PTR 0xFFC00DE0
+#define DMA7_CURR_ADDR 0xFFC00DE4
+#define DMA7_CURR_X_COUNT 0xFFC00DF0
+#define DMA7_CURR_Y_COUNT 0xFFC00DF8
+#define DMA7_IRQ_STATUS 0xFFC00DE8
+#define DMA7_PERIPHERAL_MAP 0xFFC00DEC
+
+#define MDMA_D1_CONFIG 0xFFC00E88
+#define MDMA_D1_NEXT_DESC_PTR 0xFFC00E80
+#define MDMA_D1_START_ADDR 0xFFC00E84
+#define MDMA_D1_X_COUNT 0xFFC00E90
+#define MDMA_D1_Y_COUNT 0xFFC00E98
+#define MDMA_D1_X_MODIFY 0xFFC00E94
+#define MDMA_D1_Y_MODIFY 0xFFC00E9C
+#define MDMA_D1_CURR_DESC_PTR 0xFFC00EA0
+#define MDMA_D1_CURR_ADDR 0xFFC00EA4
+#define MDMA_D1_CURR_X_COUNT 0xFFC00EB0
+#define MDMA_D1_CURR_Y_COUNT 0xFFC00EB8
+#define MDMA_D1_IRQ_STATUS 0xFFC00EA8
+#define MDMA_D1_PERIPHERAL_MAP 0xFFC00EAC
+
+#define MDMA_S1_CONFIG 0xFFC00EC8
+#define MDMA_S1_NEXT_DESC_PTR 0xFFC00EC0
+#define MDMA_S1_START_ADDR 0xFFC00EC4
+#define MDMA_S1_X_COUNT 0xFFC00ED0
+#define MDMA_S1_Y_COUNT 0xFFC00ED8
+#define MDMA_S1_X_MODIFY 0xFFC00ED4
+#define MDMA_S1_Y_MODIFY 0xFFC00EDC
+#define MDMA_S1_CURR_DESC_PTR 0xFFC00EE0
+#define MDMA_S1_CURR_ADDR 0xFFC00EE4
+#define MDMA_S1_CURR_X_COUNT 0xFFC00EF0
+#define MDMA_S1_CURR_Y_COUNT 0xFFC00EF8
+#define MDMA_S1_IRQ_STATUS 0xFFC00EE8
+#define MDMA_S1_PERIPHERAL_MAP 0xFFC00EEC
+
+#define MDMA_D0_CONFIG 0xFFC00E08
+#define MDMA_D0_NEXT_DESC_PTR 0xFFC00E00
+#define MDMA_D0_START_ADDR 0xFFC00E04
+#define MDMA_D0_X_COUNT 0xFFC00E10
+#define MDMA_D0_Y_COUNT 0xFFC00E18
+#define MDMA_D0_X_MODIFY 0xFFC00E14
+#define MDMA_D0_Y_MODIFY 0xFFC00E1C
+#define MDMA_D0_CURR_DESC_PTR 0xFFC00E20
+#define MDMA_D0_CURR_ADDR 0xFFC00E24
+#define MDMA_D0_CURR_X_COUNT 0xFFC00E30
+#define MDMA_D0_CURR_Y_COUNT 0xFFC00E38
+#define MDMA_D0_IRQ_STATUS 0xFFC00E28
+#define MDMA_D0_PERIPHERAL_MAP 0xFFC00E2C
+
+#define MDMA_S0_CONFIG 0xFFC00E48
+#define MDMA_S0_NEXT_DESC_PTR 0xFFC00E40
+#define MDMA_S0_START_ADDR 0xFFC00E44
+#define MDMA_S0_X_COUNT 0xFFC00E50
+#define MDMA_S0_Y_COUNT 0xFFC00E58
+#define MDMA_S0_X_MODIFY 0xFFC00E54
+#define MDMA_S0_Y_MODIFY 0xFFC00E5C
+#define MDMA_S0_CURR_DESC_PTR 0xFFC00E60
+#define MDMA_S0_CURR_ADDR 0xFFC00E64
+#define MDMA_S0_CURR_X_COUNT 0xFFC00E70
+#define MDMA_S0_CURR_Y_COUNT 0xFFC00E78
+#define MDMA_S0_IRQ_STATUS 0xFFC00E68
+#define MDMA_S0_PERIPHERAL_MAP 0xFFC00E6C
+
+
+#define PPI_CONTROL 0xFFC01000
+#define PPI_STATUS 0xFFC01004
+#define PPI_COUNT 0xFFC01008
+#define PPI_DELAY 0xFFC0100C
+#define PPI_FRAME 0xFFC01010
+# 400 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-bf533/defBF532.h"
+#define PLL_CLKIN 0x00000000
+#define PLL_CLKIN_DIV2 0x00000001
+#define PLL_OFF 0x00000002
+#define STOPCK_OFF 0x00000008
+#define PDWN 0x00000020
+#define BYPASS 0x00000100
+
+
+#define SCLK_DIV(x) (x)
+
+#define CCLK_DIV1 0x00000000
+#define CCLK_DIV2 0x00000010
+#define CCLK_DIV4 0x00000020
+#define CCLK_DIV8 0x00000030
+
+
+#define SYSTEM_RESET 0x00000007
+
+
+
+
+
+
+#define P0_IVG(x) ((x)-7)
+#define P1_IVG(x) ((x)-7) << 0x4
+#define P2_IVG(x) ((x)-7) << 0x8
+#define P3_IVG(x) ((x)-7) << 0xC
+#define P4_IVG(x) ((x)-7) << 0x10
+#define P5_IVG(x) ((x)-7) << 0x14
+#define P6_IVG(x) ((x)-7) << 0x18
+#define P7_IVG(x) ((x)-7) << 0x1C
+
+
+#define P8_IVG(x) ((x)-7)
+#define P9_IVG(x) ((x)-7) << 0x4
+#define P10_IVG(x) ((x)-7) << 0x8
+#define P11_IVG(x) ((x)-7) << 0xC
+#define P12_IVG(x) ((x)-7) << 0x10
+#define P13_IVG(x) ((x)-7) << 0x14
+#define P14_IVG(x) ((x)-7) << 0x18
+#define P15_IVG(x) ((x)-7) << 0x1C
+
+
+#define P16_IVG(x) ((x)-7)
+#define P17_IVG(x) ((x)-7) << 0x4
+#define P18_IVG(x) ((x)-7) << 0x8
+#define P19_IVG(x) ((x)-7) << 0xC
+#define P20_IVG(x) ((x)-7) << 0x10
+#define P21_IVG(x) ((x)-7) << 0x14
+#define P22_IVG(x) ((x)-7) << 0x18
+#define P23_IVG(x) ((x)-7) << 0x1C
+
+
+#define SIC_UNMASK_ALL 0x00000000
+#define SIC_MASK_ALL 0xFFFFFFFF
+#define SIC_MASK(x) (1 << (x))
+#define SIC_UNMASK(x) (0xFFFFFFFF ^ (1 << (x)))
+
+
+#define IWR_DISABLE_ALL 0x00000000
+#define IWR_ENABLE_ALL 0xFFFFFFFF
+#define IWR_ENABLE(x) (1 << (x))
+#define IWR_DISABLE(x) (0xFFFFFFFF ^ (1 << (x)))
+
+
+
+
+
+#define ICTL(x) ((x<<1) & 0x0006)
+#define ENABLE_RESET 0x00000000
+#define ENABLE_NMI 0x00000002
+#define ENABLE_GPI 0x00000004
+#define DISABLE_EVT 0x00000006
+
+#define TMR_EN 0x0000
+#define TMR_DIS 0x0AD0
+#define TRO 0x8000
+
+#define ICTL_P0 0x01
+#define ICTL_P1 0x02
+#define TRO_P 0x0F
+
+
+#define RTSEC 0x0000003F
+#define RTMIN 0x00000FC0
+#define RTHR 0x0001F000
+#define RTDAY 0xFFFE0000
+
+
+#define SWIE 0x0001
+#define AIE 0x0002
+#define SIE 0x0004
+#define MIE 0x0008
+#define HIE 0x0010
+#define DIE 0x0020
+#define DAIE 0x0040
+#define WCIE 0x8000
+
+
+#define SWEF 0x0001
+#define AEF 0x0002
+#define SEF 0x0004
+#define MEF 0x0008
+#define HEF 0x0010
+#define DEF 0x0020
+#define DAEF 0x0040
+#define WPS 0x4000
+#define WCOM 0x8000
+
+
+#define ENABLE_PRESCALE 0x00000001
+#define PREN 0x00000001
+
+
+
+
+
+
+#define DLAB 0x80
+#define SB 0x40
+#define STP 0x20
+#define EPS 0x10
+#define PEN 0x08
+#define STB 0x04
+#define WLS(x) ((x-5) & 0x03)
+
+#define DLAB_P 0x07
+#define SB_P 0x06
+#define STP_P 0x05
+#define EPS_P 0x04
+#define PEN_P 0x03
+#define STB_P 0x02
+#define WLS_P1 0x01
+#define WLS_P0 0x00
+
+
+#define LOOP_ENA 0x10
+#define LOOP_ENA_P 0x04
+
+
+#define TEMT 0x40
+#define THRE 0x20
+#define BI 0x10
+#define FE 0x08
+#define PE 0x04
+#define OE 0x02
+#define DR 0x01
+
+#define TEMP_P 0x06
+#define THRE_P 0x05
+#define BI_P 0x04
+#define FE_P 0x03
+#define PE_P 0x02
+#define OE_P 0x01
+#define DR_P 0x00
+
+
+#define ELSI 0x04
+#define ETBEI 0x02
+#define ERBFI 0x01
+
+#define ELSI_P 0x02
+#define ETBEI_P 0x01
+#define ERBFI_P 0x00
+
+
+#define STATUS(x) ((x << 1) & 0x06)
+#define NINT 0x01
+#define STATUS_P1 0x02
+#define STATUS_P0 0x01
+#define NINT_P 0x00
+
+
+#define FFE 0x20
+#define FPE 0x10
+#define RPOLC 0x08
+#define TPOLC 0x04
+#define IREN 0x02
+#define UCEN 0x01
+
+#define FFE_P 0x05
+#define FPE_P 0x04
+#define RPOLC_P 0x03
+#define TPOLC_P 0x02
+#define IREN_P 0x01
+#define UCEN_P 0x00
+
+
+
+
+
+#define TSPEN 0x0001
+#define ITCLK 0x0002
+#define TDTYPE 0x000C
+#define TLSBIT 0x0010
+#define ITFS 0x0200
+#define TFSR 0x0400
+#define DITFS 0x0800
+#define LTFS 0x1000
+#define LATFS 0x2000
+#define TCKFE 0x4000
+
+
+#define SLEN 0x001F
+#define TXSE 0x0100
+#define TSFSE 0x0200
+#define TRFST 0x0400
+
+
+#define RSPEN 0x0001
+#define IRCLK 0x0002
+#define RDTYPE 0x000C
+#define RULAW 0x0008
+#define RALAW 0x000C
+#define RLSBIT 0x0010
+#define IRFS 0x0200
+#define RFSR 0x0400
+#define LRFS 0x1000
+#define LARFS 0x2000
+#define RCKFE 0x4000
+
+
+#define SLEN 0x001F
+#define RXSE 0x0100
+#define RSFSE 0x0200
+#define RRFST 0x0400
+
+
+#define RXNE 0x0001
+#define RUVF 0x0002
+#define ROVF 0x0004
+#define TXF 0x0008
+#define TUVF 0x0010
+#define TOVF 0x0020
+#define TXHRE 0x0040
+
+
+#define WSIZE 0x0000F000
+#define WOFF 0x000003FF
+
+
+#define MCCRM 0x00000003
+#define MCDTXPE 0x00000004
+#define MCDRXPE 0x00000008
+#define MCMEN 0x00000010
+#define FSDR 0x00000080
+#define MFD 0x0000F000
+
+
+
+
+
+
+#define PORT_EN 0x00000001
+#define PORT_DIR 0x00000002
+#define XFR_TYPE 0x0000000C
+#define PORT_CFG 0x00000030
+#define FLD_SEL 0x00000040
+#define PACK_EN 0x00000080
+#define DMA32 0x00000100
+#define SKIP_EN 0x00000200
+#define SKIP_EO 0x00000400
+#define DLENGTH 0x00003800
+#define DLEN_8 0x0
+#define DLEN(x) (((x-9) & 0x07) << 11)
+#define POL 0x0000C000
+
+
+#define FLD 0x00000400
+#define FT_ERR 0x00000800
+#define OVR 0x00001000
+#define UNDR 0x00002000
+#define ERR_DET 0x00004000
+#define ERR_NCOR 0x00008000
+
+
+
+
+
+
+#define DMAEN 0x00000001
+#define WNR 0x00000002
+#define WDSIZE_8 0x00000000
+#define WDSIZE_16 0x00000004
+#define WDSIZE_32 0x00000008
+#define DMA2D 0x00000010
+#define RESTART 0x00000020
+#define DI_SEL 0x00000040
+#define DI_EN 0x00000080
+#define NDSIZE 0x00000900
+#define FLOW 0x00007000
+
+#define DMAEN_P 0
+#define WNR_P 1
+#define DMA2D_P 4
+#define RESTART_P 5
+#define DI_SEL_P 6
+#define DI_EN_P 7
+
+
+#define DMA_DONE 0x00000001
+#define DMA_ERR 0x00000002
+#define DFETCH 0x00000004
+#define DMA_RUN 0x00000008
+
+#define DMA_DONE_P 0
+#define DMA_ERR_P 1
+#define DFETCH_P 2
+#define DMA_RUN_P 3
+
+
+#define CTYPE 0x00000040
+#define CTYPE_P 6
+#define PCAP8 0x00000080
+#define PCAP16 0x00000100
+#define PCAP32 0x00000200
+#define PCAPWR 0x00000400
+#define PCAPRD 0x00000800
+#define PMAP 0x00007000
+# 727 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-bf533/defBF532.h"
+#define TIMEN0 0x0001
+#define TIMEN1 0x0002
+#define TIMEN2 0x0004
+
+#define TIMEN0_P 0x00
+#define TIMEN1_P 0x01
+#define TIMEN2_P 0x02
+
+
+#define TIMDIS0 0x0001
+#define TIMDIS1 0x0002
+#define TIMDIS2 0x0004
+
+#define TIMDIS0_P 0x00
+#define TIMDIS1_P 0x01
+#define TIMDIS2_P 0x02
+
+
+#define TIMIL0 0x0001
+#define TIMIL1 0x0002
+#define TIMIL2 0x0004
+#define TOVL_ERR0 0x0010
+#define TOVL_ERR1 0x0020
+#define TOVL_ERR2 0x0040
+#define TRUN0 0x1000
+#define TRUN1 0x2000
+#define TRUN2 0x4000
+
+#define TIMIL0_P 0x00
+#define TIMIL1_P 0x01
+#define TIMIL2_P 0x02
+#define TOVL_ERR0_P 0x04
+#define TOVL_ERR1_P 0x05
+#define TOVL_ERR2_P 0x06
+#define TRUN0_P 0x0C
+#define TRUN1_P 0x0D
+#define TRUN2_P 0x0E
+
+
+#define PWM_OUT 0x0001
+#define WDTH_CAP 0x0002
+#define EXT_CLK 0x0003
+#define PULSE_HI 0x0004
+#define PERIOD_CNT 0x0008
+#define IRQ_ENA 0x0010
+#define TIN_SEL 0x0020
+#define OUT_DIS 0x0040
+#define CLK_SEL 0x0080
+#define TOGGLE_HI 0x0100
+#define EMU_RUN 0x0200
+#define ERR_TYP(x) ((x & 0x03) << 14)
+
+#define TMODE_P0 0x00
+#define TMODE_P1 0x01
+#define PULSE_HI_P 0x02
+#define PERIOD_CNT_P 0x03
+#define IRQ_ENA_P 0x04
+#define TIN_SEL_P 0x05
+#define OUT_DIS_P 0x06
+#define CLK_SEL_P 0x07
+#define TOGGLE_HI_P 0x08
+#define EMU_RUN_P 0x09
+#define ERR_TYP_P0 0x0E
+#define ERR_TYP_P1 0x0F
+
+
+
+
+
+
+#define PF0 0x0001
+#define PF1 0x0002
+#define PF2 0x0004
+#define PF3 0x0008
+#define PF4 0x0010
+#define PF5 0x0020
+#define PF6 0x0040
+#define PF7 0x0080
+#define PF8 0x0100
+#define PF9 0x0200
+#define PF10 0x0400
+#define PF11 0x0800
+#define PF12 0x1000
+#define PF13 0x2000
+#define PF14 0x4000
+#define PF15 0x8000
+
+
+#define PF0_P 0
+#define PF1_P 1
+#define PF2_P 2
+#define PF3_P 3
+#define PF4_P 4
+#define PF5_P 5
+#define PF6_P 6
+#define PF7_P 7
+#define PF8_P 8
+#define PF9_P 9
+#define PF10_P 10
+#define PF11_P 11
+#define PF12_P 12
+#define PF13_P 13
+#define PF14_P 14
+#define PF15_P 15
+
+
+
+
+
+
+#define TIMOD 0x00000003
+#define SZ 0x00000004
+#define GM 0x00000008
+#define PSSE 0x00000010
+#define EMISO 0x00000020
+#define SIZE 0x00000100
+#define LSBF 0x00000200
+#define CPHA 0x00000400
+#define CPOL 0x00000800
+#define MSTR 0x00001000
+#define WOM 0x00002000
+#define SPE 0x00004000
+
+
+#define FLS1 0x00000002
+#define FLS2 0x00000004
+#define FLS3 0x00000008
+#define FLS4 0x00000010
+#define FLS5 0x00000020
+#define FLS6 0x00000040
+#define FLS7 0x00000080
+#define FLG1 0x00000200
+#define FLG2 0x00000400
+#define FLG3 0x00000800
+#define FLG4 0x00001000
+#define FLG5 0x00002000
+#define FLG6 0x00004000
+#define FLG7 0x00008000
+
+
+#define FLS1_P 0x00000001
+#define FLS2_P 0x00000002
+#define FLS3_P 0x00000003
+#define FLS4_P 0x00000004
+#define FLS5_P 0x00000005
+#define FLS6_P 0x00000006
+#define FLS7_P 0x00000007
+#define FLG1_P 0x00000009
+#define FLG2_P 0x0000000A
+#define FLG3_P 0x0000000B
+#define FLG4_P 0x0000000C
+#define FLG5_P 0x0000000D
+#define FLG6_P 0x0000000E
+#define FLG7_P 0x0000000F
+
+
+#define SPIF 0x00000001
+#define MODF 0x00000002
+#define TXE 0x00000004
+#define TXS 0x00000008
+#define RBSY 0x00000010
+#define RXS 0x00000020
+#define TXCOL 0x00000040
+
+
+
+
+
+
+#define AMCKEN 0x00000001
+#define AMBEN_B0 0x00000002
+#define AMBEN_B0_B1 0x00000004
+#define AMBEN_B0_B1_B2 0x00000006
+#define AMBEN_ALL 0x00000008
+
+
+#define AMCKEN_P 0x00000000
+#define AMBEN_P0 0x00000001
+#define AMBEN_P1 0x00000002
+#define AMBEN_P2 0x00000003
+
+
+#define B0RDYEN 0x00000001
+#define B0RDYPOL 0x00000002
+#define B0TT_1 0x00000004
+#define B0TT_2 0x00000008
+#define B0TT_3 0x0000000C
+#define B0TT_4 0x00000000
+#define B0ST_1 0x00000010
+#define B0ST_2 0x00000020
+#define B0ST_3 0x00000030
+#define B0ST_4 0x00000000
+#define B0HT_1 0x00000040
+#define B0HT_2 0x00000080
+#define B0HT_3 0x000000C0
+#define B0HT_0 0x00000000
+#define B0RAT_1 0x00000100
+#define B0RAT_2 0x00000200
+#define B0RAT_3 0x00000300
+#define B0RAT_4 0x00000400
+#define B0RAT_5 0x00000500
+#define B0RAT_6 0x00000600
+#define B0RAT_7 0x00000700
+#define B0RAT_8 0x00000800
+#define B0RAT_9 0x00000900
+#define B0RAT_10 0x00000A00
+#define B0RAT_11 0x00000B00
+#define B0RAT_12 0x00000C00
+#define B0RAT_13 0x00000D00
+#define B0RAT_14 0x00000E00
+#define B0RAT_15 0x00000F00
+#define B0WAT_1 0x00001000
+#define B0WAT_2 0x00002000
+#define B0WAT_3 0x00003000
+#define B0WAT_4 0x00004000
+#define B0WAT_5 0x00005000
+#define B0WAT_6 0x00006000
+#define B0WAT_7 0x00007000
+#define B0WAT_8 0x00008000
+#define B0WAT_9 0x00009000
+#define B0WAT_10 0x0000A000
+#define B0WAT_11 0x0000B000
+#define B0WAT_12 0x0000C000
+#define B0WAT_13 0x0000D000
+#define B0WAT_14 0x0000E000
+#define B0WAT_15 0x0000F000
+#define B1RDYEN 0x00010000
+#define B1RDYPOL 0x00020000
+#define B1TT_1 0x00040000
+#define B1TT_2 0x00080000
+#define B1TT_3 0x000C0000
+#define B1TT_4 0x00000000
+#define B1ST_1 0x00100000
+#define B1ST_2 0x00200000
+#define B1ST_3 0x00300000
+#define B1ST_4 0x00000000
+#define B1HT_1 0x00400000
+#define B1HT_2 0x00800000
+#define B1HT_3 0x00C00000
+#define B1HT_0 0x00000000
+#define B1RAT_1 0x01000000
+#define B1RAT_2 0x02000000
+#define B1RAT_3 0x03000000
+#define B1RAT_4 0x04000000
+#define B1RAT_5 0x05000000
+#define B1RAT_6 0x06000000
+#define B1RAT_7 0x07000000
+#define B1RAT_8 0x08000000
+#define B1RAT_9 0x09000000
+#define B1RAT_10 0x0A000000
+#define B1RAT_11 0x0B000000
+#define B1RAT_12 0x0C000000
+#define B1RAT_13 0x0D000000
+#define B1RAT_14 0x0E000000
+#define B1RAT_15 0x0F000000
+#define B1WAT_1 0x10000000
+#define B1WAT_2 0x20000000
+#define B1WAT_3 0x30000000
+#define B1WAT_4 0x40000000
+#define B1WAT_5 0x50000000
+#define B1WAT_6 0x60000000
+#define B1WAT_7 0x70000000
+#define B1WAT_8 0x80000000
+#define B1WAT_9 0x90000000
+#define B1WAT_10 0xA0000000
+#define B1WAT_11 0xB0000000
+#define B1WAT_12 0xC0000000
+#define B1WAT_13 0xD0000000
+#define B1WAT_14 0xE0000000
+#define B1WAT_15 0xF0000000
+
+
+#define B2RDYEN 0x00000001
+#define B2RDYPOL 0x00000002
+#define B2TT_1 0x00000004
+#define B2TT_2 0x00000008
+#define B2TT_3 0x0000000C
+#define B2TT_4 0x00000000
+#define B2ST_1 0x00000010
+#define B2ST_2 0x00000020
+#define B2ST_3 0x00000030
+#define B2ST_4 0x00000000
+#define B2HT_1 0x00000040
+#define B2HT_2 0x00000080
+#define B2HT_3 0x000000C0
+#define B2HT_0 0x00000000
+#define B2RAT_1 0x00000100
+#define B2RAT_2 0x00000200
+#define B2RAT_3 0x00000300
+#define B2RAT_4 0x00000400
+#define B2RAT_5 0x00000500
+#define B2RAT_6 0x00000600
+#define B2RAT_7 0x00000700
+#define B2RAT_8 0x00000800
+#define B2RAT_9 0x00000900
+#define B2RAT_10 0x00000A00
+#define B2RAT_11 0x00000B00
+#define B2RAT_12 0x00000C00
+#define B2RAT_13 0x00000D00
+#define B2RAT_14 0x00000E00
+#define B2RAT_15 0x00000F00
+#define B2WAT_1 0x00001000
+#define B2WAT_2 0x00002000
+#define B2WAT_3 0x00003000
+#define B2WAT_4 0x00004000
+#define B2WAT_5 0x00005000
+#define B2WAT_6 0x00006000
+#define B2WAT_7 0x00007000
+#define B2WAT_8 0x00008000
+#define B2WAT_9 0x00009000
+#define B2WAT_10 0x0000A000
+#define B2WAT_11 0x0000B000
+#define B2WAT_12 0x0000C000
+#define B2WAT_13 0x0000D000
+#define B2WAT_14 0x0000E000
+#define B2WAT_15 0x0000F000
+#define B3RDYEN 0x00010000
+#define B3RDYPOL 0x00020000
+#define B3TT_1 0x00040000
+#define B3TT_2 0x00080000
+#define B3TT_3 0x000C0000
+#define B3TT_4 0x00000000
+#define B3ST_1 0x00100000
+#define B3ST_2 0x00200000
+#define B3ST_3 0x00300000
+#define B3ST_4 0x00000000
+#define B3HT_1 0x00400000
+#define B3HT_2 0x00800000
+#define B3HT_3 0x00C00000
+#define B3HT_0 0x00000000
+#define B3RAT_1 0x01000000
+#define B3RAT_2 0x02000000
+#define B3RAT_3 0x03000000
+#define B3RAT_4 0x04000000
+#define B3RAT_5 0x05000000
+#define B3RAT_6 0x06000000
+#define B3RAT_7 0x07000000
+#define B3RAT_8 0x08000000
+#define B3RAT_9 0x09000000
+#define B3RAT_10 0x0A000000
+#define B3RAT_11 0x0B000000
+#define B3RAT_12 0x0C000000
+#define B3RAT_13 0x0D000000
+#define B3RAT_14 0x0E000000
+#define B3RAT_15 0x0F000000
+#define B3WAT_1 0x10000000
+#define B3WAT_2 0x20000000
+#define B3WAT_3 0x30000000
+#define B3WAT_4 0x40000000
+#define B3WAT_5 0x50000000
+#define B3WAT_6 0x60000000
+#define B3WAT_7 0x70000000
+#define B3WAT_8 0x80000000
+#define B3WAT_9 0x90000000
+#define B3WAT_10 0xA0000000
+#define B3WAT_11 0xB0000000
+#define B3WAT_12 0xC0000000
+#define B3WAT_13 0xD0000000
+#define B3WAT_14 0xE0000000
+#define B3WAT_15 0xF0000000
+
+
+
+
+
+
+#define SCTLE 0x00000001
+#define CL_2 0x00000008
+#define CL_3 0x0000000C
+#define PFE 0x00000010
+#define PFP 0x00000020
+#define TRAS_1 0x00000040
+#define TRAS_2 0x00000080
+#define TRAS_3 0x000000C0
+#define TRAS_4 0x00000100
+#define TRAS_5 0x00000140
+#define TRAS_6 0x00000180
+#define TRAS_7 0x000001C0
+#define TRAS_8 0x00000200
+#define TRAS_9 0x00000240
+#define TRAS_10 0x00000280
+#define TRAS_11 0x000002C0
+#define TRAS_12 0x00000300
+#define TRAS_13 0x00000340
+#define TRAS_14 0x00000380
+#define TRAS_15 0x000003C0
+#define TRP_1 0x00000800
+#define TRP_2 0x00001000
+#define TRP_3 0x00001800
+#define TRP_4 0x00002000
+#define TRP_5 0x00002800
+#define TRP_6 0x00003000
+#define TRP_7 0x00003800
+#define TRCD_1 0x00008000
+#define TRCD_2 0x00010000
+#define TRCD_3 0x00018000
+#define TRCD_4 0x00020000
+#define TRCD_5 0x00028000
+#define TRCD_6 0x00030000
+#define TRCD_7 0x00038000
+#define TWR_1 0x00080000
+#define TWR_2 0x00100000
+#define TWR_3 0x00180000
+#define PUPSD 0x00200000
+#define PSM 0x00400000
+#define PSS 0x00800000
+#define SRFS 0x01000000
+#define EBUFE 0x02000000
+#define FBBRW 0x04000000
+#define EMREN 0x10000000
+#define TCSR 0x20000000
+#define CDDBG 0x40000000
+
+
+#define EBE 0x00000001
+#define EBSZ_16 0x00000000
+#define EBSZ_32 0x00000002
+#define EBSZ_64 0x00000004
+#define EBSZ_128 0x00000006
+#define EBCAW_8 0x00000000
+#define EBCAW_9 0x00000010
+#define EBCAW_10 0x00000020
+#define EBCAW_11 0x00000030
+
+
+#define SDCI 0x00000001
+#define SDSRA 0x00000002
+#define SDPUA 0x00000004
+#define SDRS 0x00000008
+#define SDEASE 0x00000010
+#define BGSTAT 0x00000020
+# 30 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-bf533/cdefBF532.h" 2
+
+
+# 1 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-common/cdef_LPBlackfin.h" 1
+# 10 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-common/cdef_LPBlackfin.h"
+#define _CDEF_LPBLACKFIN_H 
+
+
+
+
+
+
+
+#define pSRAM_BASE_ADDRESS ((volatile void **)SRAM_BASE_ADDRESS)
+#define pDMEM_CONTROL ((volatile unsigned long *)DMEM_CONTROL)
+#define pDCPLB_STATUS ((volatile unsigned long *)DCPLB_STATUS)
+#define pDCPLB_FAULT_ADDR ((volatile void **)DCPLB_FAULT_ADDR)
+
+
+
+#define pDCPLB_ADDR0 ((volatile void **)DCPLB_ADDR0)
+#define pDCPLB_ADDR1 ((volatile void **)DCPLB_ADDR1)
+#define pDCPLB_ADDR2 ((volatile void **)DCPLB_ADDR2)
+#define pDCPLB_ADDR3 ((volatile void **)DCPLB_ADDR3)
+#define pDCPLB_ADDR4 ((volatile void **)DCPLB_ADDR4)
+#define pDCPLB_ADDR5 ((volatile void **)DCPLB_ADDR5)
+#define pDCPLB_ADDR6 ((volatile void **)DCPLB_ADDR6)
+#define pDCPLB_ADDR7 ((volatile void **)DCPLB_ADDR7)
+#define pDCPLB_ADDR8 ((volatile void **)DCPLB_ADDR8)
+#define pDCPLB_ADDR9 ((volatile void **)DCPLB_ADDR9)
+#define pDCPLB_ADDR10 ((volatile void **)DCPLB_ADDR10)
+#define pDCPLB_ADDR11 ((volatile void **)DCPLB_ADDR11)
+#define pDCPLB_ADDR12 ((volatile void **)DCPLB_ADDR12)
+#define pDCPLB_ADDR13 ((volatile void **)DCPLB_ADDR13)
+#define pDCPLB_ADDR14 ((volatile void **)DCPLB_ADDR14)
+#define pDCPLB_ADDR15 ((volatile void **)DCPLB_ADDR15)
+#define pDCPLB_DATA0 ((volatile unsigned long *)DCPLB_DATA0)
+#define pDCPLB_DATA1 ((volatile unsigned long *)DCPLB_DATA1)
+#define pDCPLB_DATA2 ((volatile unsigned long *)DCPLB_DATA2)
+#define pDCPLB_DATA3 ((volatile unsigned long *)DCPLB_DATA3)
+#define pDCPLB_DATA4 ((volatile unsigned long *)DCPLB_DATA4)
+#define pDCPLB_DATA5 ((volatile unsigned long *)DCPLB_DATA5)
+#define pDCPLB_DATA6 ((volatile unsigned long *)DCPLB_DATA6)
+#define pDCPLB_DATA7 ((volatile unsigned long *)DCPLB_DATA7)
+#define pDCPLB_DATA8 ((volatile unsigned long *)DCPLB_DATA8)
+#define pDCPLB_DATA9 ((volatile unsigned long *)DCPLB_DATA9)
+#define pDCPLB_DATA10 ((volatile unsigned long *)DCPLB_DATA10)
+#define pDCPLB_DATA11 ((volatile unsigned long *)DCPLB_DATA11)
+#define pDCPLB_DATA12 ((volatile unsigned long *)DCPLB_DATA12)
+#define pDCPLB_DATA13 ((volatile unsigned long *)DCPLB_DATA13)
+#define pDCPLB_DATA14 ((volatile unsigned long *)DCPLB_DATA14)
+#define pDCPLB_DATA15 ((volatile unsigned long *)DCPLB_DATA15)
+#define pDTEST_COMMAND ((volatile unsigned long *)DTEST_COMMAND)
+
+
+
+#define pDTEST_DATA0 ((volatile unsigned long *)DTEST_DATA0)
+#define pDTEST_DATA1 ((volatile unsigned long *)DTEST_DATA1)
+
+
+
+
+#define pIMEM_CONTROL ((volatile unsigned long *)IMEM_CONTROL)
+#define pICPLB_STATUS ((volatile unsigned long *)ICPLB_STATUS)
+#define pICPLB_FAULT_ADDR ((volatile void **)ICPLB_FAULT_ADDR)
+#define pICPLB_ADDR0 ((volatile void **)ICPLB_ADDR0)
+#define pICPLB_ADDR1 ((volatile void **)ICPLB_ADDR1)
+#define pICPLB_ADDR2 ((volatile void **)ICPLB_ADDR2)
+#define pICPLB_ADDR3 ((volatile void **)ICPLB_ADDR3)
+#define pICPLB_ADDR4 ((volatile void **)ICPLB_ADDR4)
+#define pICPLB_ADDR5 ((volatile void **)ICPLB_ADDR5)
+#define pICPLB_ADDR6 ((volatile void **)ICPLB_ADDR6)
+#define pICPLB_ADDR7 ((volatile void **)ICPLB_ADDR7)
+#define pICPLB_ADDR8 ((volatile void **)ICPLB_ADDR8)
+#define pICPLB_ADDR9 ((volatile void **)ICPLB_ADDR9)
+#define pICPLB_ADDR10 ((volatile void **)ICPLB_ADDR10)
+#define pICPLB_ADDR11 ((volatile void **)ICPLB_ADDR11)
+#define pICPLB_ADDR12 ((volatile void **)ICPLB_ADDR12)
+#define pICPLB_ADDR13 ((volatile void **)ICPLB_ADDR13)
+#define pICPLB_ADDR14 ((volatile void **)ICPLB_ADDR14)
+#define pICPLB_ADDR15 ((volatile void **)ICPLB_ADDR15)
+#define pICPLB_DATA0 ((volatile unsigned long *)ICPLB_DATA0)
+#define pICPLB_DATA1 ((volatile unsigned long *)ICPLB_DATA1)
+#define pICPLB_DATA2 ((volatile unsigned long *)ICPLB_DATA2)
+#define pICPLB_DATA3 ((volatile unsigned long *)ICPLB_DATA3)
+#define pICPLB_DATA4 ((volatile unsigned long *)ICPLB_DATA4)
+#define pICPLB_DATA5 ((volatile unsigned long *)ICPLB_DATA5)
+#define pICPLB_DATA6 ((volatile unsigned long *)ICPLB_DATA6)
+#define pICPLB_DATA7 ((volatile unsigned long *)ICPLB_DATA7)
+#define pICPLB_DATA8 ((volatile unsigned long *)ICPLB_DATA8)
+#define pICPLB_DATA9 ((volatile unsigned long *)ICPLB_DATA9)
+#define pICPLB_DATA10 ((volatile unsigned long *)ICPLB_DATA10)
+#define pICPLB_DATA11 ((volatile unsigned long *)ICPLB_DATA11)
+#define pICPLB_DATA12 ((volatile unsigned long *)ICPLB_DATA12)
+#define pICPLB_DATA13 ((volatile unsigned long *)ICPLB_DATA13)
+#define pICPLB_DATA14 ((volatile unsigned long *)ICPLB_DATA14)
+#define pICPLB_DATA15 ((volatile unsigned long *)ICPLB_DATA15)
+#define pITEST_COMMAND ((volatile unsigned long *)ITEST_COMMAND)
+
+
+
+#define pITEST_DATA0 ((volatile unsigned long *)ITEST_DATA0)
+#define pITEST_DATA1 ((volatile unsigned long *)ITEST_DATA1)
+
+
+#define pEVT0 ((volatile void **)EVT0)
+#define pEVT1 ((volatile void **)EVT1)
+#define pEVT2 ((volatile void **)EVT2)
+#define pEVT3 ((volatile void **)EVT3)
+#define pEVT4 ((volatile void **)EVT4)
+#define pEVT5 ((volatile void **)EVT5)
+#define pEVT6 ((volatile void **)EVT6)
+#define pEVT7 ((volatile void **)EVT7)
+#define pEVT8 ((volatile void **)EVT8)
+#define pEVT9 ((volatile void **)EVT9)
+#define pEVT10 ((volatile void **)EVT10)
+#define pEVT11 ((volatile void **)EVT11)
+#define pEVT12 ((volatile void **)EVT12)
+#define pEVT13 ((volatile void **)EVT13)
+#define pEVT14 ((volatile void **)EVT14)
+#define pEVT15 ((volatile void **)EVT15)
+#define pIMASK ((volatile unsigned long *)IMASK)
+#define pIPEND ((volatile unsigned long *)IPEND)
+#define pILAT ((volatile unsigned long *)ILAT)
+
+
+#define pTCNTL ((volatile unsigned long *)TCNTL)
+#define pTPERIOD ((volatile unsigned long *)TPERIOD)
+#define pTSCALE ((volatile unsigned long *)TSCALE)
+#define pTCOUNT ((volatile unsigned long *)TCOUNT)
+
+
+#define pDSPID ((volatile unsigned long *)DSPID)
+#define pDBGCTL ((volatile unsigned long *)DBGCTL)
+#define pDBGSTAT ((volatile unsigned long *)DBGSTAT)
+#define pEMUDAT ((volatile unsigned long *)EMUDAT)
+
+
+#define pTBUFCTL ((volatile unsigned long *)TBUFCTL)
+#define pTBUFSTAT ((volatile unsigned long *)TBUFSTAT)
+#define pTBUF ((volatile void **)TBUF)
+
+
+#define pWPIACTL ((volatile unsigned long *)WPIACTL)
+#define pWPIA0 ((volatile void **)WPIA0)
+#define pWPIA1 ((volatile void **)WPIA1)
+#define pWPIA2 ((volatile void **)WPIA2)
+#define pWPIA3 ((volatile void **)WPIA3)
+#define pWPIA4 ((volatile void **)WPIA4)
+#define pWPIA5 ((volatile void **)WPIA5)
+#define pWPIACNT0 ((volatile unsigned long *)WPIACNT0)
+#define pWPIACNT1 ((volatile unsigned long *)WPIACNT1)
+#define pWPIACNT2 ((volatile unsigned long *)WPIACNT2)
+#define pWPIACNT3 ((volatile unsigned long *)WPIACNT3)
+#define pWPIACNT4 ((volatile unsigned long *)WPIACNT4)
+#define pWPIACNT5 ((volatile unsigned long *)WPIACNT5)
+#define pWPDACTL ((volatile unsigned long *)WPDACTL)
+#define pWPDA0 ((volatile void **)WPDA0)
+#define pWPDA1 ((volatile void **)WPDA1)
+#define pWPDACNT0 ((volatile unsigned long *)WPDACNT0)
+#define pWPDACNT1 ((volatile unsigned long *)WPDACNT1)
+#define pWPSTAT ((volatile unsigned long *)WPSTAT)
+
+
+#define pPFCTL ((volatile unsigned long *)PFCTL)
+#define pPFCNTR0 ((volatile unsigned long *)PFCNTR0)
+#define pPFCNTR1 ((volatile unsigned long *)PFCNTR1)
+# 33 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-bf533/cdefBF532.h" 2
+
+
+#define pPLL_CTL ((volatile unsigned short *)PLL_CTL)
+#define pPLL_STAT ((volatile unsigned short *)PLL_STAT)
+#define pPLL_LOCKCNT ((volatile unsigned short *)PLL_LOCKCNT)
+#define pCHIPID ((volatile unsigned long *)CHIPID)
+#define pSWRST ((volatile unsigned short *)SWRST)
+#define pSYSCR ((volatile unsigned short *)SYSCR)
+#define pPLL_DIV ((volatile unsigned short *)PLL_DIV)
+#define pVR_CTL ((volatile unsigned short *)VR_CTL)
+
+
+#define pSIC_IAR0 ((volatile unsigned long *)SIC_IAR0)
+#define pSIC_IAR1 ((volatile unsigned long *)SIC_IAR1)
+#define pSIC_IAR2 ((volatile unsigned long *)SIC_IAR2)
+#define pSIC_IAR3 ((volatile unsigned long *)SIC_IAR3)
+#define pSIC_IMASK ((volatile unsigned long *)SIC_IMASK)
+#define pSIC_ISR ((volatile unsigned long *)SIC_ISR)
+#define pSIC_IWR ((volatile unsigned long *)SIC_IWR)
+
+
+#define pWDOG_CTL ((volatile unsigned short *)WDOG_CTL)
+#define pWDOG_CNT ((volatile unsigned long *)WDOG_CNT)
+#define pWDOG_STAT ((volatile unsigned long *)WDOG_STAT)
+
+
+#define pRTC_STAT ((volatile unsigned long *)RTC_STAT)
+#define pRTC_ICTL ((volatile unsigned short *)RTC_ICTL)
+#define pRTC_ISTAT ((volatile unsigned short *)RTC_ISTAT)
+#define pRTC_SWCNT ((volatile unsigned short *)RTC_SWCNT)
+#define pRTC_ALARM ((volatile unsigned long *)RTC_ALARM)
+#define pRTC_FAST ((volatile unsigned short *)RTC_FAST)
+#define pRTC_PREN ((volatile unsigned short *)RTC_PREN)
+
+
+#define pFIO_DIR ((volatile unsigned short *)FIO_DIR)
+#define pFIO_FLAG_C ((volatile unsigned short *)FIO_FLAG_C)
+#define pFIO_FLAG_S ((volatile unsigned short *)FIO_FLAG_S)
+#define pFIO_MASKA_C ((volatile unsigned short *)FIO_MASKA_C)
+#define pFIO_MASKA_S ((volatile unsigned short *)FIO_MASKA_S)
+#define pFIO_MASKB_C ((volatile unsigned short *)FIO_MASKB_C)
+#define pFIO_MASKB_S ((volatile unsigned short *)FIO_MASKB_S)
+#define pFIO_POLAR ((volatile unsigned short *)FIO_POLAR)
+#define pFIO_EDGE ((volatile unsigned short *)FIO_EDGE)
+#define pFIO_BOTH ((volatile unsigned short *)FIO_BOTH)
+#define pFIO_INEN ((volatile unsigned short *)FIO_INEN)
+#define pFIO_FLAG_D ((volatile unsigned short *)FIO_FLAG_D)
+#define pFIO_FLAG_T ((volatile unsigned short *)FIO_FLAG_T)
+#define pFIO_MASKA_D ((volatile unsigned short *)FIO_MASKA_D)
+#define pFIO_MASKA_T ((volatile unsigned short *)FIO_MASKA_T)
+#define pFIO_MASKB_D ((volatile unsigned short *)FIO_MASKB_D)
+#define pFIO_MASKB_T ((volatile unsigned short *)FIO_MASKB_T)
+
+
+#define pDMA_CCOMP ((volatile unsigned long *)DMA_CCOMP)
+#define pDMA_ACOMP ((volatile unsigned long *)DMA_ACOMP)
+#define pDMA_MISR ((volatile unsigned long *)DMA_MISR)
+#define pDMA_TCPER ((volatile unsigned short *)DMA_TCPER)
+#define pDMA_TCCNT ((volatile unsigned short *)DMA_TCCNT)
+#define pDMA_TMODE ((volatile unsigned short *)DMA_TMODE)
+#define pDMA_TMCHAN ((volatile unsigned short *)DMA_TMCHAN)
+#define pDMA_TMSTAT ((volatile unsigned short *)DMA_TMSTAT)
+#define pDMA_TMBD ((volatile unsigned short *)DMA_TMBD)
+#define pDMA_TMM0D ((volatile unsigned short *)DMA_TMM0D)
+#define pDMA_TMM1D ((volatile unsigned short *)DMA_TMM1D)
+#define pDMA_TMMA ((volatile void **)DMA_TMMA)
+
+
+#define pDMA0_CONFIG ((volatile unsigned short *)DMA0_CONFIG)
+#define pDMA0_NEXT_DESC_PTR ((volatile void **)DMA0_NEXT_DESC_PTR)
+#define pDMA0_START_ADDR ((volatile void **)DMA0_START_ADDR)
+#define pDMA0_X_COUNT ((volatile unsigned short *)DMA0_X_COUNT)
+#define pDMA0_Y_COUNT ((volatile unsigned short *)DMA0_Y_COUNT)
+#define pDMA0_X_MODIFY ((volatile signed short *)DMA0_X_MODIFY)
+#define pDMA0_Y_MODIFY ((volatile signed short *)DMA0_Y_MODIFY)
+#define pDMA0_CURR_DESC_PTR ((volatile void **)DMA0_CURR_DESC_PTR)
+#define pDMA0_CURR_ADDR ((volatile void **)DMA0_CURR_ADDR)
+#define pDMA0_CURR_X_COUNT ((volatile unsigned short *)DMA0_CURR_X_COUNT)
+#define pDMA0_CURR_Y_COUNT ((volatile unsigned short *)DMA0_CURR_Y_COUNT)
+#define pDMA0_IRQ_STATUS ((volatile unsigned short *)DMA0_IRQ_STATUS)
+#define pDMA0_PERIPHERAL_MAP ((volatile unsigned short *)DMA0_PERIPHERAL_MAP)
+
+#define pDMA1_CONFIG ((volatile unsigned short *)DMA1_CONFIG)
+#define pDMA1_NEXT_DESC_PTR ((volatile void **)DMA1_NEXT_DESC_PTR)
+#define pDMA1_START_ADDR ((volatile void **)DMA1_START_ADDR)
+#define pDMA1_X_COUNT ((volatile unsigned short *)DMA1_X_COUNT)
+#define pDMA1_Y_COUNT ((volatile unsigned short *)DMA1_Y_COUNT)
+#define pDMA1_X_MODIFY ((volatile signed short *)DMA1_X_MODIFY)
+#define pDMA1_Y_MODIFY ((volatile signed short *)DMA1_Y_MODIFY)
+#define pDMA1_CURR_DESC_PTR ((volatile void **)DMA1_CURR_DESC_PTR)
+#define pDMA1_CURR_ADDR ((volatile void **)DMA1_CURR_ADDR)
+#define pDMA1_CURR_X_COUNT ((volatile unsigned short *)DMA1_CURR_X_COUNT)
+#define pDMA1_CURR_Y_COUNT ((volatile unsigned short *)DMA1_CURR_Y_COUNT)
+#define pDMA1_IRQ_STATUS ((volatile unsigned short *)DMA1_IRQ_STATUS)
+#define pDMA1_PERIPHERAL_MAP ((volatile unsigned short *)DMA1_PERIPHERAL_MAP)
+
+#define pDMA2_CONFIG ((volatile unsigned short *)DMA2_CONFIG)
+#define pDMA2_NEXT_DESC_PTR ((volatile void **)DMA2_NEXT_DESC_PTR)
+#define pDMA2_START_ADDR ((volatile void **)DMA2_START_ADDR)
+#define pDMA2_X_COUNT ((volatile unsigned short *)DMA2_X_COUNT)
+#define pDMA2_Y_COUNT ((volatile unsigned short *)DMA2_Y_COUNT)
+#define pDMA2_X_MODIFY ((volatile signed short *)DMA2_X_MODIFY)
+#define pDMA2_Y_MODIFY ((volatile signed short *)DMA2_Y_MODIFY)
+#define pDMA2_CURR_DESC_PTR ((volatile void **)DMA2_CURR_DESC_PTR)
+#define pDMA2_CURR_ADDR ((volatile void **)DMA2_CURR_ADDR)
+#define pDMA2_CURR_X_COUNT ((volatile unsigned short *)DMA2_CURR_X_COUNT)
+#define pDMA2_CURR_Y_COUNT ((volatile unsigned short *)DMA2_CURR_Y_COUNT)
+#define pDMA2_IRQ_STATUS ((volatile unsigned short *)DMA2_IRQ_STATUS)
+#define pDMA2_PERIPHERAL_MAP ((volatile unsigned short *)DMA2_PERIPHERAL_MAP)
+
+#define pDMA3_CONFIG ((volatile unsigned short *)DMA3_CONFIG)
+#define pDMA3_NEXT_DESC_PTR ((volatile void **)DMA3_NEXT_DESC_PTR)
+#define pDMA3_START_ADDR ((volatile void **)DMA3_START_ADDR)
+#define pDMA3_X_COUNT ((volatile unsigned short *)DMA3_X_COUNT)
+#define pDMA3_Y_COUNT ((volatile unsigned short *)DMA3_Y_COUNT)
+#define pDMA3_X_MODIFY ((volatile signed short *)DMA3_X_MODIFY)
+#define pDMA3_Y_MODIFY ((volatile signed short *)DMA3_Y_MODIFY)
+#define pDMA3_CURR_DESC_PTR ((volatile void **)DMA3_CURR_DESC_PTR)
+#define pDMA3_CURR_ADDR ((volatile void **)DMA3_CURR_ADDR)
+#define pDMA3_CURR_X_COUNT ((volatile unsigned short *)DMA3_CURR_X_COUNT)
+#define pDMA3_CURR_Y_COUNT ((volatile unsigned short *)DMA3_CURR_Y_COUNT)
+#define pDMA3_IRQ_STATUS ((volatile unsigned short *)DMA3_IRQ_STATUS)
+#define pDMA3_PERIPHERAL_MAP ((volatile unsigned short *)DMA3_PERIPHERAL_MAP)
+
+#define pDMA4_CONFIG ((volatile unsigned short *)DMA4_CONFIG)
+#define pDMA4_NEXT_DESC_PTR ((volatile void **)DMA4_NEXT_DESC_PTR)
+#define pDMA4_START_ADDR ((volatile void **)DMA4_START_ADDR)
+#define pDMA4_X_COUNT ((volatile unsigned short *)DMA4_X_COUNT)
+#define pDMA4_Y_COUNT ((volatile unsigned short *)DMA4_Y_COUNT)
+#define pDMA4_X_MODIFY ((volatile signed short *)DMA4_X_MODIFY)
+#define pDMA4_Y_MODIFY ((volatile signed short *)DMA4_Y_MODIFY)
+#define pDMA4_CURR_DESC_PTR ((volatile void **)DMA4_CURR_DESC_PTR)
+#define pDMA4_CURR_ADDR ((volatile void **)DMA4_CURR_ADDR)
+#define pDMA4_CURR_X_COUNT ((volatile unsigned short *)DMA4_CURR_X_COUNT)
+#define pDMA4_CURR_Y_COUNT ((volatile unsigned short *)DMA4_CURR_Y_COUNT)
+#define pDMA4_IRQ_STATUS ((volatile unsigned short *)DMA4_IRQ_STATUS)
+#define pDMA4_PERIPHERAL_MAP ((volatile unsigned short *)DMA4_PERIPHERAL_MAP)
+
+#define pDMA5_CONFIG ((volatile unsigned short *)DMA5_CONFIG)
+#define pDMA5_NEXT_DESC_PTR ((volatile void **)DMA5_NEXT_DESC_PTR)
+#define pDMA5_START_ADDR ((volatile void **)DMA5_START_ADDR)
+#define pDMA5_X_COUNT ((volatile unsigned short *)DMA5_X_COUNT)
+#define pDMA5_Y_COUNT ((volatile unsigned short *)DMA5_Y_COUNT)
+#define pDMA5_X_MODIFY ((volatile signed short *)DMA5_X_MODIFY)
+#define pDMA5_Y_MODIFY ((volatile signed short *)DMA5_Y_MODIFY)
+#define pDMA5_CURR_DESC_PTR ((volatile void **)DMA5_CURR_DESC_PTR)
+#define pDMA5_CURR_ADDR ((volatile void **)DMA5_CURR_ADDR)
+#define pDMA5_CURR_X_COUNT ((volatile unsigned short *)DMA5_CURR_X_COUNT)
+#define pDMA5_CURR_Y_COUNT ((volatile unsigned short *)DMA5_CURR_Y_COUNT)
+#define pDMA5_IRQ_STATUS ((volatile unsigned short *)DMA5_IRQ_STATUS)
+#define pDMA5_PERIPHERAL_MAP ((volatile unsigned short *)DMA5_PERIPHERAL_MAP)
+
+#define pDMA6_CONFIG ((volatile unsigned short *)DMA6_CONFIG)
+#define pDMA6_NEXT_DESC_PTR ((volatile void **)DMA6_NEXT_DESC_PTR)
+#define pDMA6_START_ADDR ((volatile void **)DMA6_START_ADDR)
+#define pDMA6_X_COUNT ((volatile unsigned short *)DMA6_X_COUNT)
+#define pDMA6_Y_COUNT ((volatile unsigned short *)DMA6_Y_COUNT)
+#define pDMA6_X_MODIFY ((volatile signed short *)DMA6_X_MODIFY)
+#define pDMA6_Y_MODIFY ((volatile signed short *)DMA6_Y_MODIFY)
+#define pDMA6_CURR_DESC_PTR ((volatile void **)DMA6_CURR_DESC_PTR)
+#define pDMA6_CURR_ADDR ((volatile void **)DMA6_CURR_ADDR)
+#define pDMA6_CURR_X_COUNT ((volatile unsigned short *)DMA6_CURR_X_COUNT)
+#define pDMA6_CURR_Y_COUNT ((volatile unsigned short *)DMA6_CURR_Y_COUNT)
+#define pDMA6_IRQ_STATUS ((volatile unsigned short *)DMA6_IRQ_STATUS)
+#define pDMA6_PERIPHERAL_MAP ((volatile unsigned short *)DMA6_PERIPHERAL_MAP)
+
+#define pDMA7_CONFIG ((volatile unsigned short *)DMA7_CONFIG)
+#define pDMA7_NEXT_DESC_PTR ((volatile void **)DMA7_NEXT_DESC_PTR)
+#define pDMA7_START_ADDR ((volatile void **)DMA7_START_ADDR)
+#define pDMA7_X_COUNT ((volatile unsigned short *)DMA7_X_COUNT)
+#define pDMA7_Y_COUNT ((volatile unsigned short *)DMA7_Y_COUNT)
+#define pDMA7_X_MODIFY ((volatile signed short *)DMA7_X_MODIFY)
+#define pDMA7_Y_MODIFY ((volatile signed short *)DMA7_Y_MODIFY)
+#define pDMA7_CURR_DESC_PTR ((volatile void **)DMA7_CURR_DESC_PTR)
+#define pDMA7_CURR_ADDR ((volatile void **)DMA7_CURR_ADDR)
+#define pDMA7_CURR_X_COUNT ((volatile unsigned short *)DMA7_CURR_X_COUNT)
+#define pDMA7_CURR_Y_COUNT ((volatile unsigned short *)DMA7_CURR_Y_COUNT)
+#define pDMA7_IRQ_STATUS ((volatile unsigned short *)DMA7_IRQ_STATUS)
+#define pDMA7_PERIPHERAL_MAP ((volatile unsigned short *)DMA7_PERIPHERAL_MAP)
+
+#define pMDMA_D1_CONFIG ((volatile unsigned short *)MDMA_D1_CONFIG)
+#define pMDMA_D1_NEXT_DESC_PTR ((volatile void **)MDMA_D1_NEXT_DESC_PTR)
+#define pMDMA_D1_START_ADDR ((volatile void **)MDMA_D1_START_ADDR)
+#define pMDMA_D1_X_COUNT ((volatile unsigned short *)MDMA_D1_X_COUNT)
+#define pMDMA_D1_Y_COUNT ((volatile unsigned short *)MDMA_D1_Y_COUNT)
+#define pMDMA_D1_X_MODIFY ((volatile signed short *)MDMA_D1_X_MODIFY)
+#define pMDMA_D1_Y_MODIFY ((volatile signed short *)MDMA_D1_Y_MODIFY)
+#define pMDMA_D1_CURR_DESC_PTR ((volatile void **)MDMA_D1_CURR_DESC_PTR)
+#define pMDMA_D1_CURR_ADDR ((volatile void **)MDMA_D1_CURR_ADDR)
+#define pMDMA_D1_CURR_X_COUNT ((volatile unsigned short *)MDMA_D1_CURR_X_COUNT)
+#define pMDMA_D1_CURR_Y_COUNT ((volatile unsigned short *)MDMA_D1_CURR_Y_COUNT)
+#define pMDMA_D1_IRQ_STATUS ((volatile unsigned short *)MDMA_D1_IRQ_STATUS)
+#define pMDMA_D1_PERIPHERAL_MAP ((volatile unsigned short *)MDMA_D1_PERIPHERAL_MAP)
+
+#define pMDMA_S1_CONFIG ((volatile unsigned short *)MDMA_S1_CONFIG)
+#define pMDMA_S1_NEXT_DESC_PTR ((volatile void **)MDMA_S1_NEXT_DESC_PTR)
+#define pMDMA_S1_START_ADDR ((volatile void **)MDMA_S1_START_ADDR)
+#define pMDMA_S1_X_COUNT ((volatile unsigned short *)MDMA_S1_X_COUNT)
+#define pMDMA_S1_Y_COUNT ((volatile unsigned short *)MDMA_S1_Y_COUNT)
+#define pMDMA_S1_X_MODIFY ((volatile signed short *)MDMA_S1_X_MODIFY)
+#define pMDMA_S1_Y_MODIFY ((volatile signed short *)MDMA_S1_Y_MODIFY)
+#define pMDMA_S1_CURR_DESC_PTR ((volatile void **)MDMA_S1_CURR_DESC_PTR)
+#define pMDMA_S1_CURR_ADDR ((volatile void **)MDMA_S1_CURR_ADDR)
+#define pMDMA_S1_CURR_X_COUNT ((volatile unsigned short *)MDMA_S1_CURR_X_COUNT)
+#define pMDMA_S1_CURR_Y_COUNT ((volatile unsigned short *)MDMA_S1_CURR_Y_COUNT)
+#define pMDMA_S1_IRQ_STATUS ((volatile unsigned short *)MDMA_S1_IRQ_STATUS)
+#define pMDMA_S1_PERIPHERAL_MAP ((volatile unsigned short *)MDMA_S1_PERIPHERAL_MAP)
+
+#define pMDMA_D0_CONFIG ((volatile unsigned short *)MDMA_D0_CONFIG)
+#define pMDMA_D0_NEXT_DESC_PTR ((volatile void **)MDMA_D0_NEXT_DESC_PTR)
+#define pMDMA_D0_START_ADDR ((volatile void **)MDMA_D0_START_ADDR)
+#define pMDMA_D0_X_COUNT ((volatile unsigned short *)MDMA_D0_X_COUNT)
+#define pMDMA_D0_Y_COUNT ((volatile unsigned short *)MDMA_D0_Y_COUNT)
+#define pMDMA_D0_X_MODIFY ((volatile signed short *)MDMA_D0_X_MODIFY)
+#define pMDMA_D0_Y_MODIFY ((volatile signed short *)MDMA_D0_Y_MODIFY)
+#define pMDMA_D0_CURR_DESC_PTR ((volatile void **)MDMA_D0_CURR_DESC_PTR)
+#define pMDMA_D0_CURR_ADDR ((volatile void **)MDMA_D0_CURR_ADDR)
+#define pMDMA_D0_CURR_X_COUNT ((volatile unsigned short *)MDMA_D0_CURR_X_COUNT)
+#define pMDMA_D0_CURR_Y_COUNT ((volatile unsigned short *)MDMA_D0_CURR_Y_COUNT)
+#define pMDMA_D0_IRQ_STATUS ((volatile unsigned short *)MDMA_D0_IRQ_STATUS)
+#define pMDMA_D0_PERIPHERAL_MAP ((volatile unsigned short *)MDMA_D0_PERIPHERAL_MAP)
+
+#define pMDMA_S0_CONFIG ((volatile unsigned short *)MDMA_S0_CONFIG)
+#define pMDMA_S0_NEXT_DESC_PTR ((volatile void **)MDMA_S0_NEXT_DESC_PTR)
+#define pMDMA_S0_START_ADDR ((volatile void **)MDMA_S0_START_ADDR)
+#define pMDMA_S0_X_COUNT ((volatile unsigned short *)MDMA_S0_X_COUNT)
+#define pMDMA_S0_Y_COUNT ((volatile unsigned short *)MDMA_S0_Y_COUNT)
+#define pMDMA_S0_X_MODIFY ((volatile signed short *)MDMA_S0_X_MODIFY)
+#define pMDMA_S0_Y_MODIFY ((volatile signed short *)MDMA_S0_Y_MODIFY)
+#define pMDMA_S0_CURR_DESC_PTR ((volatile void **)MDMA_S0_CURR_DESC_PTR)
+#define pMDMA_S0_CURR_ADDR ((volatile void **)MDMA_S0_CURR_ADDR)
+#define pMDMA_S0_CURR_X_COUNT ((volatile unsigned short *)MDMA_S0_CURR_X_COUNT)
+#define pMDMA_S0_CURR_Y_COUNT ((volatile unsigned short *)MDMA_S0_CURR_Y_COUNT)
+#define pMDMA_S0_IRQ_STATUS ((volatile unsigned short *)MDMA_S0_IRQ_STATUS)
+#define pMDMA_S0_PERIPHERAL_MAP ((volatile unsigned short *)MDMA_S0_PERIPHERAL_MAP)
+
+
+#define pEBIU_AMGCTL ((volatile unsigned short *)EBIU_AMGCTL)
+#define pEBIU_AMBCTL0 ((volatile unsigned long *)EBIU_AMBCTL0)
+#define pEBIU_AMBCTL1 ((volatile unsigned long *)EBIU_AMBCTL1)
+# 284 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-bf533/cdefBF532.h"
+#define pEBIU_SDGCTL ((volatile unsigned long *)EBIU_SDGCTL)
+#define pEBIU_SDRRC ((volatile unsigned short *)EBIU_SDRRC)
+#define pEBIU_SDSTAT ((volatile unsigned short *)EBIU_SDSTAT)
+#define pEBIU_SDBCTL ((volatile unsigned short *)EBIU_SDBCTL)
+
+
+#define pUART_THR ((volatile unsigned short *)UART_THR)
+#define pUART_RBR ((volatile unsigned short *)UART_RBR)
+#define pUART_DLL ((volatile unsigned short *)UART_DLL)
+#define pUART_IER ((volatile unsigned short *)UART_IER)
+#define pUART_DLH ((volatile unsigned short *)UART_DLH)
+#define pUART_IIR ((volatile unsigned short *)UART_IIR)
+#define pUART_LCR ((volatile unsigned short *)UART_LCR)
+#define pUART_MCR ((volatile unsigned short *)UART_MCR)
+#define pUART_LSR ((volatile unsigned short *)UART_LSR)
+
+
+
+
+#define pUART_SCR ((volatile unsigned short *)UART_SCR)
+#define pUART_GCTL ((volatile unsigned short *)UART_GCTL)
+
+
+#define pSPI_CTL ((volatile unsigned short *)SPI_CTL)
+#define pSPI_FLG ((volatile unsigned short *)SPI_FLG)
+#define pSPI_STAT ((volatile unsigned short *)SPI_STAT)
+#define pSPI_TDBR ((volatile unsigned short *)SPI_TDBR)
+#define pSPI_RDBR ((volatile unsigned short *)SPI_RDBR)
+#define pSPI_BAUD ((volatile unsigned short *)SPI_BAUD)
+#define pSPI_SHADOW ((volatile unsigned short *)SPI_SHADOW)
+
+
+#define pTIMER0_CONFIG ((volatile unsigned short *)TIMER0_CONFIG)
+#define pTIMER0_COUNTER ((volatile unsigned long *)TIMER0_COUNTER)
+#define pTIMER0_PERIOD ((volatile unsigned long *)TIMER0_PERIOD)
+#define pTIMER0_WIDTH ((volatile unsigned long *)TIMER0_WIDTH)
+
+#define pTIMER1_CONFIG ((volatile unsigned short *)TIMER1_CONFIG)
+#define pTIMER1_COUNTER ((volatile unsigned long *)TIMER1_COUNTER)
+#define pTIMER1_PERIOD ((volatile unsigned long *)TIMER1_PERIOD)
+#define pTIMER1_WIDTH ((volatile unsigned long *)TIMER1_WIDTH)
+
+#define pTIMER2_CONFIG ((volatile unsigned short *)TIMER2_CONFIG)
+#define pTIMER2_COUNTER ((volatile unsigned long *)TIMER2_COUNTER)
+#define pTIMER2_PERIOD ((volatile unsigned long *)TIMER2_PERIOD)
+#define pTIMER2_WIDTH ((volatile unsigned long *)TIMER2_WIDTH)
+
+#define pTIMER_ENABLE ((volatile unsigned short *)TIMER_ENABLE)
+#define pTIMER_DISABLE ((volatile unsigned short *)TIMER_DISABLE)
+#define pTIMER_STATUS ((volatile unsigned short *)TIMER_STATUS)
+
+
+#define pSPORT0_TCR1 ((volatile unsigned short *)SPORT0_TCR1)
+#define pSPORT0_TCR2 ((volatile unsigned short *)SPORT0_TCR2)
+#define pSPORT0_TCLKDIV ((volatile unsigned short *)SPORT0_TCLKDIV)
+#define pSPORT0_TFSDIV ((volatile unsigned short *)SPORT0_TFSDIV)
+#define pSPORT0_TX ((volatile long *)SPORT0_TX)
+#define pSPORT0_RX ((volatile long *)SPORT0_RX)
+#define pSPORT0_TX32 ((volatile long *)SPORT0_TX)
+#define pSPORT0_RX32 ((volatile long *)SPORT0_RX)
+#define pSPORT0_TX16 ((volatile unsigned short *)SPORT0_TX)
+#define pSPORT0_RX16 ((volatile unsigned short *)SPORT0_RX)
+#define pSPORT0_RCR1 ((volatile unsigned short *)SPORT0_RCR1)
+#define pSPORT0_RCR2 ((volatile unsigned short *)SPORT0_RCR2)
+#define pSPORT0_RCLKDIV ((volatile unsigned short *)SPORT0_RCLKDIV)
+#define pSPORT0_RFSDIV ((volatile unsigned short *)SPORT0_RFSDIV)
+#define pSPORT0_STAT ((volatile unsigned short *)SPORT0_STAT)
+#define pSPORT0_CHNL ((volatile unsigned short *)SPORT0_CHNL)
+#define pSPORT0_MCMC1 ((volatile unsigned short *)SPORT0_MCMC1)
+#define pSPORT0_MCMC2 ((volatile unsigned short *)SPORT0_MCMC2)
+#define pSPORT0_MTCS0 ((volatile unsigned long *)SPORT0_MTCS0)
+#define pSPORT0_MTCS1 ((volatile unsigned long *)SPORT0_MTCS1)
+#define pSPORT0_MTCS2 ((volatile unsigned long *)SPORT0_MTCS2)
+#define pSPORT0_MTCS3 ((volatile unsigned long *)SPORT0_MTCS3)
+#define pSPORT0_MRCS0 ((volatile unsigned long *)SPORT0_MRCS0)
+#define pSPORT0_MRCS1 ((volatile unsigned long *)SPORT0_MRCS1)
+#define pSPORT0_MRCS2 ((volatile unsigned long *)SPORT0_MRCS2)
+#define pSPORT0_MRCS3 ((volatile unsigned long *)SPORT0_MRCS3)
+
+
+#define pSPORT1_TCR1 ((volatile unsigned short *)SPORT1_TCR1)
+#define pSPORT1_TCR2 ((volatile unsigned short *)SPORT1_TCR2)
+#define pSPORT1_TCLKDIV ((volatile unsigned short *)SPORT1_TCLKDIV)
+#define pSPORT1_TFSDIV ((volatile unsigned short *)SPORT1_TFSDIV)
+#define pSPORT1_TX ((volatile long *)SPORT1_TX)
+#define pSPORT1_RX ((volatile long *)SPORT1_RX)
+#define pSPORT1_TX32 ((volatile long *)SPORT1_TX)
+#define pSPORT1_RX32 ((volatile long *)SPORT1_RX)
+#define pSPORT1_TX16 ((volatile unsigned short *)SPORT1_TX)
+#define pSPORT1_RX16 ((volatile unsigned short *)SPORT1_RX)
+#define pSPORT1_RCR1 ((volatile unsigned short *)SPORT1_RCR1)
+#define pSPORT1_RCR2 ((volatile unsigned short *)SPORT1_RCR2)
+#define pSPORT1_RCLKDIV ((volatile unsigned short *)SPORT1_RCLKDIV)
+#define pSPORT1_RFSDIV ((volatile unsigned short *)SPORT1_RFSDIV)
+#define pSPORT1_STAT ((volatile unsigned short *)SPORT1_STAT)
+#define pSPORT1_CHNL ((volatile unsigned short *)SPORT1_CHNL)
+#define pSPORT1_MCMC1 ((volatile unsigned short *)SPORT1_MCMC1)
+#define pSPORT1_MCMC2 ((volatile unsigned short *)SPORT1_MCMC2)
+#define pSPORT1_MTCS0 ((volatile unsigned long *)SPORT1_MTCS0)
+#define pSPORT1_MTCS1 ((volatile unsigned long *)SPORT1_MTCS1)
+#define pSPORT1_MTCS2 ((volatile unsigned long *)SPORT1_MTCS2)
+#define pSPORT1_MTCS3 ((volatile unsigned long *)SPORT1_MTCS3)
+#define pSPORT1_MRCS0 ((volatile unsigned long *)SPORT1_MRCS0)
+#define pSPORT1_MRCS1 ((volatile unsigned long *)SPORT1_MRCS1)
+#define pSPORT1_MRCS2 ((volatile unsigned long *)SPORT1_MRCS2)
+#define pSPORT1_MRCS3 ((volatile unsigned long *)SPORT1_MRCS3)
+
+
+#define pPPI_CONTROL ((volatile unsigned short *)PPI_CONTROL)
+#define pPPI_STATUS ((volatile unsigned short *)PPI_STATUS)
+#define pPPI_DELAY ((volatile unsigned short *)PPI_DELAY)
+#define pPPI_COUNT ((volatile unsigned short *)PPI_COUNT)
+#define pPPI_FRAME ((volatile unsigned short *)PPI_FRAME)
+# 16 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/arch-common/cdefBF5xx.h" 2
+# 39 "/home/cvshdr/inter-uboot/bf54x_trunk/u-boot-1.1.6/include/asm/blackfin.h" 2
+# 43 "start.S" 2
+
+.global _stext;
+.global __bss_start;
+.global start;
+.global _start;
+.global _rambase;
+.global _ramstart;
+.global _ramend;
+.global _bf533_data_dest;
+.global _bf533_data_size;
+.global edata;
+.global _initialize;
+.global _exit;
+.global flashdataend;
+.global init_sdram;
+.global _icache_enable;
+.global _dcache_enable;
+# 83 "start.S"
+.text
+_start:
+start:
+_stext:
+
+ R0 = 0x32;
+ SYSCFG = R0;
+ SSYNC;
+
+
+
+
+
+ r1 = 0;
+ r2 = 0;
+ r3 = 0;
+ r4 = 0;
+ r5 = 0;
+ r6 = 0;
+ r7 = 0;
+
+ p0 = 0;
+ p1 = 0;
+ p2 = 0;
+ p3 = 0;
+ p4 = 0;
+ p5 = 0;
+
+ i0 = 0;
+ i1 = 0;
+ i2 = 0;
+ i3 = 0;
+ m0 = 0;
+ m1 = 0;
+ m3 = 0;
+ m3 = 0;
+ l0 = 0;
+ l1 = 0;
+ l2 = 0;
+ l3 = 0;
+ b0 = 0;
+ b1 = 0;
+ b2 = 0;
+ b3 = 0;
+
+
+
+
+ r0 = 0;
+ lc0 = r0;
+ lc1 = r0;
+
+ SSYNC;
+
+
+ p0.h = 0xFFC00100 >> 16;
+ p0.l = 0xFFC00100 & 0xFFFF;
+ r0.l = w[p0];
+
+ cc = bittst(r0, 15);
+ if !cc jump no_soft_reset;
+
+
+ r0 = 0x0000;
+ w[p0] = r0;
+ ssync;
+
+no_soft_reset:
+ nop;
+
+
+ p0.h = (EVT_EMULATION_ADDR >> 16);
+ p0.l = (EVT_EMULATION_ADDR & 0xFFFF);
+ p0 += 8;
+ p1 = 14;
+ r1 = 0;
+ LSETUP(4,4) lc0 = p1;
+ [ p0 ++ ] = r1;
+
+
+ p0.h = (((SIC_IWR0) >> 16) & 0xFFFF);
+ p0.l = ((SIC_IWR0) & 0xFFFF);
+ r0.l = 0x1;
+ w[p0] = r0.l;
+ SSYNC;
+# 245 "start.S"
+        p2.h = (EBIU_AMCBCTL1 >> 16);
+        p2.l = (EBIU_AMCBCTL1 & 0xFFFF);
+        r0.h = (0xFFC27BB0 >> 16);
+        r0.l = (0xFFC27BB0 & 0xFFFF);
+        [p2] = r0;
+        ssync;
+
+        p2.h = (EBIU_AMCBCTL0 >> 16);
+        p2.l = (EBIU_AMCBCTL0 & 0xFFFF);
+        r0.h = (0x7BB07BB0 >> 16);
+        r0.l = (0x7BB07BB0 & 0xFFFF);
+        [p2] = r0;
+        ssync;
+
+        p2.h = (0xFFC00A00 >> 16);
+        p2.l = (0xFFC00A00 & 0xffff);
+        r0 = 0xFF;
+        w[p2] = r0;
+        ssync;
+
+
+ sp.l = (0xffb01000 & 0xFFFF);
+ sp.h = (0xffb01000 >> 16);
+
+ call init_sdram;
+# 380 "start.S"
+ call get_pc;
+offset:
+ r2.l = offset;
+ r2.h = offset;
+ r3.l = start;
+ r3.h = start;
+ r1 = r2 - r3;
+
+ r0 = r0 - r1;
+ p1 = r0;
+
+ p2.l = ((0x04000000 - (256 << 10)) & 0xffff);
+ p2.h = ((0x04000000 - (256 << 10)) >> 16);
+
+ p3 = 0x04;
+ p4.l = (((0x04000000 - (256 << 10)) + (256 << 10)) & 0xffff);
+ p4.h = (((0x04000000 - (256 << 10)) + (256 << 10)) >> 16);
+loop1:
+ r1 = [p1 ++ p3];
+ [p2 ++ p3] = r1;
+ cc=p2==p4;
+ if !cc jump loop1;
+
+
+
+ r0.h = (((((0x04000000 - (256 << 10)) - (128 << 10)) - 0x4000) - 4) >> 16);
+ r0.l = (((((0x04000000 - (256 << 10)) - (128 << 10)) - 0x4000) - 4) & 0xFFFF);
+ sp = r0;
+ fp = sp;
+# 417 "start.S"
+ p0.l = (EVT_IVG15_ADDR & 0xFFFF);
+ p0.h = (EVT_IVG15_ADDR >> 16);
+
+ p1.l = _real_start;
+ p1.h = _real_start;
+ [p0] = p1;
+
+ p0.l = (0xFFE02104 & 0xFFFF);
+ p0.h = (0xFFE02104 >> 16);
+ r0.l = ((IVG15_POS) & 0xFFFF);
+ r0.h = (((IVG15_POS) >> 16) & 0xFFFF);
+ [p0] = r0;
+ raise 15;
+ p0.l = WAIT_HERE;
+ p0.h = WAIT_HERE;
+ reti = p0;
+ rti;
+
+WAIT_HERE:
+ jump WAIT_HERE;
+
+.global _real_start;
+_real_start:
+ [ -- sp ] = reti;
+# 461 "start.S"
+ p0.l = ((PORTH_FER) & 0xFFFF);
+    p0.h = (((PORTH_FER) >> 16) & 0xFFFF);
+    r0.l = 0x3F03;
+    w[p0] = r0;
+
+
+ p0.l = ((PORTH_MUX) & 0xFFFF);
+    p0.h = (((PORTH_MUX) >> 16) & 0xFFFF);
+    r0.l = 0x0000;
+    r0.h = 0x0000;
+    [p0] = r0;
+
+
+    p0.l = ((PORTH_DIR_SET) & 0xFFFF);
+    p0.h = (((PORTH_DIR_SET) >> 16) & 0xFFFF);
+    r0.l = 0x3F00;
+    w[p0] = r0;
+
+
+
+copy:
+ P1.H = (((SYSMMR_BASE) >> 16) & 0xFFFF);
+ P1.L = ((SYSMMR_BASE) & 0xFFFF);
+
+ R0.H = reset_start;
+ R0.L = reset_start;
+ R1.H = reset_end;
+ R1.L = reset_end;
+ R2 = R1 - R0;
+ R1.H = (((L1_ISRAM) >> 16) & 0xFFFF);
+ R1.L = ((L1_ISRAM) & 0xFFFF);
+ R3.L = 0x00000001;
+ R4.L = (0x00000080 | 0x00000002 | 0x00000001);
+
+DMA:
+ R6 = 0x1 (Z);
+ W[P1+OFFSET_(0xFFC00E54)] = R6;
+ W[P1+OFFSET_(0xFFC00E14)] = R6;
+
+ [P1+OFFSET_(0xFFC00E44)] = R0;
+ W[P1+OFFSET_(0xFFC00E50)] = R2;
+
+
+ W[P1+OFFSET_(0xFFC00E48)] = R3;
+
+ [P1+OFFSET_(0xFFC00E04)] = R1;
+ W[P1+OFFSET_(0xFFC00E10)] = R2;
+
+
+ W[P1+OFFSET_(0xFFC00E08)] = R4;
+
+WAIT_DMA_DONE:
+ p0.h = (((0xFFC00E28) >> 16) & 0xFFFF);
+ p0.l = ((0xFFC00E28) & 0xFFFF);
+ R0 = W[P0](Z);
+ CC = BITTST(R0, 0);
+ if ! CC jump WAIT_DMA_DONE
+
+ R0 = 0x1;
+ W[P1+OFFSET_(0xFFC00E28)] = R0;
+
+
+ p1.l = __bss_start;
+ p1.h = __bss_start;
+ p2.l = _end;
+ p2.h = _end;
+ r1 = p1;
+ r2 = p2;
+ r3 = r2 - r1;
+ r3 = r3 >> 2;
+ p3 = r3;
+ lsetup (_clear_bss, _clear_bss_end ) lc1 = p3;
+ CC = p2<=p1;
+ if CC jump _clear_bss_skip;
+ r0 = 0;
+_clear_bss:
+_clear_bss_end:
+  [p1++] = r0;
+_clear_bss_skip:
+# 549 "start.S"
+ call _icache_enable;
+
+
+ p0.l = _start1;
+ p0.h = _start1;
+ jump (p0);
+
+reset_start:
+ p0.h = 0xFFC00204 >> 16;
+ p0.l = 0xFFC00204 & 0xffff;
+ r0 = 0x0010;
+ w[p0] = r0;
+ p0.h = 0xFFC00200 >> 16;
+ p0.l = 0xFFC00200 & 0xffff;
+ r0 = 0x0000;
+ w[p0] = r0;
+reset_wait:
+ jump reset_wait;
+
+reset_end: nop;
+
+_exit:
+ jump.s _exit;
+get_pc:
+ r0 = rets;
+ rts;
