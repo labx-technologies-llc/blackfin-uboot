@@ -126,7 +126,8 @@
 /* #define CONFIG_ETHADDR	02:80:ad:20:31:e8 */
 /* This is the routine that copies the MAC in Flash to the 'ethaddr' setting */
 
-#define CFG_LONGHELP		1
+#define CONFIG_BFIN_BOOTLDR /* enable support for 'bootldr' command */
+
 #define CONFIG_BOOTDELAY	5
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
 #define CONFIG_BOOTCOMMAND 	"run ramboot"
