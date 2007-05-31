@@ -401,6 +401,8 @@
 #define PAGE_SIZE_4KB		0x00010000	/* 4 KB page size */
 #define PAGE_SIZE_1MB		0x00020000	/* 1 MB page size */
 #define PAGE_SIZE_4MB		0x00030000	/* 4 MB page size */
+#define PAGE_SIZE_MASK		0x00030000	/* the bits for the page_size field */
+#define PAGE_SIZE_SHIFT		16
 #define CPLB_L1SRAM		0x00000020	/* 0=SRAM mapped in L1, 0=SRAM not mapped to L1 */
 #define CPLB_PORTPRIO		0x00000200	/* 0=low priority port, 1= high priority port */
 #define CPLB_L1_CHBL		0x00001000	/* 0=non-cacheable in L1, 1=cacheable in L1 */
