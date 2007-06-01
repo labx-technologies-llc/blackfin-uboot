@@ -19,7 +19,7 @@
 #include "defBF549.h"
 
 /* include core specific register pointer definitions */
-#include "cdef_LPBlackfin.h"
+#include <asm/arch-common/cdef_LPBlackfin.h>
 
 /* SYSTEM & MMR ADDRESS DEFINITIONS FOR ADSP-BF549 */
 
