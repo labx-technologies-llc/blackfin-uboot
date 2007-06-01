@@ -390,4 +390,10 @@ void dump_reg (void)
 	}
 }
 
+#else
+int smc91111_eeprom (int argc, char *argv[])
+{
+	printf("Not supported for this board\n");
+	return 1;
+}
 #endif
