@@ -9,11 +9,10 @@
  *
  * http://www.analog.com/processors/resources/crosscore/visualDspDevSoftware.html
  *
- * (c) Copyright 2001-2005 Analog Devices, Inc. All rights reserved
+ * (c) Copyright 2001-2007 Analog Devices, Inc. All rights reserved
  *
  * This file under source code control, please send bugs or changes to:
  * dsptools.support@analog.com
- *
  */
 
 /* LP Blackfin CORE REGISTER BIT & ADDRESS DEFINITIONS FOR ADSP-BF532 */
@@ -97,19 +96,17 @@
 				MK_BMSK_(SEQSTAT_EXCAUSE2_P ) | \
 				MK_BMSK_(SEQSTAT_EXCAUSE3_P ) | \
 				MK_BMSK_(SEQSTAT_EXCAUSE4_P ) | \
-				MK_BMSK_(SEQSTAT_EXCAUSE5_P ) | \
-				0 )
+				MK_BMSK_(SEQSTAT_EXCAUSE5_P ) )
 
 /* Indicates whether the last reset was a software reset (=1) */
 #define SEQSTAT_SFTRESET	MK_BMSK_(SEQSTAT_SFTRESET_P )
 
 /* Last hw error cause */
-#define SEQSTAT_HWERRCAUSE	MK_BMSK_(SEQSTAT_HWERRCAUSE0_P ) | \
+#define SEQSTAT_HWERRCAUSE	( MK_BMSK_(SEQSTAT_HWERRCAUSE0_P ) | \
 				MK_BMSK_(SEQSTAT_HWERRCAUSE1_P ) | \
 				MK_BMSK_(SEQSTAT_HWERRCAUSE2_P ) | \
 				MK_BMSK_(SEQSTAT_HWERRCAUSE3_P ) | \
-				MK_BMSK_(SEQSTAT_HWERRCAUSE4_P ) | \
-				0
+				MK_BMSK_(SEQSTAT_HWERRCAUSE4_P ) )
 
 /*
  * SYSCFG register
@@ -414,7 +411,7 @@
 #define CPLB_USER_WR		0x00000008	/* 0=no write access, 0=write access allowed (user mode) */
 #define CPLB_SUPV_WR		0x00000010	/* 0=no write access, 0=write access allowed (supervisor mode) */
 #define CPLB_DIRTY		0x00000080	/* 1=dirty, 0=clean */
-#define CPLB_L1_AOW		0x00008000	/* 0=do not allocate cache lines on write-through writes */
+#define CPLB_L1_AOW		0x00008000	/* 0=do not allocate cache lines on write-through writes, */
 						/* 1= allocate cache lines on write-through writes. */
 #define CPLB_WT			0x00004000	/* 0=write-back, 1=write-through */
 
