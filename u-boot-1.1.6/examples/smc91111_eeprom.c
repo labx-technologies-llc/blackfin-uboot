@@ -31,6 +31,8 @@
 #include <exports.h>
 #include "../drivers/smc91111.h"
 
+#ifdef CONFIG_DRIVER_SMC91111
+
 #define SMC_BASE_ADDRESS CONFIG_SMC91111_BASE
 #define EEPROM		0x1;
 #define MAC		0x2;
@@ -387,3 +389,5 @@ void dump_reg (void)
 		printf ("\n");
 	}
 }
+
+#endif
