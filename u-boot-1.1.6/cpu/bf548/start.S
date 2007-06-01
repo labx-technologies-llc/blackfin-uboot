@@ -134,21 +134,15 @@ _stext:
 
 	SSYNC;
 
-	/* Check soft reset status */
-	p0.h = SWRST >> 16;
-	p0.l = SWRST & 0xFFFF;
-	r0.l = w[p0];
-
-	cc = bittst(r0, 15);
-	if !cc jump no_soft_reset;
-
-	/* Clear Soft reset */
+	/* Make sure we clear soft reset ... don't bother
+	 * checking the value as reads are destructive here
+	 * and double clearing the system reset field is OK
+	 */
+	p0.h = hi(SWRST);
+	p0.l = lo(SWRST);
 	r0 = 0x0000;
 	w[p0] = r0;
-	ssync;
-
-no_soft_reset:
-	nop;
+	SSYNC;
 
 	/* Clear EVT registers */
 	p0.h = (EVT_EMULATION_ADDR >> 16);
