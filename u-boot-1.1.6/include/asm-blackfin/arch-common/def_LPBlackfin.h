@@ -330,13 +330,13 @@
 
 /* ** Bit Positions */
 #define ENDM_P			0x00	/* (doesn't really exist) Enable Data Memory L1 */
-#define DMCTL_ENDM_P		0x00	/* "" (older define) */
-#define DMC0_P			0x01	/* Data Memory Configuration, 00 - A SRAM, B SRAM */
-#define DMCTL_DMC0_P		0x01	/* "" (older define) */
-#define DMC1_P			0x02	/* Data Memory Configuration, 10 - A SRAM, B SRAM */
-#define DMCTL_DMC1_P		0x02	/* "" (older define) */
-#define DMC2_P			0x03	/* Data Memory Configuration, 11 - A CACHE, B CACHE */
-#define DMCTL_DMC2_P		0x03	/* "" (older define) */
+#define DMCTL_ENDM_P		ENDM_P	/* "" (older define) */
+#define ENDCPLB_P		0x01	/* Enable DCPLBS */
+#define DMCTL_ENDCPLB_P		ENDCPLB_P	/* "" (older define) */
+#define DMC0_P			0x02	/* L1 Data Memory Configure bit 0 */
+#define DMCTL_DMC0_P		DMC0_P	/* "" (older define) */
+#define DMC1_P			0x03	/* L1 Data Memory Configure bit 1 */
+#define DMCTL_DMC1_P		DMC1_P	/* "" (older define) */
 #define DCBS_P			0x04	/* L1 Data Cache Bank Select */
 #define PORT_PREF0_P		0x12	/* DAG0 Port Preference */
 #define PORT_PREF1_P		0x13	/* DAG1 Port Preference */
