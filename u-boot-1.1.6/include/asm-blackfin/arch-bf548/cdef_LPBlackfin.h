@@ -12,7 +12,7 @@
 #if !defined(__ADSPLPBLACKFIN__)
 #warning cdef_LPBlackfin.h should only be included for 532 compatible chips.
 #endif
-#include "def_LPBlackfin.h"
+#include <asm/arch-common/def_LPBlackfin.h>
 
 #ifndef _PTR_TO_VOL_VOID_PTR
 #ifndef _USE_LEGACY_CDEF_BEHAVIOUR
