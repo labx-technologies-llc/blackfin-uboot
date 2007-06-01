@@ -123,7 +123,7 @@
 /* ** Masks */
 #define SYSCFG_SSSTEP		MK_BMSK_(SYSCFG_SSSTEP_P)	/* Supervisor single step, when set it forces an exception for each instruction executed */
 #define SYSCFG_CCEN		MK_BMSK_(SYSCFG_CCEN_P)		/* Enable cycle counter (=1) */
-#define SYSCFG_SNEN		MK_BMSK_(SYSCFG_SNEN_P		/* Self Nesting Interrupt Enable */
+#define SYSCFG_SNEN		MK_BMSK_(SYSCFG_SNEN_P)		/* Self Nesting Interrupt Enable */
 
 /* Backward-compatibility for typos in prior releases */
 #define SYSCFG_SSSSTEP		SYSCFG_SSSTEP
