@@ -4,14 +4,14 @@
 #include <asm/blackfin.h>
 
 .text
-.align 2 
-ENTRY(_blackfin_icache_flush_range) 
+.align 2
+ENTRY(_blackfin_icache_flush_range)
 	R2 = -32;
 	R2 = R0 & R2;
 	P0 = R2;
 	P1 = R1;
 	CSYNC;
-	1:
+1:
 	IFLUSH[P0++];
 	CC = P0 < P1(iu);
 	IF CC JUMP 1b(bp);
@@ -41,10 +41,10 @@ ENTRY(_invalidate_entire_icache)
 	P0.H = (IMEM_CONTROL >> 16);
 	R7 =[P0];
 
-/*
- * Clear the IMC bit , All valid bits in the instruction
- * cache are set to the invalid state
- */
+	/*
+	 * Clear the IMC bit , All valid bits in the instruction
+	 * cache are set to the invalid state
+	 */
 	BITCLR(R7, IMC_P);
 	CLI R6;
 	/* SSYNC required before invalidating cache. */
@@ -68,7 +68,7 @@ ENTRY(_invalidate_entire_icache)
 	(R7:5) =[SP++];
 	RTS;
 
-/* 
+/*
  * Invalidate the Entire Data cache by
  * clearing DMC[1:0] bits
  */
@@ -80,10 +80,10 @@ ENTRY(_dcache_invalidate)
 	P0.H = (DMEM_CONTROL >> 16);
 	R7 =[P0];
 
-/* 
- * Clear the DMC[1:0] bits, All valid bits in the data
- * cache are set to the invalid state
- */
+	/*
+	 * Clear the DMC[1:0] bits, All valid bits in the data
+	 * cache are set to the invalid state
+	 */
 	BITCLR(R7, DMC0_P);
 	BITCLR(R7, DMC1_P);
 	CLI R6;
@@ -118,11 +118,11 @@ ENTRY(_blackfin_dcache_invalidate_range)
 	CC = P0 < P1(iu);
 	IF CC JUMP 1b(bp);
 
-/* 
- * If the data crosses a cache line, then we'll be pointing to
- * the last cache line, but won't have flushed/invalidated it yet, so do
- * one more.
- */
+	/*
+	 * If the data crosses a cache line, then we'll be pointing to
+	 * the last cache line, but won't have flushed/invalidated it yet, so do
+	 * one more.
+	 */
 	FLUSHINV[P0];
 	SSYNC;
 	RTS;
