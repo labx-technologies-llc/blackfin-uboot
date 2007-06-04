@@ -198,6 +198,9 @@
 
 #define CONFIG_COMMANDS ( CONFIG_COMMANDS1 | CONFIG_COMMANDS2 )
 
+#define CONFIG_BFIN_COMMANDS \
+	( CFG_BFIN_CMD_CPLBINFO )
+
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
 

@@ -202,6 +202,9 @@
 					 CFG_CMD_DATE)
 #endif
 
+#define CONFIG_BFIN_COMMANDS \
+	( CFG_BFIN_CMD_CPLBINFO )
+
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"	
 
 #if (BFIN_BOOT_MODE == BFIN_PARA_BOOT)

@@ -37,4 +37,6 @@ extern u_long get_sclk(void);
 
 #include <asm/arch-common/cdefBF5xx.h>
 
+#include <asm/cmd_confdefs.h>
+
 #endif

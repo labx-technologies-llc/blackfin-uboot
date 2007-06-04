@@ -14,6 +14,8 @@
 #include <asm/blackfin.h>
 #include <asm/cplb.h>
 
+#if CONFIG_BFIN_COMMANDS & CFG_BFIN_CMD_CPLBINFO
+
 extern const unsigned int icplb_table[page_descriptor_table_size][2];
 extern const unsigned int dcplb_table[page_descriptor_table_size][2];
 
@@ -85,7 +87,9 @@ int do_cplbinfo(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	return 0;
 }
 
-U_BOOT_CMD(cplbinfo, 2, 0, do_cplbinfo,
+U_BOOT_CMD(cplbinfo, 1, 0, do_cplbinfo,
 	"cplbinfo- display current CPLB tables\n",
 	"\n"
 	"    - display current CPLB tables\n");
+
+#endif

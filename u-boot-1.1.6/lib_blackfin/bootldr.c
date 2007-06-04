@@ -14,7 +14,7 @@
 #include <command.h>
 #include <asm/blackfin.h>
 
-#ifdef CONFIG_BFIN_BOOTLDR
+#if CONFIG_BFIN_COMMANDS & CFG_BFIN_CMD_BOOTLDR
 
 /*
  * the bootldr command loads an address, checks to see if there
