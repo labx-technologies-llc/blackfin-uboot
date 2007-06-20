@@ -23,3 +23,8 @@
 
 # This is not actually used for Blackfin boards so do not change it
 #TEXT_BASE = do-not-use-me
+
+# these flags only matter when the part is in slave boot mode and
+# at the moment, the only thing we really test is UART boot, so
+# these reflect the UART boot setup for the BF537-STAMP
+LDR_FLAGS += --port g --gpio 6

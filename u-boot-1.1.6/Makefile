@@ -260,9 +260,8 @@ $(obj)u-boot.srec:	$(obj)u-boot
 $(obj)u-boot.bin:	$(obj)u-boot
 		$(OBJCOPY) ${OBJCFLAGS} -O binary $< $@
 
-$(obj)u-boot.ldr:	$(obj)u-boot.bin $(obj)u-boot
-		$(MAKE) -C tools/bin2ldr
-		cp tools/bin2ldr/app.ldr u-boot.ldr
+$(obj)u-boot.ldr:	$(obj)u-boot
+		$(LDR) -T $(CPU) -f -c $@ $< $(LDR_FLAGS)
 
 $(obj)u-boot.img:	$(obj)u-boot.bin
 		./tools/mkimage -A $(ARCH) -T firmware -C none \
