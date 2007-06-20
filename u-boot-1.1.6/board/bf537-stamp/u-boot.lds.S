@@ -28,16 +28,19 @@
 #include <config.h>
 
 OUTPUT_ARCH(bfin)
+ENTRY(load)
 
 MEMORY
 {
-	ram     : ORIGIN = (CFG_MONITOR_BASE), LENGTH = (256 * 1024)
+	load    : ORIGIN = 0x1000, LENGTH = (256 * 1024)
+	monitor : ORIGIN = (CFG_MONITOR_BASE), LENGTH = (256 * 1024)
 	l1_code : ORIGIN = 0xFFA00000, LENGTH = 0xC000
 	l1_data : ORIGIN = 0xFF900000, LENGTH = 0x4000
 }
 
 SECTIONS
 {
+	load = 0x1000;
 	. = CFG_MONITOR_BASE;
 	.text :
 	{
@@ -63,7 +66,7 @@ SECTIONS
 		common/environment.o	(.text)
 
 		*(EXCLUDE_FILE (board/bf537-stamp/post-memory.o) .text)
-	} > ram
+	} >monitor AT>load
 	PROVIDE (_etext = .);
 
 	. = ALIGN(4) ;
@@ -73,7 +76,7 @@ SECTIONS
 		board/bf537-stamp/post-memory.o   (.text)
 		. = ALIGN(4) ;
 		PROVIDE (_etext_l1 = .);
-	} > l1_code AT > ram
+	} >l1_code AT>load
 
 	.rodata :
 	{
@@ -83,7 +86,7 @@ SECTIONS
 		*(EXCLUDE_FILE (board/bf537-stamp/post-memory.o) .rodata.str1.4)
 		*(.eh_frame)
 		. = ALIGN(4);
-	} > ram
+	} >monitor AT>load
 
 	. = ALIGN(4);
 	PROVIDE (_erodata = .);
@@ -96,7 +99,7 @@ SECTIONS
 		board/bf537-stamp/post-memory.o (.rodata.str1.4)
 		. = ALIGN(4) ;
 		PROVIDE(_erodata_l1 = .);
-	} > l1_data AT > ram
+	} >l1_data AT>load
 
 	. = ALIGN(256);
 	.data :
@@ -107,21 +110,21 @@ SECTIONS
 		*(.sdata2)
 		*(.dynamic)
 		CONSTRUCTORS
-	} > ram
+	} >monitor AT>load
 	PROVIDE (_edata = .);
 
 	___u_boot_cmd_start = .;
-	.u_boot_cmd : { *(.u_boot_cmd) } > ram
+	.u_boot_cmd : { *(.u_boot_cmd) } >monitor AT>load
 	___u_boot_cmd_end = .;
 
 	__start___ex_table = .;
-	__ex_table : { *(__ex_table) }
+	__ex_table : { *(__ex_table) } >monitor AT>load
 	__stop___ex_table = .;
 
 	. = ALIGN(256);
 	__init_begin = .;
-	.text.init : { *(.text.init) }
-	.data.init : { *(.data.init) }
+	.text.init : { *(.text.init) } >monitor AT>load
+	.data.init : { *(.data.init) } >monitor AT>load
 	. = ALIGN(256);
 	__init_end = .;
 
@@ -132,6 +135,6 @@ SECTIONS
 		*(.dynbss)
 		*(.bss)
 		*(COMMON)
-	} > ram
+	} >monitor AT>load
 	PROVIDE (_end = .);
 }
