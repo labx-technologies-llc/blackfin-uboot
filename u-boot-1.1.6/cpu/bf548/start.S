@@ -62,24 +62,6 @@
 .global _post_flag;
 #endif
 
-#if (BFIN_BOOT_MODE == BF537_UART_BOOT)
-#if (CONFIG_CCLK_DIV == 1)
-#define CONFIG_CCLK_ACT_DIV   CCLK_DIV1
-#endif
-#if (CONFIG_CCLK_DIV == 2)
-#define CONFIG_CCLK_ACT_DIV   CCLK_DIV2
-#endif
-#if (CONFIG_CCLK_DIV == 4)
-#define CONFIG_CCLK_ACT_DIV   CCLK_DIV4
-#endif
-#if (CONFIG_CCLK_DIV == 8)
-#define CONFIG_CCLK_ACT_DIV   CCLK_DIV8
-#endif
-#ifndef CONFIG_CCLK_ACT_DIV
-#define CONFIG_CCLK_ACT_DIV   CONFIG_CCLK_DIV_not_defined_properly
-#endif
-#endif
-
 .text
 _start:
 start:
@@ -134,15 +116,21 @@ _stext:
 
 	SSYNC;
 
-	/* Make sure we clear soft reset ... don't bother
-	 * checking the value as reads are destructive here
-	 * and double clearing the system reset field is OK
-	 */
+	/* Check soft reset status */
 	p0.h = hi(SWRST);
 	p0.l = lo(SWRST);
+	r0.l = w[p0];
+
+	cc = bittst(r0, 15);
+	if !cc jump no_soft_reset;
+
+	/* Clear Soft reset */
 	r0 = 0x0000;
 	w[p0] = r0;
-	SSYNC;
+	ssync;
+
+no_soft_reset:
+	nop;
 
 	/* Clear EVT registers */
 	p0.h = (EVT_EMULATION_ADDR >> 16);
@@ -159,76 +147,6 @@ _stext:
 	r0.l = 0x1;
 	w[p0] = r0.l;
 	SSYNC;
-#endif
-
-#if (BFIN_BOOT_MODE == BFIN_UART_BOOT)
-	p0.h = hi(SIC_IWR0);
-	p0.l = lo(SIC_IWR0);
-	r0.l = 0x1;
-	w[p0] = r0.l;
-	SSYNC;
-
-	/*
-	* PLL_LOCKCNT - how many SCLK Cycles to delay while PLL becomes stable
-	*/
-	p0.h = hi(PLL_LOCKCNT);
-	p0.l = lo(PLL_LOCKCNT);
-	r0 = 0x300(Z);
-	w[p0] = r0.l;
-	ssync;
-
-	/*
-	* Put SDRAM in self-refresh, incase anything is running
-	*/
-	P2.H = hi(EBIU_SDGCTL);
-	P2.L = lo(EBIU_SDGCTL);
-	R0 = [P2];
-	BITSET (R0, 24);
-	[P2] = R0;
-	SSYNC;
-
-	/*
-	*  Set PLL_CTL with the value that we calculate in R0
-	*   - [14:09] = MSEL[5:0] : CLKIN / VCO multiplication factors
-	*   - [8]     = BYPASS    : BYPASS the PLL, run CLKIN into CCLK/SCLK
-	*   - [7]     = output delay (add 200ps of delay to mem signals)
-	*   - [6]     = input delay (add 200ps of input delay to mem signals)
-	*   - [5]     = PDWN      : 1=All Clocks off
-	*   - [3]     = STOPCK    : 1=Core Clock off
-	*   - [1]     = PLL_OFF   : 1=Disable Power to PLL
-	*   - [0]     = DF        : 1=Pass CLKIN/2 to PLL / 0=Pass CLKIN to PLL
-	*   all other bits set to zero
-	*/
-
-	r0 = CONFIG_VCO_MULT & 63;      /* Load the VCO multiplier         */
-	r0 = r0 << 9;                   /* Shift it over,                  */
-	r1 = CONFIG_CLKIN_HALF;        /* Do we need to divide CLKIN by 2?*/
-	r0 = r1 | r0;
-	r1 = CONFIG_PLL_BYPASS;         /* Bypass the PLL?                 */
-	r1 = r1 << 8;                   /* Shift it over                   */
-	r0 = r1 | r0;                   /* add them all together           */
-
-	p0.h = hi(PLL_CTL);
-	p0.l = lo(PLL_CTL);             /* Load the address                */
-	cli r2;                         /* Disable interrupts              */
-		ssync;
-	w[p0] = r0.l;                   /* Set the value                   */
-	idle;                           /* Wait for the PLL to stablize    */
-	sti r2;                         /* Enable interrupts               */
-
-check_again:
-	p0.h = hi(PLL_STAT);
-	p0.l = lo(PLL_STAT);
-	R0 = W[P0](Z);
-	CC = BITTST(R0,5);
-	if ! CC jump check_again;
-
-	/* Configure SCLK & CCLK Dividers */
-	r0 = (CONFIG_CCLK_ACT_DIV | CONFIG_SCLK_DIV);
-	p0.h = hi(PLL_DIV);
-	p0.l = lo(PLL_DIV);
-	w[p0] = r0.l;
-	ssync;
 #endif
 
 	/*
@@ -255,14 +173,6 @@ check_again:
         r0 = AMGCTLVAL;
         w[p2] = r0;
         ssync;
-
-#if ((BFIN_BOOT_MODE != BF537_SPI_MASTER_BOOT) && (BFIN_BOOT_MODE != BF537_UART_BOOT))
-	sp.l = (0xffb01000 & 0xFFFF);
-	sp.h = (0xffb01000 >> 16);
-
-	call init_sdram;
-#endif
-
 
 #if defined(CONFIG_BF537)&&defined(CONFIG_POST)
 	/* DMA POST code to Hi of L1 SRAM */
@@ -370,6 +280,7 @@ POST_DATA_DMA_DONE:
 	call init_sdram;
 #endif
 
+#if 0
 	/* relocate into to RAM */
 	call get_pc;
 offset:
@@ -393,6 +304,7 @@ loop1:
 	[p2 ++ p3] = r1;
 	cc=p2==p4;
 	if !cc jump loop1;
+#endif
 	/*
 	 * configure STACK
 	 */
@@ -447,29 +359,92 @@ _real_start:
 	ssync;
 #endif
 
-// Set up ports to configure Address lines for use with BUB parallel boot flash
-// configure PH8-PH13 as A4-A9 respectively
-
-	// configure GPIO
-	// set port H function enable register to configure PH8-PH13 as peripheral (not GPIO)
+	/************************************************
+	* configure GPIO 				*
+	* set port H function enable register		*
+	*  configure PH8-PH13 as peripheral (not GPIO) 	*
+	*************************************************/
 	p0.l = lo(PORTH_FER);
-    p0.h = hi(PORTH_FER);
-    r0.l = 0x3F03;
-    w[p0] = r0;
+	p0.h = hi(PORTH_FER);
+	r0.l = 0x3F03;
+	w[p0] = r0;
 
-	// set port H MUX to configure PH8-PH13 as 1st Function (MUX = 00) (bits 16-27 == 0) - Address signals A4-A9
+	/************************************************
+	* set port H MUX to configure PH8-PH13		*
+	*  1st Function (MUX = 00) (bits 16-27 == 0)	*
+	*  Set to address signals A4-A9 		*
+	*************************************************/
 	p0.l = lo(PORTH_MUX);
-    p0.h = hi(PORTH_MUX);
-    r0.l = 0x0000;
-    r0.h = 0x0000;
-    [p0] = r0;
+	p0.h = hi(PORTH_MUX);
+	r0.l = 0x0000;
+	r0.h = 0x0000;
+	[p0] = r0;
 
-	// set port H direction register to enable PH8-PH13 as outputs
-    p0.l = lo(PORTH_DIR_SET);
-    p0.h = hi(PORTH_DIR_SET);
-    r0.l = 0x3F00;
-    w[p0] = r0;
+	/************************************************
+	* set port H direction register			*
+	*  enable PH8-PH13 as outputs			*
+	*************************************************/
+	p0.l = lo(PORTH_DIR_SET);
+	p0.h = hi(PORTH_DIR_SET);
+	r0.l = 0x3F00;
+	w[p0] = r0;
 
+	/************************************************
+	* set port I function enable register		*
+	*  configure PI0-PI14 as peripheral (not GPIO) 	*
+	*************************************************/
+	p0.l = lo(PORTI_FER);
+	p0.h = hi(PORTI_FER);
+	r0.l = 0x7fff;
+	w[p0] = r0;
+
+	/**************************************************
+	* set PORT I MUX to configure PI14-PI0 as	  *
+	* 1st Function (MUX=00) - address signals A10-A24 *
+	***************************************************/
+	p0.l = lo(PORTI_MUX);
+	p0.h = hi(PORTI_MUX);
+	r0.l = 0x0000;
+	r0.h = 0x0000;
+	w[p0] = r0;
+
+	/****************************************
+	* set PORT I direction register		*
+	*  enable PI0 - PI14 as outputs		*
+	*****************************************/
+	p0.l = lo(PORTI_DIR_SET);
+	p0.h = hi(PORTI_DIR_SET);
+	r0.l = 0x7fff;
+	w[p0] = r0;
+
+	/************************************************
+	* set port f function enable register		*
+	*configure PF0-PF15 as GPIO (not peripheral)	*
+	*************************************************/
+	p0.l = lo(PORTF_FER);
+	p0.h = hi(PORTF_FER);
+	r0.l = 0x0000;
+	w[p0] = r0;
+
+	/* set port f MUX to configure PF0-PF15 as GPIO (not peripheral) */
+	p0.l = lo(PORTF_MUX);
+	p0.h = hi(PORTF_MUX);
+	r0.l = 0x0000;
+	w[p0] = r0;
+
+	/* set port f direction register to enable PF0-PF15 as outputs */
+	p0.l = lo(PORTF_DIR_SET);
+	p0.h = hi(PORTF_DIR_SET);
+	r0.l = 0xFFFF;
+	w[p0] = r0;
+	ssync;
+
+	/* set port f clear register */
+	p0.l = lo(PORTF_CLEAR);
+	p0.h = hi(PORTF_CLEAR);
+	r0.l = 0xFFFF;
+	w[p0] = r0;
+	ssync;
 
 	/* DMA reset code to Hi of L1 SRAM */
 copy:
@@ -529,14 +504,14 @@ WAIT_DMA_DONE:
 	r0 = 0;
 _clear_bss:
 _clear_bss_end:
- 	[p1++] = r0;
+	[p1++] = r0;
 _clear_bss_skip:
 
 #if defined(CONFIG_BF537)&&defined(CONFIG_POST)
-        p0.l = _post_flag;
-        p0.h = _post_flag;
-        r0   = r7;
-        [p0] = r0;
+	p0.l = _post_flag;
+	p0.h = _post_flag;
+	r0   = r7;
+	[p0] = r0;
 #endif
 
 #if 1 //mh
