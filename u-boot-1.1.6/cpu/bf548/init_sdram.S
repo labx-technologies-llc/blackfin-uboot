@@ -38,7 +38,6 @@ init_sdram:
 	[--SP] = (R7:0);
 	[--SP] = (P5:0);
 
-#if (BFIN_BOOT_MODE != BFIN_UART_BOOT)
 	/*************************************************
 	* System interrupt wakeup registers (SIC_IWRx)   *
 	* Required for PLL_CTL and VR_CTL configuration  *
@@ -110,16 +109,7 @@ skip_vr_ctl: nop;
 	STI R6;
 skip_pll_ctl: nop;
 
-#if 0 //jerry
 #if (BFIN_BOOT_MODE == BFIN_UART_BOOT)
-	R7.l = 0x0;
-	P5.l = lo(UART1_GCTL);
-	P5.h = hi(UART1_GCTL);
-	w[P5] = R7;
-	R7.l = 0x01;
-	w[P5] = R7;
-	SSYNC;
-
 	P5.l = lo(UART1_DLL);
 	P5.h = hi(UART1_DLL);
 	R7 = BFIN_LDR_BAUD_LB (z);
@@ -132,7 +122,6 @@ skip_pll_ctl: nop;
 	w[P5] = R7.l;
 	SSYNC;
 #endif
-#endif //jerry
 
 #if (BFIN_BOOT_MODE == BFIN_SPI_MASTER_BOOT)
 	p0.h = hi(SPI0_BAUD);
@@ -140,8 +129,6 @@ skip_pll_ctl: nop;
 	r0.l = CONFIG_SPI_BAUD_INITBLOCK;
 	w[p0] = r0.l;
 	SSYNC;
-#endif
-
 #endif
 
 	/**********************************************************
