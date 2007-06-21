@@ -38,7 +38,7 @@ init_sdram:
 	[--SP] = (R7:0);
 	[--SP] = (P5:0);
 
-#if 0 //jerry
+#if (BFIN_BOOT_MODE != BFIN_UART_BOOT)
 	/*************************************************
 	* System interrupt wakeup registers (SIC_IWRx)   *
 	* Required for PLL_CTL and VR_CTL configuration  *
@@ -46,16 +46,14 @@ init_sdram:
 	* expired.reset = 0xFFFF FFFF                    *
 	* disable all other interrupt sources in the     *
 	* meantime to disable unwanted wake up events    *
+	* Note: These vales are set in BootRom, here we  *
+	* should not modify these values. We can modify  *
+	* these values when u-boot is executed from DDR  *
+	* Notice: code is now run in BootRom environment *
 	**************************************************/
-	R7 = 0x0;
-	P5.h = hi(SIC_IWR2);
-	P5.l = lo(SIC_IWR2);
-	[P5] = R7;
-	P5.h = hi(SIC_IWR1);
-	P5.l = lo(SIC_IWR1);
-	[P5] = R7;
 	P5.h = hi(SIC_IWR0);
 	P5.l = lo(SIC_IWR0);
+	R7 = [P5];
 	bitset(R7, 0);
 	[P5] = R7;
 
@@ -112,6 +110,7 @@ skip_vr_ctl: nop;
 	STI R6;
 skip_pll_ctl: nop;
 
+#if 0 //jerry
 #if (BFIN_BOOT_MODE == BFIN_UART_BOOT)
 	R7.l = 0x0;
 	P5.l = lo(UART1_GCTL);
@@ -133,22 +132,17 @@ skip_pll_ctl: nop;
 	w[P5] = R7.l;
 	SSYNC;
 #endif
+#endif //jerry
 
 #if (BFIN_BOOT_MODE == BFIN_SPI_MASTER_BOOT)
-	p0.h = hi(SIC_IWR0);
-	p0.l = lo(SIC_IWR0);
-	r0.l = 0x1;
-	w[p0] = r0.l;
-	SSYNC;
-
-	p0.h = hi(SPI_BAUD);
-	p0.l = lo(SPI_BAUD);
-	r0.l = CONFIG_SPI_BAUD;
+	p0.h = hi(SPI0_BAUD);
+	p0.l = lo(SPI0_BAUD);
+	r0.l = CONFIG_SPI_BAUD_INITBLOCK;
 	w[p0] = r0.l;
 	SSYNC;
 #endif
 
-#endif //jerry
+#endif
 
 	/**********************************************************
 	*  PORTG configure for DDR test                           *
