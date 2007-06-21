@@ -11,6 +11,7 @@
 #define CFG_LONGHELP		1
 #define CONFIG_CMDLINE_EDITING	1
 #define CONFIG_BAUDRATE		57600
+#define CONFIG_LDR_LOAD_BAUD	115200
 /* Set default serial console for bf537 */
 #define CONFIG_UART_CONSOLE	0
 #define CONFIG_EZKIT548		1
@@ -32,7 +33,7 @@
 #define BFIN_16HOST_BOOT	0x004E	/* Bootmode 14: Boot from 16-bit host DMA */
 #define BFIN_8HOST_BOOT		0x004F	/* Bootmode 15: Boot from 8-bit host DMA */
 /* Define the boot mode */
-#define BFIN_BOOT_MODE		BFIN_PARA_BOOT
+#define BFIN_BOOT_MODE		BFIN_SPI_MASTER_BOOT
 
 #define ADSP_BF542		0x42
 #define ADSP_BF544		0x44
@@ -59,19 +60,19 @@
 #define CONFIG_PLL_BYPASS               0
 /* CONFIG_VCO_MULT controls what the multiplier of the PLL is.   */
 /* Values can range from 1-64                                    */
-#define CONFIG_VCO_MULT			20
+#define CONFIG_VCO_MULT			21
 /* CONFIG_CCLK_DIV controls what the core clock divider is       */
 /* Values can be 1, 2, 4, or 8 ONLY                              */
 #define CONFIG_CCLK_DIV			1
 /* CONFIG_SCLK_DIV controls what the peripheral clock divider is */
 /* Values can range from 1-15                                    */
-#define CONFIG_SCLK_DIV			5
+#define CONFIG_SCLK_DIV			4
 /* CONFIG_SPI_BAUD controls the SPI peripheral clock divider     */
 /* Values can range from 2-65535                                 */
 /* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)                  */
-#define CONFIG_SPI_BAUD                 2
+#define CONFIG_SPI_BAUD			2
 #if (BFIN_BOOT_MODE == BFIN_SPI_MASTER_BOOT)
-#define CONFIG_SPI_BAUD_INITBLOCK						   4
+#define CONFIG_SPI_BAUD_INITBLOCK	4
 #endif
 
 #if ( CONFIG_CLKIN_HALF == 0 )
@@ -191,55 +192,77 @@
 				 CFG_CMD_PING	| \
 				 CFG_CMD_ELF	| \
 				 CFG_CMD_CACHE	| \
+				 CFG_CMD_EEPROM | \
 				 CFG_CMD_DHCP)
-#elif (BFIN_BOOT_MODE == BFIN_SPI_MASTER_BOOT)
-#define CONFIG_COMMANDS			(CONFIG_BFIN_CMD| \
+#endif
+#if (BFIN_BOOT_MODE == BFIN_UART_BOOT)
+#define CONFIG_COMMANDS			(CONFIG_BFIN_CMD | \
 					 CFG_CMD_ELF	| \
-					 CFG_CMD_I2C	| \
 					 CFG_CMD_CACHE  | \
 					 CFG_CMD_JFFS2	| \
-					 CFG_CMD_EEPROM | \
-					 CFG_CMD_DATE)
+					 CFG_CMD_DHCP	| \
+					 CFG_CMD_EEPROM )
 #endif
-
-#define CONFIG_BFIN_COMMANDS \
-	( CFG_BFIN_CMD_CPLBINFO )
+#if (BFIN_BOOT_MODE == BFIN_SPI_MASTER_BOOT)
+#define CONFIG_COMMANDS			(CONFIG_BFIN_CMD | \
+					 CFG_CMD_ELF    | \
+					 CFG_CMD_CACHE  | \
+					 CFG_CMD_JFFS2  | \
+					 CFG_CMD_DHCP   | \
+					 CFG_CMD_EEPROM )
+#endif
 
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"	
 
 #if (BFIN_BOOT_MODE == BFIN_PARA_BOOT)
 #define CONFIG_EXTRA_ENV_SETTINGS                               \
-        "ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"      \
-        "nfsargs=setenv bootargs root=/dev/nfs rw "             \
-        "nfsroot=$(serverip):$(rootpath)\0"                     \
-        "addip=setenv bootargs $(bootargs) "                    \
-        "ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask)"      \
-        ":$(hostname):eth0:off\0"                               \
-        "ramboot=tftpboot 0x1000000 linux;"                     \
-        "run ramargs;run addip;bootelf\0"                       \
-        "nfsboot=tftpboot 0x1000000 linux;"                     \
-        "run nfsargs;run addip;bootelf\0"                       \
-        "flashboot=bootm 0x20100000\0"                          \
-        "update=tftpboot 0x1000000 u-boot.bin;"                 \
-        "protect off 0x20000000 0x2007FFFF;"                    \
-        "erase 0x20000000 0x2007FFFF;cp.b 0x1000000 0x20000000 $(filesize)\0"\
-        ""
-#elif (BFIN_BOOT_MODE == BFIN_SPI_MASTER_BOOT)
+	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"      \
+	"nfsargs=setenv bootargs root=/dev/nfs rw "             \
+	"nfsroot=$(serverip):$(rootpath)\0"                     \
+	"addip=setenv bootargs $(bootargs) "                    \
+	"ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask)"      \
+	":$(hostname):eth0:off\0"                               \
+	"ramboot=tftpboot 0x1000000 linux;"                     \
+	"run ramargs;run addip;bootelf\0"                       \
+	"nfsboot=tftpboot 0x1000000 linux;"                     \
+	"run nfsargs;run addip;bootelf\0"                       \
+	"flashboot=bootm 0x20100000\0"                          \
+	"update=tftpboot 0x1000000 u-boot.bin;"                 \
+	"protect off 0x20000000 0x2007FFFF;"                    \
+	"erase 0x20000000 0x2007FFFF;cp.b 0x1000000 0x20000000 $(filesize)\0"\
+	""
+#endif
+#if (BFIN_BOOT_MODE == BFIN_UART_BOOT)
+#define CONFIG_EXTRA_ENV_SETTINGS                               \
+	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"      \
+	"nfsargs=setenv bootargs root=/dev/nfs rw "             \
+	"nfsroot=$(serverip):$(rootpath)\0"                     \
+	"addip=setenv bootargs $(bootargs) "                    \
+	"ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask)"      \
+	":$(hostname):eth0:off\0"                               \
+	"ramboot=tftpboot 0x1000000 linux;"                     \
+	"run ramargs;run addip;bootelf\0"                       \
+	"nfsboot=tftpboot 0x1000000 linux;"                     \
+	"run nfsargs;run addip;bootelf\0"                       \
+	"flashboot=bootm 0x20100000\0"                          \
+	""
+#endif
+#if (BFIN_BOOT_MODE == BFIN_SPI_MASTER_BOOT)
 #define CONFIG_EXTRA_ENV_SETTINGS					\
-        "ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"		\
-        "nfsargs=setenv bootargs root=/dev/nfs rw "			\
-        "nfsroot=$(serverip):$(rootpath)\0"				\
-        "addip=setenv bootargs $(bootargs) "				\
-        "ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask)"		\
-        ":$(hostname):eth0:off\0"					\
-    	"ramboot=tftpboot 0x1000000 linux;"				\
-        "run ramargs;run addip;bootelf\0"				\
-        "nfsboot=tftpboot 0x1000000 linux;"				\
-        "run nfsargs;run addip;bootelf\0"				\
-        "flashboot=bootm 0x20100000\0"					\
-        "update=tftpboot 0x1000000 u-boot.ldr;"				\
-        "eeprom write 0x1000000 0x0 $(filesize);\0"			\
-        ""
+	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"		\
+	"nfsargs=setenv bootargs root=/dev/nfs rw "			\
+	"nfsroot=$(serverip):$(rootpath)\0"				\
+	"addip=setenv bootargs $(bootargs) "				\
+	"ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask)"		\
+	":$(hostname):eth0:off\0"					\
+	"ramboot=tftpboot 0x1000000 linux;"				\
+	"run ramargs;run addip;bootelf\0"				\
+	"nfsboot=tftpboot 0x1000000 linux;"				\
+	"run nfsargs;run addip;bootelf\0"				\
+	"flashboot=bootm 0x20100000\0"					\
+	"update=tftpboot 0x1000000 u-boot.ldr;"				\
+	"eeprom write 0x1000000 0x0 $(filesize);\0"			\
+	""
 #endif
 
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
@@ -296,7 +319,7 @@
 #define CFG_FLASH_CFI		/* The flash is CFI compatible */
 #define CFG_FLASH_CFI_DRIVER	/* Use common CFI driver */
 #define CFG_FLASH_BASE		0x20000000
-#define CFG_FLASH_CFI_WIDTH	FLASH_CFI_16BIT
+#define CFG_FLASH_CFI_WIDTH	FLASH_CFI_8BIT
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	256	/* max number of sectors on one chip */
 #if (BFIN_BOOT_MODE == BFIN_PARA_BOOT) || (BFIN_BOOT_MODE == BFIN_UART_BOOT)    /* for bf537-stamp, usrt boot mode still store env in flash */
@@ -320,7 +343,7 @@
 /* 512k reserved for u-boot */
 #define CFG_JFFS2_FIRST_SECTOR                 15
 
-//#define CONFIG_SPI
+#define CONFIG_SPI
 
 /*
  * Stack sizes
