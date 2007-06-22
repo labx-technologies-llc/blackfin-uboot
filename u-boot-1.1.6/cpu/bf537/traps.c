@@ -87,16 +87,16 @@ void trap_c(struct pt_regs *regs)
 		printf("this time, curr = 0x%08x last = 0x%08x\n",
 		       addr, last_cplb_fault_retx);
 		if (addr != last_cplb_fault_retx)
-			goto trap_c_return;
+			return;
 #endif
 		data = 1;
 
 	case VEC_CPLB_I_M:
 
 		if (data) {
-			addr = *pDCPLB_FAULT_ADDR;
+			addr = *(unsigned int *)pDCPLB_FAULT_ADDR;
 		} else {
-			addr = *pICPLB_FAULT_ADDR;
+			addr = *(unsigned int *)pICPLB_FAULT_ADDR;
 		}
 		for (i = 0; i < page_descriptor_table_size; i++) {
 			if (data) {
@@ -141,8 +141,8 @@ void trap_c(struct pt_regs *regs)
 		j = 0;
 		while (*I1 & CPLB_LOCK) {
 			debug("skipping %i %08p - %08x\n", j, I1, *I1);
-			*I0++;
-			*I1++;
+			I0++;
+			I1++;
 			j++;
 		}
 
@@ -150,8 +150,10 @@ void trap_c(struct pt_regs *regs)
 
 		for (; j < 15; j++) {
 			debug("replace %i 0x%08x  0x%08x\n", j, I0, I0 + 1);
-			*I0++ = *(I0 + 1);
-			*I1++ = *(I1 + 1);
+			*I0 = *(I0 + 1);
+			*I1 = *(I1 + 1);
+			I0++;
+			I1++;
 		}
 
 		if (data) {
@@ -199,9 +201,7 @@ void trap_c(struct pt_regs *regs)
 		do_reset(NULL, 0, 0, NULL);
 	}
 
-trap_c_return:
 	return;
-
 }
 
 void dump(struct pt_regs *fp)
