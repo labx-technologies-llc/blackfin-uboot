@@ -33,6 +33,8 @@ typedef struct mtd_info nand_info_t;
 extern int nand_curr_device;
 extern nand_info_t nand_info[];
 
+extern void nand_init(void);
+
 static inline int nand_read(nand_info_t *info, ulong ofs, ulong *len, u_char *buf)
 {
 	return info->read(info, ofs, *len, (size_t *)len, buf);

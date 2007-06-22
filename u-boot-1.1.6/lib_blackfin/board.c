@@ -33,6 +33,7 @@
 #include <net.h>
 #include <environment.h>
 #include <i2c.h>
+#include <nand.h>
 #include "blackfin_board.h"
 #include <asm/cplb.h>
 #include "../drivers/smc91111.h"
