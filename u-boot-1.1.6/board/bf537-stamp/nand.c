@@ -44,24 +44,24 @@ static void bfin_hwcontrol(struct mtd_info *mtd, int cmd)
 	switch (cmd) {
 
 	case NAND_CTL_SETCLE:
-		this->IO_ADDR_W = CFG_NAND_BASE + BFIN_NAND_CLE;
+		this->IO_ADDR_W = (void *)CFG_NAND_BASE + BFIN_NAND_CLE;
 		break;
 	case NAND_CTL_CLRCLE:
-		this->IO_ADDR_W = CFG_NAND_BASE;
+		this->IO_ADDR_W = (void *)CFG_NAND_BASE;
 		break;
 
 	case NAND_CTL_SETALE:
-		this->IO_ADDR_W = CFG_NAND_BASE + BFIN_NAND_ALE;
+		this->IO_ADDR_W = (void *)CFG_NAND_BASE + BFIN_NAND_ALE;
 		break;
 	case NAND_CTL_CLRALE:
-		this->IO_ADDR_W = CFG_NAND_BASE;
+		this->IO_ADDR_W = (void *)CFG_NAND_BASE;
 		break;
 	case NAND_CTL_SETNCE:
 	case NAND_CTL_CLRNCE:
 		break;
 	}
 
-	this->IO_ADDR_R = this->IO_ADDR_W;
+	this->IO_ADDR_R = (void *)this->IO_ADDR_W;
 
 	/* Drain the writebuffer */
 	sync();
