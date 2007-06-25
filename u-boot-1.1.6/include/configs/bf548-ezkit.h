@@ -33,7 +33,7 @@
 #define BFIN_16HOST_BOOT	0x004E	/* Bootmode 14: Boot from 16-bit host DMA */
 #define BFIN_8HOST_BOOT		0x004F	/* Bootmode 15: Boot from 8-bit host DMA */
 /* Define the boot mode */
-#define BFIN_BOOT_MODE		BFIN_SPI_MASTER_BOOT
+#define BFIN_BOOT_MODE		BFIN_PARA_BOOT
 
 #define ADSP_BF542		0x42
 #define ADSP_BF544		0x44
@@ -227,7 +227,7 @@
 	"nfsboot=tftpboot 0x1000000 linux;"                     \
 	"run nfsargs;run addip;bootelf\0"                       \
 	"flashboot=bootm 0x20100000\0"                          \
-	"update=tftpboot 0x1000000 u-boot.bin;"                 \
+	"update=tftpboot 0x1000000 u-boot.ldr;"                 \
 	"protect off 0x20000000 0x2007FFFF;"                    \
 	"erase 0x20000000 0x2007FFFF;cp.b 0x1000000 0x20000000 $(filesize)\0"\
 	""
@@ -319,12 +319,12 @@
 #define CFG_FLASH_CFI		/* The flash is CFI compatible */
 #define CFG_FLASH_CFI_DRIVER	/* Use common CFI driver */
 #define CFG_FLASH_BASE		0x20000000
-#define CFG_FLASH_CFI_WIDTH	FLASH_CFI_8BIT
+#define CFG_FLASH_PROTECTION
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
-#define CFG_MAX_FLASH_SECT	256	/* max number of sectors on one chip */
+#define CFG_MAX_FLASH_SECT	259	/* max number of sectors on one chip */
 #if (BFIN_BOOT_MODE == BFIN_PARA_BOOT) || (BFIN_BOOT_MODE == BFIN_UART_BOOT)    /* for bf537-stamp, usrt boot mode still store env in flash */
 #define	CFG_ENV_IS_IN_FLASH	1
-#define CFG_ENV_ADDR		0x20004000
+#define CFG_ENV_ADDR		0x20020000
 #define CFG_ENV_OFFSET		(CFG_ENV_ADDR - CFG_FLASH_BASE)
 #elif (BFIN_BOOT_MODE == BFIN_SPI_MASTER_BOOT)
 #define CFG_ENV_IS_IN_EEPROM           1
