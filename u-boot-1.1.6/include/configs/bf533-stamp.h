@@ -368,7 +368,7 @@
 #define I2C_INIT		(*pFIO_DIR |=  PF_SCL); asm("ssync;")
 #define I2C_ACTIVE		(*pFIO_DIR |=  PF_SDA); *pFIO_INEN &= ~PF_SDA; asm("ssync;")
 #define I2C_TRISTATE		(*pFIO_DIR &= ~PF_SDA); *pFIO_INEN |= PF_SDA; asm("ssync;")
-#define I2C_READ		((volatile)(*pFIO_FLAG_D & PF_SDA) != 0); asm("ssync;")
+#define I2C_READ		((*pFIO_FLAG_D & PF_SDA) != 0)
 #define I2C_SDA(bit)	if(bit) { \
 				*pFIO_FLAG_S = PF_SDA; \
 				asm("ssync;"); \
