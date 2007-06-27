@@ -1,14 +1,12 @@
 /*
- * U-boot - serial.c Serial driver for BF537
+ * U-boot - serial.c Blackfin Serial Driver
  *
  * Copyright (c) 2005-2007 Analog Devices Inc.
  *
- * This file is based on
- * bf537_serial.c: Serial driver for BlackFin BF537 internal UART.
  * Copyright (c) 2003	Bas Vermeulen <bas@buyways.nl>,
  * 			BuyWays B.V. (www.buyways.nl)
  *
- * Based heavily on blkfinserial.c
+ * Based heavily on:
  * blkfinserial.c: Serial driver for BlackFin DSP internal USRTs.
  * Copyright(c) 2003	Metrowerks	<mwaddel@metrowerks.com>
  * Copyright(c)	2001	Tony Z. Kou	<tonyko@arcturusnetworks.com>

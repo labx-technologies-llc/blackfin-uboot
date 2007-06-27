@@ -1,14 +1,12 @@
 /*
- * U-boot - serial.c Serial driver for BF533
+ * U-boot - serial.c Blackfin Serial Driver
  *
- * Copyright (c) 2005 blackfin.uclinux.org
+ * Copyright (c) 2005-2007 Analog Devices Inc.
  *
- * This file is based on
- * bf533_serial.c: Serial driver for BlackFin BF533 DSP internal UART.
  * Copyright (c) 2003	Bas Vermeulen <bas@buyways.nl>,
  * 			BuyWays B.V. (www.buyways.nl)
  *
- * Based heavily on blkfinserial.c
+ * Based heavily on:
  * blkfinserial.c: Serial driver for BlackFin DSP internal USRTs.
  * Copyright(c) 2003	Metrowerks	<mwaddel@metrowerks.com>
  * Copyright(c)	2001	Tony Z. Kou	<tonyko@arcturusnetworks.com>
@@ -38,8 +36,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+ * MA 02110-1301 USA
  */
 
 #include <common.h>
@@ -49,7 +47,8 @@
 #include <asm/bitops.h>
 #include <asm/delay.h>
 #include <asm/uaccess.h>
-#include "bf533_serial.h"
+#include <asm/io.h>
+#include "serial.h"
 
 unsigned long pll_div_fact;
 

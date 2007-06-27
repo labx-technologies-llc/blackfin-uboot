@@ -1,10 +1,8 @@
 /*
- * U-boot - bf537_serial.h Serial Driver defines
+ * U-boot - serial.h Blackfin Serial Driver defines
  *
  * Copyright (c) 2005-2007 Analog Devices Inc.
  *
- * This file is based on
- * bf533_serial.h: Definitions for the BlackFin BF533 DSP serial driver.
  * Copyright (C) 2003	Bas Vermeulen <bas@buyways.nl>
  * 			BuyWays B.V. (www.buyways.nl)
  *
@@ -42,8 +40,8 @@
  * MA 02110-1301 USA
  */
 
-#ifndef _Bf537_SERIAL_H
-#define _Bf537_SERIAL_H
+#ifndef _BFIN_SERIAL_H
+#define _BFIN_SERIAL_H
 
 #include <linux/config.h>
 #include <asm/blackfin.h>
@@ -52,7 +50,6 @@
 #define ACCESS_LATCH	*pUART_LCR |= UART_LCR_DLAB;
 #define ACCESS_PORT_IER	*pUART_LCR &= (~UART_LCR_DLAB);
 
-void serial_setbrg(void);
 static void local_put_char(char ch);
 void calc_baud(void);
 void serial_setbrg(void);
@@ -61,7 +58,6 @@ void serial_putc(const char c);
 int serial_tstc(void);
 int serial_getc(void);
 void serial_puts(const char *s);
-static void local_put_char(char ch);
 
 int baud_table[5] = { 9600, 19200, 38400, 57600, 115200 };
 
@@ -69,9 +65,5 @@ struct {
 	unsigned char dl_high;
 	unsigned char dl_low;
 } hw_baud_table[5];
-
-#ifdef CONFIG_STAMP
-extern unsigned long pll_div_fact;
-#endif
 
 #endif
