@@ -43,6 +43,8 @@
 int post_flag;
 #endif
 
+#undef DEBUG
+
 #ifndef CFG_NO_FLASH
 extern flash_info_t flash_info[];
 #endif
@@ -137,9 +139,9 @@ static int init_baudrate(void)
 	return (0);
 }
 
-#ifdef DEBUG
 static void display_global_data(void)
 {
+#ifdef DEBUG
 	DECLARE_GLOBAL_DATA_PTR;
 	bd_t *bd;
 	bd = gd->bd;
@@ -167,8 +169,8 @@ static void display_global_data(void)
 	printf("---bi_flashsize:%x\n", bd->bi_flashsize);
 	printf("---bi_flashoffset:%x\n", bd->bi_flashoffset);
 	printf("--jt:%x *:%x\n", gd->jt, *(gd->jt));
-}
 #endif
+}
 
 /* we cover everything with 4 meg pages, and need an extra for L1 */
 unsigned int icplb_table[page_descriptor_table_size][2];
@@ -486,9 +488,7 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	init_func_i2c();
 #endif
 
-#ifdef DEBUG
 	display_global_data();
-#endif
 
 #if defined(CONFIG_BF537) && defined(CONFIG_POST)
 	if (post_flag)

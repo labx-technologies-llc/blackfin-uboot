@@ -52,9 +52,6 @@ static ulong mem_malloc_end;
 static ulong mem_malloc_brk;
 extern char _sram_in_sdram_start[];
 extern char _sram_inst_size[];
-#ifdef DEBUG
-static void display_global_data(void);
-#endif
 
 /* definitions used to check the SMC card availability */
 #define SMC_BASE_ADDRESS CONFIG_SMC91111_BASE
