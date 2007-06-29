@@ -23,3 +23,13 @@
 
 # This is not actually used for Blackfin boards so do not change it
 #TEXT_BASE = do-not-use-me
+
+# Set some default LDR flags based on boot mode.
+BOOT_MODE := $(shell \
+	sed -n '/^\#define[[:space:]]*BFIN_BOOT_MODE[[:space:]]/s:.*[[:space:]]*BFIN_:BFIN_:p' \
+	$(SRCTREE)/include/configs/bf548-ezkit.h)
+LDR_FLAGS-BFIN_PARA_BOOT       := --dma 6
+LDR_FLAGS-BFIN_FIFO_BOOT       := --dma 1
+LDR_FLAGS-BFIN_SPI_MASTER_BOOT := --dma 1
+LDR_FLAGS-BFIN_UART_BOOT       := --dma 1
+LDR_FLAGS += $(LDR_FLAGS-$(BOOT_MODE))
