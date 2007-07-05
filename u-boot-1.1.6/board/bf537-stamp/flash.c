@@ -143,6 +143,7 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 		if (info->protect[sect])
 			prot++;
 	}
+
 	if (prot)
 		printf("- Warning: %d protected sectors will not be erased!\n",
 		       prot);
@@ -151,36 +152,27 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 
 	cnt = s_last - s_first + 1;
 
-#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
-	printf("Erasing Flash locations, Please Wait\n");
-	for (i = s_first; i <= s_last; i++) {
-		if (info->protect[i] == 0) {	/* not protected */
-			if (erase_block_flash(i) < 0) {
-				printf("Error Sector erasing \n");
-				return FLASH_FAIL;
-			}
-		}
-	}
-#elif (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
+	printf("Erasing flash, please wait\n");
+
+#if (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
 	if (cnt == FLASH_TOT_SECT) {
-		printf("Erasing flash, Please Wait \n");
 		if (erase_flash() < 0) {
-			printf("Erasing flash failed \n");
+			printf("Erasing flash failed\n");
 			return FLASH_FAIL;
 		}
-	} else {
-		printf("Erasing Flash locations, Please Wait\n");
-		for (i = s_first; i <= s_last; i++) {
+	} else
+#endif
+	{
+		for (i = s_first; i <= s_last; ++i) {
 			if (info->protect[i] == 0) {	/* not protected */
 				if (erase_block_flash(i) < 0) {
-					printf("Error Sector erasing \n");
+					printf("Erasing block %i failed\n", i);
 					return FLASH_FAIL;
 				}
 			}
 		}
 	}
-#endif
-	printf("\n");
+
 	return FLASH_SUCCESS;
 }
 
