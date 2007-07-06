@@ -38,6 +38,15 @@ init_sdram:
 	[--SP] = (R7:0);
 	[--SP] = (P5:0);
 
+#if (BFIN_BOOT_MODE == BFIN_UART_BOOT)
+	/* force RTS rather than relying on auto RTS */
+	P3.h = hi(UART1_MCR)
+	P3.l = lo(UART1_MCR)
+	R0 = w[P3];
+	bitset(R0, 5);
+	w[p3] = R0;
+#endif
+
 	/*************************************************
 	* System interrupt wakeup registers (SIC_IWRx)   *
 	* Required for PLL_CTL and VR_CTL configuration  *
@@ -239,8 +248,17 @@ test_failed:
 	r0.l = 0x0080; /* Test failed, light on LED2 */
 	w[p0]= r0;
 	ssync
-
 ddr_init_end:
+
+#if (BFIN_BOOT_MODE == BFIN_UART_BOOT)
+	/* clear forced RTS rather than relying on auto RTS */
+	P3.h = hi(UART1_MCR)
+	P3.l = lo(UART1_MCR)
+	R0 = w[P3];
+	bitclr(R0, 5);
+	w[p3] = R0;
+#endif
+
 	(P5:0) = [SP++];
 	(R7:0) = [SP++];
 	RETS   = [SP++];
