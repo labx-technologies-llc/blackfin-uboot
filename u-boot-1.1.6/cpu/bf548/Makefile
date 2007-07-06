@@ -31,8 +31,6 @@ LIB	= $(obj)lib$(CPU).a
 START	= init_sdram.o start.o start1.o interrupt.o cache.o flush.o
 COBJS	= cpu.o traps.o ints.o serial.o interrupts.o video.o i2c.o
 
-EXTRA = init_sdram_bootrom_initblock.o
-
 SRCS	:= $(START:.o=.S) $(SOBJS:.o=.S) $(COBJS:.o=.c)
 OBJS	:= $(addprefix $(obj),$(COBJS) $(SOBJS))
 START	:= $(addprefix $(obj),$(START))
