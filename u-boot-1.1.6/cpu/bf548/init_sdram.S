@@ -40,11 +40,40 @@ init_sdram:
 
 #if (BFIN_BOOT_MODE == BFIN_UART_BOOT)
 	/* force RTS rather than relying on auto RTS */
-	P3.h = hi(UART1_MCR)
-	P3.l = lo(UART1_MCR)
+	P3.h = hi(UART1_MCR);
+	P3.l = lo(UART1_MCR);
 	R0 = w[P3];
-	bitset(R0, 5);
-	w[p3] = R0;
+	bitset(R0, 5);	/* set FCPOL */
+	w[P3] = R0;
+	SSYNC;
+
+	/* Wait for the line to clear up.  We cannot rely on UART
+	 * registers as none of them reflect the status of the RSR.
+	 * Instead, we'll sleep for ~10 bit times at 9600 baud.
+	 * We can precalc things here by assuming boot values for
+	 * PLL rather than loading registers and calculating.
+	 *	baud    = SCLK / (16 ^ (1 - EDBO) * Divisor)
+	 *	EDB0    = 0
+	 *	Divisor = (SCLK / baud) / 16
+	 *	SCLK    = baud * 16 * Divisor
+	 *	SCLK    = (0x14 * CONFIG_CLKIN_HZ) / 5
+	 *	CCLK    = (16 * Divisor * 5) * (9600 / 10)
+	 * In reality, this will probably be just about 1 second delay,
+	 * so assuming 9600 baud is OK (both as a very low and too high
+	 * speed as this will buffer things enough).
+	 */
+#define _NUMBITS (10)                                   /* how many bits to delay */
+#define _LOWBAUD (9600)                                 /* low baud rate */
+#define _SCLK    ((0x14 * CONFIG_CLKIN_HZ) / 5)         /* SCLK based on PLL */
+#define _DIVISOR ((_SCLK / _LOWBAUD) / 16)              /* UART DLL/DLH */
+#define _NUMINS  (3)                                    /* how many instructions in loop */
+#define _CCLK    (((16 * _DIVISOR * 5) * (_LOWBAUD / _NUMBITS)) / _NUMINS)
+	R1.h = HI(_CCLK);
+	R1.l = LO(_CCLK);
+.Lcheck_again:
+	R1 += -1;
+	CC = R1 == 0;
+	IF !CC jump .Lcheck_again;
 #endif
 
 	/*************************************************
