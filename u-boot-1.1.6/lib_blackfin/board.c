@@ -398,8 +398,7 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	post_reloc();
 #endif
 
-/*#if	(CONFIG_STAMP || CONFIG_BF537 || CONFIG_EZKIT561 || CONFIG_EZKIT548) && !defined(CFG_NO_FLASH)*/
-#if	(CONFIG_STAMP || CONFIG_BF537 || CONFIG_EZKIT561) && !defined(CFG_NO_FLASH)
+#if	(CONFIG_STAMP || CONFIG_BF537 || CONFIG_EZKIT561 || CONFIG_EZKIT548) && !defined(CFG_NO_FLASH)
 	/* There are some other pointer constants we must deal with */
 	/* configure available FLASH banks */
 	size = flash_init();
