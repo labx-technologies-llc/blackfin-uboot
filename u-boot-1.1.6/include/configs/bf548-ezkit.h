@@ -333,9 +333,8 @@
 #endif
 #define CFG_ENV_SIZE		0x2000
 #define	CFG_ENV_SECT_SIZE	0x2000	/* Total Size of Environment Sector */
-#if (BFIN_BOOT_MODE == BFIN_SPI_MASTER_BOOT)
+
 #define ENV_IS_EMBEDDED
-#endif
 
 /* JFFS Partition offset set  */
 #define CFG_JFFS2_FIRST_BANK 0
