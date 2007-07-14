@@ -157,10 +157,10 @@
 			    frames in sport MCM */
 #define ANOMALY_05000203 /* Specific sequence that can cause DMA error or DMA
 			    stopping */
-#if defined(CONFIG_BF533)
+#if (BFIN_CPU == ADSP_BF533)
 #define ANOMALY_05000204 /* Incorrect data read with write-through cache and
 			    allocate cache lines on reads only mode */
-#endif /* CONFIG_BF533 */
+#endif
 #define ANOMALY_05000207 /* Recovery from "brown-out" condition */
 #define ANOMALY_05000209 /* Speed-Path in computational unit affects certain
 			    instructions */

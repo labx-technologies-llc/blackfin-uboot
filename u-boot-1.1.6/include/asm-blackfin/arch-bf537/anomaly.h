@@ -54,7 +54,7 @@
 				   upper bits */
 #define ANOMALY_05000180	/* PPI_DELAY not functional in PPI modes with 0 frame
 				   syncs */
-#if (defined(CONFIG_BF537) || defined(CONFIG_BF536))
+#if (BFIN_CPU == ADSP_BF537 || BFIN_CPU == ADSP_BF536)
 #define ANOMALY_05000247	/* CLKIN Buffer Output Enable Reset Behavior Is
 				   Changed */
 #endif
@@ -79,13 +79,13 @@
 				   unpredictable results */
 #define ANOMALY_05000250	/* Incorrect Bit-Shift of Data Word in Multichannel
 				   (TDM) */
-#if (defined(CONFIG_BF537) || defined(CONFIG_BF536))
+#if (BFIN_CPU == ADSP_BF537 || BFIN_CPU == ADSP_BF536)
 #define ANOMALY_05000252	/* EMAC Tx DMA error after an early frame abort */
 #endif
 #define ANOMALY_05000253	/* Maximum external clock speed for Timers */
 #define ANOMALY_05000255	/* Entering Hibernate Mode with RTC Seconds event
 				   interrupt not functional */
-#if (defined(CONFIG_BF537) || defined(CONFIG_BF536))
+#if (BFIN_CPU == ADSP_BF537 || BFIN_CPU == ADSP_BF536)
 #define ANOMALY_05000256	/* EMAC MDIO input latched on wrong MDC edge */
 #endif
 #define ANOMALY_05000257	/* An interrupt or exception during short Hardware
