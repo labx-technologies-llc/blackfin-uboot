@@ -1,5 +1,5 @@
 /*
- * U-boot - bf537_rtc.h
+ * U-boot - bfin_rtc.h
  *
  * Copyright (c) 2005-2007 Analog Devices Inc.
  *
@@ -22,8 +22,8 @@
  * MA 02110-1301 USA
  */
 
-#ifndef _BF537_RTC_H_
-#define _BF537_RTC_H_
+#ifndef _BFIN_RTC_H_
+#define _BFIN_RTC_H_
 
 void rtc_init(void);
 void wait_for_complete(void);

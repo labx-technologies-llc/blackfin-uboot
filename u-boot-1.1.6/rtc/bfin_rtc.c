@@ -52,7 +52,7 @@
 #if defined(CONFIG_RTC_BFIN) && (CONFIG_COMMANDS & CFG_CMD_DATE)
 
 #include <asm/blackfin.h>
-#include <asm/arch/bf5xx_rtc.h>
+#include <asm/arch-common/bfin_rtc.h>
 
 void rtc_reset(void)
 {
