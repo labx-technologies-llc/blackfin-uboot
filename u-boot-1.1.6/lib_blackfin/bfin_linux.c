@@ -1,5 +1,5 @@
 /*
- * U-boot - bf533_linux.c
+ * U-boot - bfin_linux.c
  *
  * Copyright (c) 2005-2007 Analog Devices Inc.
  *
@@ -81,9 +81,9 @@ void do_bootm_linux(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[],
 char *make_command_line(void)
 {
 	char *dest = (char *)CMD_LINE_ADDR;
-	char *bootargs;
+	char *bootargs = getenv("bootargs");
 
-	if ((bootargs = getenv("bootargs")) == NULL)
+	if (bootargs == NULL)
 		return NULL;
 
 	strncpy(dest, bootargs, 0x1000);

@@ -31,7 +31,7 @@ LIB	= $(obj)lib$(ARCH).a
 
 SOBJS	= memcpy.o memcmp.o memset.o memmove.o
 
-COBJS	= post.o tests.o board.o bf533_linux.o bf533_string.o cache.o \
+COBJS	= post.o tests.o board.o bfin_linux.o bfin_string.o cache.o \
 	muldi3.o bootldr.o cplbinfo.o
 
 SRCS 	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
