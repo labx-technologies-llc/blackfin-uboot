@@ -8,6 +8,7 @@
 #include <asm/blackfin-config-pre.h>
 
 #define BFIN_CPU             ADSP_BF537
+#define BFIN_BOOT_MODE       BFIN_BOOT_SPI_MASTER
 
 #define CFG_LONGHELP		1
 #define CONFIG_CMDLINE_EDITING	1
@@ -20,21 +21,6 @@
 #define CONFIG_UART_CONSOLE	0
 /* define CONFIG_BF537_STAMP_LEDCMD to enable LED command*/
 /*#define CONFIG_BF537_STAMP_LEDCMD	1*/
-
-/*
- * Boot Mode Set
- * Blackfin can support several boot modes
- */
-#define BF537_BYPASS_BOOT	0x0011  /* Bootmode 0: Execute from 16-bit externeal memory ( bypass BOOT ROM) 	*/
-#define BF537_PARA_BOOT		0x0012  /* Bootmode 1: Boot from 8-bit or 16-bit flash 				*/
-#define BF537_SPI_MASTER_BOOT	0x0014	/* Bootmode 3: SPI master mode boot from SPI flash			*/
-#define BF537_SPI_SLAVE_BOOT	0x0015	/* Bootmode 4: SPI slave mode boot from SPI flash			*/
-#define BF537_TWI_MASTER_BOOT	0x0016	/* Bootmode 5: TWI master mode boot from EEPROM				*/
-#define BF537_TWI_SLAVE_BOOT	0x0017	/* Bootmode 6: TWI slave mode boot from EEPROM				*/
-#define BF537_UART_BOOT		0x0018	/* Bootmode 7: UART slave mdoe boot via UART host			*/
-/* Define the boot mode */
-#define BFIN_BOOT_MODE		BF537_SPI_MASTER_BOOT
-//#define BFIN_BOOT_MODE		BF537_SPI_MASTER_BOOT
 
 /* Define if want to do post memory test */
 #undef CONFIG_POST_TEST
@@ -63,11 +49,11 @@
 /* Values can range from 2-65535                                 */
 /* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)                  */
 #define CONFIG_SPI_BAUD                 2
-#if (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CONFIG_SPI_BAUD_INITBLOCK						   4
 #endif
 
-#if (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #if (CONFIG_SCLK_HZ / (2*CONFIG_SPI_BAUD) > 20000000)
 #define CONFIG_SPI_FLASH_FAST_READ 1 /* Needed if SPI_CLK > 20 MHz */
 #else
@@ -102,7 +88,7 @@
 #define CONFIG_ETHADDR          02:80:ad:24:21:18
 /* This is the routine that copies the MAC in Flash to the 'ethaddr' setting */
 
-#if (BFIN_BOOT_MODE == BF537_UART_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_UART)
 # define CONFIG_BOOTDELAY	-1
 #else
 # define CONFIG_BOOTDELAY	5
@@ -112,7 +98,7 @@
 #define CONFIG_BOOT_RETRY_TIME		-1	/* Enable this if bootretry required, currently its disabled */
 #define CONFIG_BOOTCOMMAND 		"run ramboot"
 
-#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT) && defined(CONFIG_POST_TEST)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) && defined(CONFIG_POST_TEST)
 /* POST support */
 #define CONFIG_POST 		( CFG_POST_MEMORY | \
 				  CFG_POST_UART	  | \
@@ -132,19 +118,6 @@
 #define CFG_CMD_POST_DIAG	0
 #endif
 
-/* CF-CARD IDE-HDD Support */
-
-//#define CONFIG_BFIN_CF_IDE    /* Add CF flash card support */
-//#define CONFIG_BFIN_HDD_IDE   /* Add IDE Disk Drive (HDD) support */
-
-
-#if defined(CONFIG_BFIN_CF_IDE) || defined(CONFIG_BFIN_HDD_IDE)
-#  define CONFIG_BFIN_IDE	1
-#  define ADD_IDE_CMD           CFG_CMD_IDE
-#else
-#  define ADD_IDE_CMD           0
-#endif
-
 #define CONFIG_BF537_NAND 		/* Add nand flash support */
 
 #ifdef CONFIG_BF537_NAND
@@ -159,7 +132,7 @@
 #define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NFS & ~CFG_CMD_DISPLAY & ~CFG_CMD_IMI & ~CFG_CMD_LOADB & ~CFG_CMD_LOADS)
 #endif
 
-#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #define CONFIG_COMMANDS			(CONFIG_BFIN_CMD| \
 					 CFG_CMD_ELF	| \
 					 CFG_CMD_I2C	| \
@@ -167,11 +140,10 @@
 					 CFG_CMD_JFFS2	| \
 					 CFG_CMD_EEPROM | \
 					 CFG_CMD_DHCP   | \
-					 ADD_IDE_CMD	| \
 					 ADD_NAND_CMD	| \
 					 CFG_CMD_POST_DIAG | \
 					 CFG_CMD_DATE)
-#elif (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
+#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CONFIG_COMMANDS			(CONFIG_BFIN_CMD| \
 					 CFG_CMD_CACHE  | \
 					 ADD_NAND_CMD	| \
@@ -181,7 +153,7 @@
 
 #define CONFIG_BOOTARGS "root=/dev/mtdblock1 rw rootfstype=yaffs"
 
-#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #if (BFIN_CPU != ADSP_BF534)
 #define CONFIG_EXTRA_ENV_SETTINGS                               \
         "ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"      \
@@ -206,7 +178,7 @@
         "flashboot=bootm 0x20100000\0" \
         ""
 #endif
-#elif (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
+#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #if (BFIN_CPU != ADSP_BF534)
 #define CONFIG_EXTRA_ENV_SETTINGS					\
         "ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"		\
@@ -268,20 +240,18 @@
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	71	/* max number of sectors on one chip */
 
-#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT) || (BFIN_BOOT_MODE == BF537_UART_BOOT)    /* for bf537-stamp, usrt boot mode still store env in flash */
+#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) || (BFIN_BOOT_MODE == BFIN_BOOT_UART)    /* for bf537-stamp, usrt boot mode still store env in flash */
 #define	CFG_ENV_IS_IN_FLASH	1
 #define CFG_ENV_ADDR		0x20004000
 #define CFG_ENV_OFFSET		(CFG_ENV_ADDR - CFG_FLASH_BASE)
-#elif (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
+#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CFG_ENV_IS_IN_EEPROM           1
 #define CFG_ENV_OFFSET                 0x4000
 #define CFG_ENV_HEADER                 (CFG_ENV_OFFSET + 0x16e)        /* 0x12A is the length of LDR file header */
 #endif
 #define CFG_ENV_SIZE		0x1000
 #define	CFG_ENV_SECT_SIZE	0x2000	/* Total Size of Environment Sector */
-//#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
 #define ENV_IS_EMBEDDED
-//#endif
 
 /* JFFS Partition offset set  */
 #define CFG_JFFS2_FIRST_BANK 0
@@ -357,47 +327,6 @@
 #define AMGCTLVAL               0xFF
 #define AMBCTL0VAL              0x7BB033B0
 #define AMBCTL1VAL              0xFFC27BB0
-
-#if defined(CONFIG_BFIN_IDE)
-
-#define CONFIG_DOS_PARTITION            1
-/*
- * IDE/ATA stuff
- */
-#undef  CONFIG_IDE_8xx_DIRECT           /* no pcmcia interface required */
-#undef  CONFIG_IDE_LED                  /* no led for ide supported */
-#undef  CONFIG_IDE_RESET                /* no reset for ide supported */
-
-#define CFG_IDE_MAXBUS  1               /* max. 1 IDE busses */
-#define CFG_IDE_MAXDEVICE               (CFG_IDE_MAXBUS*1) /* max. 1 drives per IDE bus */
-
-#undef  AMBCTL1VAL
-#define AMBCTL1VAL			0xFFC3FFC3
-
-#define CONFIG_CF_ATASEL_DIS 	0x20311800
-
-#if defined(CONFIG_BFIN_CF_IDE) /* USE CompactFlash Storage Card in the common memory space */
-#define CFG_ATA_BASE_ADDR               0x20211800
-#define CFG_ATA_IDE0_OFFSET             0x0000
-#define CFG_ATA_DATA_OFFSET             0x0000  /* Offset for data I/O */
-#define CFG_ATA_REG_OFFSET              0x0000  /* Offset for normal register accesses */
-#define CFG_ATA_ALT_OFFSET              0x000E  /* Offset for alternate registers */
-#define CFG_ATA_STRIDE                  1 	/* CF.A0 --> Blackfin.Ax */
-#endif /* CONFIG_BFIN_CF_IDE */
-
-#if defined(CONFIG_BFIN_HDD_IDE) /* USE TRUE IDE */
-#define CFG_ATA_BASE_ADDR               0x20314000
-#define CFG_ATA_IDE0_OFFSET             0x0000
-#define CFG_ATA_DATA_OFFSET             0x0020  /* Offset for data I/O */
-#define CFG_ATA_REG_OFFSET              0x0020  /* Offset for normal register accesses */
-#define CFG_ATA_ALT_OFFSET              0x001C  /* Offset for alternate registers */
-#define CFG_ATA_STRIDE                  2 	/* CF.A0 --> Blackfin.A1 */
-
-#undef  CONFIG_SCLK_DIV
-#define CONFIG_SCLK_DIV                 8
-#endif /* CONFIG_BFIN_HDD_IDE */
-
-#endif /*CONFIG_BFIN_IDE*/
 
 #include <asm/blackfin-config-post.h>
 

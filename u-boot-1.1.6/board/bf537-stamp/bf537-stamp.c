@@ -103,7 +103,7 @@ long int initdram(int board_type)
 /* miscellaneous platform dependent initialisations */
 int misc_init_r(void)
 {
-#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 	char nid[32];
 	unsigned char *pMACaddr = (unsigned char *)0x203F0000;
 	u8 SrcAddr[6] = { 0x02, 0x80, 0xAD, 0x20, 0x31, 0xB8 };
@@ -121,7 +121,7 @@ int misc_init_r(void)
 		SetupMacAddr(SrcAddr);
 	}
 #endif				/* CONFIG_COMMANDS & CFG_CMD_NET */
-#endif				/* BFIN_BOOT_MODE == BF537_BYPASS_BOOT */
+#endif				/* BFIN_BOOT_MODE == BFIN_BOOT_BYPASS */
 
 #if defined(CONFIG_BFIN_IDE)
 #if defined(CONFIG_BFIN_TRUE_IDE)
@@ -144,7 +144,7 @@ int misc_init_r(void)
 #endif				/* CONFIG_MISC_INIT_R */
 
 #ifdef CONFIG_POST
-#if (BFIN_BOOT_MODE != BF537_BYPASS_BOOT)
+#if (BFIN_BOOT_MODE != BFIN_BOOT_BYPASS)
 /* Using sw10-PF5 as the hotkey */
 int post_hotkeys_pressed(void)
 {

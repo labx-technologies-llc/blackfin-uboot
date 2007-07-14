@@ -25,7 +25,7 @@
 #define PLL_DIV_VAL	(CONFIG_CCLK_ACT_DIV | CONFIG_SCLK_DIV)
 #define PLL_CTL_VAL	((CONFIG_VCO_MULT *2) << 8)
 
-#if (BFIN_BOOT_MODE == BFIN_UART_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_UART)
 #define BFIN_LDR_BAUD	((((CONFIG_CLKIN_HZ * CONFIG_VCO_MULT) \
 	/ CONFIG_SCLK_DIV) / 16) /CONFIG_LDR_LOAD_BAUD)
 #define BFIN_LDR_BAUD_HB 	((BFIN_LDR_BAUD >> 8) & 0xFF)
@@ -38,7 +38,7 @@ init_sdram:
 	[--SP] = (R7:0);
 	[--SP] = (P5:0);
 
-#if (BFIN_BOOT_MODE == BFIN_UART_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_UART)
 	/* force RTS rather than relying on auto RTS */
 	P3.h = hi(UART1_MCR);
 	P3.l = lo(UART1_MCR);
@@ -147,7 +147,7 @@ skip_vr_ctl: nop;
 	STI R6;
 skip_pll_ctl: nop;
 
-#if (BFIN_BOOT_MODE == BFIN_UART_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_UART)
 	P5.l = lo(UART1_DLL);
 	P5.h = hi(UART1_DLL);
 	R7 = BFIN_LDR_BAUD_LB (z);
@@ -161,7 +161,7 @@ skip_pll_ctl: nop;
 	SSYNC;
 #endif
 
-#if (BFIN_BOOT_MODE == BFIN_SPI_MASTER_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 	p0.h = hi(SPI0_BAUD);
 	p0.l = lo(SPI0_BAUD);
 	r0.l = CONFIG_SPI_BAUD_INITBLOCK;
@@ -279,7 +279,7 @@ test_failed:
 	ssync
 ddr_init_end:
 
-#if (BFIN_BOOT_MODE == BFIN_UART_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_UART)
 	/* clear forced RTS rather than relying on auto RTS */
 	P3.h = hi(UART1_MCR)
 	P3.l = lo(UART1_MCR)

@@ -35,21 +35,21 @@
 #define ADSP_BF54X		54
 #define ADSP_BF56X		56
 
-/* Bootmode defines -- your config needs to select this via BFIN_BOOT_MODE
+/* Bootmode defines -- your config needs to select this via BFIN_BOOT_MODE.
  * Depending on your cpu, some of these may not be valid, check your HRM.
  * The actual values here are meaningless as long as they're unique.
  */
-#define BFIN_BOOT_BYPASS      1
-#define BFIN_BOOT_PARA        2
-#define BFIN_BOOT_SPI_MASTER  3
-#define BFIN_BOOT_SPI_SLAVE   4
-#define BFIN_BOOT_TWI_MASTER  5
-#define BFIN_BOOT_TWI_SLAVE   6
-#define BFIN_BOOT_UART        7
-#define BFIN_BOOT_IDLE        8
-#define BFIN_BOOT_FIFO        9
-#define BFIN_BOOT_MEM         10
-#define BFIN_BOOT_16HOST_DMA  11
-#define BFIN_BOOT_8HOST_DMA   12
+#define BFIN_BOOT_BYPASS      1       /* bypass bootrom */
+#define BFIN_BOOT_PARA        2       /* boot ldr out of parallel flash */
+#define BFIN_BOOT_SPI_MASTER  3       /* boot ldr out of serial flash */
+#define BFIN_BOOT_SPI_SLAVE   4       /* boot ldr as spi slave */
+#define BFIN_BOOT_TWI_MASTER  5       /* boot ldr over twi device */
+#define BFIN_BOOT_TWI_SLAVE   6       /* boot ldr over twi slave */
+#define BFIN_BOOT_UART        7       /* boot ldr over uart */
+#define BFIN_BOOT_IDLE        8       /* do nothing, just idle */
+#define BFIN_BOOT_FIFO        9       /* boot ldr out of FIFO */
+#define BFIN_BOOT_MEM         10      /* boot ldr out of memory (warmboot) */
+#define BFIN_BOOT_16HOST_DMA  11      /* boot ldr from 16-bit host dma */
+#define BFIN_BOOT_8HOST_DMA   12      /* boot ldr from 8-bit host dma */
 
 #endif

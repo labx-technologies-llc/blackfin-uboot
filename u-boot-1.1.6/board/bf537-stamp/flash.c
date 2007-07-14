@@ -97,7 +97,7 @@ unsigned long flash_init(void)
 	/* flash_protect (int flag, ulong from, ulong to, flash_info_t *info) */
 	(void)flash_protect(FLAG_PROTECT_SET, CFG_FLASH_BASE,
 			    (flash_info[0].start[2] - 1), &flash_info[0]);
-#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 	(void)flash_protect(FLAG_PROTECT_SET, 0x203F0000, 0x203FFFFF,
 			    &flash_info[0]);
 #endif
@@ -154,7 +154,7 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 
 	printf("Erasing flash, please wait\n");
 
-#if (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 	if (cnt == FLASH_TOT_SECT) {
 		if (erase_flash() < 0) {
 			printf("Erasing flash failed\n");
@@ -248,7 +248,7 @@ int write_flash(long nOffset, int nValue)
 	addr = (CFG_FLASH_BASE + nOffset);
 	*(unsigned volatile short *)addr = nValue;
 	sync();
-#if (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 	if (icache_status())
 		udelay(CONFIG_CCLK_HZ / 1000000);
 #endif

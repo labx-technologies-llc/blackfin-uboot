@@ -28,7 +28,7 @@ init_sdram:
 	[--SP] = (R7:0);
 	[--SP] = (P5:0);
 
-#if (BFIN_BOOT_MODE == BF533_SPI_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 	p0.h = hi(SPI_BAUD);
 	p0.l = lo(SPI_BAUD);
 	r0.l = CONFIG_SPI_BAUD_INITBLOCK;

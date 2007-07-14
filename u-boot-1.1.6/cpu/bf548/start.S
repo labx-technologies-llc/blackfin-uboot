@@ -135,7 +135,7 @@ no_soft_reset:
 	LSETUP(4,4) lc0 = p1;
 	[ p0 ++ ] = r1;
 
-#if (BFIN_BOOT_MODE != BFIN_SPI_MASTER_BOOT)
+#if (BFIN_BOOT_MODE != BFIN_BOOT_SPI_MASTER)
 	p0.h = hi(SIC_IWR0);
 	p0.l = lo(SIC_IWR0);
 	r0.l = 0x1;

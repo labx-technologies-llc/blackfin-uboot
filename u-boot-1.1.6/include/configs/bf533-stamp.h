@@ -8,17 +8,9 @@
 #include <asm/blackfin-config-pre.h>
 
 #define BFIN_CPU             ADSP_BF533
+#define BFIN_BOOT_MODE       BFIN_BOOT_BYPASS
 
 #define CONFIG_RTC_BFIN			1
-/*
- * Boot Mode Set
- * Blackfin can support several boot modes
- */
-#define BF533_BYPASS_BOOT	0x0001	/* Bootmode 0: Execute from 16-bit externeal memory ( bypass BOOT ROM) */
-#define BF533_PARA_BOOT		0x0002	/* Bootmode 1: Boot from 8-bit or 16-bit flash */
-#define BF533_SPI_BOOT		0x0004	/* Bootmode 3: Boot from SPI flash */
-/* Define the boot mode */
-#define BFIN_BOOT_MODE		BF533_BYPASS_BOOT
 
 #define CONFIG_PANIC_HANG 1
 
@@ -71,7 +63,7 @@
 /* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)			*/
 #define CONFIG_SPI_BAUD		2
 
-#if (BFIN_BOOT_MODE == BF533_SPI_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CONFIG_SPI_BAUD_INITBLOCK	4
 #endif
 
@@ -108,11 +100,11 @@
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	67	/* max number of sectors on one chip */
 
-#if (BFIN_BOOT_MODE == BF533_BYPASS_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #define CFG_ENV_IS_IN_FLASH	1
 #define CFG_ENV_ADDR		0x20004000
 #define	CFG_ENV_OFFSET		(CFG_ENV_ADDR - CFG_FLASH_BASE)
-#elif (BFIN_BOOT_MODE == BF533_SPI_BOOT)
+#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CFG_ENV_IS_IN_EEPROM	1
 #define CFG_ENV_OFFSET		0x4000
 #define CFG_ENV_HEADER		(CFG_ENV_OFFSET + 0x12A)	/* 0x12A is the length of LDR file header */
@@ -147,9 +139,9 @@
 #define CONFIG_MEM_ADD_WDTH     11	/* 8, 9, 10, 11    */
 #define CONFIG_MEM_MT48LC64M4A2FB_7E	1
 
-#if (BFIN_BOOT_MODE == BF533_BYPASS_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #define CFG_MEMTEST_START	0x00000000	/* memtest works on */
-#elif (BFIN_BOOT_MODE == BF533_SPI_BOOT)
+#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CFG_MEMTEST_START	0x00100000	/* memtest works on */
 #endif
 
@@ -169,7 +161,7 @@
 #define CFG_GBL_DATA_ADDR	(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
 #define CONFIG_STACKBASE	(CFG_GBL_DATA_ADDR  - 4)
 
-#if (BFIN_BOOT_MODE == BF533_SPI_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #if (CONFIG_SCLK_HZ / (2*CONFIG_SPI_BAUD) > 20000000)
 #define CONFIG_SPI_FLASH_FAST_READ 1 /* Needed if SPI_CLK > 20 MHz */
 #else
@@ -184,7 +176,7 @@
 #define CFG_LONGHELP		1
 #define CONFIG_CMDLINE_EDITING	1
 
-#if (BFIN_BOOT_MODE == BF533_BYPASS_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #define CFG_AUTOLOAD		"no"	/*rarpb, bootp or dhcp commands will perform only a */
 #endif
 
@@ -193,9 +185,9 @@
 
 #define CONFIG_BOOTDELAY	5
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
-#if (BFIN_BOOT_MODE == BF533_BYPASS_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #define CONFIG_BOOTCOMMAND	"run ramboot"
-#elif (BFIN_BOOT_MODE == BF533_SPI_BOOT)
+#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CONFIG_BOOTCOMMAND 	"eeprom read 0x1000000 0x100000 0x180000;icache on;dcache on;bootm 0x1000000"
 #endif
 
@@ -219,7 +211,7 @@
 				 CFG_CMD_DATE)
 #endif
 
-#if (BFIN_BOOT_MODE == BF533_BYPASS_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #if (CONFIG_DRIVER_SMC91111)
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" \
@@ -243,7 +235,7 @@
 	""
 #endif
 
-#elif (BFIN_BOOT_MODE == BF533_SPI_BOOT)
+#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" \
 	"nfsargs=setenv bootargs root=/dev/nfs rw nfsroot=$(serverip):" \
@@ -272,9 +264,9 @@
 #define CONFIG_COMMANDS2 0
 #endif /* CONFIG_SOFT_I2C */
 
-#if (BFIN_BOOT_MODE == BF533_BYPASS_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #define CONFIG_COMMANDS  ( CONFIG_COMMANDS1 | CONFIG_COMMANDS2 | CFG_CMD_DHCP)
-#elif (BFIN_BOOT_MODE == BF533_SPI_BOOT)
+#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CONFIG_COMMANDS  ( CONFIG_COMMANDS1 | CONFIG_COMMANDS2)
 #endif
 

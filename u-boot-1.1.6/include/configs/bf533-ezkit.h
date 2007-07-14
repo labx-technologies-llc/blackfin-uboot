@@ -8,6 +8,7 @@
 #include <asm/blackfin-config-pre.h>
 
 #define BFIN_CPU             ADSP_BF533
+#define BFIN_BOOT_MODE       BFIN_BOOT_BYPASS
 
 #define CONFIG_BAUDRATE		57600
 #define CONFIG_BOOTDELAY	5
@@ -29,17 +30,6 @@
 
 #define CONFIG_RTC_BFIN		1
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
-
-/*
- * Boot Mode Set
- * Blackfin can support several boot modes
- */
-#define BF533_BYPASS_BOOT	0x0001	/* Bootmode 0: Execute from 16-bit externeal memory ( bypass BOOT ROM) */
-#define BF533_PARA_BOOT		0x0002	/* Bootmode 1: Boot from 8-bit or 16-bit flash */
-#define BF533_SPI_BOOT		0x0004	/* Bootmode 3: Boot from SPI flash */
-/* Define the boot mode */
-#define BFIN_BOOT_MODE		BF533_BYPASS_BOOT
-/* #define BFIN_BOOT_MODE	BF533_SPI_BOOT */
 
 #define CONFIG_PANIC_HANG 1
 

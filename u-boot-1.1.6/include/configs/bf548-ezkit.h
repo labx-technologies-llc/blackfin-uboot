@@ -8,6 +8,7 @@
 #include <asm/blackfin-config-pre.h>
 
 #define BFIN_CPU             ADSP_BF548
+#define BFIN_BOOT_MODE       BFIN_BOOT_PARA
 
 #define CFG_LONGHELP		1
 #define CONFIG_CMDLINE_EDITING	1
@@ -15,24 +16,6 @@
 #define CONFIG_LDR_LOAD_BAUD	115200
 /* Set default serial console for bf537 */
 #define CONFIG_UART_CONSOLE	0
-
-/*
- * Boot Mode Set
- * Blackfin can support several boot modes
- */
-#define BFIN_IDLE		0x0040	/* Bootmode 0: Idle-no boot. not used */
-#define BFIN_PARA_BOOT		0x0041  /* Bootmode 1: Boot from 8-bit or 16-bit flash 				*/
-#define BFIN_FIFO_BOOT		0x0042	/* Bootmode 2: Boot from 16-bit asynchronous FIFO */
-#define BFIN_SPI_MASTER_BOOT	0x0043	/* Bootmode 3: SPI master mode boot from SPI flash			*/
-#define BFIN_SPI_SLAVE_BOOT	0x0044	/* Bootmode 4: SPI slave mode boot from SPI flash			*/
-#define BFIN_TWI_MASTER_BOOT	0x0045	/* Bootmode 5: TWI master mode boot from EEPROM				*/
-#define BFIN_TWI_SLAVE_BOOT	0x0046	/* Bootmode 6: TWI slave mode boot from EEPROM				*/
-#define BFIN_UART_BOOT		0x0047	/* Bootmode 7: UART slave mdoe boot via UART host			*/
-#define BFIN_MEM_BOOT		0x004A	/* Bootmode 10: Boot from (DDR) SDRAM */
-#define BFIN_16HOST_BOOT	0x004E	/* Bootmode 14: Boot from 16-bit host DMA */
-#define BFIN_8HOST_BOOT		0x004F	/* Bootmode 15: Boot from 8-bit host DMA */
-/* Define the boot mode */
-#define BFIN_BOOT_MODE		BFIN_PARA_BOOT
 
 /* Define if want to do post memory test */
 #undef CONFIG_POST_TEST
@@ -61,11 +44,11 @@
 /* Values can range from 2-65535                                 */
 /* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)                  */
 #define CONFIG_SPI_BAUD			2
-#if (BFIN_BOOT_MODE == BFIN_SPI_MASTER_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CONFIG_SPI_BAUD_INITBLOCK	4
 #endif
 
-#if (BFIN_BOOT_MODE == BFIN_SPI_MASTER_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #if (CONFIG_SCLK_HZ / (2*CONFIG_SPI_BAUD) > 20000000)
 #define CONFIG_SPI_FLASH_FAST_READ 1 /* Needed if SPI_CLK > 20 MHz */
 #else
@@ -106,7 +89,7 @@
 #define CONFIG_ETHADDR          02:80:ad:24:31:e8
 /* This is the routine that copies the MAC in Flash to the 'ethaddr' setting */
 
-#if (BFIN_BOOT_MODE == BFIN_UART_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_UART)
 # define CONFIG_BOOTDELAY	-1
 #else
 # define CONFIG_BOOTDELAY	5
@@ -116,7 +99,7 @@
 #define CONFIG_BOOT_RETRY_TIME		-1	/* Enable this if bootretry required, currently its disabled */
 #define CONFIG_BOOTCOMMAND 		"run ramboot"
 
-#if (BFIN_BOOT_MODE == BFIN_PARA_BOOT) && defined(CONFIG_POST_TEST)
+#if defined(CONFIG_POST_TEST)
 /* POST support */
 #define CONFIG_POST 		( CFG_POST_MEMORY | \
 				  CFG_POST_UART	  | \
@@ -146,12 +129,12 @@
 
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"
 
-#if (BFIN_BOOT_MODE == BFIN_PARA_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_PARA)
 # define BOOT_ENV_SETTINGS \
 	"update=tftpboot 0x1000000 u-boot.ldr;" \
 		"protect off 0x20000000 0x2007FFFF;" \
 		"erase 0x20000000 0x2007FFFF;cp.b 0x1000000 0x20000000 $(filesize)\0"
-#elif (BFIN_BOOT_MODE == BFIN_SPI_MASTER_BOOT)
+#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 # define BOOT_ENV_SETTINGS \
 	"update=tftpboot 0x1000000 u-boot.ldr;" \
 		"eeprom write 0x1000000 0x0 $(filesize)\0"
@@ -209,11 +192,11 @@
 #define CFG_FLASH_PROTECTION
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	259	/* max number of sectors on one chip */
-#if (BFIN_BOOT_MODE == BFIN_PARA_BOOT) || (BFIN_BOOT_MODE == BFIN_UART_BOOT)    /* for bf537-stamp, usrt boot mode still store env in flash */
+#if (BFIN_BOOT_MODE == BFIN_BOOT_PARA) || (BFIN_BOOT_MODE == BFIN_BOOT_UART)    /* for bf537-stamp, usrt boot mode still store env in flash */
 #define	CFG_ENV_IS_IN_FLASH	1
 #define CFG_ENV_ADDR		0x20020000
 #define CFG_ENV_OFFSET		(CFG_ENV_ADDR - CFG_FLASH_BASE)
-#elif (BFIN_BOOT_MODE == BFIN_SPI_MASTER_BOOT)
+#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CFG_ENV_IS_IN_EEPROM           1
 #define CFG_ENV_OFFSET                 0x4000
 #define CFG_ENV_HEADER                 (CFG_ENV_OFFSET + 0x16e)        /* 0x12A is the length of LDR file header */

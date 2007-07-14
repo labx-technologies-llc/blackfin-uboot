@@ -8,6 +8,7 @@
 #include <asm/blackfin-config-pre.h>
 
 #define BFIN_CPU             ADSP_BF561
+#define BFIN_BOOT_MODE       BFIN_BOOT_BYPASS
 
 #define CFG_LONGHELP		1
 #define CONFIG_CMDLINE_EDITING	1
@@ -17,16 +18,6 @@
 #define CONFIG_BOOTDELAY	5
 
 #define CONFIG_PANIC_HANG 1
-
-/*
-* Boot Mode Set
-* Blackfin can support several boot modes
-*/
-#define BF561_BYPASS_BOOT	0x21
-#define BF561_PARA_BOOT		0x22
-#define BF561_SPI_BOOT		0x24
-/* Define the boot mode */
-#define BFIN_BOOT_MODE	BF561_BYPASS_BOOT
 
 /* This sets the default state of the cache on U-Boot's boot */
 #define CONFIG_ICACHE_ON

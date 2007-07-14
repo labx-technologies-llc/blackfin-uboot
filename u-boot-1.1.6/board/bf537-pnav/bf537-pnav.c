@@ -101,7 +101,7 @@ long int initdram(int board_type)
 
 #if defined(CONFIG_MISC_INIT_R)
 /* miscellaneous platform dependent initialisations */
-#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 int misc_init_r(void)
 {
 	char nid[32];
@@ -141,7 +141,7 @@ int misc_init_r(void)
 #endif
 
 #ifdef CONFIG_POST
-#if (BFIN_BOOT_MODE == BF537_BYPASS_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 /* Using sw10-PF5 as the hotkey */
 int post_hotkeys_pressed(void)
 {

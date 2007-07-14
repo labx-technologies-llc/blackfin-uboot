@@ -60,7 +60,7 @@
 .global _post_flag;
 #endif
 
-#if (BFIN_BOOT_MODE == BF537_UART_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_UART)
 #if (CONFIG_CCLK_DIV == 1)
 #define CONFIG_CCLK_ACT_DIV   CCLK_DIV1
 #endif
@@ -151,7 +151,7 @@ _stext:
 	LSETUP(4,4) lc0 = p1;
 	[ p0 ++ ] = r1;
 
-#if (BFIN_BOOT_MODE != BF537_SPI_MASTER_BOOT)
+#if (BFIN_BOOT_MODE != BFIN_BOOT_SPI_MASTER)
 	p0.h = hi(SIC_IWR);
 	p0.l = lo(SIC_IWR);
 	r0.l = 0x1;
@@ -159,7 +159,7 @@ _stext:
 	SSYNC;
 #endif
 
-#if (BFIN_BOOT_MODE == BF537_UART_BOOT)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_UART)
 
 	p0.h = hi(SIC_IWR);
 	p0.l = lo(SIC_IWR);
@@ -255,7 +255,7 @@ check_again:
 	w[p2] = r0;
 	ssync;
 
-#if ((BFIN_BOOT_MODE != BF537_SPI_MASTER_BOOT) && (BFIN_BOOT_MODE != BF537_UART_BOOT))
+#if ((BFIN_BOOT_MODE != BFIN_BOOT_SPI_MASTER) && (BFIN_BOOT_MODE != BFIN_BOOT_UART))
 	sp.l = (0xffb01000 & 0xFFFF);
 	sp.h = (0xffb01000 >> 16);
 
