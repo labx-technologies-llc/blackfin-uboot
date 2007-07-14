@@ -1,5 +1,5 @@
 /*
- * U-boot - BF537.c
+ * U-boot - bf548-ezkit.c
  *
  * Copyright (c) 2005 blackfin.uclinux.org
  *
@@ -34,16 +34,8 @@
 
 int checkboard(void)
 {
-#if (BFIN_CPU == ADSP_BF542)	
-	printf("CPU:   ADSP BF542 Rev.: 0.%d\n", *pCHIPID >>28);
-#elif (BFIN_CPU == ADSP_BF544)	
-	printf("CPU:   ADSP BF544 Rev.: 0.%d\n", *pCHIPID >>28);
-#elif (BFIN_CPU == ADSP_BF548)	
-	printf("CPU:   ADSP BF548 Rev.: 0.%d\n", *pCHIPID >>28);
-#else	
-	printf("CPU:   ADSP BF549 Rev.: 0.%d\n", *pCHIPID >>28);
-#endif
-	printf("Board: ADI BF549 EZKIZ board\n");
+	printf("CPU:   ADSP BF" MK_STR(BFIN_CPU) " Rev.: 0.%d\n", bfin_revid());
+	printf("Board: ADI BF548 EZ-Kit board\n");
 	printf("       Support: http://blackfin.uclinux.org/\n");
 	return 0;
 }

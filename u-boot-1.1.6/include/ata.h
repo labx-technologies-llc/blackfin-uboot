@@ -41,7 +41,7 @@
 #define CFG_ATA_STRIDE	1
 #endif
 
-#if defined (CONFIG_BFIN_TRUE_IDE) && defined (CONFIG_BF537)
+#if defined (CONFIG_BFIN_TRUE_IDE)
 // Correct for what is probably a board layout problem on the 537???
 // (It looks like bit 13 should be mapped to bit 0?)
 #define ATA_DATA_REG    0x0020

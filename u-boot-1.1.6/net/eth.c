@@ -252,7 +252,7 @@ int eth_initialize(bd_t *bis)
 #if defined(CONFIG_RTL8169)
 	rtl8169_initialize(bis);
 #endif
-#if defined(CONFIG_BF537)
+#if defined(CONFIG_BFIN_MAC)
 	bfin_EMAC_initialize(bis);
 #endif
 

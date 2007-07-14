@@ -2,11 +2,12 @@
  * U-boot - Configuration file for BF548 STAMP board
  */
 
-#ifndef __CONFIG_BF548_H__
-#define __CONFIG_BF548_H__
+#ifndef __CONFIG_BF548_EZKIT_H__
+#define __CONFIG_BF548_EZKIT_H__
 
-#define CONFIG_BF548		1
-#define CONFIG_VDSP		1
+#include <asm/blackfin-config-pre.h>
+
+#define BFIN_CPU             ADSP_BF548
 
 #define CFG_LONGHELP		1
 #define CONFIG_CMDLINE_EDITING	1
@@ -14,11 +15,9 @@
 #define CONFIG_LDR_LOAD_BAUD	115200
 /* Set default serial console for bf537 */
 #define CONFIG_UART_CONSOLE	0
-#define CONFIG_EZKIT548		1
-#define CONFIG_BOOTDELAY	5
 
 /*
- * Boot Mode Set  
+ * Boot Mode Set
  * Blackfin can support several boot modes
  */
 #define BFIN_IDLE		0x0040	/* Bootmode 0: Idle-no boot. not used */
@@ -35,19 +34,10 @@
 /* Define the boot mode */
 #define BFIN_BOOT_MODE		BFIN_PARA_BOOT
 
-#define ADSP_BF542		0x42
-#define ADSP_BF544		0x44
-#define ADSP_BF548		0x48
-#define ADSP_BF549		0x49
-#define BFIN_CPU		ADSP_BF549
-
 /* Define if want to do post memory test */
 #undef CONFIG_POST_TEST
 
-/* Define where the uboot will be loaded by on-chip boot rom */
-#define APP_ENTRY 0x00001000
-
-#define CONFIG_RTC_BF533	1
+#define CONFIG_RTC_BFIN	1
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
 
 /* CONFIG_CLKIN_HZ is any value in Hz                            */
@@ -75,22 +65,8 @@
 #define CONFIG_SPI_BAUD_INITBLOCK	4
 #endif
 
-#if ( CONFIG_CLKIN_HALF == 0 )
-#define CONFIG_VCO_HZ           ( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT )
-#else
-#define CONFIG_VCO_HZ           (( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT ) / 2 )
-#endif
-
-#if (CONFIG_PLL_BYPASS == 0)
-#define CONFIG_CCLK_HZ          ( CONFIG_VCO_HZ / CONFIG_CCLK_DIV )
-#define CONFIG_SCLK_HZ          ( CONFIG_VCO_HZ / CONFIG_SCLK_DIV )
-#else
-#define CONFIG_CCLK_HZ          CONFIG_CLKIN_HZ
-#define CONFIG_SCLK_HZ          CONFIG_CLKIN_HZ
-#endif
-
 #if (BFIN_BOOT_MODE == BFIN_SPI_MASTER_BOOT)
-#if (CONFIG_SCLK_HZ / (2*CONFIG_SPI_BAUD) > 20000000) 
+#if (CONFIG_SCLK_HZ / (2*CONFIG_SPI_BAUD) > 20000000)
 #define CONFIG_SPI_FLASH_FAST_READ 1 /* Needed if SPI_CLK > 20 MHz */
 #else
 #undef CONFIG_SPI_FLASH_FAST_READ
@@ -108,12 +84,9 @@
 
 #define CONFIG_LOADS_ECHO		1
 
-#define CFG_AUTOLOAD                    "no"    /*rarpb, bootp or dhcp commands will perform only a */
+#define CFG_AUTOLOAD                    "no"    /* rarpb, bootp or dhcp commands will perform only a */
                                                 /* configuration lookup from the BOOTP/DHCP server, */
                                                 /* but not try to load any image using TFTP         */
-
-//#define CONFIG_DRIVER_SMC91111          1
-//#define CONFIG_SMC91111_BASE            0x20300300
 
 #define CONFIG_DRIVER_SMSC9118 1
 #define CONFIG_SMSC9118_BASE 0x24000000
@@ -126,15 +99,20 @@
 #define CONFIG_NETMASK          255.255.255.0
 #define CONFIG_GATEWAYIP        192.168.0.1
 #define CONFIG_SERVERIP         192.168.0.2
-#define CONFIG_HOSTNAME         BF549
+#define CONFIG_HOSTNAME         BF548
 
 #define CONFIG_ROOTPATH		/romfs
 /* Uncomment next line to use fixed MAC address */
-#define CONFIG_ETHADDR          02:80:ad:24:31:e8 
+#define CONFIG_ETHADDR          02:80:ad:24:31:e8
 /* This is the routine that copies the MAC in Flash to the 'ethaddr' setting */
 
+#if (BFIN_BOOT_MODE == BFIN_UART_BOOT)
+# define CONFIG_BOOTDELAY	-1
+#else
+# define CONFIG_BOOTDELAY	5
+#endif
+
 #define CFG_LONGHELP			1
-#define CONFIG_BOOTDELAY		5
 #define CONFIG_BOOT_RETRY_TIME		-1	/* Enable this if bootretry required, currently its disabled */
 #define CONFIG_BOOTCOMMAND 		"run ramboot"
 
@@ -146,7 +124,7 @@
 				  CFG_POST_ETHER  | \
 				  CFG_POST_LED	  | \
 				  CFG_POST_BUTTON)
-#else 
+#else
 #undef CONFIG_POST
 #endif
 
@@ -158,64 +136,29 @@
 #define CFG_CMD_POST_DIAG	0
 #endif
 
-/* CF-CARD IDE-HDD Support */
+#define CONFIG_COMMANDS \
+	(CONFIG_CMD_DFL  | \
+	 CFG_CMD_ELF     | \
+	 CFG_CMD_CACHE   | \
+	 CFG_CMD_JFFS2   | \
+	 CFG_CMD_DHCP    | \
+	 CFG_CMD_EEPROM)
 
-//#define CONFIG_BFIN_CF_IDE    /* Add CF flash card support */
-//#define CONFIG_BFIN_HDD_IDE   /* Add IDE Disk Drive (HDD) support */
-
-
-#if defined(CONFIG_BFIN_CF_IDE) || defined(CONFIG_BFIN_HDD_IDE) 
-#  define CONFIG_BFIN_IDE	1
-#  define ADD_IDE_CMD           CFG_CMD_IDE
-#else
-#  define ADD_IDE_CMD           0
-#endif
-
-/*#define CONFIG_BF537_NAND */		/* Add nand flash support */
-
-#ifdef CONFIG_BF537_NAND
-#  define ADD_NAND_CMD		CFG_CMD_NAND
-#else
-#  define ADD_NAND_CMD		0
-#endif
-
-//#if (BFIN_CPU == ADSP_BF534)
-//#define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NET) 
-//#else
-#define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL | CFG_CMD_PING)
-//#endif
-
-//#define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NET) //mh
+#define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"
 
 #if (BFIN_BOOT_MODE == BFIN_PARA_BOOT)
-#define CONFIG_COMMANDS			(CONFIG_CMD_DFL	| \
-				 CFG_CMD_PING	| \
-				 CFG_CMD_ELF	| \
-				 CFG_CMD_CACHE	| \
-				 CFG_CMD_EEPROM | \
-				 CFG_CMD_DHCP)
+# define BOOT_ENV_SETTINGS \
+	"update=tftpboot 0x1000000 u-boot.ldr;" \
+		"protect off 0x20000000 0x2007FFFF;" \
+		"erase 0x20000000 0x2007FFFF;cp.b 0x1000000 0x20000000 $(filesize)\0"
+#elif (BFIN_BOOT_MODE == BFIN_SPI_MASTER_BOOT)
+# define BOOT_ENV_SETTINGS \
+	"update=tftpboot 0x1000000 u-boot.ldr;" \
+		"eeprom write 0x1000000 0x0 $(filesize)\0"
+#else
+# define BOOT_ENV_SETTINGS
 #endif
-#if (BFIN_BOOT_MODE == BFIN_UART_BOOT)
-#define CONFIG_COMMANDS			(CONFIG_BFIN_CMD | \
-					 CFG_CMD_ELF	| \
-					 CFG_CMD_CACHE  | \
-					 CFG_CMD_JFFS2	| \
-					 CFG_CMD_DHCP	| \
-					 CFG_CMD_EEPROM )
-#endif
-#if (BFIN_BOOT_MODE == BFIN_SPI_MASTER_BOOT)
-#define CONFIG_COMMANDS			(CONFIG_BFIN_CMD | \
-					 CFG_CMD_ELF    | \
-					 CFG_CMD_CACHE  | \
-					 CFG_CMD_JFFS2  | \
-					 CFG_CMD_DHCP   | \
-					 CFG_CMD_EEPROM )
-#endif
-
-#define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"	
-
-#if (BFIN_BOOT_MODE == BFIN_PARA_BOOT)
-#define CONFIG_EXTRA_ENV_SETTINGS                               \
+#define CONFIG_EXTRA_ENV_SETTINGS                           \
 	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"      \
 	"nfsargs=setenv bootargs root=/dev/nfs rw "             \
 	"nfsroot=$(serverip):$(rootpath)\0"                     \
@@ -227,68 +170,12 @@
 	"nfsboot=tftpboot 0x1000000 linux;"                     \
 	"run nfsargs;run addip;bootelf\0"                       \
 	"flashboot=bootm 0x20100000\0"                          \
-	"update=tftpboot 0x1000000 u-boot.ldr;"                 \
-	"protect off 0x20000000 0x2007FFFF;"                    \
-	"erase 0x20000000 0x2007FFFF;cp.b 0x1000000 0x20000000 $(filesize)\0"\
-	""
-#endif
-#if (BFIN_BOOT_MODE == BFIN_UART_BOOT)
-#define CONFIG_EXTRA_ENV_SETTINGS                               \
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"      \
-	"nfsargs=setenv bootargs root=/dev/nfs rw "             \
-	"nfsroot=$(serverip):$(rootpath)\0"                     \
-	"addip=setenv bootargs $(bootargs) "                    \
-	"ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask)"      \
-	":$(hostname):eth0:off\0"                               \
-	"ramboot=tftpboot 0x1000000 linux;"                     \
-	"run ramargs;run addip;bootelf\0"                       \
-	"nfsboot=tftpboot 0x1000000 linux;"                     \
-	"run nfsargs;run addip;bootelf\0"                       \
-	"flashboot=bootm 0x20100000\0"                          \
-	""
-#endif
-#if (BFIN_BOOT_MODE == BFIN_SPI_MASTER_BOOT)
-#define CONFIG_EXTRA_ENV_SETTINGS					\
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"		\
-	"nfsargs=setenv bootargs root=/dev/nfs rw "			\
-	"nfsroot=$(serverip):$(rootpath)\0"				\
-	"addip=setenv bootargs $(bootargs) "				\
-	"ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask)"		\
-	":$(hostname):eth0:off\0"					\
-	"ramboot=tftpboot 0x1000000 linux;"				\
-	"run ramargs;run addip;bootelf\0"				\
-	"nfsboot=tftpboot 0x1000000 linux;"				\
-	"run nfsargs;run addip;bootelf\0"				\
-	"flashboot=bootm 0x20100000\0"					\
-	"update=tftpboot 0x1000000 u-boot.ldr;"				\
-	"eeprom write 0x1000000 0x0 $(filesize);\0"			\
-	""
-#endif
+	BOOT_ENV_SETTINGS
 
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
 
-#if (BFIN_BOOT_MODE == BFIN_SPI_MASTER_BOOT)
-#if (BFIN_CPU == ADSP_BF542)
-#define	CFG_PROMPT		"serial_bf542> "	/* Monitor Command Prompt */
-#elif (BFIN_CPU == ADSP_BF544)
-#define	CFG_PROMPT		"serial_bf544> "	/* Monitor Command Prompt */
-#elif (BFIN_CPU == ADSP_BF548)
-#define	CFG_PROMPT		"serial_bf548> "	/* Monitor Command Prompt */
-#else
-#define	CFG_PROMPT		"serial_bf549> "	/* Monitor Command Prompt */
-#endif
-#else
-#if (BFIN_CPU == ADSP_BF542)
-#define	CFG_PROMPT		"bf542> "	/* Monitor Command Prompt */
-#elif (BFIN_CPU == ADSP_BF544)
-#define	CFG_PROMPT		"bf544> "	/* Monitor Command Prompt */
-#elif (BFIN_CPU == ADSP_BF548)
-#define	CFG_PROMPT		"bf548> "	/* Monitor Command Prompt */
-#else
-#define	CFG_PROMPT		"bf549> "	/* Monitor Command Prompt */
-#endif
-#endif
+#define CFG_PROMPT MK_STR(CONFIG_HOSTNAME) "> "
 
 #if (CONFIG_COMMANDS & CFG_CMD_KGDB)
 #define	CFG_CBSIZE		1024	/* Console I/O Buffer Size */
@@ -390,51 +277,14 @@
 
 /*
  * I2C settings
- * By default PF1 is used as SDA and PF0 as SCL on the Stamp board
  */
-/*#define CONFIG_SOFT_I2C			1*/	/* I2C bit-banged		*/
-#undef CONFIG_SOFT_I2C
 //#define CONFIG_HARD_I2C			1	/* I2C TWI */
 #if defined CONFIG_HARD_I2C
 #define CONFIG_TWICLK_KHZ		50
 #endif
 
-#if defined CONFIG_SOFT_I2C
-/*
- * Software (bit-bang) I2C driver configuration
- */
-#define PF_SCL				PF0
-#define PF_SDA				PF1
-
-#define I2C_INIT			(*pFIO_DIR |=  PF_SCL); asm("ssync;")
-#define I2C_ACTIVE			(*pFIO_DIR |=  PF_SDA); *pFIO_INEN &= ~PF_SDA; asm("ssync;")
-#define I2C_TRISTATE			(*pFIO_DIR &= ~PF_SDA); *pFIO_INEN |= PF_SDA; asm("ssync;")
-#define I2C_READ		((*pFIO_FLAG_D & PF_SDA) != 0)
-#define I2C_SDA(bit)			if(bit) { \
-							*pFIO_FLAG_S = PF_SDA; \
-							asm("ssync;"); \
-						} \
-					else    { \
-							*pFIO_FLAG_C = PF_SDA; \
-							asm("ssync;"); \
-						}
-#define I2C_SCL(bit)			if(bit) { \
-							*pFIO_FLAG_S = PF_SCL; \
-							asm("ssync;"); \
-						} \
-					else    { \
-							*pFIO_FLAG_C = PF_SCL; \
-							asm("ssync;"); \
-						}
-#define I2C_DELAY			udelay(5)	/* 1/4 I2C clock duration */
-#endif
-
 #define CFG_I2C_SPEED			50000
 #define CFG_I2C_SLAVE			0xFE
-
-#define __ADSPLPBLACKFIN__	1
-#define __ADSPBF54x__		1
-#undef __ADSPBF532__
 
 /* 0xFF, 0x7BB07BB0, 0x22547BB0 */
 /* #define AMGCTLVAL            (AMBEN_P0 | AMBEN_P1 | AMBEN_P2 | AMCKEN)
@@ -448,54 +298,6 @@
 #define AMBCTL0VAL              0x7BB07BB0
 #define AMBCTL1VAL              0xFFC27BB0
 
-#define CONFIG_VDSP		1
-
-#ifdef CONFIG_VDSP
-#define ET_EXEC_VDSP		0x8
-#define SHT_STRTAB_VDSP		0x1
-#define ELFSHDRSIZE_VDSP	0x2C
-#define VDSP_ENTRY_ADDR		0xFFA00000
-#endif
-
-#if defined(CONFIG_BFIN_IDE)
-
-#define CONFIG_DOS_PARTITION            1
-/*
- * IDE/ATA stuff
- */
-#undef  CONFIG_IDE_8xx_DIRECT           /* no pcmcia interface required */
-#undef  CONFIG_IDE_LED                  /* no led for ide supported */
-#undef  CONFIG_IDE_RESET                /* no reset for ide supported */
-
-#define CFG_IDE_MAXBUS  1               /* max. 1 IDE busses */
-#define CFG_IDE_MAXDEVICE               (CFG_IDE_MAXBUS*1) /* max. 1 drives per IDE bus */
-
-#undef  AMBCTL1VAL
-#define AMBCTL1VAL			0xFFC3FFC3
-
-#define CONFIG_CF_ATASEL_DIS 	0x20311800
-
-#if defined(CONFIG_BFIN_CF_IDE) /* USE CompactFlash Storage Card in the common memory space */
-#define CFG_ATA_BASE_ADDR               0x20211800
-#define CFG_ATA_IDE0_OFFSET             0x0000
-#define CFG_ATA_DATA_OFFSET             0x0000  /* Offset for data I/O */
-#define CFG_ATA_REG_OFFSET              0x0000  /* Offset for normal register accesses */
-#define CFG_ATA_ALT_OFFSET              0x000E  /* Offset for alternate registers */
-#define CFG_ATA_STRIDE                  1 	/* CF.A0 --> Blackfin.Ax */
-#endif /* CONFIG_BFIN_CF_IDE */
- 
-#if defined(CONFIG_BFIN_HDD_IDE) /* USE TRUE IDE */
-#define CFG_ATA_BASE_ADDR               0x20314000
-#define CFG_ATA_IDE0_OFFSET             0x0000
-#define CFG_ATA_DATA_OFFSET             0x0020  /* Offset for data I/O */
-#define CFG_ATA_REG_OFFSET              0x0020  /* Offset for normal register accesses */
-#define CFG_ATA_ALT_OFFSET              0x001C  /* Offset for alternate registers */
-#define CFG_ATA_STRIDE                  2 	/* CF.A0 --> Blackfin.A1 */
-
-#undef  CONFIG_SCLK_DIV
-#define CONFIG_SCLK_DIV                 8
-#endif /* CONFIG_BFIN_HDD_IDE */
-
-#endif /*CONFIG_BFIN_IDE*/
+#include <asm/blackfin-config-post.h>
 
 #endif

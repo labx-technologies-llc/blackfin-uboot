@@ -2,12 +2,14 @@
  * U-boot - Configuration file for BF533 EZKIT board
  */
 
-#ifndef __CONFIG_EZKIT533_H__
-#define __CONFIG_EZKIT533_H__
+#ifndef __CONFIG_BF533_EZKIT_H__
+#define __CONFIG_BF533_EZKIT_H__
+
+#include <asm/blackfin-config-pre.h>
+
+#define BFIN_CPU             ADSP_BF533
 
 #define CONFIG_BAUDRATE		57600
-#define CONFIG_STAMP		1
-
 #define CONFIG_BOOTDELAY	5
 #define CFG_AUTOLOAD		"no"	/*rarpb, bootp or dhcp commands will perform only a */
 
@@ -41,17 +43,9 @@
 
 #define CONFIG_PANIC_HANG 1
 
-#define ADSP_BF531		0x31
-#define ADSP_BF532		0x32
-#define ADSP_BF533		0x33
-#define BFIN_CPU		ADSP_BF533
-
 /* This sets the default state of the cache on U-Boot's boot */
 #define CONFIG_ICACHE_ON
 #define CONFIG_DCACHE_ON
-
-/* Define where the uboot will be loaded by on-chip boot rom */
-#define APP_ENTRY 0x00001000
 
 /* CONFIG_CLKIN_HZ is any value in Hz				*/
 #define CONFIG_CLKIN_HZ		27000000
@@ -76,20 +70,6 @@
 #define CONFIG_SPI_BAUD		2
 #define CONFIG_SPI_BAUD_INITBLOCK	4
 
-#if ( CONFIG_CLKIN_HALF == 0 )
-#define CONFIG_VCO_HZ		( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT )
-#else
-#define CONFIG_VCO_HZ		(( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT ) / 2 )
-#endif
-
-#if (CONFIG_PLL_BYPASS == 0)
-#define CONFIG_CCLK_HZ		( CONFIG_VCO_HZ / CONFIG_CCLK_DIV )
-#define CONFIG_SCLK_HZ		( CONFIG_VCO_HZ / CONFIG_SCLK_DIV )
-#else
-#define CONFIG_CCLK_HZ		CONFIG_CLKIN_HZ
-#define CONFIG_SCLK_HZ		CONFIG_CLKIN_HZ
-#endif
-
 #define CONFIG_MEM_SIZE		32	/* 128, 64, 32, 16 */
 #define CONFIG_MEM_ADD_WDTH	9	/* 8, 9, 10, 11    */
 #define CONFIG_MEM_MT48LC16M16A2TG_75	1
@@ -111,7 +91,8 @@
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
 
-#define	CFG_PROMPT		"ezkit> "	/* Monitor Command Prompt */
+#define CFG_PROMPT MK_STR(CONFIG_HOSTNAME) "> "
+
 #if (CONFIG_COMMANDS & CFG_CMD_KGDB)
 #define	CFG_CBSIZE		1024	/* Console I/O Buffer Size */
 #else
@@ -154,15 +135,7 @@
 /* 512k reserved for u-boot */
 #define CFG_JFFS2_FIRST_SECTOR	11
 
-
-/*
- * Stack sizes
- */
-#define CONFIG_STACKSIZE	(128*1024)	/* regular stack */
-
-#define POLL_MODE		1
 #define FLASH_TOT_SECT		40
-#define FLASH_SIZE		0x220000
 #define CFG_FLASH_SIZE		0x220000
 
 /*
@@ -219,13 +192,6 @@
 #define AMBCTL0VAL		0x7BB07BB0
 #define AMBCTL1VAL		0xFFC27BB0
 
-#define CONFIG_VDSP		1
-
-#ifdef CONFIG_VDSP
-#define ET_EXEC_VDSP		0x8
-#define SHT_STRTAB_VDSP		0x1
-#define ELFSHDRSIZE_VDSP	0x2C
-#define VDSP_ENTRY_ADDR		0xFFA00000
-#endif
+#include <asm/blackfin-config-post.h>
 
 #endif

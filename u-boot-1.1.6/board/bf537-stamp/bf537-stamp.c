@@ -36,13 +36,7 @@
 
 int checkboard(void)
 {
-#if (BFIN_CPU == ADSP_BF534)
-	printf("CPU:   ADSP BF534 Rev.: 0.%d\n", *pCHIPID >> 28);
-#elif (BFIN_CPU == ADSP_BF536)
-	printf("CPU:   ADSP BF536 Rev.: 0.%d\n", *pCHIPID >> 28);
-#else
-	printf("CPU:   ADSP BF537 Rev.: 0.%d\n", *pCHIPID >> 28);
-#endif
+	printf("CPU:   ADSP BF" MK_STR(BFIN_CPU) " Rev.: 0.%d\n", bfin_revid());
 	printf("Board: ADI BF537 stamp board\n");
 	printf("       Support: http://blackfin.uclinux.org/\n");
 	return 0;

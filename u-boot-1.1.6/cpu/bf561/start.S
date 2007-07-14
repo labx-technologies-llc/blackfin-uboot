@@ -212,12 +212,10 @@ WAIT_HERE:
 _real_start:
 	[ -- sp ] = reti;
 
-#ifdef CONFIG_EZKIT561
 	p0.l = (WDOG_CTL & 0xFFFF);
 	p0.h = (WDOG_CTL >> 16);
 	r0 = WATCHDOG_DISABLE(z);
 	w[p0] = r0;
-#endif
 
 	/* DMA reset code to Hi of L1 SRAM */
 copy:

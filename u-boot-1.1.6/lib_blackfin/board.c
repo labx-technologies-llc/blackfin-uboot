@@ -41,7 +41,7 @@
 #include <nand.h>
 #endif
 
-#if defined(CONFIG_BF537)&&defined(CONFIG_POST)
+#if defined(CONFIG_POST)
 #include <post.h>
 int post_flag;
 #endif
@@ -125,7 +125,7 @@ static int display_banner(void)
 
 static void display_flash_config(ulong size)
 {
-	puts("FLASH:  ");
+	puts("FLASH: ");
 	print_size(size, "\n");
 	return;
 }
@@ -199,7 +199,7 @@ void init_cplbtables(void)
 		}
 		j++;
 	}
-#if defined(CONFIG_BF561)
+#if (BFIN_FAMILY == ADSP_BF56X)
 	/* MAC space */
 	icplb_table[j][0] = 0x2C000000;
 	icplb_table[j][1] = SDRAM_INON_CHBL;
@@ -210,7 +210,7 @@ void init_cplbtables(void)
 		icplb_table[j][1] = SDRAM_INON_CHBL;
 		j++;
 	}
-#elif defined(CONFIG_BF548)	
+#elif (BFIN_FAMILY == ADSP_BF54X)
 	/* Async memory */
 	/* Bank0 */
 	for (i = 0; i < CONFIG_ASYNC_BANK0_SIZE / 4; i++) {
@@ -256,7 +256,7 @@ void init_cplbtables(void)
 		}
 		j++;
 	}
-#if defined(CONFIG_BF561)
+#if (BFIN_FAMILY == ADSP_BF56X)
 	/* MAC space */
 	dcplb_table[j][0] = 0x2C000000;
 	dcplb_table[j][1] = SDRAM_EBIU;
@@ -267,7 +267,7 @@ void init_cplbtables(void)
 		dcplb_table[j][1] = SDRAM_EBIU;
 		j++;
 	}
-#elif defined(CONFIG_BF548)
+#elif (BFIN_FAMILY == ADSP_BF54X)
 	/* Async memory */
 	/* Bank0 */
 	for (i = 0; i < CONFIG_ASYNC_BANK0_SIZE / 4; i++) {
@@ -355,7 +355,7 @@ void board_init_f(ulong bootflag)
 	}
 
 	checkboard();
-#if defined(CONFIG_RTC_BF533) && (CONFIG_COMMANDS & CFG_CMD_DATE)
+#if defined(CONFIG_RTC_BFIN) && (CONFIG_COMMANDS & CFG_CMD_DATE)
 	rtc_init();
 #endif
 	timer_init();
@@ -363,7 +363,7 @@ void board_init_f(ulong bootflag)
 	       get_vco() / 1000000, get_cclk() / 1000000, get_sclk() / 1000000);
 	printf("SDRAM: ");
 	print_size(initdram(0), "\n");
-#if defined(CONFIG_BF537)&&defined(CONFIG_POST)
+#if defined(CONFIG_POST)
 	post_init_f();
 	post_bootmode_init();
 	post_run(NULL, POST_ROM | post_bootmode_get(0));
@@ -393,12 +393,12 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	gd->flags |= GD_FLG_RELOC;	/* tell others: relocation done */
 	bd = gd->bd;
 
-#if    defined(CONFIG_BF537) && defined(CONFIG_POST)
+#if defined(CONFIG_POST)
 	post_output_backlog();
 	post_reloc();
 #endif
 
-#if	(CONFIG_STAMP || CONFIG_BF537 || CONFIG_EZKIT561 || CONFIG_EZKIT548) && !defined(CFG_NO_FLASH)
+#if	!defined(CFG_NO_FLASH)
 	/* There are some other pointer constants we must deal with */
 	/* configure available FLASH banks */
 	size = flash_init();
@@ -465,7 +465,7 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	misc_init_r();
 #endif
 
-#if ((BFIN_CPU == ADSP_BF537) || (BFIN_CPU == ADSP_BF536))
+#ifdef CONFIG_BFIN_MAC
 	printf("Net:    ");
 	eth_initialize(bd);
 #endif
@@ -492,7 +492,7 @@ void board_init_r(gd_t * id, ulong dest_addr)
 
 	display_global_data();
 
-#if defined(CONFIG_BF537) && defined(CONFIG_POST)
+#if defined(CONFIG_POST)
 	if (post_flag)
 		post_run(NULL, POST_RAM | post_bootmode_get(0));
 #endif

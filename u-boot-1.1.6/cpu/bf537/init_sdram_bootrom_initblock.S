@@ -46,7 +46,7 @@ init_sdram:
 
 #if (BFIN_BOOT_MODE != BF537_UART_BOOT)
 
-#ifdef CONFIG_BF537
+#ifdef CONFIG_BFIN_MAC
 	/* Enable PHY CLK buffer output */
 	p0.h = hi(VR_CTL);
 	p0.l = lo(VR_CTL);

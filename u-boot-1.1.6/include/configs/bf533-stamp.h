@@ -2,12 +2,14 @@
  * U-boot - Configuration file for BF533 STAMP board
  */
 
-#ifndef __CONFIG_STAMP_H__
-#define __CONFIG_STAMP_H__
+#ifndef __CONFIG_BF533_STAMP_H__
+#define __CONFIG_BF533_STAMP_H__
 
-#define CONFIG_STAMP			1
+#include <asm/blackfin-config-pre.h>
+
+#define BFIN_CPU             ADSP_BF533
+
 #define CONFIG_RTC_BFIN			1
-#define CONFIG_BF533			1
 /*
  * Boot Mode Set
  * Blackfin can support several boot modes
@@ -17,27 +19,13 @@
 #define BF533_SPI_BOOT		0x0004	/* Bootmode 3: Boot from SPI flash */
 /* Define the boot mode */
 #define BFIN_BOOT_MODE		BF533_BYPASS_BOOT
-/* #define BFIN_BOOT_MODE	BF533_SPI_BOOT */
 
 #define CONFIG_PANIC_HANG 1
 
-#define ADSP_BF531		0x31
-#define ADSP_BF532		0x32
-#define ADSP_BF533		0x33
-#define BFIN_CPU		ADSP_BF533
 
 /* This sets the default state of the cache on U-Boot's boot */
 #define CONFIG_ICACHE_ON
 #define CONFIG_DCACHE_ON
-
-/* Define where the uboot will be loaded by on-chip boot rom */
-#define APP_ENTRY 0x00001000
-
-/*
- * Stringize definitions - needed for environmental settings
- */
-#define STRINGIZE2(x) #x
-#define STRINGIZE(x) STRINGIZE2(x)
 
 /*
  * Board settings
@@ -56,13 +44,6 @@
  */
 #define PF_SCL			PF3
 #define PF_SDA			PF2
-
-/*
- * Video splash screen support
- */
-#define  CONFIG_VIDEO		0
-
-#define CONFIG_VDSP		1
 
 /*
  * Clock settings
@@ -182,31 +163,11 @@
 #define	CFG_MONITOR_LEN		(256 << 10)	/* Reserve 256 kB for Monitor	*/
 #define CFG_MALLOC_LEN		(128 << 10)     /* Reserve 128 kB for malloc()	*/
 #define CFG_GBL_DATA_SIZE	0x4000		/* Reserve 16k for Global Data  */
-#define CONFIG_STACKSIZE	(128*1024)	/* regular stack */
 
 #define CFG_MONITOR_BASE		(CFG_MAX_RAM_SIZE - 0x40000)
 #define CFG_MALLOC_BASE		(CFG_MONITOR_BASE - CFG_MALLOC_LEN)
 #define CFG_GBL_DATA_ADDR	(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
 #define CONFIG_STACKBASE	(CFG_GBL_DATA_ADDR  - 4)
-
-/* Check to make sure everything fits in SDRAM */
-#if ((CFG_MONITOR_BASE + CFG_MONITOR_LEN) > CFG_MAX_RAM_SIZE)
-# error Memory Map does not fit into configuration
-#endif
-
-#if ( CONFIG_CLKIN_HALF == 0 )
-#define CONFIG_VCO_HZ		( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT )
-#else
-#define CONFIG_VCO_HZ		(( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT ) / 2 )
-#endif
-
-#if (CONFIG_PLL_BYPASS == 0)
-#define CONFIG_CCLK_HZ		( CONFIG_VCO_HZ / CONFIG_CCLK_DIV )
-#define CONFIG_SCLK_HZ		( CONFIG_VCO_HZ / CONFIG_SCLK_DIV )
-#else
-#define CONFIG_CCLK_HZ		CONFIG_CLKIN_HZ
-#define CONFIG_SCLK_HZ		CONFIG_CLKIN_HZ
-#endif
 
 #if (BFIN_BOOT_MODE == BF533_SPI_BOOT)
 #if (CONFIG_SCLK_HZ / (2*CONFIG_SPI_BAUD) > 20000000)
@@ -330,23 +291,7 @@
 #define CONFIG_BAUDRATE		57600
 #define CFG_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 
-#if (BFIN_BOOT_MODE == BF533_SPI_BOOT)
-#if (BFIN_CPU == ADSP_BF531)
-#define	CFG_PROMPT	"serial_bf531> "	/* Monitor Command Prompt */
-#elif (BFIN_CPU == ADSP_BF532)
-#define	CFG_PROMPT	"serial_bf532> "	/* Monitor Command Prompt */
-#else
-#define	CFG_PROMPT	"serial_bf533> "	/* Monitor Command Prompt */
-#endif
-#else
-#if (BFIN_CPU == ADSP_BF531)
-#define	CFG_PROMPT	"bf531> "	/* Monitor Command Prompt */
-#elif (BFIN_CPU == ADSP_BF532)
-#define	CFG_PROMPT	"bf532> "	/* Monitor Command Prompt */
-#else
-#define	CFG_PROMPT	"bf533> "	/* Monitor Command Prompt */
-#endif
-#endif
+#define CFG_PROMPT MK_STR(CONFIG_HOSTNAME) "> "
 
 #if (CONFIG_COMMANDS & CFG_CMD_KGDB)
 #define CFG_CBSIZE	1024		/* Console I/O Buffer Size */
@@ -434,15 +379,6 @@
 
 #define CONFIG_SPI
 
-#ifdef  CONFIG_VIDEO
-#if (CONFIG_VIDEO)
-#define CONFIG_SPLASH_SCREEN	1
-#define CONFIG_SILENT_CONSOLE	1
-#else
-#undef CONFIG_VIDEO
-#endif
-#endif
-
 /*
  * FLASH organization and environment definitions
  */
@@ -460,11 +396,6 @@
 #define AMBCTL1VAL		0x99B39983
 #define CF_AMBCTL1VAL		0x99B3ffc2
 
-#ifdef CONFIG_VDSP
-#define ET_EXEC_VDSP		0x8
-#define SHT_STRTAB_VDSP		0x1
-#define ELFSHDRSIZE_VDSP	0x2C
-#define VDSP_ENTRY_ADDR		0xFFA00000
-#endif
+#include <asm/blackfin-config-post.h>
 
 #endif

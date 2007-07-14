@@ -55,9 +55,7 @@
 .global _exit;
 .global flashdataend;
 .global init_sdram;
-.global _icache_enable;
-.global _dcache_enable;
-#if defined(CONFIG_BF537)&&defined(CONFIG_POST)
+#if defined(CONFIG_POST)
 .global _memory_post_test;
 .global _post_flag;
 #endif
@@ -265,7 +263,7 @@ check_again:
 #endif
 
 
-#if defined(CONFIG_BF537)&&defined(CONFIG_POST)
+#if defined(CONFIG_POST)
 	/* DMA POST code to Hi of L1 SRAM */
 postcopy:
 	/* P1 Points to the beginning of SYSTEM MMR Space */
@@ -434,7 +432,6 @@ WAIT_HERE:
 _real_start:
 	[ -- sp ] = reti;
 
-#ifdef CONFIG_BF537
 /* Initialise General-Purpose I/O Modules on BF537
  * Rev 0.0 Anomaly 05000212 - PORTx_FER,
  * PORT_MUX Registers Do Not accept "writes" correctly
@@ -476,8 +473,6 @@ _real_start:
 	nop;
 	nop;
 	ssync;
-
-#endif
 
 	/* DMA reset code to Hi of L1 SRAM */
 copy:
@@ -540,7 +535,7 @@ _clear_bss_end:
 	[p1++] = r0;
 _clear_bss_skip:
 
-#if defined(CONFIG_BF537)&&defined(CONFIG_POST)
+#if defined(CONFIG_POST)
 	p0.l = _post_flag;
 	p0.h = _post_flag;
 	r0   = r7;

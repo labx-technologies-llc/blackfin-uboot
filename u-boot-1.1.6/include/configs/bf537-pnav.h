@@ -1,20 +1,23 @@
 /*
- * U-boot - Configuration file for BF537 STAMP board
+ * U-boot - Configuration file for BF537 PNAV board
  */
 
-#ifndef __CONFIG_BF537_H__
-#define __CONFIG_BF537_H__
+#ifndef __CONFIG_BF537_PNAV_H__
+#define __CONFIG_BF537_PNAV_H__
+
+#include <asm/blackfin-config-pre.h>
+
+#define BFIN_CPU             ADSP_BF537
 
 #define CFG_LONGHELP		1
 #define CONFIG_CMDLINE_EDITING	1
 #define CONFIG_BAUDRATE		115200
 
+#define CONFIG_BFIN_MAC
 #define CONFIG_BFIN_MAC_RMII
 
 /* Set default serial console for bf537 */
 #define CONFIG_UART_CONSOLE	0
-#define CONFIG_BF537		1
-#define CONFIG_BOOTDELAY	5
 /* define CONFIG_BF537_STAMP_LEDCMD to enable LED command*/
 /*#define CONFIG_BF537_STAMP_LEDCMD	1*/
 
@@ -33,16 +36,8 @@
 #define BFIN_BOOT_MODE		BF537_SPI_MASTER_BOOT
 //#define BFIN_BOOT_MODE		BF537_SPI_MASTER_BOOT
 
-#define ADSP_BF534		0x34
-#define ADSP_BF536		0x36
-#define ADSP_BF537		0x37
-#define BFIN_CPU		ADSP_BF537
-
 /* Define if want to do post memory test */
 #undef CONFIG_POST_TEST
-
-/* Define where the uboot will be loaded by on-chip boot rom */
-#define APP_ENTRY 0x00001000
 
 #define CONFIG_RTC_BFIN		1
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
@@ -72,20 +67,6 @@
 #define CONFIG_SPI_BAUD_INITBLOCK						   4
 #endif
 
-#if ( CONFIG_CLKIN_HALF == 0 )
-#define CONFIG_VCO_HZ           ( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT )
-#else
-#define CONFIG_VCO_HZ           (( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT ) / 2 )
-#endif
-
-#if (CONFIG_PLL_BYPASS == 0)
-#define CONFIG_CCLK_HZ          ( CONFIG_VCO_HZ / CONFIG_CCLK_DIV )
-#define CONFIG_SCLK_HZ          ( CONFIG_VCO_HZ / CONFIG_SCLK_DIV )
-#else
-#define CONFIG_CCLK_HZ          CONFIG_CLKIN_HZ
-#define CONFIG_SCLK_HZ          CONFIG_CLKIN_HZ
-#endif
-
 #if (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
 #if (CONFIG_SCLK_HZ / (2*CONFIG_SPI_BAUD) > 20000000)
 #define CONFIG_SPI_FLASH_FAST_READ 1 /* Needed if SPI_CLK > 20 MHz */
@@ -108,7 +89,7 @@
  * Network Settings
  */
 /* network support */
-#if (BFIN_CPU != ADSP_BF534)
+#ifdef CONFIG_BFIN_MAC
 #define CONFIG_IPADDR           192.168.0.15
 #define CONFIG_NETMASK          255.255.255.0
 #define CONFIG_GATEWAYIP        192.168.0.1
@@ -121,8 +102,13 @@
 #define CONFIG_ETHADDR          02:80:ad:24:21:18
 /* This is the routine that copies the MAC in Flash to the 'ethaddr' setting */
 
+#if (BFIN_BOOT_MODE == BF537_UART_BOOT)
+# define CONFIG_BOOTDELAY	-1
+#else
+# define CONFIG_BOOTDELAY	5
+#endif
+
 #define CFG_LONGHELP			1
-#define CONFIG_BOOTDELAY		5
 #define CONFIG_BOOT_RETRY_TIME		-1	/* Enable this if bootretry required, currently its disabled */
 #define CONFIG_BOOTCOMMAND 		"run ramboot"
 
@@ -250,23 +236,7 @@
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
 
-#if (BFIN_BOOT_MODE == BF537_SPI_MASTER_BOOT)
-#if (BFIN_CPU == ADSP_BF534)
-#define	CFG_PROMPT		"serial_bf534> "	/* Monitor Command Prompt */
-#elif (BFIN_CPU == ADSP_BF536)
-#define	CFG_PROMPT		"serial_bf536> "	/* Monitor Command Prompt */
-#else
-#define	CFG_PROMPT		"PNAV> "	/* Monitor Command Prompt */
-#endif
-#else
-#if (BFIN_CPU == ADSP_BF534)
-#define	CFG_PROMPT		"bf534> "	/* Monitor Command Prompt */
-#elif (BFIN_CPU == ADSP_BF536)
-#define	CFG_PROMPT		"bf536> "	/* Monitor Command Prompt */
-#else
-#define	CFG_PROMPT		"bf537> "	/* Monitor Command Prompt */
-#endif
-#endif
+#define CFG_PROMPT MK_STR(CONFIG_HOSTNAME) "> "
 
 #if (CONFIG_COMMANDS & CFG_CMD_KGDB)
 #define	CFG_CBSIZE		1024	/* Console I/O Buffer Size */
@@ -321,14 +291,7 @@
 
 #define CONFIG_SPI
 
-/*
- * Stack sizes
- */
-#define CONFIG_STACKSIZE        (128*1024)      /* regular stack */
-
-#define POLL_MODE		1
 #define FLASH_TOT_SECT		71
-#define FLASH_SIZE		0x400000
 #define CFG_FLASH_SIZE		0x400000
 
 /*
@@ -374,42 +337,10 @@
 
 /*
  * I2C settings
- * By default PF1 is used as SDA and PF0 as SCL on the Stamp board
  */
-/*#define CONFIG_SOFT_I2C			1*/	/* I2C bit-banged		*/
 #define CONFIG_HARD_I2C			1	/* I2C TWI */
 #if defined CONFIG_HARD_I2C
 #define CONFIG_TWICLK_KHZ		50
-#endif
-
-#if defined CONFIG_SOFT_I2C
-/*
- * Software (bit-bang) I2C driver configuration
- */
-#define PF_SCL				PF0
-#define PF_SDA				PF1
-
-#define I2C_INIT			(*pFIO_DIR |=  PF_SCL); asm("ssync;")
-#define I2C_ACTIVE			(*pFIO_DIR |=  PF_SDA); *pFIO_INEN &= ~PF_SDA; asm("ssync;")
-#define I2C_TRISTATE			(*pFIO_DIR &= ~PF_SDA); *pFIO_INEN |= PF_SDA; asm("ssync;")
-#define I2C_READ		((*pFIO_FLAG_D & PF_SDA) != 0)
-#define I2C_SDA(bit)			if(bit) { \
-							*pFIO_FLAG_S = PF_SDA; \
-							asm("ssync;"); \
-						} \
-					else    { \
-							*pFIO_FLAG_C = PF_SDA; \
-							asm("ssync;"); \
-						}
-#define I2C_SCL(bit)			if(bit) { \
-							*pFIO_FLAG_S = PF_SCL; \
-							asm("ssync;"); \
-						} \
-					else    { \
-							*pFIO_FLAG_C = PF_SCL; \
-							asm("ssync;"); \
-						}
-#define I2C_DELAY			udelay(5)	/* 1/4 I2C clock duration */
 #endif
 
 #define CFG_I2C_SPEED			50000
@@ -426,15 +357,6 @@
 #define AMGCTLVAL               0xFF
 #define AMBCTL0VAL              0x7BB033B0
 #define AMBCTL1VAL              0xFFC27BB0
-
-#define CONFIG_VDSP		1
-
-#ifdef CONFIG_VDSP
-#define ET_EXEC_VDSP		0x8
-#define SHT_STRTAB_VDSP		0x1
-#define ELFSHDRSIZE_VDSP	0x2C
-#define VDSP_ENTRY_ADDR		0xFFA00000
-#endif
 
 #if defined(CONFIG_BFIN_IDE)
 
@@ -476,5 +398,7 @@
 #endif /* CONFIG_BFIN_HDD_IDE */
 
 #endif /*CONFIG_BFIN_IDE*/
+
+#include <asm/blackfin-config-post.h>
 
 #endif

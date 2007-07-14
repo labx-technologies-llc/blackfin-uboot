@@ -33,10 +33,11 @@
 # include <linux/types.h>
 
 extern u_long get_sclk(void);
+
+#define bfin_revid() (*pCHIPID >> 28)
+
 #endif
 
 #include <asm/arch-common/cdefBF5xx.h>
-
-#include <asm/cmd_confdefs.h>
 
 #endif

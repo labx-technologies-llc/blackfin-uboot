@@ -2,18 +2,18 @@
  * U-boot - Configuration file for BF561 EZKIT board
  */
 
-#ifndef __CONFIG_EZKIT561_H__
-#define __CONFIG_EZKIT561_H__
+#ifndef __CONFIG_BF561_EZKIT_H__
+#define __CONFIG_BF561_EZKIT_H__
 
-#define CONFIG_VDSP		1
-#define CONFIG_BF561		1
+#include <asm/blackfin-config-pre.h>
+
+#define BFIN_CPU             ADSP_BF561
 
 #define CFG_LONGHELP		1
 #define CONFIG_CMDLINE_EDITING	1
 #define CONFIG_BAUDRATE		57600
 /* Set default serial console for bf537 */
 #define CONFIG_UART_CONSOLE	0
-#define CONFIG_EZKIT561		1
 #define CONFIG_BOOTDELAY	5
 
 #define CONFIG_PANIC_HANG 1
@@ -31,15 +31,6 @@
 /* This sets the default state of the cache on U-Boot's boot */
 #define CONFIG_ICACHE_ON
 #define CONFIG_DCACHE_ON
-
-/* Define where the uboot will be loaded by on-chip boot rom */
-#define APP_ENTRY 0x00001000
-
-/*
- * Stringize definitions - needed for environmental settings
- */
-#define STRINGIZE2(x) #x
-#define STRINGIZE(x) STRINGIZE2(x)
 
 /*
  * Board settings
@@ -135,20 +126,6 @@
 #define CONFIG_STACKBASE	(CFG_GBL_DATA_ADDR  - 4)
 #define CONFIG_STACKSIZE	(128*1024)	/* regular stack */
 
-#if ( CONFIG_CLKIN_HALF == 0 )
-#define CONFIG_VCO_HZ		( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT )
-#else
-#define CONFIG_VCO_HZ		(( CONFIG_CLKIN_HZ * CONFIG_VCO_MULT ) / 2 )
-#endif
-
-#if (CONFIG_PLL_BYPASS == 0)
-#define CONFIG_CCLK_HZ		( CONFIG_VCO_HZ / CONFIG_CCLK_DIV )
-#define CONFIG_SCLK_HZ		( CONFIG_VCO_HZ / CONFIG_SCLK_DIV )
-#else
-#define CONFIG_CCLK_HZ		CONFIG_CLKIN_HZ
-#define CONFIG_SCLK_HZ		CONFIG_CLKIN_HZ
-#endif
-
 /*
  * Command settings
  */
@@ -209,7 +186,7 @@
  */
 #define CFG_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 
-#define	CFG_PROMPT		"ezkit> "	/* Monitor Command Prompt */
+#define CFG_PROMPT MK_STR(CONFIG_HOSTNAME) "> "
 
 #if (CONFIG_COMMANDS & CFG_CMD_KGDB)
 #define	CFG_CBSIZE		1024		/* Console I/O Buffer Size */
@@ -237,11 +214,6 @@
 #define AMBCTL0VAL		0x7BB07BB0
 #define AMBCTL1VAL		0xFFC27BB0
 
-#ifdef CONFIG_VDSP
-#define ET_EXEC_VDSP		0x8
-#define SHT_STRTAB_VDSP		0x1
-#define ELFSHDRSIZE_VDSP	0x2C
-#define VDSP_ENTRY_ADDR		0xFFA00000
-#endif
+#include <asm/blackfin-config-post.h>
 
 #endif				/* __CONFIG_EZKIT561_H__ */

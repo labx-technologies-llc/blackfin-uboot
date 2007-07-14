@@ -55,12 +55,6 @@
 .global _exit;
 .global flashdataend;
 .global init_sdram;
-.global _icache_enable;
-.global _dcache_enable;
-#if defined(CONFIG_BF537)&&defined(CONFIG_POST)
-.global _memory_post_test;
-.global _post_flag;
-#endif
 
 .text
 _start:
@@ -173,112 +167,6 @@ no_soft_reset:
         r0 = AMGCTLVAL;
         w[p2] = r0;
         ssync;
-
-#if defined(CONFIG_BF537)&&defined(CONFIG_POST)
-	/* DMA POST code to Hi of L1 SRAM */
-postcopy:
-	/* P1 Points to the beginning of SYSTEM MMR Space */
-	P1.H = hi(SYSMMR_BASE);
-	P1.L = lo(SYSMMR_BASE);
-
-	R0.H = _text_l1;
-	R0.L = _text_l1;
-	R1.H = _etext_l1;
-	R1.L = _etext_l1;
-	R2 = R1 - R0;           /* Count */
-	R0.H = _etext;
-	R0.L = _etext;
-	R1.H = (CFG_MONITOR_BASE >> 16);
-	R1.L = (CFG_MONITOR_BASE & 0xFFFF);
-	R0 = R0 - R1;
-	R1.H = (CFG_FLASH_BASE >> 16);
-	R1.L = (CFG_FLASH_BASE & 0xFFFF);
-	R0 = R0 + R1;		/* Source Address */
-	R1.H = hi(L1_ISRAM);    /* Destination Address (high) */
-	R1.L = lo(L1_ISRAM);    /* Destination Address (low) */
-	R3.L = DMAEN;           /* Source DMAConfig Value (8-bit words) */
-	/* Destination DMAConfig Value (8-bit words) */
-	R4.L = (DI_EN | WNR | DMAEN);
-
-	R6 = 0x1 (Z);
-	W[P1+OFFSET_(MDMA_S0_X_MODIFY)] = R6;   /* Source Modify = 1 */
-	W[P1+OFFSET_(MDMA_D0_X_MODIFY)] = R6;   /* Destination Modify = 1 */
-
-	[P1+OFFSET_(MDMA_S0_START_ADDR)] = R0;  /* Set Source Base Address */
-	W[P1+OFFSET_(MDMA_S0_X_COUNT)] = R2;    /* Set Source Count */
-	/* Set Source  DMAConfig = DMA Enable,
-	Memory Read,  8-Bit Transfers, 1-D DMA, Flow - Stop */
-	W[P1+OFFSET_(MDMA_S0_CONFIG)] = R3;
-
-	[P1+OFFSET_(MDMA_D0_START_ADDR)] = R1;  /* Set Destination Base Address */
-	W[P1+OFFSET_(MDMA_D0_X_COUNT)] = R2;    /* Set Destination Count */
-	/* Set Destination DMAConfig = DMA Enable,
-	Memory Write, 8-Bit Transfers, 1-D DMA, Flow - Stop, IOC */
-	W[P1+OFFSET_(MDMA_D0_CONFIG)] = R4;
-
-POST_DMA_DONE:
-	p0.h = hi(MDMA_D0_IRQ_STATUS);
-	p0.l = lo(MDMA_D0_IRQ_STATUS);
-	R0 = W[P0](Z);
-	CC = BITTST(R0, 0);
-	if ! CC jump POST_DMA_DONE
-
-	R0 = 0x1;
-	W[P1+OFFSET_(MDMA_D0_IRQ_STATUS)] = R0; /* Write 1 to clear DMA interrupt */
-
-	/* DMA POST data to Hi of L1 SRAM */
-	R0.H = _rodata_l1;
-	R0.L = _rodata_l1;
-	R1.H = _erodata_l1;
-	R1.L = _erodata_l1;
-	R2 = R1 - R0;           /* Count */
-	R0.H = _erodata;
-	R0.L = _erodata;
-	R1.H = (CFG_MONITOR_BASE >> 16);
-	R1.L = (CFG_MONITOR_BASE & 0xFFFF);
-	R0 = R0 - R1;
-	R1.H = (CFG_FLASH_BASE >> 16);
-	R1.L = (CFG_FLASH_BASE & 0xFFFF);
-	R0 = R0 + R1;           /* Source Address */
-	R1.H = hi(DATA_BANKB_SRAM);    /* Destination Address (high) */
-	R1.L = lo(DATA_BANKB_SRAM);    /* Destination Address (low) */
-	R3.L = DMAEN;           /* Source DMAConfig Value (8-bit words) */
-	R4.L = (DI_EN | WNR | DMAEN);   /* Destination DMAConfig Value (8-bit words) */
-
-	R6 = 0x1 (Z);
-	W[P1+OFFSET_(MDMA_S0_X_MODIFY)] = R6;   /* Source Modify = 1 */
-	W[P1+OFFSET_(MDMA_D0_X_MODIFY)] = R6;   /* Destination Modify = 1 */
-
-	[P1+OFFSET_(MDMA_S0_START_ADDR)] = R0;  /* Set Source Base Address */
-	W[P1+OFFSET_(MDMA_S0_X_COUNT)] = R2;    /* Set Source Count */
-	/* Set Source  DMAConfig = DMA Enable,
-	Memory Read,  8-Bit Transfers, 1-D DMA, Flow - Stop */
-	W[P1+OFFSET_(MDMA_S0_CONFIG)] = R3;
-
-	[P1+OFFSET_(MDMA_D0_START_ADDR)] = R1;  /* Set Destination Base Address */
-	W[P1+OFFSET_(MDMA_D0_X_COUNT)] = R2;    /* Set Destination Count */
-	/* Set Destination DMAConfig = DMA Enable,
-	Memory Write, 8-Bit Transfers, 1-D DMA, Flow - Stop, IOC */
-	W[P1+OFFSET_(MDMA_D0_CONFIG)] = R4;
-
-POST_DATA_DMA_DONE:
-	p0.h = hi(MDMA_D0_IRQ_STATUS);
-	p0.l = lo(MDMA_D0_IRQ_STATUS);
-	R0 = W[P0](Z);
-	CC = BITTST(R0, 0);
-	if ! CC jump POST_DATA_DMA_DONE
-
-	R0 = 0x1;
-	W[P1+OFFSET_(MDMA_D0_IRQ_STATUS)] = R0; /* Write 1 to clear DMA interrupt */
-
-	p0.l = _memory_post_test;
-	p0.h = _memory_post_test;
-	r0 = 0x0;
-	call (p0);
-	r7 = r0;				/* save return value */
-
-	call init_sdram;
-#endif
 
 #if 0
 	/* relocate into to RAM */
@@ -507,17 +395,6 @@ _clear_bss_end:
 	[p1++] = r0;
 _clear_bss_skip:
 
-#if defined(CONFIG_BF537)&&defined(CONFIG_POST)
-	p0.l = _post_flag;
-	p0.h = _post_flag;
-	r0   = r7;
-	[p0] = r0;
-#endif
-
-#if 1 //mh
-	call _icache_enable;
-//	call _dcache_enable;
-#endif
 	p0.l = _start1;
 	p0.h = _start1;
 	jump (p0);
