@@ -62,7 +62,7 @@ void icache_enable(void)
 	unsigned int *I0, *I1;
 	int i, j = 0;
 
-	if ((*pCHIPID >> 28) < 2)
+	if (bfin_revid() < 2)
 		return;
 
 	/* Before enable icache, disable it first */
@@ -113,7 +113,7 @@ void icache_enable(void)
 
 void icache_disable(void)
 {
-	if ((*pCHIPID >> 28) < 2)
+	if (bfin_revid() < 2)
 		return;
 	cli();
 	sync();

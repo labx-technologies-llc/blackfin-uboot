@@ -20,6 +20,8 @@
 #include <asm/arch-bf561/defBF561.h>
 #include <asm/arch-common/cdef_LPBlackfin.h>
 
+#define pCHIPID ((volatile unsigned long *)CHIPID)
+
 /*
  * System MMR Register Map
  */

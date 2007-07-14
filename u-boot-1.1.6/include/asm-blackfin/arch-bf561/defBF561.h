@@ -39,6 +39,7 @@
 #define PLL_CTL			0xFFC00000	/* PLL Control register */
 #define PLL_DIV			0xFFC00004	/* PLL Divide Register */
 #define VR_CTL			0xFFC00008	/* Voltage Regulator Control Register */
+#define CHIPID			0xFFC00014	/* Chip ID register (32-bit) */
 #define PLL_STAT		0xFFC0000C	/* PLL Status register */
 #define PLL_LOCKCNT		0xFFC00010	/* PLL Lock Count register */
 

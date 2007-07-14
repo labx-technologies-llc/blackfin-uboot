@@ -62,9 +62,6 @@ void icache_enable(void)
 	unsigned int *I0, *I1;
 	int i, j = 0;
 
-	if ((*pCHIPID >> 28) < 2)
-		return;
-
 	/* Before enable icache, disable it first */
 	icache_disable();
 	I0 = (unsigned int *)ICPLB_ADDR0;
@@ -113,8 +110,6 @@ void icache_enable(void)
 
 void icache_disable(void)
 {
-	if ((*pCHIPID >> 28) < 2)
-		return;
 	cli();
 	sync();
 	asm(" .align 8; ");
