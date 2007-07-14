@@ -1,49 +1,48 @@
-//--------------------------------------------------------------------------
-//
-// File name:      smsc9118.c
-//
-// Abstract:      Driver for SMSC LAN9118 ethernet controller.
-//
-// Start Automated RH
-// *** Do not edit between "Start Automated RH" and "End Automated RH" ***
-//
-// Copyright 2005, Seagate Technology LLC
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-//
-// Revision History
-//
-// *** Do not edit between "Start Automated RH" and "End Automated RH" ***
-// End Automated RH
-//
-//--------------------------------------------------------------------------
+/*
+ * File name:      smsc9118.c
+ *
+ * Abstract:      Driver for SMSC LAN9118 ethernet controller.
+ *
+ * Start Automated RH
+ * *** Do not edit between "Start Automated RH" and "End Automated RH" ***
+ *
+ * Copyright 2005, Seagate Technology LLC
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+ *
+ * Revision History
+ *
+ * *** Do not edit between "Start Automated RH" and "End Automated RH" ***
+ * End Automated RH
+ *
+ */
 /*---------------------------------------------------------------------------
  * Copyright(c) 2005-2006 SMSC
  *
  *  Use of this source code is subject to the terms of the SMSC Software
- *  License Agreement (SLA) under which you licensed this software product.	 
+ *  License Agreement (SLA) under which you licensed this software product.
  *  If you did not accept the terms of the SLA, you are not authorized to use
- *  this source code. 
- *  
+ *  this source code.
+ *
  *  This code and information is provided as is without warranty of any kind,
  *  either expressed or implied, including but not limited to the implied
  *  warranties of merchantability and/or fitness for a particular purpose.
- *   
- *  File name   : smsc9118.c 
+ *
+ *  File name   : smsc9118.c
  *  Description : smsc9118 polled driver (non-interrupt driven)
- *  
+ *
  *  History	    :
  *  	09-27-06 MDG		v1.0 (First Release)
  *			modified for ARM platform
@@ -52,52 +51,47 @@
 #include <common.h>
 #include <command.h>
 #include <config.h>
+#include <malloc.h>
 #include "smsc9118.h"
 #include <net.h>
 
 #ifdef CONFIG_DRIVER_SMSC9118
 
-//*************************************************************************
- //  FUNCTION PROTOTYPES
-
-//*************************************************************************
+/**************************************************************************
+ * FUNCTION PROTOTYPES
+ **************************************************************************/
 int	eth_init(bd_t *bd);
 void eth_halt(void);
 int	eth_rx(void);
 int	eth_send(volatile void *packet, int length);
-extern void *malloc( unsigned ); // <stdlib.h>
-extern void free( void * ); // <stdlib.h>
 
-//*************************************************************************
- //  LOCAL DEFINITIONS AND MACROS
-
-//*************************************************************************
-//#define	DEBUG
+/**************************************************************************
+ * LOCAL DEFINITIONS AND MACROS
+ **************************************************************************/
+#undef	DEBUG
 #define 	GPIO_OUT(val)	  		(*GPIO_CFG = ((*GPIO_CFG & ~GPIO_CFG_GPIOD_MSK) | (val & GPIO_CFG_GPIOD_MSK)))
 #define 	ENET_MAX_MTU			PKTSIZE
 #define 	ENET_MAX_MTU_ALIGNED	PKTSIZE_ALIGN
 #define 	NUM_RX_BUFF 	  		PKTBUFSRX
 #define		ENET_ADDR_LENGTH		6
-#define		TX_TIMEOUT_COUNT		30	// waiting for TX_FIFO to drain
+#define		TX_TIMEOUT_COUNT		30	/* waiting for TX_FIFO to drain */
 
 
-//*************************************************************************
- // GLOBAL DATA
-
-//*************************************************************************
+/*************************************************************************
+ * GLOBAL DATA
+ *************************************************************************/
 static const char date_code[] = BUILD_NUMBER;
 
-static char * txbp; 				// TX buffer pointer (only 1 buffer)
-static volatile char * rxbp[PKTBUFSRX];   // Receiver buffer queue (IP layers)
-static struct rxQue rxAvlQue[PKTBUFSRX]; // Receive buffer available queue
-static int rxNdx = 0;				// Current receive buffer index
-static int rxNdxIn = 0; 			// Used for input
-static int rxNdxOut = 0;			// Used for output to protocol layer
+static char * txbp; 				/* TX buffer pointer (only 1 buffer) */
+static volatile char * rxbp[PKTBUFSRX];   /* Receiver buffer queue (IP layers) */
+static struct rxQue rxAvlQue[PKTBUFSRX]; /* Receive buffer available queue */
+static int rxNdx;				/* Current receive buffer index */
+static int rxNdxIn; 			/* Used for input */
+static int rxNdxOut;			/* Used for output to protocol layer */
 static ushort lastTxTag = 0x0;
 static unsigned char macAddr[ENET_ADDR_LENGTH];
 
-// Temp variables
-//#ifdef		DEBUG
+/* Temp variables */
 ulong MaxRxFifoSz;
 ulong TotalInts = 0;
 ulong TotalRXE = 0;
@@ -111,44 +105,40 @@ ulong TotalRxDrop = 0;
 ulong TotalPackets = 0;
 ulong TotalWords = 0;
 ulong TBLower1, TBLower2;
-//#endif
-// Temp variables
 
-
-//*************************************************************************
- // EXTERNS
-
-//*************************************************************************
+/*************************************************************************
+ * EXTERNS
+ *************************************************************************/
 #ifdef		DEBUG
 extern int use_smsc9118;
 #endif
 
-static void lan9118_udelay(unsigned long delta)	// Arg is really microseconds
+static void lan9118_udelay(unsigned long delta)	/* Arg is really microseconds */
 {
-	const unsigned long	start = *FREE_RUN,	// Start timing
+	const unsigned long	start = *FREE_RUN,	/* Start timing */
 						usec = delta * (25000000/1000000);
 
-	// usec adjusted for 25MHz on-chip clock, 1 microsecond (1/1000000) scaling
+	/* usec adjusted for 25MHz on-chip clock, 1 microsecond (1/1000000) scaling */
 	do {
 		delta = *FREE_RUN;
 		if (delta >= start)
 			delta = (delta - start);
 		else
-			delta = (delta - start) + 1;	// use 0x100000000, not 0xffffffff
+			delta = (delta - start) + 1;	/* use 0x100000000, not 0xffffffff */
 	} while (delta < usec);
 }
 
 static int MacBusy(int ReqTO)
 {
 	  int timeout = ReqTO;
-	  int RetVal = FALSE;	  // No timeout
+	  int RetVal = FALSE;	  /* No timeout */
 
 	  while (timeout--) {
 			if (!(*MAC_CSR_CMD & MAC_CSR_CMD_CSR_BUSY)) {
 				  goto done;
 			}
 	  }
-	  RetVal = TRUE;		  // Timeout
+	  RetVal = TRUE;		  /* Timeout */
 done:
 	  return (RetVal);
 }
@@ -181,7 +171,7 @@ static int
 PhyBusy(int ReqTO)
 {
 	  int timeout = ReqTO;
-	  int RetVal = FALSE;	  // No timeout
+	  int RetVal = FALSE;	  /* No timeout */
 
 	  while (timeout--) {
 			if (!(GetMacReg(MAC_MIIACC) & MAC_MIIACC_MII_BUSY)) {
@@ -189,7 +179,7 @@ PhyBusy(int ReqTO)
 			}
 	  }
 
-	  RetVal = TRUE;		  // Timeout
+	  RetVal = TRUE;		  /* Timeout */
 done:
 	  return (RetVal);
 }
@@ -269,7 +259,7 @@ done:
 	  return (RetVal);
 }
 
-// Display directly accessed, Control/Status Registers
+/* Display directly accessed, Control/Status Registers */
 static int
 DumpCsrRegs(void)
 {
@@ -299,7 +289,7 @@ DumpCsrRegs(void)
 	  return (0);
 }
 
-// Display Media Access Controller Registers
+/* Display Media Access Controller Registers */
 static int
 DumpMacRegs(void)
 {
@@ -317,8 +307,8 @@ DumpMacRegs(void)
 	  printf("MAC_WUCSR\t0x%0.8x\n", GetMacReg(MAC_WUCSR));
 	  return (0);
 }
- 
-// Display PHYsical media interface registers
+
+/* Display PHYsical media interface registers */
 static int
 DumpPhyRegs(void)
 {
@@ -356,32 +346,31 @@ lan9118_open(bd_t *bis)
 	  if (bis->bi_bootflags & 0x40000000) {
 			use_smsc9118 = 1;
 	  }
-#endif		//DEBUG
+#endif
 
-	  // Because we just came out of h/w reset we can't be sure that
-	  // the chip has completed reset and may have to implement the
-	  // workaround for Errata 5, stepping A0.	Therefore we need to
-	  // check the ID_REV in little endian, the reset default.
+	  /* Because we just came out of h/w reset we can't be sure that
+	   * the chip has completed reset and may have to implement the
+	   * workaround for Errata 5, stepping A0.	Therefore we need to
+	   * check the ID_REV in little endian, the reset default.
+	   */
 	  if (((*ID_REV & ID_REV_ID_MASK) == ID_REV_CHIP_118) ||
-	  	  ((*ID_REV & ID_REV_ID_MASK) == ID_REV_CHIP_218))
+	      ((*ID_REV & ID_REV_ID_MASK) == ID_REV_CHIP_218))
 	  {
 			printf("LAN9x18 (0x%08x) detected.\n", *ID_REV);
-	  }
-	  else
-	  {
+	  } else {
 			printf("Failed to detect LAN9118. ID_REV = 0x%08x\n", *ID_REV);
 		    RetVal = FALSE;
 		    goto done;
 	  }
 
-	  // Does SoftReset to 118
+	  /* Does SoftReset to 118 */
 	  *HW_CFG = HW_CFG_SRST;
 	  DELAY(10);
 
-	  // Is the internal PHY running?
+	  /* Is the internal PHY running? */
 	  if ((*PWR_MGMT & PWR_MGMT_PM_MODE_MSK) != 0) {
-			// Apparently not...
-			*BYTE_TEST = 0x0; // Wake it up
+			/* Apparently not so wake it up */
+			*BYTE_TEST = 0x0;
 			DELAY(1);
 			timeout = PHY_TIMEOUT;
 			while (timeout-- && ((*PWR_MGMT & PWR_MGMT_PME_READY) == 0)) {
@@ -395,16 +384,16 @@ lan9118_open(bd_t *bis)
 			}
 	  }
 
-	  // Setup TX and RX resources.
+	  /* Setup TX and RX resources. */
 
-	  // There is one TX buffer.
-	  if ((txbp = (char *)malloc(ENET_MAX_MTU_ALIGNED)) == NULL) {
+	  /* There is one TX buffer. */
+	  txbp = malloc(ENET_MAX_MTU_ALIGNED);
+	  if (txbp == NULL) {
 			LAN9118_WARN("lan9118_open: can't get TX buffer\n");
 			goto cleanup;
 	  }
 
-	  // The receive buffers are allocated and aligned by upper layer
-	  // software.
+	  /* The receive buffers are allocated and aligned by upper layer software. */
 	  for (i = 0; i < PKTBUFSRX; i++) {
 			rxbp[i] = NetRxPackets[i];
 			rxAvlQue[i].index = -1;
@@ -415,28 +404,29 @@ lan9118_open(bd_t *bis)
 	  rxNdxOut = 0;
 	  lastTxTag = 0x0;
 
-	  // Set TX Fifo Size
-	  *HW_CFG = 0x00040000;   // 4K for TX
+	  /* Set TX Fifo Size: 4K */
+	  *HW_CFG = 0x00040000;
 
-	  // This value is dependent on TX Fifo Size since there's a limited
-	  // amount of Fifo space.
-	  MaxRxFifoSz = 13440;			// Decimal
+	  /* This value is dependent on TX Fifo Size since there's a limited
+	   * amount of Fifo space.
+	   */
+	  MaxRxFifoSz = 13440;
 
-	  // Set automatic flow control.
+	  /* Set automatic flow control. */
 	  *AFC_CFG = 0x008c46af;
 
-	  // Flash LEDs.
+	  /* Flash LEDs. */
 	  *GPIO_CFG = 0x70700000;
 
-	  // Disable interrupts until the rest of initialization is complete.
-	  *INT_EN = 0x0;				// Clear interrupt enables
-	  *INT_STS = 0xffffffff;		// Clear pending interrupts
-	  *IRQ_CFG = 0x00000001;		// IRQ disable
+	  /* Disable interrupts until the rest of initialization is complete. */
+	  *INT_EN = 0x0;				/* Clear interrupt enables */
+	  *INT_STS = 0xffffffff;		/* Clear pending interrupts */
+	  *IRQ_CFG = 0x00000001;		/* IRQ disable */
 
-	  // Enable flow control and pause frame time
+	  /* Enable flow control and pause frame time */
 	  SetMacReg(MAC_FLOW, 0xffff0002);
 
-	  // Set MAC address, if octet 0 is non-null assume it's all good.
+	  /* Set MAC address, if octet 0 is non-null assume it's all good. */
 	  {
 			unsigned mac_addrh;
 			unsigned mac_addrl;
@@ -451,27 +441,27 @@ lan9118_open(bd_t *bis)
 			}
 	  }
 
-	  // Dump old status and data
+	  /* Dump old status and data */
 	  *TX_CFG = (TX_CFG_TXS_DUMP | TX_CFG_TXD_DUMP);
 	  *RX_CFG = (RX_CFG_FORCE_DISCARD);
 
-	  // Initialize Tx parameters
+	  /* Initialize Tx parameters */
 	  *HW_CFG = ((*HW_CFG & HW_CFG_TX_FIF_SZ_MSK) | HW_CFG_SF);
-	  *FIFO_INT = FIFO_INT_TDAL_MSK;	  // Max out value
+	  *FIFO_INT = FIFO_INT_TDAL_MSK;	  /* Max out value */
 	  *INT_EN |= INT_EN_TDFA_INT_EN;
 	  {
-			// Disable MAC heartbeat SQE and enable MAC transmitter
+			/* Disable MAC heartbeat SQE and enable MAC transmitter */
 			ulong macCR = GetMacReg(MAC_CR);
 			macCR |= (MAC_CR_TXEN | MAC_CR_HBDIS);
-			macCR &= ~MAC_CR_PRMS;	// Turn off promiscuous mode
-			macCR |= MAC_CR_BCAST;	// Don't accept broadcast frames
+			macCR &= ~MAC_CR_PRMS;	/* Turn off promiscuous mode */
+			macCR |= MAC_CR_BCAST;	/* Don't accept broadcast frames */
 			SetMacReg(MAC_CR, macCR);
 	  }
 
-	  // Initialize Rx parameters
-	  *RX_CFG = 0x00000000;			// 4byte end-alignment
+	  /* Initialize Rx parameters */
+	  *RX_CFG = 0x00000000;			/* 4byte end-alignment */
 	  {
-			// Enable receiver.
+			/* Enable receiver. */
 			ulong macCR = GetMacReg(MAC_CR);
 			SetMacReg(MAC_CR, (macCR | MAC_CR_RXEN));
 	  }
@@ -479,28 +469,26 @@ lan9118_open(bd_t *bis)
 	  *INT_EN |= (INT_EN_RSFL_INT_EN | INT_EN_RXE_INT_EN);
 	  *INT_EN |= INT_EN_RXDFH_INT_EN;
 
-	  // Initialize PHY parameters
-	  if (((GetPhyReg(PHY_ID1) == PHY_ID1_LAN9118) && 
+	  /* Initialize PHY parameters */
+	  if (((GetPhyReg(PHY_ID1) == PHY_ID1_LAN9118) &&
 		   (GetPhyReg(PHY_ID2) == PHY_ID2_LAN9118)) ||
-	      ((GetPhyReg(PHY_ID1) == PHY_ID1_LAN9218) && 
+	      ((GetPhyReg(PHY_ID1) == PHY_ID1_LAN9218) &&
 		   (GetPhyReg(PHY_ID2) == PHY_ID2_LAN9218)))
 	  {
-		  // Reset the PHY
+		  /* Reset the PHY */
 		  SetPhyReg(PHY_BCR, PHY_BCR_RST);
 		  timeout = PHY_TIMEOUT;
-		  lan9118_udelay(50*1000);	// > 50ms
-		  while(timeout-- && (GetPhyReg(PHY_BCR) & PHY_BCR_RST))
-		  {
+		  lan9118_udelay(50*1000);	/* > 50ms */
+		  while (timeout-- && (GetPhyReg(PHY_BCR) & PHY_BCR_RST)) {
 				lan9118_udelay(10);
 		  }
-		  if (timeout == 0)
-		  {
+		  if (timeout == 0) {
 				LAN9118_WARN("PHY reset incomplete\n");
 				RetVal = FALSE;
 				goto done;
 		  }
 
-		  // Setup and start auto negotiation
+		  /* Setup and start auto negotiation */
 		  {
 				ushort anar;
 				ushort bcr;
@@ -526,7 +514,7 @@ lan9118_open(bd_t *bis)
 				DELAY(2);
 
 				timeout = PHY_AN_TIMEOUT;
-				while((timeout--) && ((GetPhyReg(PHY_BSR) & PHY_BSR_ANC) == 0)) {
+				while ((timeout--) && ((GetPhyReg(PHY_BSR) & PHY_BSR_ANC) == 0)) {
 					  lan9118_udelay(500000);
 				}
 				if ((GetPhyReg(PHY_BSR) & PHY_BSR_ANC) == 0) {
@@ -542,34 +530,32 @@ lan9118_open(bd_t *bis)
 				}
 
 				switch ((GetPhyReg(PHY_PHYSCSR) & PHY_PHYSCSR_SPEED_MSK)>>2) {
-					  case 0x01:
-							spddplx = "10BaseT, half duplex";
-							break;
-					  case 0x02:
-							spddplx = "100BaseTX, half duplex";
-							break;
-					  case 0x05:
-							spddplx = "10BaseT, full duplex";
-							break;
-					  case 0x06:
-							spddplx = "100BaseTX, full duplex";
-							break;
-					  default:
-							spddplx = "Unknown";
-							break;
+				case 0x01:
+					spddplx = "10BaseT, half duplex";
+					break;
+				case 0x02:
+					spddplx = "100BaseTX, half duplex";
+					break;
+				case 0x05:
+					spddplx = "10BaseT, full duplex";
+					break;
+				case 0x06:
+					spddplx = "100BaseTX, full duplex";
+					break;
+				default:
+					spddplx = "Unknown";
+					break;
 				}
 				printf("Auto negotiation complete, %s\n", spddplx);
 		  }
 
-		  // If PHYs auto negotiated for full duplex, enable full duplex in MAC.
+		  /* If PHYs auto negotiated for full duplex, enable full duplex in MAC. */
 		  if ((GetPhyReg(PHY_ANAR) & GetPhyReg(PHY_ANLPAR)) & 0x0140) {
 				SetMacReg(MAC_CR, (GetMacReg(MAC_CR) | 0x00100000));
 		  }
-		  // correct PHY_ID is detected
+		  /* correct PHY_ID is detected */
 		  goto done;
-	  }
-	  else
-	  {
+	  } else {
 			printf("Unknown PHY ID : 0x%x, 0x%x\n", GetPhyReg(PHY_ID1), GetPhyReg(PHY_ID2));
 	  }
 
@@ -587,14 +573,14 @@ done:
 static void
 lan9118_close(void)
 {
-	  // Release the TX buffer.
+	  /* Release the TX buffer. */
 	  if (txbp != NULL) {
 			free(txbp);
 	  }
 }
 
 static int
-lan9118_read()
+lan9118_read(void)
 {
 	  int curBufNdx;
 	  int loopCount = 0;
@@ -605,25 +591,25 @@ lan9118_read()
 	  int timeout;
 	  int handled = 0;
 
-	  while((*RX_FIFO_INF & 0x00ff0000) != 0) {
+	  while ((*RX_FIFO_INF & 0x00ff0000) != 0) {
 			if (loopCount >= NUM_RX_BUFF) {
-//printf("read: loopCount exceeded\n");
-				  break;	  // Packet buffers full
+				  /*printf("read: loopCount exceeded\n");*/
+				  break;	  /* Packet buffers full */
 			}
 
 			curBufNdx = rxNdx;
 			loopCount++;
 			if (++rxNdx >= NUM_RX_BUFF) {
-				  rxNdx = 0;  // Wrap buffer slot #
+				  rxNdx = 0;  /* Wrap buffer slot # */
 			}
 
 			rxStatus = *RX_STATUS_FIFO_PORT;
 			len = count = rxStatus >> 16;
 
 			if (count >= 4*sizeof(ulong)) {
-				  ffwdOk = TRUE;	// Use h/w to toss packet
+				  ffwdOk = TRUE;	/* Use h/w to toss packet */
 			} else {
-				  ffwdOk = FALSE;	// Have to empty manually on error
+				  ffwdOk = FALSE;	/* Have to empty manually on error */
 			}
 
 			if (count != 0) {
@@ -638,7 +624,7 @@ lan9118_read()
 
 			if (count == 0) {
 				  if (ffwdOk == TRUE) {
-						// Drain it the fast way
+						/* Drain it the fast way */
 						*RX_DP_CTL = RX_DP_FFWD;
 						timeout = FFWD_TIMEOUT;
 						while (timeout-- && (*RX_DP_CTL & RX_DP_FFWD)) {
@@ -650,7 +636,7 @@ lan9118_read()
 							  break;
 						}
 				  } else {
-						// Drain it manually
+						/* Drain it manually */
 						while (len--) {
 							volatile ulong tmp = *RX_FIFO_PORT;
 						}
@@ -670,9 +656,9 @@ lan9118_read()
 						rxNdxIn = 0;
 				  }
 
-				  // Copy this packet to a NetRxPacket buffer
+				  /* Copy this packet to a NetRxPacket buffer */
 				  handled = 1;
-//printf("read: %d empty reads prior to this one\n", EmptyReads);
+				  /*printf("read: %d empty reads prior to this one\n", EmptyReads);*/
 				  EmptyReads = 0;
 				  rxbpl = (ulong *)rxbp[curBufNdx];
 				  for (ndx = (count+3)/sizeof(ulong); ndx > 0; ndx--) {
@@ -698,21 +684,21 @@ lan9118_read()
 			for (;;) {
 				  curBufNdx = rxAvlQue[rxNdxOut].index;
 				  if (curBufNdx == -1) {
-						len = -1;	// Nothing else received
-//printf("read: nothing else received: rxNdxOut: %d curBufNdx: %d\n", rxNdxOut, curBufNdx);
+						len = -1;	/* Nothing else received */
+						/*printf("read: nothing else received: rxNdxOut: %d curBufNdx: %d\n", rxNdxOut, curBufNdx);*/
 						break;
 				  }
 				  len = rxAvlQue[rxNdxOut].len;
-//printf("read: sending a packet up: rxNdxOut: %d curBufNdx: %d\n", rxNdxOut, curBufNdx);
+				  /*printf("read: sending a packet up: rxNdxOut: %d curBufNdx: %d\n", rxNdxOut, curBufNdx);*/
 				  NetReceive(NetRxPackets[curBufNdx], len - 4);
-				  rxAvlQue[rxNdxOut].index = -1;	  // Free buffer
+				  rxAvlQue[rxNdxOut].index = -1;	  /* Free buffer */
 				  if (++rxNdxOut >= NUM_RX_BUFF) {
-						rxNdxOut = 0;	  // Handle wrap
+						rxNdxOut = 0;	  /* Handle wrap */
 				  }
 			}
 	  } else {
 			EmptyReads++;
-			return (-1);	  // Nothing was received
+			return (-1);	  /* Nothing was received */
 	  }
 
 	  return (len);
@@ -741,10 +727,12 @@ static int sendToNet(uchar * txbp, int len)
 			}
 			printf("\n");
 
-//			printf("sendToNet: peek TX status: 0x%0.8x\n",
-//				  *TX_STATUS_FIFO_PEEK);
+			/*
+			printf("sendToNet: peek TX status: 0x%0.8x\n",
+				  *TX_STATUS_FIFO_PEEK);
+			*/
 	  }
-#endif		// DEBUG
+#endif
 
 	  tx_cmd_a = (((ulong)txbp & 0x3) << 16) | 0x00003000 | len;
 	  tx_cmd_b = (lastTxTag << 16) | len;
@@ -752,16 +740,16 @@ static int sendToNet(uchar * txbp, int len)
 #if   DEBUG
 	  printf("sendToNet: tx_cmd_a: 0x%0.8x tx_cmd_b: 0x%0.8x\n",
 			tx_cmd_a, tx_cmd_b);
-#endif		// DEBUG
+#endif
 
 	  *TX_FIFO_PORT = tx_cmd_a;
 	  *TX_FIFO_PORT = tx_cmd_b;
 
 	  for (i = (len+3)/sizeof(ulong); i > 0; i--) {
-			*TX_FIFO_PORT = *txbpl++; 
+			*TX_FIFO_PORT = *txbpl++;
 	  }
 
-	  *TX_CFG = TX_CFG_TX_ON;		// Enable transmitter
+	  *TX_CFG = TX_CFG_TX_ON;		/* Enable transmitter */
 
 	  return (TRUE);
 }
@@ -776,19 +764,17 @@ static int lan9118_write(volatile void *ptr, int len)
 			len = ENET_MAX_MTU;
 	  }
 
-	  // Copy the packet.
+	  /* Copy the packet. */
 	  memcpy((void *)txbp, (void *)ptr, len);
 
-	  // Drain the TX status fifo just in case there are old (good) statuses.
-	  for (timeout=0; timeout<TX_TIMEOUT_COUNT; timeout++)
-	  {
+	  /* Drain the TX status fifo just in case there are old (good) statuses. */
+	  for (timeout = 0; timeout < TX_TIMEOUT_COUNT; timeout++) {
 		  if ((*TX_FIFO_INF & TX_FIFO_TXSUSED_MSK) == 0) {
 				break;
 		  }
 		  printf("lan9118_write: discarded old TX status\n");
 	  }
-	  if (timeout == TX_TIMEOUT_COUNT)	// timed out?  Yes--
-	  {
+	  if (timeout == TX_TIMEOUT_COUNT) {	/* timed out?  Yes-- */
 		DumpCsrRegs();
 		DumpMacRegs();
 		DumpPhyRegs();
@@ -798,12 +784,12 @@ static int lan9118_write(volatile void *ptr, int len)
 			return (-1);
 	  }
 
-//printf("write: sent packet out: len: %d\n", len);
+	/*printf("write: sent packet out: len: %d\n", len);*/
 
 	  startTime = get_timer(0);
 	  while (1) {
 			if ((*TX_FIFO_INF & TX_FIFO_TXSUSED_MSK) == 0) {
-				  // No status yet
+				  /* No status yet */
 				  if ((get_timer(0) - startTime) > TX_TIMEOUT) {
 						return (-1);
 				  }
@@ -816,8 +802,8 @@ static int lan9118_write(volatile void *ptr, int len)
 						LAN9118_WARN(statusStr);
 						return (-1);
 				  } else {
-						*TX_CFG |= TX_CFG_STOP_TX; // Stop transmitter
-						return (len);				// successful send
+						*TX_CFG |= TX_CFG_STOP_TX; /* Stop transmitter */
+						return (len);				/* successful send */
 				  }
 			}
 	  }
@@ -847,4 +833,4 @@ int	eth_send(volatile void *packet, int length)
 	return lan9118_write(packet, length);
 }
 
-#endif		// #ifdef CONFIG_DRIVER_SMSC9118
+#endif		/* #ifdef CONFIG_DRIVER_SMSC9118 */
