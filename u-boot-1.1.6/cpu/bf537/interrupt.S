@@ -42,7 +42,7 @@
 #define ASSEMBLY
 #include <config.h>
 #include <asm/blackfin.h>
-#include <asm/hw_irq.h>
+#include <asm/arch/irq.h>
 #include <asm/entry.h>
 #include <asm/blackfin_defs.h>
 
