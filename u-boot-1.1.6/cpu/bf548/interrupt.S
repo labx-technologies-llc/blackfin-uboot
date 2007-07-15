@@ -39,7 +39,6 @@
  * MA 02110-1301 USA
  */
 
-#define ASSEMBLY
 #include <config.h>
 #include <asm/blackfin.h>
 #include <asm/arch/irq.h>

@@ -41,7 +41,6 @@ SECTIONS
 		 */
 
 		cpu/bf533/start.o		(.text)
-		cpu/bf533/start1.o		(.text)
 		cpu/bf533/traps.o		(.text)
 		cpu/bf533/interrupt.o	(.text)
 		cpu/bf533/serial.o		(.text)

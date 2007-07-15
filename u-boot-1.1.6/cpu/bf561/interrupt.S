@@ -8,11 +8,11 @@
  *
  * This file is based on interrupt.S
  *
- * Copyright (C) 2003	Metrowerks, Inc. <mwaddel@metrowerks.com>
- * Copyright (C) 2002	Arcturus Networks Ltd. Ted Ma <mated@sympatico.ca>
- * Copyright (C) 1998	D. Jeff Dionne <jeff@ryeham.ee.ryerson.ca>,
- *			Kenneth Albanowski <kjahds@kjahds.com>,
- *			The Silver Hammer Group, Ltd.
+ * Copyright (C) 2003  Metrowerks, Inc. <mwaddel@metrowerks.com>
+ * Copyright (C) 2002  Arcturus Networks Ltd. Ted Ma <mated@sympatico.ca>
+ * Copyright (C) 1998  D. Jeff Dionne <jeff@ryeham.ee.ryerson.ca>,
+ *                     Kenneth Albanowski <kjahds@kjahds.com>,
+ *                     The Silver Hammer Group, Ltd.
  *
  * (c) 1995, Dionne & Associates
  * (c) 1995, DKG Display Tech.
@@ -39,7 +39,6 @@
  * MA 02110-1301 USA
  */
 
-#define ASSEMBLY
 #include <config.h>
 #include <asm/blackfin.h>
 #include <asm/arch/irq.h>

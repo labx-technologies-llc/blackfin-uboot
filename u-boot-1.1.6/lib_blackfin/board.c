@@ -334,7 +334,7 @@ void board_init_f(ulong bootflag)
 	memset((void *)bd, 0, sizeof(bd_t));
 
 	/* Initialize */
-	init_IRQ();
+	irq_init();
 	env_init();		/* initialize environment */
 	init_baudrate();	/* initialze baudrate settings */
 	serial_init();		/* serial communications setup */

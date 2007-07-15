@@ -41,23 +41,13 @@
 #include <config.h>
 #include <asm/blackfin.h>
 
-.global _stext;
 .global __bss_start;
-.global start;
 .global _start;
-.global _rambase;
-.global _ramstart;
-.global _ramend;
-.global edata;
-.global _initialize;
 .global _exit;
-.global flashdataend;
 .global init_sdram;
 
 .text
 _start:
-start:
-_stext:
 
 	R0 = 0x32;
 	SYSCFG = R0;
@@ -151,11 +141,11 @@ _stext:
 	/* relocate into to RAM */
 sdram_initialized:
 	call get_pc;
-offset:
-	r2.l = offset;
-	r2.h = offset;
-	r3.l = start;
-	r3.h = start;
+.Loffset:
+	r2.l = .Loffset;
+	r2.h = .Loffset;
+	r3.l = _start;
+	r3.h = _start;
 	r1 = r2 - r3;
 
 	r0 = r0 - r1;
@@ -278,8 +268,8 @@ _clear_bss_end:
 	[p1++] = r0;
 _clear_bss_skip:
 
-	p0.l = _start1;
-	p0.h = _start1;
+	p0.l = _board_init_f;
+	p0.h = _board_init_f;
 	jump (p0);
 
 reset_start:

@@ -44,12 +44,6 @@
 #include <asm/cplb.h>
 #include <asm/io.h>
 
-void init_IRQ(void)
-{
-	blackfin_init_IRQ();
-	return;
-}
-
 void process_int(unsigned long vec, struct pt_regs *fp)
 {
 	printf("interrupt\n");

@@ -1,4 +1,8 @@
-#define ASSEMBLY
+/* cache.S - low level cache handling routines
+ * Copyright (C) 2003-2007 Analog Devices Inc.
+ * Licensed under the GPL-2 or later.
+ */
+
 #include <asm/linkage.h>
 #include <config.h>
 #include <asm/blackfin.h>
@@ -18,6 +22,7 @@ ENTRY(_blackfin_icache_flush_range)
 	IFLUSH[P0];
 	SSYNC;
 	RTS;
+ENDPROC(_blackfin_icache_flush_range)
 
 ENTRY(_blackfin_dcache_flush_range)
 	R2 = -32;
@@ -32,6 +37,7 @@ ENTRY(_blackfin_dcache_flush_range)
 	FLUSH[P0];
 	SSYNC;
 	RTS;
+ENDPROC(_blackfin_dcache_flush_range)
 
 ENTRY(_icache_invalidate)
 ENTRY(_invalidate_entire_icache)
@@ -67,6 +73,8 @@ ENTRY(_invalidate_entire_icache)
 
 	(R7:5) =[SP++];
 	RTS;
+ENDPROC(_invalidate_entire_icache)
+ENDPROC(_icache_invalidate)
 
 /*
  * Invalidate the Entire Data cache by
@@ -106,6 +114,8 @@ ENTRY(_dcache_invalidate)
 
 	(R7:6) =[SP++];
 	RTS;
+ENDPROC(_dcache_invalidate)
+ENDPROC(_invalidate_entire_dcache)
 
 ENTRY(_blackfin_dcache_invalidate_range)
 	R2 = -32;
@@ -126,3 +136,4 @@ ENTRY(_blackfin_dcache_invalidate_range)
 	FLUSHINV[P0];
 	SSYNC;
 	RTS;
+ENDPROC(_blackfin_dcache_invalidate_range)

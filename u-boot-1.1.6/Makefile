@@ -179,22 +179,6 @@ endif
 ifeq ($(CPU),mpc86xx)
 OBJS += cpu/$(CPU)/resetvec.o
 endif
-ifeq ($(CPU),bf533)
-OBJS += cpu/$(CPU)/start1.o	cpu/$(CPU)/interrupt.o	cpu/$(CPU)/cache.o
-OBJS += cpu/$(CPU)/flush.o 	cpu/$(CPU)/init_sdram.o
-endif
-ifeq ($(CPU),bf537)
-OBJS += cpu/$(CPU)/start1.o	cpu/$(CPU)/interrupt.o	cpu/$(CPU)/cache.o
-OBJS += cpu/$(CPU)/flush.o      cpu/$(CPU)/init_sdram.o
-endif
-ifeq ($(CPU),bf561)
-OBJS += cpu/$(CPU)/start1.o     cpu/$(CPU)/interrupt.o  cpu/$(CPU)/cache.o
-OBJS += cpu/$(CPU)/flush.o 	cpu/$(CPU)/init_sdram.o
-endif
-ifeq ($(CPU),bf548)
-OBJS += cpu/$(CPU)/start1.o	cpu/$(CPU)/interrupt.o	cpu/$(CPU)/cache.o
-OBJS += cpu/$(CPU)/flush.o      cpu/$(CPU)/init_sdram.o
-endif
 
 OBJS := $(addprefix $(obj),$(OBJS))
 

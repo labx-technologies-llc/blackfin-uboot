@@ -58,7 +58,7 @@ void blackfin_irq_panic(int reason, struct pt_regs *regs)
 	printf("Please reset the board \n");
 }
 
-void blackfin_init_IRQ(void)
+void irq_init(void)
 {
 	*(unsigned volatile long *) (SIC_IMASK0) = 0;
 	*(unsigned volatile long *) (SIC_IMASK1) = 0;

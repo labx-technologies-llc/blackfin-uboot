@@ -39,7 +39,6 @@
  * MA 02110-1301 USA
  */
 
-#define ASSEMBLY
 #include <config.h>
 #include <asm/blackfin.h>
 #include <asm/arch/irq.h>
@@ -78,7 +77,7 @@ _evt_nmi_exit:
 .global _trap
 _trap:
 	SAVE_ALL_SYS
-	r0 = sp;        /* stack frame pt_regs pointer argument ==> r0 */
+	r0 = sp;	/* stack frame pt_regs pointer argument ==> r0 */
 	sp += -12;
 	call _trap_c
 	sp += 12;

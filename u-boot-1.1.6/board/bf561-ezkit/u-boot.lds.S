@@ -41,7 +41,6 @@ SECTIONS
 		 */
 
 		cpu/bf561/start.o		(.text)
-		cpu/bf561/start1.o		(.text)
 		cpu/bf561/traps.o		(.text)
 		cpu/bf561/interrupt.o	(.text)
 		cpu/bf561/serial.o		(.text)

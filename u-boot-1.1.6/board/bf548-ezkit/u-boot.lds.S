@@ -48,7 +48,6 @@ SECTIONS
 		 */
 
 		cpu/bf548/start.o		(.text)
-		cpu/bf548/start1.o		(.text)
 		cpu/bf548/traps.o		(.text)
 		cpu/bf548/interrupt.o	(.text)
 		cpu/bf548/serial.o		(.text)

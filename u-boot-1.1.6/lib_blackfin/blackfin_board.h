@@ -31,7 +31,7 @@
 #include <version.h>
 
 extern void timer_init(void);
-extern void init_IRQ(void);
+extern void irq_init(void);
 extern void rtc_init(void);
 
 extern ulong uboot_end_data;
