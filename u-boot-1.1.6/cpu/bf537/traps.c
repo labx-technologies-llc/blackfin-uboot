@@ -39,7 +39,6 @@
 #include <asm/irq.h>
 #include <asm/system.h>
 #include <asm/traps.h>
-#include <asm/machdep.h>
 #include "cpu.h"
 #include <asm/arch/anomaly.h>
 #include <asm/cplb.h>

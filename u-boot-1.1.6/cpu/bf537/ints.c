@@ -43,7 +43,6 @@
 #include <asm/traps.h>
 #include <asm/io.h>
 #include <asm/errno.h>
-#include <asm/machdep.h>
 #include <asm/setup.h>
 #include <asm/blackfin.h>
 #include "cpu.h"

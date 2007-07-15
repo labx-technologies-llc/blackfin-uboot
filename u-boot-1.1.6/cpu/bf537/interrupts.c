@@ -35,7 +35,6 @@
  */
 
 #include <common.h>
-#include <asm/machdep.h>
 #include <asm/irq.h>
 #include <config.h>
 #include <asm/blackfin.h>
