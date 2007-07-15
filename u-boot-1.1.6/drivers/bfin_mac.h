@@ -1,3 +1,14 @@
+/*
+ * bfin_mac.h - some defines/structures for the Blackfin on-chip MAC.
+ *
+ * Copyright (c) 2005-2007 Analog Device, Inc.
+ *
+ * Licensed under the GPL-2 or later.
+ */
+
+#ifndef __BFIN_MAC_H__
+#define __BFIN_MAC_H__
+
 #define PHYADDR			0x01
 #define NO_PHY_REGS		0x20
 
@@ -60,51 +71,17 @@ typedef struct adi_ether_buffer {
 } ADI_ETHER_BUFFER;
 /* 40 bytes/struct in 44 bytes */
 
-void SetupMacAddr(u8 * MACaddr);
+static ADI_ETHER_BUFFER *SetupRxBuffer(int no);
+static ADI_ETHER_BUFFER *SetupTxBuffer(int no);
 
-void PollMdcDone(void);
-void WrPHYReg(u16 PHYAddr, u16 RegAddr, u16 Data);
-u16 RdPHYReg(u16 PHYAddr, u16 RegAddr);
-void SoftResetPHY(void);
-void DumpPHYRegs(void);
+static int bfin_EMAC_init(struct eth_device *dev, bd_t *bd);
+static void bfin_EMAC_halt(struct eth_device *dev);
+static int bfin_EMAC_send(struct eth_device *dev, volatile void *packet, int length);
+static int bfin_EMAC_recv(struct eth_device *dev);
 
-int SetupSystemRegs(int *opmode);
+static void PollMdcDone(void);
+static void WrPHYReg(u16 PHYAddr, u16 RegAddr, u16 Data);
+static u16 RdPHYReg(u16 PHYAddr, u16 RegAddr);
+static int SetupSystemRegs(int *opmode);
 
-/**
- * is_zero_ether_addr - Determine if give Ethernet address is all zeros.
- * @addr: Pointer to a six-byte array containing the Ethernet address
- *
- * Return true if the address is all zeroes.
- */
-static inline int is_zero_ether_addr(const u8 * addr)
-{
-	return !(addr[0] | addr[1] | addr[2] | addr[3] | addr[4] | addr[5]);
-}
-
-/**
- * is_multicast_ether_addr - Determine if the Ethernet address is a multicast.
- * @addr: Pointer to a six-byte array containing the Ethernet address
- *
- * Return true if the address is a multicast address.
- * By definition the broadcast address is also a multicast address.
- */
-static inline int is_multicast_ether_addr(const u8 * addr)
-{
-	return (0x01 & addr[0]);
-}
-
-/**
- * is_valid_ether_addr - Determine if the given Ethernet address is valid
- * @addr: Pointer to a six-byte array containing the Ethernet address
- *
- * Check that the Ethernet address (MAC) is not 00:00:00:00:00:00, is not
- * a multicast address, and is not FF:FF:FF:FF:FF:FF.
- *
- * Return true if the address is valid.
- */
-static inline int is_valid_ether_addr(const u8 * addr)
-{
-	/* FF:FF:FF:FF:FF:FF is a multicast address so we don't need to
-	 * explicitly check for it here. */
-	return !is_multicast_ether_addr(addr) && !is_zero_ether_addr(addr);
-}
+#endif

@@ -30,7 +30,7 @@
 #include <command.h>
 #include <asm/blackfin.h>
 #include <asm/io.h>
-#include "ether_bf537.h"
+#include <asm/net.h>
 
 #define POST_WORD_ADDR 0xFF903FFC
 
@@ -117,9 +117,8 @@ int misc_init_r(void)
 			pMACaddr[2], pMACaddr[3], pMACaddr[4], pMACaddr[5]);
 		setenv("ethaddr", nid);
 	}
-	if (getenv("ethaddr")) {
-		SetupMacAddr(SrcAddr);
-	}
+	if (getenv("ethaddr"))
+		bfin_EMAC_setup_addr(SrcAddr);
 #endif				/* CONFIG_COMMANDS & CFG_CMD_NET */
 #endif				/* BFIN_BOOT_MODE == BFIN_BOOT_BYPASS */
 
