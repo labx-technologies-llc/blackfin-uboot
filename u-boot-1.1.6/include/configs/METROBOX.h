@@ -25,13 +25,10 @@
  ***********************************************************************/
 
 /*
- * $Id$
+ * $Id: METROBOX.h,v 1.21 2005/06/03 15:05:25 tsawyer Exp $
  *
  *
- * $Log$
- * Revision 1.1  2006/12/22 18:32:22  aubrey
- * Initial revision
- *
+ * $Log: METROBOX.h,v $
  * Revision 1.21  2005/06/03 15:05:25  tsawyer
  * MB rev 2.0.3 KA rev 0.0.7.  Add CONFIG_VERSION_VARIABLE, Add fakeled to MB
  *

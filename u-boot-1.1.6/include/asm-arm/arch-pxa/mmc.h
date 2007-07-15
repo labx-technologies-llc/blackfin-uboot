@@ -4,7 +4,7 @@
  *  Author: Vladimir Shebordaev, Igor Oblakov
  *  Copyright:  MontaVista Software Inc.
  *
- *  $Id$
+ *  $Id: mmc_pxa.h,v 0.3.1.6 2002/09/25 19:25:48 ted Exp ted $
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as

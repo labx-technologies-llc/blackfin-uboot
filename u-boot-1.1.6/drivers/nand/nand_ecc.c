@@ -7,7 +7,7 @@
  * Copyright (C) 2000-2004 Steven J. Hill (sjhill@realitydiluted.com)
  *                         Toshiba America Electronics Components, Inc.
  *
- * $Id$
+ * $Id: nand_ecc.c,v 1.14 2004/06/16 15:34:37 gleixner Exp $
  *
  * This file is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the

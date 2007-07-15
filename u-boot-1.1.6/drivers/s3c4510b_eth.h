@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
  *
- * MODULE:        $Id$
+ * MODULE:        $Id:$
  * Description:   Ethernet interface
  * Runtime Env:   ARM7TDMI
  * Change History:

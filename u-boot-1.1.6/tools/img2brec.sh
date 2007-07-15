@@ -90,8 +90,7 @@ echo "\
 08111800E4   ; special read
 
 00221000C482124200   ; set normal mode
-
-"
+"
 }
 
 output_uboot()
@@ -101,8 +100,7 @@ echo "\
 * U-Boot image as bootstrap records        *
 *   will be stored in SDRAM at 0x0A000000  *
 ********************************************
-
-"
+"
 
 cat $INFILE | \
 hexdump -v -e "\"0A0%05.5_ax10\" 16/1 \"%02x\"\"\r\n\"" | \
@@ -116,8 +114,7 @@ echo "\
 * Address of arguments to flashProg        *
 * ---------------------------------------- *
 * Source      : 0x0A000000                 *
-* Destination : 0x0C000000                 *
-"
+* Destination : 0x0C000000                 *"
 
 # get the real size of the U-Boot image
 printf "* Size        : 0x%08X                 *\r\n" $FILESIZE
@@ -375,8 +372,7 @@ echo "\
 0AFE1F3410202E2E2E000000002073756363656564
 0AFE1F44102E0A0000206661696C656420210A0000
 0AFE100000
-
-"
+"
 }
 
 #########################################################

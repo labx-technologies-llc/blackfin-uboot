@@ -2,8 +2,8 @@
  *
  * Name:	skgeinit.c
  * Project:	GEnesis, PCI Gigabit Ethernet Adapter
- * Version:	$Revision$
- * Date:	$Date$
+ * Version:	$Revision: 1.85 $
+ * Date:	$Date: 2003/02/05 15:30:33 $
  * Purpose:	Contains functions to initialize the GE HW
  *
  ******************************************************************************/
@@ -25,10 +25,7 @@
  *
  * History:
  *
- *	$Log$
- *	Revision 1.1  2006/12/22 18:31:47  aubrey
- *	Initial revision
- *
+ *	$Log: skgeinit.c,v $
  *	Revision 1.85  2003/02/05 15:30:33  rschmidt
  *	Corrected setting of GIHstClkFact (Host Clock Factor) and
  *	GIPollTimerVal (Descr. Poll Timer Init Value) for YUKON.
@@ -408,7 +405,7 @@
 /* local variables ************************************************************/
 
 static const char SysKonnectFileId[] =
-	"@(#)$Id$ (C) SK ";
+	"@(#)$Id: skgeinit.c,v 1.85 2003/02/05 15:30:33 rschmidt Exp $ (C) SK ";
 
 struct s_QOffTab {
 	int	RxQOff;		/* Receive Queue Address Offset */

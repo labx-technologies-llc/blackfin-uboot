@@ -2,8 +2,8 @@
  *
  * Name:	skgepnm2.h
  * Project:	GEnesis, PCI Gigabit Ethernet Adapter
- * Version:	$Revision$
- * Date:	$Date$
+ * Version:	$Revision: 1.34 $
+ * Date:	$Date: 2002/12/16 09:05:18 $
  * Purpose:	Defines for Private Network Management Interface
  *
  ****************************************************************************/
@@ -25,10 +25,7 @@
  *
  * History:
  *
- *	$Log$
- *	Revision 1.1  2006/12/22 18:31:53  aubrey
- *	Initial revision
- *
+ *	$Log: skgepnm2.h,v $
  *	Revision 1.34  2002/12/16 09:05:18  tschilli
  *	Code for VCT handling added.
  *

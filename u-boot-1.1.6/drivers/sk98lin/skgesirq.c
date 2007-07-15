@@ -2,8 +2,8 @@
  *
  * Name:	skgesirq.c
  * Project:	GEnesis, PCI Gigabit Ethernet Adapter
- * Version:	$Revision$
- * Date:	$Date$
+ * Version:	$Revision: 1.83 $
+ * Date:	$Date: 2003/02/05 15:10:59 $
  * Purpose:	Special IRQ module
  *
  ******************************************************************************/
@@ -25,10 +25,7 @@
  *
  * History:
  *
- *	$Log$
- *	Revision 1.1  2006/12/22 18:31:49  aubrey
- *	Initial revision
- *
+ *	$Log: skgesirq.c,v $
  *	Revision 1.83  2003/02/05 15:10:59  rschmidt
  *	Fixed setting of PLinkSpeedUsed in SkHWLinkUp() when
  *	auto-negotiation is disabled.
@@ -369,7 +366,7 @@
  */
 
 static const char SysKonnectFileId[] =
-	"$Id$" ;
+	"$Id: skgesirq.c,v 1.83 2003/02/05 15:10:59 rschmidt Exp $" ;
 
 #include "h/skdrv1st.h"		/* Driver Specific Definitions */
 #include "h/skgepnmi.h"		/* PNMI Definitions */

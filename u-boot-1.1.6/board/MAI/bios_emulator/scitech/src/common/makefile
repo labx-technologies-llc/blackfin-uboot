@@ -7,7 +7,7 @@
 #               DPMSLib library files. Requires Borland C++ 4.52 to build
 #               some components.
 #
-# $Date$ $Author$
+# $Date: 2002/10/02 15:35:20 $ $Author: hfrieden $
 #
 #############################################################################
 

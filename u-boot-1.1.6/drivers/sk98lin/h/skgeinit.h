@@ -2,8 +2,8 @@
  *
  * Name:	skgeinit.h
  * Project:	GEnesis, PCI Gigabit Ethernet Adapter
- * Version:	$Revision$
- * Date:	$Date$
+ * Version:	$Revision: 1.75 $
+ * Date:	$Date: 2003/02/05 13:36:39 $
  * Purpose:	Structures and prototypes for the GE Init Module
  *
  ******************************************************************************/
@@ -25,10 +25,7 @@
  *
  * History:
  *
- *	$Log$
- *	Revision 1.1  2006/12/22 18:31:53  aubrey
- *	Initial revision
- *
+ *	$Log: skgeinit.h,v $
  *	Revision 1.75  2003/02/05 13:36:39  rschmidt
  *	Added define SK_FACT_78	for YUKON's Host Clock of 78.12 MHz
  *	Editorial changes

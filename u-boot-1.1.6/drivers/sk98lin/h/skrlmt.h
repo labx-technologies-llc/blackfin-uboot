@@ -2,8 +2,8 @@
  *
  * Name:	skrlmt.h
  * Project:	GEnesis, PCI Gigabit Ethernet Adapter
- * Version:	$Revision$
- * Date:	$Date$
+ * Version:	$Revision: 1.35 $
+ * Date:	$Date: 2003/01/31 14:12:41 $
  * Purpose:	Header file for Redundant Link ManagemenT.
  *
  ******************************************************************************/
@@ -25,10 +25,7 @@
  *
  * History:
  *
- *	$Log$
- *	Revision 1.1  2006/12/22 18:31:53  aubrey
- *	Initial revision
- *
+ *	$Log: skrlmt.h,v $
  *	Revision 1.35  2003/01/31 14:12:41  mkunz
  *	single port adapter runs now with two identical MAC addresses
  *

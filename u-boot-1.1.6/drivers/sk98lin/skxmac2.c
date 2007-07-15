@@ -2,8 +2,8 @@
  *
  * Name:	skxmac2.c
  * Project:	GEnesis, PCI Gigabit Ethernet Adapter
- * Version:	$Revision$
- * Date:	$Date$
+ * Version:	$Revision: 1.91 $
+ * Date:	$Date: 2003/02/05 15:09:34 $
  * Purpose:	Contains functions to initialize the MACs and PHYs
  *
  ******************************************************************************/
@@ -25,10 +25,7 @@
  *
  * History:
  *
- *	$Log$
- *	Revision 1.1  2006/12/22 18:31:52  aubrey
- *	Initial revision
- *
+ *	$Log: skxmac2.c,v $
  *	Revision 1.91  2003/02/05 15:09:34  rschmidt
  *	Removed setting of 'Collision Test'-bit in SkGmInitPhyMarv().
  *	Disabled auto-update for speed, duplex and flow-control when
@@ -430,7 +427,7 @@ typedef struct s_PhyHack {
 
 /* local variables ************************************************************/
 static const char SysKonnectFileId[] =
-	"@(#)$Id$ (C) SK ";
+	"@(#)$Id: skxmac2.c,v 1.91 2003/02/05 15:09:34 rschmidt Exp $ (C) SK ";
 
 BCOM_HACK BcomRegA1Hack[] = {
  { 0x18, 0x0c20 }, { 0x17, 0x0012 }, { 0x15, 0x1104 }, { 0x17, 0x0013 },

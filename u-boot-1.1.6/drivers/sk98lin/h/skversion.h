@@ -2,8 +2,8 @@
  *
  * Name:	version.h
  * Project:	GEnesis, PCI Gigabit Ethernet Adapter
- * Version:	$Revision$
- * Date:	$Date$
+ * Version:	$Revision: 1.4 $
+ * Date:	$Date: 2003/02/25 14:16:40 $
  * Purpose:	SK specific Error log support
  *
  ******************************************************************************/
@@ -24,10 +24,7 @@
 /******************************************************************************
  *
  * History:
- *	$Log$
- *	Revision 1.1  2006/12/22 18:31:54  aubrey
- *	Initial revision
- *
+ *	$Log: skversion.h,v $
  *	Revision 1.4  2003/02/25 14:16:40  mlindner
  *	Fix: Copyright statement
  *

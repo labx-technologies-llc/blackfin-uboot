@@ -2,8 +2,8 @@
  *
  * Name:	skgemib.c
  * Project:	GEnesis, PCI Gigabit Ethernet Adapter
- * Version:	$Revision$
- * Date:	$Date$
+ * Version:	$Revision: 1.7 $
+ * Date:	$Date: 2002/12/16 09:04:34 $
  * Purpose:	Private Network Management Interface Management Database
  *
  ****************************************************************************/
@@ -25,10 +25,7 @@
  *
  * History:
  *
- *	$Log$
- *	Revision 1.1  2006/12/22 18:31:47  aubrey
- *	Initial revision
- *
+ *	$Log: skgemib.c,v $
  *	Revision 1.7  2002/12/16 09:04:34  tschilli
  *	Code for VCT handling added.
  *

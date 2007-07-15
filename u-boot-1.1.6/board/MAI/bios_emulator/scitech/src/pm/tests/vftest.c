@@ -22,7 +22,7 @@
 *  ========================================================================
 *
 * Filename:     $Workfile$
-* Version:      $Revision$
+* Version:      $Revision: 1.1 $
 *
 * Language:     ANSI C
 * Environment:  any
@@ -33,7 +33,7 @@
 *                                   VF_init()
 *                                   VF_exit()
 *
-* $Date$ $Author$
+* $Date: 2002/10/02 15:35:21 $ $Author: hfrieden $
 *
 ****************************************************************************/
 

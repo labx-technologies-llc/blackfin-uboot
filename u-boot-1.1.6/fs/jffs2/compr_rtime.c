@@ -31,7 +31,7 @@
  * provisions above, a recipient may use your version of this file
  * under either the RHEPL or the GPL.
  *
- * $Id$
+ * $Id: compr_rtime.c,v 1.2 2002/01/24 22:58:42 rfeany Exp $
  *
  *
  * Very simple lz77-ish encoder.

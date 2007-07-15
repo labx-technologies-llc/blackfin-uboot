@@ -2,8 +2,8 @@
  *
  * Name:	skgehwt.c
  * Project:	GEnesis, PCI Gigabit Ethernet Adapter
- * Version:	$Revision$
- * Date:	$Date$
+ * Version:	$Revision: 1.13 $
+ * Date:	$Date: 1999/11/22 13:31:12 $
  * Purpose:	Hardware Timer.
  *
  ******************************************************************************/
@@ -26,10 +26,7 @@
  *
  * History:
  *
- *	$Log$
- *	Revision 1.1  2006/12/22 18:31:47  aubrey
- *	Initial revision
- *
+ *	$Log: skgehwt.c,v $
  *	Revision 1.13  1999/11/22 13:31:12  cgoos
  *	Changed license header to GPL.
  *
@@ -84,7 +81,7 @@
 	Event queue and dispatcher
 */
 static const char SysKonnectFileId[] =
-	"$Header$" ;
+	"$Header: /usr56/projects/ge/schedule/skgehwt.c,v 1.13 1999/11/22 13:31:12 cgoos Exp $" ;
 
 #include "h/skdrv1st.h"		/* Driver Specific Definitions */
 #include "h/skdrv2nd.h"		/* Adapter Control- and Driver specific Def. */

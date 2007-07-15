@@ -29,7 +29,7 @@
  * (c) 2002 Datentechnik AG - Project: Dino
  *
  *
- * $Id$
+ * $Id: DB64360.h,v 1.3 2003/04/26 04:58:13 brad Exp $
  *
   ************************************************************************/
 
@@ -37,10 +37,7 @@
  *
  * History:
  *
- *	$Log$
- *	Revision 1.1  2006/12/22 18:32:19  aubrey
- *	Initial revision
- *
+ *	$Log: DB64360.h,v $
  *	Revision 1.3  2003/04/26 04:58:13  brad
  *	Cosmetic changes and compiler warning cleanups
  *
