@@ -71,7 +71,7 @@ void icache_enable(void)
 	for (i = 0; i < page_descriptor_table_size; i++) {
 		if (CPLB_LOCK & icplb_table[i][1]) {
 			debug("adding %02i %02i 0x%08x 0x%08x\n", i, j,
-				 icplb_table[i][0], icplb_table[i][1]);
+			      icplb_table[i][0], icplb_table[i][1]);
 			*I0++ = icplb_table[i][0];
 			*I1++ = icplb_table[i][1];
 			j++;
@@ -81,7 +81,7 @@ void icache_enable(void)
 	for (i = 0; i < page_descriptor_table_size; i++) {
 		if (!(CPLB_LOCK & icplb_table[i][1])) {
 			debug("adding %02i %02i 0x%08x 0x%08x\n", i, j,
-				 icplb_table[i][0], icplb_table[i][1]);
+			      icplb_table[i][0], icplb_table[i][1]);
 			*I0++ = icplb_table[i][0];
 			*I1++ = icplb_table[i][1];
 			j++;
@@ -144,20 +144,20 @@ void dcache_enable(void)
 	for (i = 0; i < page_descriptor_table_size; i++) {
 		if (CPLB_LOCK & dcplb_table[i][1]) {
 			debug("adding %02i %02i 0x%08x 0x%08x\n", i, j,
-				 dcplb_table[i][0], dcplb_table[i][1]);
+			      dcplb_table[i][0], dcplb_table[i][1]);
 			*I0++ = dcplb_table[i][0];
 			*I1++ = dcplb_table[i][1];
 			j++;
 		} else {
 			debug("skip   %02i %02i 0x%08x 0x%08x\n", i, j,
-				 dcplb_table[i][0], dcplb_table[i][1]);
+			      dcplb_table[i][0], dcplb_table[i][1]);
 		}
 	}
 
 	for (i = 0; i < page_descriptor_table_size; i++) {
 		if (!(CPLB_LOCK & dcplb_table[i][1])) {
 			debug("adding %02i %02i 0x%08x 0x%08x\n", i, j,
-				 dcplb_table[i][0], dcplb_table[i][1]);
+			      dcplb_table[i][0], dcplb_table[i][1]);
 			*I0++ = dcplb_table[i][0];
 			*I1++ = dcplb_table[i][1];
 			j++;
@@ -214,6 +214,7 @@ int dcache_status(void)
 {
 	unsigned int value;
 	value = *(unsigned int *)DMEM_CONTROL;
+
 	if (value & (ENDCPLB))
 		return CACHE_ON;
 	else

@@ -1,18 +1,10 @@
-/****************************************************************
- * $ID: i2c.c	24 Oct 2006 12:00:00 +0800 $ 			*
- *								*
- * Description:							*
- *								*
- * Maintainer:  sonicz  <sonic.zhang@analog.com>		*
- *								*
- * CopyRight (c)  2006  Analog Device				*
- * All rights reserved.						*
- *								*
- * This file is free software;					*
- *	you are free to modify and/or redistribute it		*
- *	under the terms of the GNU General Public Licence (GPL).*
- *								*
- ****************************************************************/
+/*
+ * i2c.c - driver for Blackfin on-chip TWI/I2C
+ *
+ * Copyright (c) 2006-2007 Analog Devices Inc.
+ *
+ * Licensed under the GPL-2 or later.
+ */
 
 #include <common.h>
 
@@ -27,44 +19,44 @@
 			"%0 = w[%1] (z);\n\t"\
 			: "=d"(__v) : "a"(addr)); (unsigned short)__v; })
 
-#define bfin_write16(addr,val) ({\
+#define bfin_write16(addr, val) ({\
 			__asm__ __volatile__ (\
 			"w[%0] = %1;\n\t"\
 			: : "a"(addr) , "d"(val) : "memory");})
 
 /* Two-Wire Interface		(0xFFC01400 - 0xFFC014FF) */
-#define bfin_read_TWI_CLKDIV()		bfin_read16(TWI_CLKDIV)
-#define bfin_write_TWI_CLKDIV(val)	bfin_write16(TWI_CLKDIV,val)
-#define bfin_read_TWI_CONTROL()		bfin_read16(TWI_CONTROL)
-#define bfin_write_TWI_CONTROL(val)	bfin_write16(TWI_CONTROL,val)
-#define bfin_read_TWI_SLAVE_CTL()	bfin_read16(TWI_SLAVE_CTL)
-#define bfin_write_TWI_SLAVE_CTL(val)	bfin_write16(TWI_SLAVE_CTL,val)
-#define bfin_read_TWI_SLAVE_STAT()	bfin_read16(TWI_SLAVE_STAT)
-#define bfin_write_TWI_SLAVE_STAT(val)	bfin_write16(TWI_SLAVE_STAT,val)
-#define bfin_read_TWI_SLAVE_ADDR()	bfin_read16(TWI_SLAVE_ADDR)
-#define bfin_write_TWI_SLAVE_ADDR(val)	bfin_write16(TWI_SLAVE_ADDR,val)
-#define bfin_read_TWI_MASTER_CTL()	bfin_read16(TWI_MASTER_CTL)
-#define bfin_write_TWI_MASTER_CTL(val)	bfin_write16(TWI_MASTER_CTL,val)
-#define bfin_read_TWI_MASTER_STAT()	bfin_read16(TWI_MASTER_STAT)
-#define bfin_write_TWI_MASTER_STAT(val)	bfin_write16(TWI_MASTER_STAT,val)
-#define bfin_read_TWI_MASTER_ADDR()	bfin_read16(TWI_MASTER_ADDR)
-#define bfin_write_TWI_MASTER_ADDR(val)	bfin_write16(TWI_MASTER_ADDR,val)
-#define bfin_read_TWI_INT_STAT()	bfin_read16(TWI_INT_STAT)
-#define bfin_write_TWI_INT_STAT(val)	bfin_write16(TWI_INT_STAT,val)
-#define bfin_read_TWI_INT_MASK()	bfin_read16(TWI_INT_MASK)
-#define bfin_write_TWI_INT_MASK(val)	bfin_write16(TWI_INT_MASK,val)
-#define bfin_read_TWI_FIFO_CTL()	bfin_read16(TWI_FIFO_CTL)
-#define bfin_write_TWI_FIFO_CTL(val)	bfin_write16(TWI_FIFO_CTL,val)
-#define bfin_read_TWI_FIFO_STAT()	bfin_read16(TWI_FIFO_STAT)
-#define bfin_write_TWI_FIFO_STAT(val)	bfin_write16(TWI_FIFO_STAT,val)
-#define bfin_read_TWI_XMT_DATA8()	bfin_read16(TWI_XMT_DATA8)
-#define bfin_write_TWI_XMT_DATA8(val)	bfin_write16(TWI_XMT_DATA8,val)
-#define bfin_read_TWI_XMT_DATA16()	bfin_read16(TWI_XMT_DATA16)
-#define bfin_write_TWI_XMT_DATA16(val)	bfin_write16(TWI_XMT_DATA16,val)
-#define bfin_read_TWI_RCV_DATA8()	bfin_read16(TWI_RCV_DATA8)
-#define bfin_write_TWI_RCV_DATA8(val)	bfin_write16(TWI_RCV_DATA8,val)
-#define bfin_read_TWI_RCV_DATA16()	bfin_read16(TWI_RCV_DATA16)
-#define bfin_write_TWI_RCV_DATA16(val)	bfin_write16(TWI_RCV_DATA16,val)
+#define bfin_read_TWI_CLKDIV()               bfin_read16(TWI_CLKDIV)
+#define bfin_write_TWI_CLKDIV(val)           bfin_write16(TWI_CLKDIV, val)
+#define bfin_read_TWI_CONTROL()              bfin_read16(TWI_CONTROL)
+#define bfin_write_TWI_CONTROL(val)          bfin_write16(TWI_CONTROL, val)
+#define bfin_read_TWI_SLAVE_CTL()            bfin_read16(TWI_SLAVE_CTL)
+#define bfin_write_TWI_SLAVE_CTL(val)        bfin_write16(TWI_SLAVE_CTL, val)
+#define bfin_read_TWI_SLAVE_STAT()           bfin_read16(TWI_SLAVE_STAT)
+#define bfin_write_TWI_SLAVE_STAT(val)       bfin_write16(TWI_SLAVE_STAT, val)
+#define bfin_read_TWI_SLAVE_ADDR()           bfin_read16(TWI_SLAVE_ADDR)
+#define bfin_write_TWI_SLAVE_ADDR(val)       bfin_write16(TWI_SLAVE_ADDR, val)
+#define bfin_read_TWI_MASTER_CTL()           bfin_read16(TWI_MASTER_CTL)
+#define bfin_write_TWI_MASTER_CTL(val)       bfin_write16(TWI_MASTER_CTL, val)
+#define bfin_read_TWI_MASTER_STAT()          bfin_read16(TWI_MASTER_STAT)
+#define bfin_write_TWI_MASTER_STAT(val)      bfin_write16(TWI_MASTER_STAT, val)
+#define bfin_read_TWI_MASTER_ADDR()          bfin_read16(TWI_MASTER_ADDR)
+#define bfin_write_TWI_MASTER_ADDR(val)      bfin_write16(TWI_MASTER_ADDR, val)
+#define bfin_read_TWI_INT_STAT()             bfin_read16(TWI_INT_STAT)
+#define bfin_write_TWI_INT_STAT(val)         bfin_write16(TWI_INT_STAT, val)
+#define bfin_read_TWI_INT_MASK()             bfin_read16(TWI_INT_MASK)
+#define bfin_write_TWI_INT_MASK(val)         bfin_write16(TWI_INT_MASK, val)
+#define bfin_read_TWI_FIFO_CTL()             bfin_read16(TWI_FIFO_CTL)
+#define bfin_write_TWI_FIFO_CTL(val)         bfin_write16(TWI_FIFO_CTL, val)
+#define bfin_read_TWI_FIFO_STAT()            bfin_read16(TWI_FIFO_STAT)
+#define bfin_write_TWI_FIFO_STAT(val)        bfin_write16(TWI_FIFO_STAT, val)
+#define bfin_read_TWI_XMT_DATA8()            bfin_read16(TWI_XMT_DATA8)
+#define bfin_write_TWI_XMT_DATA8(val)        bfin_write16(TWI_XMT_DATA8, val)
+#define bfin_read_TWI_XMT_DATA16()           bfin_read16(TWI_XMT_DATA16)
+#define bfin_write_TWI_XMT_DATA16(val)       bfin_write16(TWI_XMT_DATA16, val)
+#define bfin_read_TWI_RCV_DATA8()            bfin_read16(TWI_RCV_DATA8)
+#define bfin_write_TWI_RCV_DATA8(val)        bfin_write16(TWI_RCV_DATA8, val)
+#define bfin_read_TWI_RCV_DATA16()           bfin_read16(TWI_RCV_DATA16)
+#define bfin_write_TWI_RCV_DATA16(val)       bfin_write16(TWI_RCV_DATA16, val)
 
 #ifdef DEBUG_I2C
 #define PRINTD(fmt,args...)	do {	\
@@ -92,14 +84,12 @@ struct i2c_msg {
 
 /**
  * i2c_reset: - reset the host controller
- *
  */
-
 static void i2c_reset(void)
 {
 	/* Disable TWI */
 	bfin_write_TWI_CONTROL(0);
-	sync();
+	__builtin_bfin_ssync();
 
 	/* Set TWI internal clock as 10MHz */
 	bfin_write_TWI_CONTROL(((get_sclk() / 1024 / 1024 + 5) / 10) & 0x7F);
@@ -116,7 +106,7 @@ static void i2c_reset(void)
 
 	/* Enable TWI */
 	bfin_write_TWI_CONTROL(bfin_read_TWI_CONTROL() | TWI_ENA);
-	sync();
+	__builtin_bfin_ssync();
 }
 
 int wait_for_completion(struct i2c_msg *msg, int timeout_count)
@@ -137,10 +127,10 @@ int wait_for_completion(struct i2c_msg *msg, int timeout_count)
 			} else if (msg->flags & I2C_M_STOP)
 				bfin_write_TWI_MASTER_CTL
 				    (bfin_read_TWI_MASTER_CTL() | STOP);
-			sync();
+			__builtin_bfin_ssync();
 			/* Clear status */
 			bfin_write_TWI_INT_STAT(XMTSERV);
-			sync();
+			__builtin_bfin_ssync();
 			i = 0;
 		}
 		if (RCVSERV & twi_int_stat) {
@@ -151,11 +141,11 @@ int wait_for_completion(struct i2c_msg *msg, int timeout_count)
 			} else if (msg->flags & I2C_M_STOP) {
 				bfin_write_TWI_MASTER_CTL
 				    (bfin_read_TWI_MASTER_CTL() | STOP);
-				sync();
+				__builtin_bfin_ssync();
 			}
 			/* Clear interrupt source */
 			bfin_write_TWI_INT_STAT(RCVSERV);
-			sync();
+			__builtin_bfin_ssync();
 			i = 0;
 		}
 		if (MERR & twi_int_stat) {
@@ -163,7 +153,7 @@ int wait_for_completion(struct i2c_msg *msg, int timeout_count)
 			bfin_write_TWI_INT_MASK(0);
 			bfin_write_TWI_MASTER_STAT(0x3e);
 			bfin_write_TWI_MASTER_CTL(0);
-			sync();
+			__builtin_bfin_ssync();
 			/*
 			 * if both err and complete int stats are set,
 			 * return proper results.
@@ -172,7 +162,7 @@ int wait_for_completion(struct i2c_msg *msg, int timeout_count)
 				bfin_write_TWI_INT_STAT(MCOMP);
 				bfin_write_TWI_INT_MASK(0);
 				bfin_write_TWI_MASTER_CTL(0);
-				sync();
+				__builtin_bfin_ssync();
 				/*
 				 * If it is a quick transfer,
 				 * only address bug no data, not an err.
@@ -192,10 +182,10 @@ int wait_for_completion(struct i2c_msg *msg, int timeout_count)
 		}
 		if (MCOMP & twi_int_stat) {
 			bfin_write_TWI_INT_STAT(MCOMP);
-			sync();
+			__builtin_bfin_ssync();
 			bfin_write_TWI_INT_MASK(0);
 			bfin_write_TWI_MASTER_CTL(0);
-			sync();
+			__builtin_bfin_ssync();
 			return 0;
 		}
 	}
@@ -229,7 +219,8 @@ int i2c_transfer(struct i2c_msg *msg)
 		goto transfer_error;
 	}
 
-	while (bfin_read_TWI_MASTER_STAT() & BUSBUSY) ;
+	while (bfin_read_TWI_MASTER_STAT() & BUSBUSY)
+		continue;
 
 	/* Set Transmit device address */
 	bfin_write_TWI_MASTER_ADDR(msg->addr);
@@ -239,9 +230,9 @@ int i2c_transfer(struct i2c_msg *msg)
 	 * Data in FIFO should be discarded before start a new operation.
 	 */
 	bfin_write_TWI_FIFO_CTL(0x3);
-	sync();
+	__builtin_bfin_ssync();
 	bfin_write_TWI_FIFO_CTL(0);
-	sync();
+	__builtin_bfin_ssync();
 
 	if (!(msg->flags & I2C_M_RD)) {
 		/* Transmit first data */
@@ -250,7 +241,7 @@ int i2c_transfer(struct i2c_msg *msg)
 			       len);
 			bfin_write_TWI_XMT_DATA8(*(msg->buf++));
 			msg->len--;
-			sync();
+			__builtin_bfin_ssync();
 		}
 	}
 
@@ -260,7 +251,7 @@ int i2c_transfer(struct i2c_msg *msg)
 	/* Interrupt mask . Enable XMT, RCV interrupt */
 	bfin_write_TWI_INT_MASK(MCOMP | MERR |
 			((msg->flags & I2C_M_RD) ? RCVSERV : XMTSERV));
-	sync();
+	__builtin_bfin_ssync();
 
 	if (len > 0 && len <= 255)
 		bfin_write_TWI_MASTER_CTL((len << 6));
@@ -275,12 +266,12 @@ int i2c_transfer(struct i2c_msg *msg)
 			((msg->flags & I2C_M_RD)
 			 ? MDIR : 0) | ((CONFIG_TWICLK_KHZ >
 					 100) ? FAST : 0));
-	sync();
+	__builtin_bfin_ssync();
 
 	ret = wait_for_completion(msg, timeout_count);
 	PRINTD("3 in i2c_transfer: ret=%d\n", ret);
 
-transfer_error:
+ transfer_error:
 	switch (ret) {
 	case 1:
 		PRINTD(("i2c_transfer: error: transfer fail\n"));
@@ -457,4 +448,4 @@ void i2c_reg_write(uchar chip, uchar reg, uchar val)
 	i2c_write(chip, reg, 0, &val, 1);
 }
 
-#endif				/* CONFIG_HARD_I2C */
+#endif /* CONFIG_HARD_I2C */

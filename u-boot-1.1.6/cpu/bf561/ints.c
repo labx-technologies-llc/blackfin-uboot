@@ -6,7 +6,7 @@
  * This file is based on ints.c
  *
  * Apr18 2003, Changed by HuTao to support interrupt cascading for Blackfin
- *	drivers
+ *             drivers
  *
  * Copyright 1996 Roman Zippel
  * Copyright 1999 D. Jeff Dionne <jeff@uclinux.org>
@@ -66,37 +66,37 @@ void irq_init(void)
 	*(unsigned volatile long *)(EVT_EMULATION_ADDR) = 0x0;
 #endif
 	*(unsigned volatile long *)(EVT_NMI_ADDR) =
-	    (unsigned volatile long)evt_nmi;
+		(unsigned volatile long)evt_nmi;
 	*(unsigned volatile long *)(EVT_EXCEPTION_ADDR) =
-	    (unsigned volatile long)trap;
+		(unsigned volatile long)trap;
 	*(unsigned volatile long *)(EVT_HARDWARE_ERROR_ADDR) =
-	    (unsigned volatile long)evt_ivhw;
+		(unsigned volatile long)evt_ivhw;
 	*(unsigned volatile long *)(EVT_RESET_ADDR) =
-	    (unsigned volatile long)evt_rst;
+		(unsigned volatile long)evt_rst;
 	*(unsigned volatile long *)(EVT_TIMER_ADDR) =
-	    (unsigned volatile long)evt_timer;
+		(unsigned volatile long)evt_timer;
 	*(unsigned volatile long *)(EVT_IVG7_ADDR) =
-	    (unsigned volatile long)evt_evt7;
+		(unsigned volatile long)evt_evt7;
 	*(unsigned volatile long *)(EVT_IVG8_ADDR) =
-	    (unsigned volatile long)evt_evt8;
+		(unsigned volatile long)evt_evt8;
 	*(unsigned volatile long *)(EVT_IVG9_ADDR) =
-	    (unsigned volatile long)evt_evt9;
+		(unsigned volatile long)evt_evt9;
 	*(unsigned volatile long *)(EVT_IVG10_ADDR) =
-	    (unsigned volatile long)evt_evt10;
+		(unsigned volatile long)evt_evt10;
 	*(unsigned volatile long *)(EVT_IVG11_ADDR) =
-	    (unsigned volatile long)evt_evt11;
+		(unsigned volatile long)evt_evt11;
 	*(unsigned volatile long *)(EVT_IVG12_ADDR) =
-	    (unsigned volatile long)evt_evt12;
+		(unsigned volatile long)evt_evt12;
 	*(unsigned volatile long *)(EVT_IVG13_ADDR) =
-	    (unsigned volatile long)evt_evt13;
+		(unsigned volatile long)evt_evt13;
 	*(unsigned volatile long *)(EVT_IVG14_ADDR) =
-	    (unsigned volatile long)evt_system_call;
+		(unsigned volatile long)evt_system_call;
 	*(unsigned volatile long *)(EVT_IVG15_ADDR) =
-	    (unsigned volatile long)evt_soft_int1;
-	*(volatile unsigned long *)ILAT = 0;
+		(unsigned volatile long)evt_soft_int1;
+	*(volatile unsigned long *) ILAT = 0;
 	asm("csync;");
 	sti();
-	*(volatile unsigned long *)IMASK = 0xffbf;
+	*(volatile unsigned long *) IMASK = 0xffbf;
 	asm("csync;");
 }
 

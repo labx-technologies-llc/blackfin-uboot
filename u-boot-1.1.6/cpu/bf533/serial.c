@@ -49,8 +49,6 @@
 #include <asm/io.h>
 #include "serial.h"
 
-DECLARE_GLOBAL_DATA_PTR;
-
 unsigned long pll_div_fact;
 
 void calc_baud(void)
@@ -99,7 +97,7 @@ void serial_setbrg(void)
 	ACCESS_PORT_IER;
 	sync();
 
-	/* Enable  ERBFI and ELSI interrupts
+	/* Enable ERBFI and ELSI interrupts
 	 * to poll SIC_ISR register*/
 	*pUART_IER = UART_IER_ELSI | UART_IER_ERBFI | UART_IER_ETBEI;
 	sync();

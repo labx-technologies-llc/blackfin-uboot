@@ -50,7 +50,7 @@ int irq_flags;			/* needed by asm-blackfin/system.h */
 
 /*
  * This function is derived from PowerPC code (read timebase as long long).
- * On BF561 it just returns the timer value.
+ * On Blackfin it just returns the timer value.
  */
 unsigned long long get_ticks(void)
 {
@@ -59,7 +59,7 @@ unsigned long long get_ticks(void)
 
 /*
  * This function is derived from PowerPC code (timebase clock frequency).
- * On BF561 it returns the number of timer ticks per second.
+ * On Blackfin it returns the number of timer ticks per second.
  */
 ulong get_tbclk(void)
 {
@@ -104,9 +104,9 @@ void udelay(unsigned long usec)
 			usec -= 1000;
 		}
 
-		asm volatile (" %0 = CYCLES;":"=r" (start));
+		asm volatile (" %0 = CYCLES;" : "=r" (start));
 		do {
-			asm volatile (" %0 = CYCLES; ":"=r" (stop));
+			asm volatile (" %0 = CYCLES; " : "=r" (stop));
 		} while (stop - start < delay);
 	}
 
@@ -160,11 +160,15 @@ ulong get_timer(ulong base)
 	milisec = clocks / (CONFIG_CCLK_HZ / 1000);
 
 	/*
-	 * Find the number of millisonds
-	 * that got elapsed before this TCOUNT
-	 * cycle
+	 * Find the number of millisonds that
+	 * got elapsed before this TCOUNT cycle
 	 */
 	milisec += timestamp * (MAX_TIM_LOAD / (CONFIG_CCLK_HZ / 1000));
 
 	return (milisec - base);
+}
+
+void reset_timer(void)
+{
+	timestamp = 0;
 }

@@ -187,7 +187,6 @@ void dcache_enable(void)
 
 void dcache_disable(void)
 {
-
 	unsigned int *I0, *I1;
 	int i;
 
@@ -199,7 +198,9 @@ void dcache_disable(void)
 	sync();
 	sti();
 
-	/* after disable dcache, clear it so we don't confuse the next application */
+	/* after disable dcache,
+	 * clear it so we don't confuse the next application
+	 */
 	I0 = (unsigned int *)DCPLB_ADDR0;
 	I1 = (unsigned int *)DCPLB_DATA0;
 
@@ -213,6 +214,7 @@ int dcache_status(void)
 {
 	unsigned int value;
 	value = *(unsigned int *)DMEM_CONTROL;
+
 	if (value & (ENDCPLB))
 		return CACHE_ON;
 	else

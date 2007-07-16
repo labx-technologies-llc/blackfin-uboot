@@ -1,5 +1,5 @@
 /*
- * U-boot - start.S Startup file of u-boot for BF537
+ * U-boot - start.S Startup file for Blackfin u-boot
  *
  * Copyright (c) 2005-2007 Analog Devices Inc.
  *
@@ -34,8 +34,6 @@
  * Note: A change in this file subsequently requires a change in
  *       board/$(board_name)/config.mk for a valid u-boot.bin
  */
-
-#define ASSEMBLY
 
 #include <linux/config.h>
 #include <config.h>

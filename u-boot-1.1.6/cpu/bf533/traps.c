@@ -40,7 +40,7 @@
 #include <asm/system.h>
 #include <asm/traps.h>
 #include "cpu.h"
-#include <asm/arch/anomaly.h>
+#include <asm/arch-common/anomaly.h>
 #include <asm/cplb.h>
 #include <asm/io.h>
 
@@ -86,11 +86,11 @@ void trap_c(struct pt_regs *regs)
 
 	case VEC_CPLB_I_M:
 
-		if (data) {
+		if (data)
 			addr = *(unsigned int *)pDCPLB_FAULT_ADDR;
-		} else {
+		else
 			addr = *(unsigned int *)pICPLB_FAULT_ADDR;
-		}
+
 		for (i = 0; i < page_descriptor_table_size; i++) {
 			if (data) {
 				size = cplb_sizes[dcplb_table[i][1] >> 16];
@@ -229,5 +229,4 @@ void dump(struct pt_regs *fp)
 
 	debug("DCPLB_FAULT_ADDR=%p\n", *pDCPLB_FAULT_ADDR);
 	debug("ICPLB_FAULT_ADDR=%p\n", *pICPLB_FAULT_ADDR);
-
 }

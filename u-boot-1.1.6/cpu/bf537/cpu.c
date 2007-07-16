@@ -62,9 +62,6 @@ void icache_enable(void)
 	unsigned int *I0, *I1;
 	int i, j = 0;
 
-	if (bfin_revid() < 2)
-		return;
-
 	/* Before enable icache, disable it first */
 	icache_disable();
 	I0 = (unsigned int *)ICPLB_ADDR0;
@@ -74,7 +71,7 @@ void icache_enable(void)
 	for (i = 0; i < page_descriptor_table_size; i++) {
 		if (CPLB_LOCK & icplb_table[i][1]) {
 			debug("adding %02i %02i 0x%08x 0x%08x\n", i, j,
-				 icplb_table[i][0], icplb_table[i][1]);
+			      icplb_table[i][0], icplb_table[i][1]);
 			*I0++ = icplb_table[i][0];
 			*I1++ = icplb_table[i][1];
 			j++;
@@ -84,7 +81,7 @@ void icache_enable(void)
 	for (i = 0; i < page_descriptor_table_size; i++) {
 		if (!(CPLB_LOCK & icplb_table[i][1])) {
 			debug("adding %02i %02i 0x%08x 0x%08x\n", i, j,
-				 icplb_table[i][0], icplb_table[i][1]);
+			      icplb_table[i][0], icplb_table[i][1]);
 			*I0++ = icplb_table[i][0];
 			*I1++ = icplb_table[i][1];
 			j++;
@@ -113,8 +110,6 @@ void icache_enable(void)
 
 void icache_disable(void)
 {
-	if (bfin_revid() < 2)
-		return;
 	cli();
 	sync();
 	asm(" .align 8; ");
@@ -149,20 +144,20 @@ void dcache_enable(void)
 	for (i = 0; i < page_descriptor_table_size; i++) {
 		if (CPLB_LOCK & dcplb_table[i][1]) {
 			debug("adding %02i %02i 0x%08x 0x%08x\n", i, j,
-				 dcplb_table[i][0], dcplb_table[i][1]);
+			      dcplb_table[i][0], dcplb_table[i][1]);
 			*I0++ = dcplb_table[i][0];
 			*I1++ = dcplb_table[i][1];
 			j++;
 		} else {
 			debug("skip   %02i %02i 0x%08x 0x%08x\n", i, j,
-				 dcplb_table[i][0], dcplb_table[i][1]);
+			      dcplb_table[i][0], dcplb_table[i][1]);
 		}
 	}
 
 	for (i = 0; i < page_descriptor_table_size; i++) {
 		if (!(CPLB_LOCK & dcplb_table[i][1])) {
 			debug("adding %02i %02i 0x%08x 0x%08x\n", i, j,
-				 dcplb_table[i][0], dcplb_table[i][1]);
+			      dcplb_table[i][0], dcplb_table[i][1]);
 			*I0++ = dcplb_table[i][0];
 			*I1++ = dcplb_table[i][1];
 			j++;

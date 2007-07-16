@@ -101,7 +101,7 @@ void serial_setbrg(void)
 	ACCESS_PORT_IER;
 	__builtin_bfin_ssync();
 
-	/* Enable  ERBFI and ELSI interrupts
+	/* Enable ERBFI and ELSI interrupts
 	 * to poll SIC_ISR register*/
 	*pUART1_IER_SET = ELSI_S | ERBFI_S | ETBEI_S;
 	__builtin_bfin_ssync();

@@ -1,13 +1,13 @@
 /*
- * U-boot - start.S Startup file of u-boot for BF533/BF561
+ * U-boot - start.S Startup file for Blackfin u-boot
  *
  * Copyright (c) 2005-2007 Analog Devices Inc.
  *
  * This file is based on head.S
  * Copyright (c) 2003  Metrowerks/Motorola
  * Copyright (C) 1998  D. Jeff Dionne <jeff@ryeham.ee.ryerson.ca>,
- *		       Kenneth Albanowski <kjahds@kjahds.com>,
- *		       The Silver Hammer Group, Ltd.
+ *                     Kenneth Albanowski <kjahds@kjahds.com>,
+ *                     The Silver Hammer Group, Ltd.
  * (c) 1995, Dionne & Associates
  * (c) 1995, DKG Display Tech.
  *
@@ -34,8 +34,6 @@
  * Note: A change in this file subsequently requires a change in
  *       board/$(board_name)/config.mk for a valid u-boot.bin
  */
-
-#define ASSEMBLY
 
 #include <linux/config.h>
 #include <config.h>

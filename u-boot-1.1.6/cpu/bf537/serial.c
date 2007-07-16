@@ -97,7 +97,7 @@ void serial_setbrg(void)
 	ACCESS_PORT_IER;
 	sync();
 
-	/* Enable  ERBFI and ELSI interrupts
+	/* Enable ERBFI and ELSI interrupts
 	 * to poll SIC_ISR register*/
 	*pUART_IER = UART_IER_ELSI | UART_IER_ERBFI | UART_IER_ETBEI;
 	sync();
