@@ -147,10 +147,10 @@
 #define CONFIG_NETCONSOLE	1
 #define CONFIG_NET_MULTI	1
 
-#if (BFIN_CPU == ADSP_BF534)
-#define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NET)
+#ifdef CONFIG_BFIN_MAC
+# define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL | CFG_CMD_PING)
 #else
-#define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL | CFG_CMD_PING)
+# define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NET)
 #endif
 
 #if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) || (BFIN_BOOT_MODE == BFIN_BOOT_UART)
@@ -183,54 +183,37 @@
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"
 #define CONFIG_LOADADDR	0x1000000
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) || (BFIN_BOOT_MODE == BFIN_BOOT_UART)
-#if (BFIN_CPU != ADSP_BF534)
-#define CONFIG_EXTRA_ENV_SETTINGS				\
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"	\
-	"nfsargs=setenv bootargs root=/dev/nfs rw "		\
-	"nfsroot=$(serverip):$(rootpath)\0"\
-	"addip=setenv bootargs $(bootargs) "			\
-	"ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask)"	\
-	":$(hostname):eth0:off\0"				\
-	"ramboot=tftpboot $(loadaddr) linux;"			\
-	"run ramargs;run addip;bootelf\0"			\
-	"nfsboot=tftpboot $(loadaddr) linux;"			\
-	"run nfsargs;run addip;bootelf\0"			\
-	"flashboot=bootm 0x20100000\0"				\
-	"update=tftpboot $(loadaddr) u-boot.bin;"		\
-	"protect off 0x20000000 0x2007FFFF;"			\
-	"erase 0x20000000 0x2007FFFF;cp.b 0x1000000 0x20000000 $(filesize)\0"	\
-	""
-#else
-#define CONFIG_EXTRA_ENV_SETTINGS				\
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"	\
-	"flashboot=bootm 0x20100000\0"				\
-	""
-#endif
+#if (BFIN_BOOT_MODE == BFIN_BOOT_PARA)
+# define BOOT_ENV_SETTINGS \
+	"update=tftpboot $(loadaddr) u-boot.bin;" \
+		"protect off 0x20000000 0x2007FFFF;" \
+		"erase 0x20000000 0x2007FFFF;cp.b 0x1000000 0x20000000 $(filesize)\0"
 #elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
-#if (BFIN_CPU != ADSP_BF534)
-#define CONFIG_EXTRA_ENV_SETTINGS				\
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"	\
-	"nfsargs=setenv bootargs root=/dev/nfs rw "		\
-	"nfsroot=$(serverip):$(rootpath)\0"\
-	"addip=setenv bootargs $(bootargs) "			\
-	"ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask)"	\
-	":$(hostname):eth0:off\0"				\
-	"ramboot=tftpboot $(loadaddr) linux;"			\
-	"run ramargs;run addip;bootelf\0"			\
-	"nfsboot=tftpboot $(loadaddr) linux;"			\
-	"run nfsargs;run addip;bootelf\0"			\
-	"flashboot=bootm 0x20100000\0"				\
-	"update=tftpboot $(loadaddr) u-boot.ldr;"		\
-	"eeprom write $(loadaddr) 0x0 $(filesize);\0"		\
-	""
+# define BOOT_ENV_SETTINGS \
+	"update=tftpboot $(loadaddr) u-boot.ldr;" \
+		"eeprom write $(loadaddr) 0x0 $(filesize);\0"
 #else
-#define CONFIG_EXTRA_ENV_SETTINGS				\
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"	\
-	"flashboot=bootm 0x20100000\0"				\
-	""
+# define BOOT_ENV_SETTINGS
 #endif
+#ifdef CONFIG_BFIN_MAC
+# define NETWORK_ENV_SETTINGS \
+	"nfsargs=setenv bootargs root=/dev/nfs rw " \
+		"nfsroot=$(serverip):$(rootpath)\0" \
+	"addip=setenv bootargs $(bootargs) " \
+		"ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask)" \
+		":$(hostname):eth0:off\0" \
+	"ramboot=tftpboot $(loadaddr) linux;" \
+		"run ramargs;run addip;bootelf\0" \
+	"nfsboot=tftpboot $(loadaddr) linux;" \
+		"run nfsargs;run addip;bootelf\0"
+#else
+# define NETWORK_ENV_SETTINGS
 #endif
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	NETWORK_ENV_SETTINGS \
+	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" \
+	"flashboot=bootm 0x20100000\0" \
+	BOOT_ENV_SETTINGS
 
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
