@@ -114,22 +114,22 @@ check_again:
 	 * This will speed up execution, since we are normally running from FLASH.
 	 */
 
-	p2.h = (EBIU_AMBCTL1 >> 16);
-	p2.l = (EBIU_AMBCTL1 & 0xFFFF);
-	r0.h = (AMBCTL1VAL >> 16);
-	r0.l = (AMBCTL1VAL & 0xFFFF);
+	p2.h = HI(EBIU_AMBCTL1);
+	p2.l = LO(EBIU_AMBCTL1);
+	r0.h = HI(AMBCTL1VAL);
+	r0.l = LO(AMBCTL1VAL);
 	[p2] = r0;
 	ssync;
 
-	p2.h = (EBIU_AMBCTL0 >> 16);
-	p2.l = (EBIU_AMBCTL0 & 0xFFFF);
-	r0.h = (AMBCTL0VAL >> 16);
-	r0.l = (AMBCTL0VAL & 0xFFFF);
+	p2.h = HI(EBIU_AMBCTL0);
+	p2.l = LO(EBIU_AMBCTL0);
+	r0.h = HI(AMBCTL0VAL);
+	r0.l = LO(AMBCTL0VAL);
 	[p2] = r0;
 	ssync;
 
-	p2.h = (EBIU_AMGCTL >> 16);
-	p2.l = (EBIU_AMGCTL & 0xffff);
+	p2.h = HI(EBIU_AMGCTL);
+	p2.l = LO(EBIU_AMGCTL);
 	r0 = AMGCTLVAL;
 	w[p2] = r0;
 	ssync;
@@ -147,8 +147,8 @@ check_again:
 	/*
 	 * SDRAM Memory Bank Control Register - bank specific parameters
 	 */
-	p0.l = (EBIU_SDBCTL & 0xFFFF);
-	p0.h = (EBIU_SDBCTL >> 16);
+	p0.l = LO(EBIU_SDBCTL);
+	p0.h = HI(EBIU_SDBCTL);
 	r0 = mem_SDBCTL;
 	w[p0] = r0.l;
 	ssync;

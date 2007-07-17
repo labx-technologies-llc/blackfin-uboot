@@ -128,8 +128,8 @@ _start:
 	SSYNC;
 
 	/* Clear EVT registers */
-	p0.h = (EVT_EMULATION_ADDR >> 16);
-	p0.l = (EVT_EMULATION_ADDR & 0xFFFF);
+	p0.h = HI(EVT_EMULATION_ADDR);
+	p0.l = LO(EVT_EMULATION_ADDR);
 	p0 += 8;
 	p1 = 14;
 	r1 = 0;
@@ -220,22 +220,22 @@ check_again:
 	 * This will speed up execution, since we are normally running from FLASH.
 	 * we need to read MAC address from FLASH
 	 */
-	p2.h = (EBIU_AMBCTL1 >> 16);
-	p2.l = (EBIU_AMBCTL1 & 0xFFFF);
-	r0.h = (AMBCTL1VAL >> 16);
-	r0.l = (AMBCTL1VAL & 0xFFFF);
+	p2.h = HI(EBIU_AMBCTL1);
+	p2.l = LO(EBIU_AMBCTL1);
+	r0.h = HI(AMBCTL1VAL);
+	r0.l = LO(AMBCTL1VAL);
 	[p2] = r0;
 	ssync;
 
-	p2.h = (EBIU_AMBCTL0 >> 16);
-	p2.l = (EBIU_AMBCTL0 & 0xFFFF);
-	r0.h = (AMBCTL0VAL >> 16);
-	r0.l = (AMBCTL0VAL & 0xFFFF);
+	p2.h = HI(EBIU_AMBCTL0);
+	p2.l = LO(EBIU_AMBCTL0);
+	r0.h = HI(AMBCTL0VAL);
+	r0.l = LO(AMBCTL0VAL);
 	[p2] = r0;
 	ssync;
 
-	p2.h = (EBIU_AMGCTL >> 16);
-	p2.l = (EBIU_AMGCTL & 0xffff);
+	p2.h = HI(EBIU_AMGCTL);
+	p2.l = LO(EBIU_AMGCTL);
 	r0 = AMGCTLVAL;
 	w[p2] = r0;
 	ssync;
@@ -264,11 +264,11 @@ postcopy:
 	R2 = R1 - R0;           /* Count */
 	R0.H = _etext;
 	R0.L = _etext;
-	R1.H = (CFG_MONITOR_BASE >> 16);
-	R1.L = (CFG_MONITOR_BASE & 0xFFFF);
+	R1.H = HI(CFG_MONITOR_BASE);
+	R1.L = LO(CFG_MONITOR_BASE);
 	R0 = R0 - R1;
-	R1.H = (CFG_FLASH_BASE >> 16);
-	R1.L = (CFG_FLASH_BASE & 0xFFFF);
+	R1.H = HI(CFG_FLASH_BASE);
+	R1.L = LO(CFG_FLASH_BASE);
 	R0 = R0 + R1;		/* Source Address */
 	R1.H = hi(L1_ISRAM);    /* Destination Address (high) */
 	R1.L = lo(L1_ISRAM);    /* Destination Address (low) */
@@ -310,11 +310,11 @@ POST_DMA_DONE:
 	R2 = R1 - R0;           /* Count */
 	R0.H = _erodata;
 	R0.L = _erodata;
-	R1.H = (CFG_MONITOR_BASE >> 16);
-	R1.L = (CFG_MONITOR_BASE & 0xFFFF);
+	R1.H = HI(CFG_MONITOR_BASE);
+	R1.L = LO(CFG_MONITOR_BASE);
 	R0 = R0 - R1;
-	R1.H = (CFG_FLASH_BASE >> 16);
-	R1.L = (CFG_FLASH_BASE & 0xFFFF);
+	R1.H = HI(CFG_FLASH_BASE);
+	R1.L = LO(CFG_FLASH_BASE);
 	R0 = R0 + R1;           /* Source Address */
 	R1.H = hi(DATA_BANKB_SRAM);    /* Destination Address (high) */
 	R1.L = lo(DATA_BANKB_SRAM);    /* Destination Address (low) */
@@ -368,12 +368,12 @@ POST_DATA_DMA_DONE:
 	r0 = r0 - r1;
 	p1 = r0;
 
-	p2.l = (CFG_MONITOR_BASE & 0xffff);
-	p2.h = (CFG_MONITOR_BASE >> 16);
+	p2.l = LO(CFG_MONITOR_BASE);
+	p2.h = HI(CFG_MONITOR_BASE);
 
 	p3 = 0x04;
-	p4.l = ((CFG_MONITOR_BASE + CFG_MONITOR_LEN) & 0xffff);
-	p4.h = ((CFG_MONITOR_BASE + CFG_MONITOR_LEN) >> 16);
+	p4.l = LO(CFG_MONITOR_BASE + CFG_MONITOR_LEN);
+	p4.h = HI(CFG_MONITOR_BASE + CFG_MONITOR_LEN);
 loop1:
 	r1 = [p1 ++ p3];
 	[p2 ++ p3] = r1;
@@ -382,8 +382,8 @@ loop1:
 	/*
 	 * configure STACK
 	 */
-	r0.h = (CONFIG_STACKBASE >> 16);
-	r0.l = (CONFIG_STACKBASE & 0xFFFF);
+	r0.h = HI(CONFIG_STACKBASE);
+	r0.l = LO(CONFIG_STACKBASE);
 	sp = r0;
 	fp = sp;
 
@@ -394,15 +394,15 @@ loop1:
 	 */
 
 	/* To keep ourselves in the supervisor mode */
-	p0.l = (EVT_IVG15_ADDR & 0xFFFF);
-	p0.h = (EVT_IVG15_ADDR >> 16);
+	p0.l = LO(EVT_IVG15_ADDR);
+	p0.h = HI(EVT_IVG15_ADDR);
 
 	p1.l = _real_start;
 	p1.h = _real_start;
 	[p0] = p1;
 
-	p0.l = (IMASK & 0xFFFF);
-	p0.h = (IMASK >> 16);
+	p0.l = LO(IMASK);
+	p0.h = HI(IMASK);
 	r0.l = LO(IVG15_POS);
 	r0.h = HI(IVG15_POS);
 	[p0] = r0;
@@ -534,12 +534,12 @@ _clear_bss_skip:
 	jump (p0);
 
 reset_start:
-	p0.h = WDOG_CNT >> 16;
-	p0.l = WDOG_CNT & 0xffff;
+	p0.h = HI(WDOG_CNT);
+	p0.l = LO(WDOG_CNT);
 	r0 = 0x0010;
 	w[p0] = r0;
-	p0.h = WDOG_CTL >> 16;
-	p0.l = WDOG_CTL & 0xffff;
+	p0.h = HI(WDOG_CTL);
+	p0.l = LO(WDOG_CTL);
 	r0 = 0x0000;
 	w[p0] = r0;
 reset_wait:

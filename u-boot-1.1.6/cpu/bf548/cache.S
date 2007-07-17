@@ -43,8 +43,8 @@ ENTRY(_icache_invalidate)
 ENTRY(_invalidate_entire_icache)
 	[--SP] = (R7:5);
 
-	P0.L = (IMEM_CONTROL & 0xFFFF);
-	P0.H = (IMEM_CONTROL >> 16);
+	P0.L = LO(IMEM_CONTROL);
+	P0.H = HI(IMEM_CONTROL);
 	R7 =[P0];
 
 	/*
@@ -84,8 +84,8 @@ ENTRY(_invalidate_entire_dcache)
 ENTRY(_dcache_invalidate)
 	[--SP] = (R7:6);
 
-	P0.L = (DMEM_CONTROL & 0xFFFF);
-	P0.H = (DMEM_CONTROL >> 16);
+	P0.L = LO(DMEM_CONTROL);
+	P0.H = HI(DMEM_CONTROL);
 	R7 =[P0];
 
 	/*
