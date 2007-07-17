@@ -42,7 +42,6 @@
 .global __bss_start;
 .global _start;
 .global _exit;
-.global init_sdram;
 
 .text
 _start:

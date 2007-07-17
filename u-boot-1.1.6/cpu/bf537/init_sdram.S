@@ -1,10 +1,16 @@
-#define ASSEMBLY
+/*
+ * init_sdram.S - initialize external memory and any critical peripherals
+ *                to help out the bootrom in the init LDR block
+ *
+ * Copyright (c) 2004-2007 Analog Devices Inc.
+ *
+ * Licensed under the GPL-2 or later.
+ */
 
-#include <linux/config.h>
 #include <config.h>
 #include <asm/blackfin.h>
+#include <asm/linkage.h>
 #include <asm/mem_init.h>
-.global init_sdram;
 
 #if (BFIN_BOOT_MODE != BFIN_BOOT_UART)
 #if (CONFIG_CCLK_DIV == 1)
@@ -24,13 +30,18 @@
 #endif
 #endif
 
-init_sdram:
+ENTRY(_init_sdram)
 	[--SP] = ASTAT;
 	[--SP] = RETS;
 	[--SP] = (R7:0);
 	[--SP] = (P5:0);
 
 #if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+	/* the bootrom has a misbehavior where it uses SPI read commands
+	 * that are too fast for the configured rate.  here we scale back
+	 * the SPI speed until u-boot is up and running and then the SPI
+	 * flash drivers will do the right thing at the right speed.
+	 */
 	p0.h = hi(SIC_IWR);
 	p0.l = lo(SIC_IWR);
 	r0.l = 0x1;
@@ -39,7 +50,7 @@ init_sdram:
 
 	p0.h = hi(SPI_BAUD);
 	p0.l = lo(SPI_BAUD);
-	r0.l = CONFIG_SPI_BAUD;
+	r0.l = CONFIG_SPI_BAUD_INITBLOCK;
 	w[p0] = r0.l;
 	SSYNC;
 #endif
@@ -119,6 +130,31 @@ check_again:
 #endif
 
 	/*
+	 * We now are running at speed, time to set the Async mem bank wait states
+	 * This will speed up execution, since we are normally running from FLASH.
+	 */
+
+	p2.h = (EBIU_AMBCTL1 >> 16);
+	p2.l = (EBIU_AMBCTL1 & 0xFFFF);
+	r0.h = (AMBCTL1VAL >> 16);
+	r0.l = (AMBCTL1VAL & 0xFFFF);
+	[p2] = r0;
+	ssync;
+
+	p2.h = (EBIU_AMBCTL0 >> 16);
+	p2.l = (EBIU_AMBCTL0 & 0xFFFF);
+	r0.h = (AMBCTL0VAL >> 16);
+	r0.l = (AMBCTL0VAL & 0xFFFF);
+	[p2] = r0;
+	ssync;
+
+	p2.h = (EBIU_AMGCTL >> 16);
+	p2.l = (EBIU_AMGCTL & 0xffff);
+	r0 = AMGCTLVAL;
+	w[p2] = r0;
+	ssync;
+
+	/*
 	 * Now, Initialize the SDRAM,
 	 * start with the SDRAM Refresh Rate Control Register
 	 */
@@ -172,3 +208,4 @@ skip:
 	RETS   = [SP++];
 	ASTAT  = [SP++];
 	RTS;
+ENDPROC(_init_sdram)

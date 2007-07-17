@@ -1,10 +1,16 @@
-#define ASSEMBLY
+/*
+ * init_sdram.S - initialize external memory and any critical peripherals
+ *                to help out the bootrom in the init LDR block
+ *
+ * Copyright (c) 2004-2007 Analog Devices Inc.
+ *
+ * Licensed under the GPL-2 or later.
+ */
 
-#include <linux/config.h>
 #include <config.h>
 #include <asm/blackfin.h>
+#include <asm/linkage.h>
 #include <asm/mem_init.h>
-.global init_sdram;
 
 #if (CONFIG_CCLK_DIV == 1)
 #define CONFIG_CCLK_ACT_DIV	0x0000
@@ -32,7 +38,7 @@
 #define BFIN_LDR_BAUD_LB	(BFIN_LDR_BAUD & 0xFF)
 #endif
 
-init_sdram:
+ENTRY(_init_sdram)
 	[--SP] = ASTAT;
 	[--SP] = RETS;
 	[--SP] = (R7:0);
@@ -162,6 +168,11 @@ skip_pll_ctl: nop;
 #endif
 
 #if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+	/* the bootrom has a misbehavior where it uses SPI read commands
+	 * that are too fast for the configured rate.  here we scale back
+	 * the SPI speed until u-boot is up and running and then the SPI
+	 * flash drivers will do the right thing at the right speed.
+	 */
 	p0.h = hi(SPI0_BAUD);
 	p0.l = lo(SPI0_BAUD);
 	r0.l = CONFIG_SPI_BAUD_INITBLOCK;
@@ -293,4 +304,4 @@ ddr_init_end:
 	RETS   = [SP++];
 	ASTAT  = [SP++];
 	RTS;
-
+ENDPROC(_init_sdram)

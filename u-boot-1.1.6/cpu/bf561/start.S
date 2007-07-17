@@ -42,7 +42,6 @@
 .global __bss_start;
 .global _start;
 .global _exit;
-.global init_sdram;
 
 .text
 _start:
@@ -135,7 +134,7 @@ _start:
 	r3.h = 0x2000;
 	cc = r0 < r3 (iu);
 	if cc jump sdram_initialized;
-	call init_sdram;
+	call _init_sdram;
 	/* relocate into to RAM */
 sdram_initialized:
 	call get_pc;

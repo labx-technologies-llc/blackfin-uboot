@@ -42,7 +42,6 @@
 .global __bss_start;
 .global _start;
 .global _exit;
-.global init_sdram;
 
 #if (CONFIG_CCLK_DIV == 1)
 #define CONFIG_CCLK_ACT_DIV   CCLK_DIV1
@@ -137,10 +136,14 @@ _start:
 	w[p0] = r0.l;
 	SSYNC;
 
-	sp.l = (0xffb01000 & 0xFFFF);
-	sp.h = (0xffb01000 >> 16);
-
-	call init_sdram;
+#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+	/* In bypass mode, we don't have an LDR with an init block
+	 * so we need to explicitly call it ourselves.
+	 */
+	sp.l = LO(0xffb01000);
+	sp.h = HI(0xffb01000);
+	call _init_sdram;
+#endif
 
 	/* relocate into to RAM */
 	call get_pc;

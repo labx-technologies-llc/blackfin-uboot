@@ -42,7 +42,6 @@
 .global __bss_start;
 .global _start;
 .global _exit;
-.global init_sdram;
 #if defined(CONFIG_POST)
 .global _memory_post_test;
 .global _post_flag;
@@ -241,11 +240,13 @@ check_again:
 	w[p2] = r0;
 	ssync;
 
-#if ((BFIN_BOOT_MODE != BFIN_BOOT_SPI_MASTER) && (BFIN_BOOT_MODE != BFIN_BOOT_UART))
-	sp.l = (0xffb01000 & 0xFFFF);
-	sp.h = (0xffb01000 >> 16);
-
-	call init_sdram;
+#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+	/* In bypass mode, we don't have an LDR with an init block
+	 * so we need to explicitly call it ourselves.
+	 */
+	sp.l = LO(0xffb01000);
+	sp.h = HI(0xffb01000);
+	call _init_sdram;
 #endif
 
 
@@ -352,7 +353,7 @@ POST_DATA_DMA_DONE:
 	call (p0);
 	r7 = r0;				/* save return value */
 
-	call init_sdram;
+	call _init_sdram;
 #endif
 
 	/* relocate into to RAM */

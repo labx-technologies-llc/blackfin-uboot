@@ -1,10 +1,16 @@
-#define ASSEMBLY
+/*
+ * init_sdram.S - initialize external memory and any critical peripherals
+ *                to help out the bootrom in the init LDR block
+ *
+ * Copyright (c) 2004-2007 Analog Devices Inc.
+ *
+ * Licensed under the GPL-2 or later.
+ */
 
-#include <linux/config.h>
 #include <config.h>
 #include <asm/blackfin.h>
+#include <asm/linkage.h>
 #include <asm/mem_init.h>
-.global init_sdram;
 
 #if (CONFIG_CCLK_DIV == 1)
 #define CONFIG_CCLK_ACT_DIV   CCLK_DIV1
@@ -22,11 +28,30 @@
 #define CONFIG_CCLK_ACT_DIV   CONFIG_CCLK_DIV_not_defined_properly
 #endif
 
-init_sdram:
+ENTRY(_init_sdram)
 	[--SP] = ASTAT;
 	[--SP] = RETS;
 	[--SP] = (R7:0);
 	[--SP] = (P5:0);
+
+#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+	/* the bootrom has a misbehavior where it uses SPI read commands
+	 * that are too fast for the configured rate.  here we scale back
+	 * the SPI speed until u-boot is up and running and then the SPI
+	 * flash drivers will do the right thing at the right speed.
+	 */
+	p0.h = hi(SICA_IWR0);
+	p0.l = lo(SICA_IWR0);
+	r0.l = 0x1;
+	w[p0] = r0.l;
+	SSYNC;
+
+	p0.h = hi(SPI_BAUD);
+	p0.l = lo(SPI_BAUD);
+	r0.l = CONFIG_SPI_BAUD_INITBLOCK;
+	w[p0] = r0.l;
+	SSYNC;
+#endif
 
 	/*
 	 * PLL_LOCKCNT - how many SCLK Cycles to delay while PLL becomes stable
@@ -50,13 +75,13 @@ init_sdram:
 	/*
 	 *  Set PLL_CTL with the value that we calculate in R0
 	 *   - [14:09] = MSEL[5:0] : CLKIN / VCO multiplication factors
-	 *   - [8]     = BYPASS	   : BYPASS the PLL, run CLKIN into CCLK/SCLK
+	 *   - [8]     = BYPASS    : BYPASS the PLL, run CLKIN into CCLK/SCLK
 	 *   - [7]     = output delay (add 200ps of delay to mem signals)
 	 *   - [6]     = input delay (add 200ps of input delay to mem signals)
-	 *   - [5]     = PDWN	   : 1=All Clocks off
-	 *   - [3]     = STOPCK	   : 1=Core Clock off
+	 *   - [5]     = PDWN      : 1=All Clocks off
+	 *   - [3]     = STOPCK    : 1=Core Clock off
 	 *   - [1]     = PLL_OFF   : 1=Disable Power to PLL
-	 *   - [0]     = DF	   : 1=Pass CLKIN/2 to PLL / 0=Pass CLKIN to PLL
+	 *   - [0]     = DF    : 1=Pass CLKIN/2 to PLL / 0=Pass CLKIN to PLL
 	 *   all other bits set to zero
 	 */
 
@@ -169,3 +194,4 @@ skip:
 	RETS   = [SP++];
 	ASTAT  = [SP++];
 	RTS;
+ENDPROC(_init_sdram)
