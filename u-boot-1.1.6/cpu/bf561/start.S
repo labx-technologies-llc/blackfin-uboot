@@ -118,8 +118,8 @@ _start:
 
 	p0.h = hi(SIC_IWR);
 	p0.l = lo(SIC_IWR);
-	r0.l = 0x1;
-	w[p0] = r0.l;
+	r0 = 0x1;
+	[p0] = r0;
 	SSYNC;
 
 	sp.l = LO(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);

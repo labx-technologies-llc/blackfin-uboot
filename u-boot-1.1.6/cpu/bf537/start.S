@@ -139,19 +139,12 @@ _start:
 #if (BFIN_BOOT_MODE != BFIN_BOOT_SPI_MASTER)
 	p0.h = hi(SIC_IWR);
 	p0.l = lo(SIC_IWR);
-	r0.l = 0x1;
-	w[p0] = r0.l;
+	r0 = 0x1;
+	[p0] = r0;
 	SSYNC;
 #endif
 
 #if (BFIN_BOOT_MODE == BFIN_BOOT_UART)
-
-	p0.h = hi(SIC_IWR);
-	p0.l = lo(SIC_IWR);
-	r0.l = 0x1;
-	w[p0] = r0.l;
-	SSYNC;
-
 	/*
 	* PLL_LOCKCNT - how many SCLK Cycles to delay while PLL becomes stable
 	*/

@@ -123,8 +123,8 @@ no_soft_reset:
 #if (BFIN_BOOT_MODE != BFIN_BOOT_SPI_MASTER)
 	p0.h = hi(SIC_IWR0);
 	p0.l = lo(SIC_IWR0);
-	r0.l = 0x1;
-	w[p0] = r0.l;
+	r0 = 0x1;
+	[p0] = r0;
 	SSYNC;
 #endif
 
