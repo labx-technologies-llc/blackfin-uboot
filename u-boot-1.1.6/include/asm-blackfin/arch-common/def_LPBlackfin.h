@@ -21,6 +21,12 @@
 #define _DEF_LPBLACKFIN_H
 
 /*
+ * Onchip scratchpad SRAM
+ */
+#define L1_SRAM_SCRATCH		0xFFB00000	/* Onchip Scratch SRAM */
+#define L1_SRAM_SCRATCH_SIZE	0x1000		/*  4K */
+
+/*
  * #if !defined(__ADSPLPBLACKFIN__)
  * #warning def_LPBlackfin.h should only be included for 532 compatible chips.
  * #endif

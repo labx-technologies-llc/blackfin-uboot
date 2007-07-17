@@ -122,8 +122,8 @@ _start:
 	w[p0] = r0.l;
 	SSYNC;
 
-	sp.l = LO(0xffb01000);
-	sp.h = HI(0xffb01000);
+	sp.l = LO(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);
+	sp.h = HI(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);
 
 	/*
 	 * Check if the code is in SDRAM

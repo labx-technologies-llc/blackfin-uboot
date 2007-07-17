@@ -140,8 +140,8 @@ _start:
 	/* In bypass mode, we don't have an LDR with an init block
 	 * so we need to explicitly call it ourselves.
 	 */
-	sp.l = LO(0xffb01000);
-	sp.h = HI(0xffb01000);
+	sp.l = LO(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);
+	sp.h = HI(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);
 	call _init_sdram;
 #endif
 
