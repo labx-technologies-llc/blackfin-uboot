@@ -17,19 +17,6 @@
 #define CFG_BFIN_CMD_BOOTLDR  0x01
 #define CFG_BFIN_CMD_CPLBINFO 0x02
 
-/* CPU defines -- your config needs to select this via BFIN_CPU */
-#define ADSP_BF531		531
-#define ADSP_BF532		532
-#define ADSP_BF533		533
-#define ADSP_BF534		534
-#define ADSP_BF536		536
-#define ADSP_BF537		537
-#define ADSP_BF542		542
-#define ADSP_BF544		544
-#define ADSP_BF548		548
-#define ADSP_BF549		549
-#define ADSP_BF561		561
-
 /* Family defines -- automatically selected by blackfin-config-post.h */
 #define ADSP_BF53X		53
 #define ADSP_BF54X		54

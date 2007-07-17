@@ -25,3 +25,6 @@
 #
 
 PLATFORM_CPPFLAGS += -DCONFIG_BLACKFIN -ffixed-P5 -fomit-frame-pointer
+
+CONFIG_CPU := $(strip $(shell echo 'BFIN_CPU' | $(CPP) -P -include $(TOPDIR)/include/configs/$(BOARD).h - 2>/dev/null | tail -n 1))
+PLATFORM_RELFLAGS += -mcpu=$(CONFIG_CPU)

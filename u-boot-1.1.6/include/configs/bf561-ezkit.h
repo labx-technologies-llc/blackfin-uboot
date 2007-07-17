@@ -7,7 +7,7 @@
 
 #include <asm/blackfin-config-pre.h>
 
-#define BFIN_CPU             ADSP_BF561
+#define BFIN_CPU             bf561-0.3
 #define BFIN_BOOT_MODE       BFIN_BOOT_BYPASS
 
 #define CFG_LONGHELP		1

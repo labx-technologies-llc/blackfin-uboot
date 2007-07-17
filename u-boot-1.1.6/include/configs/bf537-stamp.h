@@ -7,7 +7,7 @@
 
 #include <asm/blackfin-config-pre.h>
 
-#define BFIN_CPU             ADSP_BF537
+#define BFIN_CPU             bf537-0.2
 #define BFIN_BOOT_MODE       BFIN_BOOT_BYPASS
 
 #define CFG_LONGHELP		1
@@ -183,7 +183,7 @@
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"
 #define CONFIG_LOADADDR	0x1000000
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_PARA)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 # define BOOT_ENV_SETTINGS \
 	"update=tftpboot $(loadaddr) u-boot.bin;" \
 		"protect off 0x20000000 0x2007FFFF;" \

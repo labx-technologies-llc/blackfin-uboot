@@ -7,7 +7,7 @@
 
 #include <asm/blackfin-config-pre.h>
 
-#define BFIN_CPU             ADSP_BF533
+#define BFIN_CPU             bf533-0.3
 #define BFIN_BOOT_MODE       BFIN_BOOT_BYPASS
 
 #define CONFIG_BAUDRATE		57600

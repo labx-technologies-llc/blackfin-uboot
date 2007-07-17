@@ -18,14 +18,14 @@
 #ifndef BFIN_CPU
 # error BFIN_CPU: your board config needs to define this
 #endif
-#if (BFIN_CPU >= ADSP_BF531 && BFIN_CPU <= ADSP_BF537)
+#if defined(__ADSPBF531__) || defined(__ADSPBF532__) || defined(__ADSPBF533__) || \
+    defined(__ADSPBF534__) || defined(__ADSPBF536__) || defined(__ADSPBF537__)
 # define BFIN_FAMILY ADSP_BF53X
-#elif (BFIN_CPU >= ADSP_BF542 && BFIN_CPU <= ADSP_BF549)
+#elif defined(__ADSPBF542__) || defined(__ADSPBF544__) || \
+      defined(__ADSPBF548__) || defined(__ADSPBF549__)
 # define BFIN_FAMILY ADSP_BF54X
-#elif (BFIN_CPU == ADSP_BF561)
+#elif defined(__ADSPBF561__)
 # define BFIN_FAMILY ADSP_BF56X
-#else
-# error BFIN_CPU: invalid selection in your board config
 #endif
 
 /* Set default CONFIG_VCO_HZ if need be */

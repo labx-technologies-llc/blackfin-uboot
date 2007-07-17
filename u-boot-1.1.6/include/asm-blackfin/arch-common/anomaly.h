@@ -12,9 +12,15 @@
 /* a little bit of glue so we can use kernel headers
  * without any modification.
  */
-#define CONFIG_BF533 (BFIN_CPU == ADSP_BF533)
-#define CONFIG_BF536 (BFIN_CPU == ADSP_BF536)
-#define CONFIG_BF537 (BFIN_CPU == ADSP_BF537)
+#ifdef __ADSPBF533__
+# define CONFIG_BF533
+#endif
+#ifdef __ADSPBF536__
+# define CONFIG_BF536
+#endif
+#ifdef __ADSPBF537__
+# define CONFIG_BF537
+#endif
 #include <asm/arch/anomaly.h>
 #undef CONFIG_BF533
 #undef CONFIG_BF536
