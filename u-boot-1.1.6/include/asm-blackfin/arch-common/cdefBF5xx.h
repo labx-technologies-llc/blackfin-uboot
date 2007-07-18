@@ -11,8 +11,10 @@
 
 #if defined(__ADSPBF531__)
 	#include <asm/arch-bf533/cdefBF531.h>
+	#include <asm/arch-bf533/defBF533_extn.h>
 #elif defined(__ADSPBF532__)
 	#include <asm/arch-bf533/cdefBF532.h>
+	#include <asm/arch-bf533/defBF533_extn.h>
 #elif defined(__ADSPBF533__)
 	#include <asm/arch-bf533/cdefBF533.h>
 	#include <asm/arch-bf533/defBF533_extn.h>
