@@ -261,7 +261,7 @@
 /*
  * I2C settings
  */
-//#define CONFIG_HARD_I2C			1	/* I2C TWI */
+#define CONFIG_HARD_I2C			1	/* I2C TWI */
 #if defined CONFIG_HARD_I2C
 #define CONFIG_TWICLK_KHZ		50
 #endif
