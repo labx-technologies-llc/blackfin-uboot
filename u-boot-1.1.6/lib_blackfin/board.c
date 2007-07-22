@@ -175,128 +175,70 @@ static void display_global_data(void)
 #endif
 }
 
-/* we cover everything with 4 meg pages, and need an extra for L1 */
-unsigned int icplb_table[page_descriptor_table_size][2];
-unsigned int dcplb_table[page_descriptor_table_size][2];
-
+#define CPLB_PAGE_SIZE (4 * 1024 * 1024)
+#define CPLB_PAGE_MASK (~(CPLB_PAGE_SIZE - 1))
 void init_cplbtables(void)
 {
-	int i, j;
+	volatile uint32_t *ICPLB_ADDR, *ICPLB_DATA;
+	volatile uint32_t *DCPLB_ADDR, *DCPLB_DATA;
+	uint32_t extern_memory;
+	size_t i;
 
-	/* Instruction CPLB table */
-	j = 0;
-	icplb_table[j][0] = 0xFFA00000;
-	icplb_table[j][1] = L1_IMEMORY;
-	j++;
+	void icplb_add(uint32_t addr, uint32_t data)
+	{
+		*(ICPLB_ADDR + i) = addr;
+		*(ICPLB_DATA + i) = data;
+	}
+	void dcplb_add(uint32_t addr, uint32_t data)
+	{
+		*(DCPLB_ADDR + i) = addr;
+		*(DCPLB_DATA + i) = data;
+	}
 
-	for (i = 0; i < CONFIG_MEM_SIZE / 4; i++) {
-		icplb_table[j][0] = (i * 4 * 1024 * 1024);
-		if (i * 4 * 1024 * 1024 <= CFG_MONITOR_BASE
-		    && (i + 1) * 4 * 1024 * 1024 >= CFG_MONITOR_BASE) {
-			icplb_table[j][1] = SDRAM_IKERNEL;
-		} else {
-			icplb_table[j][1] = SDRAM_IGENERIC;
-		}
-		j++;
-	}
-#if (BFIN_FAMILY == ADSP_BF56X)
-	/* MAC space */
-	icplb_table[j][0] = 0x2C000000;
-	icplb_table[j][1] = SDRAM_INON_CHBL;
-	j++;
-	/* Async Memory space */
-	for (i = 0; i < 3; i++) {
-		icplb_table[j][0] = 0x20000000 + i * 4 * 1024 * 1024;
-		icplb_table[j][1] = SDRAM_INON_CHBL;
-		j++;
-	}
-#elif (BFIN_FAMILY == ADSP_BF54X)
-	/* Async memory */
-	/* Bank0 */
-	for (i = 0; i < CONFIG_ASYNC_BANK0_SIZE / 4; i++) {
-		icplb_table[j][0] = 0x20000000 + i * 4 * 1024 * 1024;
-		icplb_table[j][1] = SDRAM_INON_CHBL;
-		j++;
-	}
-	/* Bank1 */
-	for (i = 0; i < CONFIG_ASYNC_BANK1_SIZE / 4; i++) {
-		icplb_table[j][0] = 0x24000000 + i * 4 * 1024 * 1024;
-		icplb_table[j][1] = SDRAM_INON_CHBL;
-		j++;
-	}
-	/* Bank2 */
-	for (i = 0; i < CONFIG_ASYNC_BANK2_SIZE / 4; i++) {
-		icplb_table[j][0] = 0x28000000 + i * 4 * 1024 * 1024;
-		icplb_table[j][1] = SDRAM_INON_CHBL;
-		j++;
-	}
-	/* Bank3 */
-	for (i = 0; i < CONFIG_ASYNC_BANK3_SIZE / 4; i++) {
-		icplb_table[j][0] = 0x2C000000 + i * 4 * 1024 * 1024;
-		icplb_table[j][1] = SDRAM_INON_CHBL;
-		j++;
-	}
-#else
-	icplb_table[j][0] = 0x20000000;
-	icplb_table[j][1] = SDRAM_INON_CHBL;
-#endif
-	/* data CPLB table */
-	j = 0;
-	dcplb_table[j][0] = 0xFF800000;
-	dcplb_table[j][1] = L1_DMEMORY;
-	j++;
+	/* populate a few common entries ... we'll let
+	 * the memory map and cplb exception handler do
+	 * the rest of the work.
+	 */
+	i = 0;
+	ICPLB_ADDR = (uint32_t *)ICPLB_ADDR0;
+	ICPLB_DATA = (uint32_t *)ICPLB_DATA0;
+	DCPLB_ADDR = (uint32_t *)DCPLB_ADDR0;
+	DCPLB_DATA = (uint32_t *)DCPLB_DATA0;
 
-	for (i = 0; i < CONFIG_MEM_SIZE / 4; i++) {
-		dcplb_table[j][0] = (i * 4 * 1024 * 1024);
-		if (i * 4 * 1024 * 1024 <= CFG_MONITOR_BASE
-		    && (i + 1) * 4 * 1024 * 1024 >= CFG_MONITOR_BASE) {
-			dcplb_table[j][1] = SDRAM_DKERNEL;
-		} else {
-			dcplb_table[j][1] = SDRAM_DGENERIC;
-		}
-		j++;
+	icplb_add(0xFFA00000, L1_IMEMORY);
+	dcplb_add(0xFF800000, L1_DMEMORY);
+	++i;
+
+	icplb_add(CFG_MONITOR_BASE & CPLB_PAGE_MASK, SDRAM_IKERNEL);
+	dcplb_add(CFG_MONITOR_BASE & CPLB_PAGE_MASK, SDRAM_DKERNEL);
+	++i;
+
+	/* If the monitor crosses a 4 meg boundary, we'll need
+	 * to lock two entries for it.
+	 */
+	if ((CFG_MONITOR_BASE & CPLB_PAGE_MASK) != ((CFG_MONITOR_BASE + CFG_MONITOR_LEN) & CPLB_PAGE_MASK)) {
+		icplb_add((CFG_MONITOR_BASE + CFG_MONITOR_LEN) & CPLB_PAGE_MASK, SDRAM_IKERNEL);
+		dcplb_add((CFG_MONITOR_BASE + CFG_MONITOR_LEN) & CPLB_PAGE_MASK, SDRAM_DKERNEL);
+		++i;
 	}
-#if (BFIN_FAMILY == ADSP_BF56X)
-	/* MAC space */
-	dcplb_table[j][0] = 0x2C000000;
-	dcplb_table[j][1] = SDRAM_EBIU;
-	j++;
-	/* Flash space */
-	for (i = 0; i < 3; i++) {
-		dcplb_table[j][0] = 0x20000000 + i * 4 * 1024 * 1024;
-		dcplb_table[j][1] = SDRAM_EBIU;
-		j++;
+
+	icplb_add(0x20000000, SDRAM_INON_CHBL);
+	dcplb_add(0x20000000, SDRAM_EBIU);
+	++i;
+
+	/* Add entries for the rest of external RAM up to the bootrom */
+	extern_memory = 0;
+	while (i < 16 && extern_memory < (CFG_MONITOR_BASE & CPLB_PAGE_MASK)) {
+		icplb_add(extern_memory, SDRAM_IGENERIC);
+		dcplb_add(extern_memory, SDRAM_DGENERIC);
+		extern_memory += CPLB_PAGE_SIZE;
+		++i;
 	}
-#elif (BFIN_FAMILY == ADSP_BF54X)
-	/* Async memory */
-	/* Bank0 */
-	for (i = 0; i < CONFIG_ASYNC_BANK0_SIZE / 4; i++) {
-		dcplb_table[j][0] = 0x20000000 + i * 4 * 1024 * 1024;
-		dcplb_table[j][1] = SDRAM_EBIU;
-		j++;
+	while (i < 16) {
+		icplb_add(0, 0);
+		dcplb_add(0, 0);
+		++i;
 	}
-	/* Bank1 */
-	for (i = 0; i < CONFIG_ASYNC_BANK1_SIZE / 4; i++) {
-		dcplb_table[j][0] = 0x24000000 + i * 4 * 1024 * 1024;
-		dcplb_table[j][1] = SDRAM_EBIU;
-		j++;
-	}
-	/* Bank2 */
-	for (i = 0; i < CONFIG_ASYNC_BANK2_SIZE / 4; i++) {
-		dcplb_table[j][0] = 0x28000000 + i * 4 * 1024 * 1024;
-		dcplb_table[j][1] = SDRAM_EBIU;
-		j++;
-	}
-	/* Bank3 */
-	for (i = 0; i < CONFIG_ASYNC_BANK3_SIZE / 4; i++) {
-		dcplb_table[j][0] = 0x2C000000 + i * 4 * 1024 * 1024;
-		dcplb_table[j][1] = SDRAM_EBIU;
-		j++;
-	}
-#else
-	dcplb_table[j][0] = 0x20000000;
-	dcplb_table[j][1] = SDRAM_EBIU;
-#endif
 }
 
 /*
@@ -317,7 +259,6 @@ void board_init_f(ulong bootflag)
 	DECLARE_GLOBAL_DATA_PTR;
 	ulong addr;
 	bd_t *bd;
-	int i;
 
 	init_cplbtables();
 
@@ -346,13 +287,6 @@ void board_init_f(ulong bootflag)
 	dcache_enable();
 #endif
 	display_banner();	/* say that we are here */
-
-	for (i = 0; i < page_descriptor_table_size; i++) {
-		debug
-		    ("data (%02i)= 0x%08x : 0x%08x    intr = 0x%08x : 0x%08x\n",
-		     i, dcplb_table[i][0], dcplb_table[i][1], icplb_table[i][0],
-		     icplb_table[i][1]);
-	}
 
 	checkboard();
 #if defined(CONFIG_RTC_BFIN) && (CONFIG_COMMANDS & CFG_CMD_DATE)

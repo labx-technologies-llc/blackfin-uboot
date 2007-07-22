@@ -40,6 +40,7 @@
 #include <asm/system.h>
 #include <asm/traps.h>
 #include "cpu.h"
+#include <asm/memory-map.h>
 #include <asm/arch-common/anomaly.h>
 #include <asm/cplb.h>
 #include <asm/io.h>
@@ -50,26 +51,17 @@ void process_int(unsigned long vec, struct pt_regs *fp)
 	return;
 }
 
-extern unsigned int icplb_table[page_descriptor_table_size][2];
-extern unsigned int dcplb_table[page_descriptor_table_size][2];
-
-unsigned long last_cplb_fault_retx;
-
-static unsigned int cplb_sizes[4] =
-    { 1024, 4 * 1024, 1024 * 1024, 4 * 1024 * 1024 };
-
 void trap_c(struct pt_regs *regs)
 {
-	unsigned int addr;
-	unsigned long trapnr = (regs->seqstat) & SEQSTAT_EXCAUSE;
-	unsigned int i, j, size, *I0, *I1;
-	unsigned short data = 0;
+	uint32_t trapnr = (regs->seqstat) & SEQSTAT_EXCAUSE;
+	bool data = false;
 
 	switch (trapnr) {
 	/* 0x26 - Data CPLB Miss */
-	case VEC_CPLB_M:
+	case VEC_CPLB_M: {
 
 #ifdef ANOMALY_05000261
+		static uint32_t last_cplb_fault_retx;
 		/*
 		 * Work around an anomaly: if we see a new DCPLB fault,
 		 * return without doing anything. Then,
@@ -77,120 +69,100 @@ void trap_c(struct pt_regs *regs)
 		 */
 		addr = last_cplb_fault_retx;
 		last_cplb_fault_retx = regs->retx;
-		printf("this time, curr = 0x%08x last = 0x%08x\n",
-		       addr, last_cplb_fault_retx);
+		debug("this time, curr = 0x%08x last = 0x%08x\n",
+		      addr, last_cplb_fault_retx);
 		if (addr != last_cplb_fault_retx)
 			return;
 #endif
-		data = 1;
 
-	case VEC_CPLB_I_M:
+		data = true;
+		/* fall through */
+	}
 
-		if (data)
-			addr = *(unsigned int *)pDCPLB_FAULT_ADDR;
-		else
-			addr = *(unsigned int *)pICPLB_FAULT_ADDR;
+	/* 0x27 - Instruction CPLB Miss */
+	case VEC_CPLB_I_M: {
+		volatile uint32_t *CPLB_ADDR_BASE, *CPLB_DATA_BASE, *CPLB_ADDR, *CPLB_DATA;
+		uint32_t new_cplb_addr = 0, new_cplb_data = 0;
+		static size_t last_evicted;
+		size_t i;
 
-		for (i = 0; i < page_descriptor_table_size; i++) {
-			if (data) {
-				size = cplb_sizes[dcplb_table[i][1] >> 16];
-				j = dcplb_table[i][0];
-			} else {
-				size = cplb_sizes[icplb_table[i][1] >> 16];
-				j = icplb_table[i][0];
-			}
-			if ((j <= addr) && ((j + size) > addr)) {
-				debug("found %i 0x%08x\n", i, j);
-				break;
-			}
+		new_cplb_addr = (*(uint32_t *)(data ? pDCPLB_FAULT_ADDR : pICPLB_FAULT_ADDR)) & ~(4 * 1024 * 1024 - 1);
+
+		for (i = 0; i < ARRAY_SIZE(bfin_memory_map); ++i) {
+			/* if the exception is inside this range ... */
+			if (new_cplb_addr >= bfin_memory_map[i].start &&
+			    new_cplb_addr < bfin_memory_map[i].end)
+				/* and it is the right type for this range ... */
+				if ((data && bfin_memory_map[i].data) ||
+				    (!data && bfin_memory_map[i].inst))
+					/* lets use it */
+					break;
 		}
-		if (i == page_descriptor_table_size) {
-			printf("something is really wrong\n");
+		if (i == ARRAY_SIZE(bfin_memory_map)) {
+			printf("CPLB exception outside of memory map\n");
 			do_reset(NULL, 0, 0, NULL);
-		}
+		} else
+			debug("CPLB addr %p matches map 0x%p - 0x%p\n", new_cplb_addr, bfin_memory_map[i].start, bfin_memory_map[i].end);
+		new_cplb_data = (data ? bfin_memory_map[i].data_flags : bfin_memory_map[i].inst_flags);
 
 		/* Turn the cache off */
+		sync();
 		if (data) {
-			sync();
 			asm(" .align 8; ");
-			*(unsigned int *)DMEM_CONTROL &=
-			    ~(ACACHE_BCACHE | ENDCPLB | PORT_PREF0);
-			sync();
+			*pDMEM_CONTROL &= ~ENDCPLB;
 		} else {
-			sync();
 			asm(" .align 8; ");
-			*(unsigned int *)IMEM_CONTROL &= ~(IMC | ENICPLB);
-			sync();
+			*pIMEM_CONTROL &= ~ENICPLB;
 		}
+		sync();
 
 		if (data) {
-			I0 = (unsigned int *)DCPLB_ADDR0;
-			I1 = (unsigned int *)DCPLB_DATA0;
+			CPLB_ADDR_BASE = (uint32_t *)DCPLB_ADDR0;
+			CPLB_DATA_BASE = (uint32_t *)DCPLB_DATA0;
 		} else {
-			I0 = (unsigned int *)ICPLB_ADDR0;
-			I1 = (unsigned int *)ICPLB_DATA0;
+			CPLB_ADDR_BASE = (uint32_t *)ICPLB_ADDR0;
+			CPLB_DATA_BASE = (uint32_t *)ICPLB_DATA0;
 		}
 
-		j = 0;
-		while (*I1 & CPLB_LOCK) {
-			debug("skipping %i %08p - %08x\n", j, I1, *I1);
-			I0++;
-			I1++;
-			j++;
+		/* find the next unlocked entry and evict it */
+		i = last_evicted & 0xF;
+		debug("last evicted = %i\n", i);
+		CPLB_DATA = CPLB_DATA_BASE + i;
+		while (*CPLB_DATA & CPLB_LOCK) {
+			debug("skipping %i %p - %08X\n", i, CPLB_DATA, *CPLB_DATA);
+			i = (i + 1) & 0xF;	/* wrap around */
+			CPLB_DATA = CPLB_DATA_BASE + i;
 		}
+		CPLB_ADDR = CPLB_ADDR_BASE + i;
 
-		debug("remove %i 0x%08x  0x%08x\n", j, *I0, *I1);
+		debug("evicting entry %i: 0x%p 0x%08X\n", i, *CPLB_ADDR, *CPLB_DATA);
+		last_evicted = i + 1;
+		*CPLB_ADDR = new_cplb_addr;
+		*CPLB_DATA = new_cplb_data;
 
-		for (; j < 15; j++) {
-			debug("replace %i 0x%08x  0x%08x\n", j, I0, I0 + 1);
-			*I0 = *(I0 + 1);
-			*I1 = *(I1 + 1);
-			I0++;
-			I1++;
-		}
-
-		if (data) {
-			*I0 = dcplb_table[i][0];
-			*I1 = dcplb_table[i][1];
-			I0 = (unsigned int *)DCPLB_ADDR0;
-			I1 = (unsigned int *)DCPLB_DATA0;
-		} else {
-			*I0 = icplb_table[i][0];
-			*I1 = icplb_table[i][1];
-			I0 = (unsigned int *)ICPLB_ADDR0;
-			I1 = (unsigned int *)ICPLB_DATA0;
-		}
-
-		for (j = 0; j < 16; j++) {
-			debug("%i 0x%08x  0x%08x\n", j, *I0++, *I1++);
-		}
+		/* dump current table for debugging purposes */
+		CPLB_ADDR = CPLB_ADDR_BASE;
+		CPLB_DATA = CPLB_DATA_BASE;
+		for (i = 0; i < 16; ++i)
+			debug("%2i 0x%p 0x%08X\n", i, *CPLB_ADDR++, *CPLB_DATA++);
 
 		/* Turn the cache back on */
+		sync();
 		if (data) {
-			j = *(unsigned int *)DMEM_CONTROL;
-			sync();
 			asm(" .align 8; ");
-			*(unsigned int *)DMEM_CONTROL =
-			    ACACHE_BCACHE | ENDCPLB | PORT_PREF0 | j;
-			sync();
+			*pDMEM_CONTROL |= ENDCPLB;
 		} else {
-			sync();
 			asm(" .align 8; ");
-			*(unsigned int *)IMEM_CONTROL = IMC | ENICPLB;
-			sync();
+			*pIMEM_CONTROL |= ENICPLB;
 		}
+		sync();
 
 		break;
+	}
+
 	default:
 		/* All traps come here */
-		printf("code=[0x%x], ", (unsigned int)(regs->seqstat & 0x3f));
-		printf("stack frame=0x%x, ", (unsigned int)regs);
-		printf("bad PC=0x%04x\n", (unsigned int)regs->pc);
-		dump(regs);
-		printf("\n\n");
-
-		printf("Unhandled IRQ or exceptions!\n");
-		printf("Please reset the board \n");
+		blackfin_irq_panic(trapnr, regs);
 		do_reset(NULL, 0, 0, NULL);
 	}
 

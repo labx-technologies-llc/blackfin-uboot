@@ -14,18 +14,9 @@
 # error Memory Map does not fit into configuration
 #endif
 
-/* Set BFIN_FAMILY based on BFIN_CPU */
+/* Sanity check BFIN_CPU */
 #ifndef BFIN_CPU
 # error BFIN_CPU: your board config needs to define this
-#endif
-#if defined(__ADSPBF531__) || defined(__ADSPBF532__) || defined(__ADSPBF533__) || \
-    defined(__ADSPBF534__) || defined(__ADSPBF536__) || defined(__ADSPBF537__)
-# define BFIN_FAMILY ADSP_BF53X
-#elif defined(__ADSPBF542__) || defined(__ADSPBF544__) || \
-      defined(__ADSPBF548__) || defined(__ADSPBF549__)
-# define BFIN_FAMILY ADSP_BF54X
-#elif defined(__ADSPBF561__)
-# define BFIN_FAMILY ADSP_BF56X
 #endif
 
 /* Set default CONFIG_VCO_HZ if need be */

@@ -12,15 +12,11 @@
 /* Misc helper functions */
 #define XMK_STR(x) #x
 #define MK_STR(x) XMK_STR(x)
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
 /* Configurable Blackfin-specific monitor commands */
 #define CFG_BFIN_CMD_BOOTLDR  0x01
 #define CFG_BFIN_CMD_CPLBINFO 0x02
-
-/* Family defines -- automatically selected by blackfin-config-post.h */
-#define ADSP_BF53X		53
-#define ADSP_BF54X		54
-#define ADSP_BF56X		56
 
 /* Bootmode defines -- your config needs to select this via BFIN_BOOT_MODE.
  * Depending on your cpu, some of these may not be valid, check your HRM.

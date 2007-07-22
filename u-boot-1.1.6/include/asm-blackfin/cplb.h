@@ -1,14 +1,13 @@
-/************************************************************************
+/*
+ * cplb.h - defines for managing CPLB tables
  *
- * cplb.h
+ * Copyright (c) 2002-2007 Analog Devices Inc.
  *
- * (c) Copyright 2002-2003 Analog Devices, Inc.  All rights reserved.
- *
- ************************************************************************/
+ * Licensed under the GPL-2 or later.
+ */
 
-/* Defines necessary for cplb initialisation routines. */
-#ifndef _CPLB_H
-#define _CPLB_H
+#ifndef __ASM_BLACKFIN_CPLB_H__
+#define __ASM_BLACKFIN_CPLB_H__
 
 #define CONFIG_BLKFIN_WT
 
@@ -70,14 +69,6 @@
 #define SDRAM_DKERNEL           (PAGE_SIZE_4MB | CPLB_L1_CHBL | CPLB_WT | CPLB_L1_AOW | CPLB_USER_RD | CPLB_SUPV_WR | CPLB_USER_WR | CPLB_VALID | CPLB_LOCK | ANOMALY_05000158)
 #define L1_DMEMORY              (PAGE_SIZE_4MB | CPLB_SUPV_WR | CPLB_USER_WR | CPLB_VALID | ANOMALY_05000158)
 #define SDRAM_EBIU              (PAGE_SIZE_4MB | CPLB_WT | CPLB_L1_AOW | CPLB_USER_RD | CPLB_USER_WR | CPLB_SUPV_WR | CPLB_VALID | ANOMALY_05000158)
-#endif
-
-#if (BFIN_FAMILY == ADSP_BF56X)
-#define page_descriptor_table_size (CONFIG_MEM_SIZE/4 + 1 + 4)	/* SDRAM +L1 + ASYNC_Memory */
-#elif (BFIN_FAMILY == ADSP_BF54X)
-#define page_descriptor_table_size (CONFIG_MEM_SIZE/4 + 1 + CONFIG_ASYNC_BANK0_SIZE/4 + CONFIG_ASYNC_BANK1_SIZE/4 + CONFIG_ASYNC_BANK2_SIZE/4 + CONFIG_ASYNC_BANK3_SIZE/4)	/* SDRAM + L1 + ASYNC_Memory */
-#else
-#define page_descriptor_table_size (CONFIG_MEM_SIZE/4 + 2)	/* SDRAM + L1 + ASYNC_Memory */
 #endif
 
 #endif				/* _CPLB_H */

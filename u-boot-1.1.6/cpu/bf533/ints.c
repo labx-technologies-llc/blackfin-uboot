@@ -49,13 +49,21 @@
 
 void blackfin_irq_panic(int reason, struct pt_regs *regs)
 {
-	printf("\n\nException: IRQ 0x%x entered\n", reason);
-	printf("code=[0x%x], ", (unsigned int)(regs->seqstat & 0x3f));
-	printf("stack frame=0x%x, ", (unsigned int)regs);
-	printf("bad PC=0x%04x\n", (unsigned int)regs->pc);
+	printf(
+		"\n\n\n"
+		"Exception: IRQ 0x%x entered\n"
+		"seqstat=[0x%x], stack frame=0x%x, bad PC=0x%04x\n",
+		reason,
+		(unsigned int)regs->seqstat,
+		(unsigned int)regs,
+		(unsigned int)regs->pc
+	);
 	dump(regs);
-	printf("Unhandled IRQ or exceptions!\n");
-	printf("Please reset the board \n");
+	printf(
+		"Unhandled IRQ or exceptions!\n"
+		"Please reset the board\n"
+		"\n\n"
+	);
 }
 
 void irq_init(void)
