@@ -41,7 +41,7 @@
 #include <asm/traps.h>
 #include "cpu.h"
 #include <asm/memory-map.h>
-#include <asm/arch-common/anomaly.h>
+#include <asm/arch/anomaly.h>
 #include <asm/cplb.h>
 #include <asm/io.h>
 
@@ -58,26 +58,23 @@ void trap_c(struct pt_regs *regs)
 
 	switch (trapnr) {
 	/* 0x26 - Data CPLB Miss */
-	case VEC_CPLB_M: {
+	case VEC_CPLB_M:
 
-#ifdef ANOMALY_05000261
-		static uint32_t last_cplb_fault_retx;
-		/*
-		 * Work around an anomaly: if we see a new DCPLB fault,
-		 * return without doing anything. Then,
-		 * if we get the same fault again, handle it.
-		 */
-		addr = last_cplb_fault_retx;
-		last_cplb_fault_retx = regs->retx;
-		debug("this time, curr = 0x%08x last = 0x%08x\n",
-		      addr, last_cplb_fault_retx);
-		if (addr != last_cplb_fault_retx)
-			return;
-#endif
+		if (ANOMALY_05000261) {
+			static uint32_t last_cplb_fault_retx;
+			/*
+			 * Work around an anomaly: if we see a new DCPLB fault,
+			 * return without doing anything. Then,
+			 * if we get the same fault again, handle it.
+			 */
+			if (last_cplb_fault_retx != regs->retx) {
+				last_cplb_fault_retx = regs->retx;
+				return;
+			}
+		}
 
 		data = true;
 		/* fall through */
-	}
 
 	/* 0x27 - Instruction CPLB Miss */
 	case VEC_CPLB_I_M: {
