@@ -132,8 +132,7 @@
 	 CFG_CMD_EEPROM)
 
 #define CONFIG_BFIN_COMMANDS \
-	( CFG_BFIN_CMD_BOOTLDR | \
-	  CFG_BFIN_CMD_CPLBINFO )
+	( CFG_BFIN_CMD_CPLBINFO )
 
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"
 
