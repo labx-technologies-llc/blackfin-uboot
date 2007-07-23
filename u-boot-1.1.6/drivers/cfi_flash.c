@@ -917,7 +917,7 @@ static void flash_write_cmd (flash_info_t * info, flash_sect_t sect, uint offset
 		       cword.c, info->chipwidth << CFI_FLASH_SHIFT_WIDTH);
 		*addr.cp = cword.c;
 #ifdef CONFIG_BLACKFIN
-		asm("ssync;");
+		SSYNC();
 #endif
 		break;
 	case FLASH_CFI_16BIT:
@@ -926,7 +926,7 @@ static void flash_write_cmd (flash_info_t * info, flash_sect_t sect, uint offset
 		       info->chipwidth << CFI_FLASH_SHIFT_WIDTH);
 		*addr.wp = cword.w;
 #ifdef CONFIG_BLACKFIN
-		asm("ssync;");
+		SSYNC();
 #endif
 		break;
 	case FLASH_CFI_32BIT:
@@ -935,7 +935,7 @@ static void flash_write_cmd (flash_info_t * info, flash_sect_t sect, uint offset
 		       info->chipwidth << CFI_FLASH_SHIFT_WIDTH);
 		*addr.lp = cword.l;
 #ifdef CONFIG_BLACKFIN
-		asm("ssync;");
+		SSYNC();
 #endif
 		break;
 	case FLASH_CFI_64BIT:
@@ -952,7 +952,7 @@ static void flash_write_cmd (flash_info_t * info, flash_sect_t sect, uint offset
 #endif
 		*addr.llp = cword.ll;
 #ifdef CONFIG_BLACKFIN
-		asm("ssync;");
+		SSYNC();
 #endif
 		break;
 	}

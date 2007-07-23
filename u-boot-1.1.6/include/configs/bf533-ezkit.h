@@ -144,26 +144,26 @@
 #define PF_SCL			PF0
 #define PF_SDA			PF1
 
-#define I2C_INIT		(*pFIO_DIR |=  PF_SCL); asm("ssync;")
-#define I2C_ACTIVE		(*pFIO_DIR |=  PF_SDA); *pFIO_INEN &= ~PF_SDA; asm("ssync;")
-#define I2C_TRISTATE		(*pFIO_DIR &= ~PF_SDA); *pFIO_INEN |= PF_SDA; asm("ssync;")
-#define I2C_READ		((*pFIO_FLAG_D & PF_SDA) != 0)
-#define I2C_SDA(bit)	if(bit) { \
-				*pFIO_FLAG_S = PF_SDA; \
-				asm("ssync;"); \
-				} \
-			else    { \
-				*pFIO_FLAG_C = PF_SDA; \
-				asm("ssync;"); \
-				}
-#define I2C_SCL(bit)	if(bit) { \
-				*pFIO_FLAG_S = PF_SCL; \
-				asm("ssync;"); \
-				} \
-			else    { \
-				*pFIO_FLAG_C = PF_SCL; \
-				asm("ssync;"); \
-				}
+#define I2C_INIT       do { *pFIO_DIR |= PF_SCL; SSYNC(); } while (0)
+#define I2C_ACTIVE     do { *pFIO_DIR |= PF_SDA; *pFIO_INEN &= ~PF_SDA; SSYNC(); } while (0)
+#define I2C_TRISTATE   do { *pFIO_DIR &= ~PF_SDA; *pFIO_INEN |= PF_SDA; SSYNC(); } while (0)
+#define I2C_READ       ((*pFIO_FLAG_D & PF_SDA) != 0)
+#define I2C_SDA(bit) \
+	do { \
+		if (bit) \
+			*pFIO_FLAG_S = PF_SDA; \
+		else \
+			*pFIO_FLAG_C = PF_SDA; \
+		SSYNC(); \
+	} while (0)
+#define I2C_SCL(bit) \
+	do { \
+		if (bit) \
+			*pFIO_FLAG_S = PF_SCL; \
+		else \
+			*pFIO_FLAG_C = PF_SCL; \
+		SSYNC(); \
+	} while (0)
 #define I2C_DELAY	udelay(5)	/* 1/4 I2C clock duration */
 
 #define CFG_I2C_SPEED		50000

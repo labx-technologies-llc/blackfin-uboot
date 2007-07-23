@@ -45,7 +45,7 @@ int checkboard(void)
 void cf_outb(unsigned char val, volatile unsigned char* addr)
 {
         *(addr) = val;
-	__builtin_bfin_ssync();
+	SSYNC();
 }
 
 unsigned char cf_inb(volatile unsigned char *addr)
@@ -53,7 +53,7 @@ unsigned char cf_inb(volatile unsigned char *addr)
         volatile unsigned char c;
 
         c = *(addr);
-	__builtin_bfin_ssync();
+	SSYNC();
 
         return c;
 }
@@ -64,7 +64,7 @@ void cf_insw(unsigned short *sect_buf, unsigned short *addr, int words)
 
         for (i = 0;i < words; i++)
                 *(sect_buf + i) = *(addr);
-	__builtin_bfin_ssync();
+	SSYNC();
 }
 
 void cf_outsw(unsigned short *addr, unsigned short *sect_buf, int words)
@@ -73,7 +73,7 @@ void cf_outsw(unsigned short *addr, unsigned short *sect_buf, int words)
 
         for (i = 0;i < words; i++)
                 *(addr) = *(sect_buf + i);
-	__builtin_bfin_ssync();
+	SSYNC();
 }
 #endif /* CONFIG_BFIN_IDE */
 

@@ -150,7 +150,7 @@ void SendSingleCommand(const int iCommand)
 
 	/* sends the actual command to the SPI TX register */
 	*pSPI0_TDBR = iCommand;
-	sync();
+	SSYNC();
 
 	/* The SPI status register will be polled to check the SPIF bit */
 	Wait_For_SPIF();
@@ -172,10 +172,10 @@ void SetupSPI(const int spi_setting)
 	*pSPI0_FLG = 0xFF02;
 	*pSPI0_BAUD = CONFIG_SPI_BAUD;
 	*pSPI0_CTL = spi_setting;
-	sync();
+	SSYNC();
 
 	*pSPI0_FLG = 0xFD02;
-	sync();
+	SSYNC();
 }
 
 void SPI_OFF(void)
@@ -184,7 +184,7 @@ void SPI_OFF(void)
 	*pSPI0_CTL = 0x0400;	/* disable SPI */
 	*pSPI0_FLG = 0;
 	*pSPI0_BAUD = 0;
-	sync();
+	SSYNC();
 	udelay(CONFIG_CCLK_HZ / 50000000);
 
 }
@@ -242,10 +242,10 @@ char ReadStatusRegister(void)
 	SetupSPI((COMMON_SPI_SETTINGS | TIMOD01));	/* Turn on the SPI */
 
 	*pSPI0_TDBR = SPI_RDSR;	/* send instruction to read status register */
-	sync();
+	SSYNC();
 	Wait_For_SPIF();	/*wait until the instruction has been sent */
 	*pSPI0_TDBR = 0;		/*send dummy to receive the status register */
-	sync();
+	SSYNC();
 	Wait_For_SPIF();	/*wait until the data has been sent */
 	status_register = *pSPI0_RDBR;	/*read the status register */
 
@@ -308,23 +308,23 @@ enum error_code EraseBlock(int nBlock)
 	 * to point to the start of a sector
 	 */
 	*pSPI0_TDBR = SPI_SE;
-	sync();
+	SSYNC();
 	Wait_For_SPIF();
 	/* Send the highest byte of the 24 bit address at first */
 	ShiftValue = (ulSectorOff >> 16);
 	*pSPI0_TDBR = ShiftValue;
-	sync();
+	SSYNC();
 	/* Wait until the instruction has been sent */
 	Wait_For_SPIF();
 	/* Send the middle byte of the 24 bit address  at second */
 	ShiftValue = (ulSectorOff >> 8);
 	*pSPI0_TDBR = ShiftValue;
-	sync();
+	SSYNC();
 	/* Wait until the instruction has been sent */
 	Wait_For_SPIF();
 	/* Send the lowest byte of the 24 bit address finally */
 	*pSPI0_TDBR = ulSectorOff;
-	sync();
+	SSYNC();
 	/* Wait until the instruction has been sent */
 	Wait_For_SPIF();
 
@@ -365,33 +365,33 @@ enum error_code ReadData(unsigned long ulStart, long lCount, int *pnData)
 	/* Send the read command to SPI device */
 	*pSPI0_TDBR = SPI_READ;
 #endif
-	sync();
+	SSYNC();
 	/* Wait until the instruction has been sent */
 	Wait_For_SPIF();
 	/* Send the highest byte of the 24 bit address at first */
 	ShiftValue = (ulStart >> 16);
 	/* Send the byte to the SPI device */
 	*pSPI0_TDBR = ShiftValue;
-	sync();
+	SSYNC();
 	/* Wait until the instruction has been sent */
 	Wait_For_SPIF();
 	/* Send the middle byte of the 24 bit address  at second */
 	ShiftValue = (ulStart >> 8);
 	/* Send the byte to the SPI device */
 	*pSPI0_TDBR = ShiftValue;
-	sync();
+	SSYNC();
 	/* Wait until the instruction has been sent */
 	Wait_For_SPIF();
 	/* Send the lowest byte of the 24 bit address finally */
 	*pSPI0_TDBR = ulStart;
-	sync();
+	SSYNC();
 	/* Wait until the instruction has been sent */
 	Wait_For_SPIF();
 
 #ifdef CONFIG_SPI_FLASH_FAST_READ
 	/* Send dummy for FAST_READ */
 	*pSPI0_TDBR = 0;
-	sync();
+	SSYNC();
 	/* Wait until the instruction has been sent */
 	Wait_For_SPIF();
 #endif
@@ -400,7 +400,7 @@ enum error_code ReadData(unsigned long ulStart, long lCount, int *pnData)
 	/* received on the MISO pin. */
 	for (i = 0; i < lCount; i++) {
 		*pSPI0_TDBR = 0;
-		sync();
+		SSYNC();
 		while (!(*pSPI0_STAT & RXS)) ;
 		*cnData++ = *pSPI0_RDBR;
 
@@ -443,22 +443,22 @@ enum error_code WriteFlash(unsigned long ulStartAddr, long lTransferCount,
 		 */
 		SetupSPI((COMMON_SPI_SETTINGS | TIMOD01));
 	*pSPI0_TDBR = SPI_PP;
-	sync();
+	SSYNC();
 	/*wait until the instruction has been sent */
 	Wait_For_SPIF();
 	ulWAddr = (ulStartAddr >> 16);
 	*pSPI0_TDBR = ulWAddr;
-	sync();
+	SSYNC();
 	/*wait until the instruction has been sent */
 	Wait_For_SPIF();
 	ulWAddr = (ulStartAddr >> 8);
 	*pSPI0_TDBR = ulWAddr;
-	sync();
+	SSYNC();
 	/*wait until the instruction has been sent */
 	Wait_For_SPIF();
 	ulWAddr = ulStartAddr;
 	*pSPI0_TDBR = ulWAddr;
-	sync();
+	SSYNC();
 	/*wait until the instruction has been sent */
 	Wait_For_SPIF();
 	/*
@@ -468,7 +468,7 @@ enum error_code WriteFlash(unsigned long ulStartAddr, long lTransferCount,
 	for (i = 0; (i < lTransferCount) && (i < 256); i++, lWTransferCount++) {
 		iData = *temp;
 		*pSPI0_TDBR = iData;
-		sync();
+		SSYNC();
 		/*wait until the instruction has been sent */
 		Wait_For_SPIF();
 		temp++;

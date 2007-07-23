@@ -57,20 +57,20 @@ int cleanup_before_linux(void)
 void icache_enable(void)
 {
 	cli();
-	sync();
+	SSYNC();
 	asm(" .align 8; ");
 	*pIMEM_CONTROL |= (IMC | ENICPLB);
-	sync();
+	SSYNC();
 	sti();
 }
 
 void icache_disable(void)
 {
 	cli();
-	sync();
+	SSYNC();
 	asm(" .align 8; ");
 	*pIMEM_CONTROL &= ~(IMC | ENICPLB);
-	sync();
+	SSYNC();
 	sti();
 }
 
@@ -85,20 +85,20 @@ int icache_status(void)
 void dcache_enable(void)
 {
 	cli();
-	sync();
+	SSYNC();
 	asm(" .align 8; ");
 	*pDMEM_CONTROL |= (ACACHE_BCACHE | ENDCPLB | PORT_PREF0);
-	sync();
+	SSYNC();
 	sti();
 }
 
 void dcache_disable(void)
 {
 	cli();
-	sync();
+	SSYNC();
 	asm(" .align 8; ");
 	*pDMEM_CONTROL &= ~(ACACHE_BCACHE | ENDCPLB | PORT_PREF0);
-	sync();
+	SSYNC();
 	sti();
 }
 

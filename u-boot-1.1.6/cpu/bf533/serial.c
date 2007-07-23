@@ -82,29 +82,29 @@ void serial_setbrg(void)
 
 	/* Enable UART */
 	*pUART_GCTL |= UART_GCTL_UCEN;
-	sync();
+	SSYNC();
 
 	/* Set DLAB in LCR to Access DLL and DLH */
 	ACCESS_LATCH;
-	sync();
+	SSYNC();
 
 	*pUART_DLL = hw_baud_table[i].dl_low;
-	sync();
+	SSYNC();
 	*pUART_DLH = hw_baud_table[i].dl_high;
-	sync();
+	SSYNC();
 
 	/* Clear DLAB in LCR to Access THR RBR IER */
 	ACCESS_PORT_IER;
-	sync();
+	SSYNC();
 
 	/* Enable ERBFI and ELSI interrupts
 	 * to poll SIC_ISR register*/
 	*pUART_IER = UART_IER_ELSI | UART_IER_ERBFI | UART_IER_ETBEI;
-	sync();
+	SSYNC();
 
 	/* Set LCR to Word Lengh 8-bit word select */
 	*pUART_LCR = UART_LCR_WLS8;
-	sync();
+	SSYNC();
 
 	return;
 }
@@ -125,7 +125,7 @@ void serial_putc(const char c)
 	}
 
 	while (!((*pUART_LSR) & UART_LSR_TEMT))
-		SYNC_ALL;
+		SSYNC();
 
 	return;
 }
@@ -147,7 +147,7 @@ int serial_getc(void)
 	/* Poll for RX Interrupt */
 	while (!((isr_val =
 		  *(volatile unsigned long *)SIC_ISR) & IRQ_UART_RX_BIT)) ;
-	asm("csync;");
+	CSYNC();
 
 	uart_lsr_val = *pUART_LSR;	/* Clear status bit */
 	uart_rbr_val = *pUART_RBR;	/* getc() */
@@ -177,7 +177,7 @@ static void local_put_char(char ch)
 
 	/* Poll for TX Interruput */
 	while (!((isr_val = *pSIC_ISR) & IRQ_UART_TX_BIT)) ;
-	asm("csync;");
+	CSYNC();
 
 	*pUART_THR = ch;	/* putc() */
 

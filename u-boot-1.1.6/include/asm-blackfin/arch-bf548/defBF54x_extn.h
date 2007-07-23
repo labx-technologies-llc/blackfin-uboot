@@ -23,11 +23,6 @@
 #define OFFSET_( x )		((x) & 0x0000FFFF)
 /* Delay inserted for PLL transition */
 
-#define LO(con32)               ((con32) & 0xFFFF)
-#define lo(con32)               ((con32) & 0xFFFF)
-#define HI(con32)               (((con32) >> 16) & 0xFFFF)
-#define hi(con32)               (((con32) >> 16) & 0xFFFF)
-
 #define PLL_DELAY		0x1000
 
 #define L1_ISRAM		0xFFA00000

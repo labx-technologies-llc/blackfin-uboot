@@ -104,15 +104,15 @@ void post_init_uart(int sclk)
 
 	*pUART_GCTL = 0x00;
 	*pUART_LCR = 0x83;
-	sync();
+	SSYNC();
 	*pUART_DLL = (divisor & 0xFF);
-	sync();
+	SSYNC();
 	*pUART_DLH = ((divisor >> 8) & 0xFF);
-	sync();
+	SSYNC();
 	*pUART_LCR = 0x03;
-	sync();
+	SSYNC();
 	*pUART_GCTL = 0x01;
-	sync();
+	SSYNC();
 }
 
 void post_out_buff(char *buff)
@@ -125,7 +125,7 @@ void post_out_buff(char *buff)
 	while ((buff[i] != '\0') && (i != 100)) {
 		while (!(*pUART_LSR & 0x20)) ;
 		*pUART_THR = buff[i];
-		sync();
+		SSYNC();
 		i++;
 	}
 	for (i = 0; i < 0x80000; i++)
@@ -143,7 +143,7 @@ int post_key_pressed(void)
 	*pPORTF_FER &= ~PF5;
 	*pPORTFIO_DIR &= ~PF5;
 	*pPORTFIO_INEN |= PF5;
-	sync();
+	SSYNC();
 
 	post_out_buff("########Press SW10 to enter Memory POST########: 3\0");
 	for (i = 0; i < KEY_LOOP; i++) {
@@ -302,7 +302,7 @@ int post_init_sdram(int sclk)
 	    (SCTLE | SDRAM_CL | SDRAM_tRAS | SDRAM_tRP | SDRAM_tRCD | SDRAM_tWR
 	     | PSS);
 
-	sync();
+	SSYNC();
 
 	*pEBIU_SDGCTL |= 0x1000000;
 	/* Set the SDRAM Refresh Rate control register based on SSCLK value */
@@ -313,7 +313,7 @@ int post_init_sdram(int sclk)
 
 	/* SDRAM Memory Global Control Register */
 	*pEBIU_SDGCTL = mem_SDGCTL;
-	sync();
+	SSYNC();
 	return mem_SDRRC;
 }
 

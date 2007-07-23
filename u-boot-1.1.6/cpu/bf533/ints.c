@@ -102,10 +102,10 @@ void irq_init(void)
 	*(unsigned volatile long *)(EVT_IVG15_ADDR) =
 		(unsigned volatile long)evt_soft_int1;
 	*(volatile unsigned long *) ILAT = 0;
-	asm("csync;");
+	CSYNC();
 	sti();
 	*(volatile unsigned long *) IMASK = 0xffbf;
-	asm("csync;");
+	CSYNC();
 }
 
 void exception_handle(void)

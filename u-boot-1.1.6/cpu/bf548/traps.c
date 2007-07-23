@@ -103,7 +103,7 @@ void trap_c(struct pt_regs *regs)
 		new_cplb_data = (data ? bfin_memory_map[i].data_flags : bfin_memory_map[i].inst_flags);
 
 		/* Turn the cache off */
-		sync();
+		SSYNC();
 		if (data) {
 			asm(" .align 8; ");
 			*pDMEM_CONTROL &= ~ENDCPLB;
@@ -111,7 +111,7 @@ void trap_c(struct pt_regs *regs)
 			asm(" .align 8; ");
 			*pIMEM_CONTROL &= ~ENICPLB;
 		}
-		sync();
+		SSYNC();
 
 		if (data) {
 			CPLB_ADDR_BASE = (uint32_t *)DCPLB_ADDR0;
@@ -144,7 +144,7 @@ void trap_c(struct pt_regs *regs)
 			debug("%2i 0x%p 0x%08X\n", i, *CPLB_ADDR++, *CPLB_DATA++);
 
 		/* Turn the cache back on */
-		sync();
+		SSYNC();
 		if (data) {
 			asm(" .align 8; ");
 			*pDMEM_CONTROL |= ENDCPLB;
@@ -152,7 +152,7 @@ void trap_c(struct pt_regs *regs)
 			asm(" .align 8; ");
 			*pIMEM_CONTROL |= ENICPLB;
 		}
-		sync();
+		SSYNC();
 
 		break;
 	}

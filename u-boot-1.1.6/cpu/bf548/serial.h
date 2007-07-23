@@ -46,7 +46,6 @@
 #include <linux/config.h>
 #include <asm/blackfin.h>
 
-#define SYNC_ALL	__asm__ __volatile__ ("ssync;\n")
 /*
 #define ACCESS_LATCH	*pUART1_LCR |= UART_LCR_DLAB;
 #define ACCESS_PORT_IER	*pUART1_LCR &= (~UART_LCR_DLAB);

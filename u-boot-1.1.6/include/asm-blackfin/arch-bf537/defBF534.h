@@ -18,11 +18,6 @@
 /* Include all Core registers and bit definitions */
 #include <asm/arch-common/def_LPBlackfin.h>
 
-#define LO(con32)		((con32) & 0xFFFF)
-#define lo(con32)		((con32) & 0xFFFF)
-#define HI(con32)		(((con32) >> 16) & 0xFFFF)
-#define hi(con32)		(((con32) >> 16) & 0xFFFF)
-
 /*
  * System MMR Register Map
  */

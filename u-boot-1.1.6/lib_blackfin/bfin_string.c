@@ -139,7 +139,7 @@ static void *dma_memcpy(void *dest, const void *src, size_t count)
 
 	/* Enable source DMA */
 	*pMDMA_S0_CONFIG = (DMAEN);
-	sync();
+	SSYNC();
 
 	*pMDMA_D0_CONFIG = (WNR | DMAEN);
 

@@ -86,29 +86,29 @@ void serial_setbrg(void)
 
 	/* Enable UART */
 	*pUART1_GCTL |= UCEN;
-	__builtin_bfin_ssync();
+	SSYNC();
 
 	/* Set DLAB in LCR to Access DLL and DLH */
 	ACCESS_LATCH;
-	__builtin_bfin_ssync();
+	SSYNC();
 
 	*pUART1_DLL = hw_baud_table[i].dl_low;
-	__builtin_bfin_ssync();
+	SSYNC();
 	*pUART1_DLH = hw_baud_table[i].dl_high;
-	__builtin_bfin_ssync();
+	SSYNC();
 
 	/* Clear DLAB in LCR to Access THR RBR IER */
 	ACCESS_PORT_IER;
-	__builtin_bfin_ssync();
+	SSYNC();
 
 	/* Enable ERBFI and ELSI interrupts
 	 * to poll SIC_ISR register*/
 	*pUART1_IER_SET = ELSI_S | ERBFI_S | ETBEI_S;
-	__builtin_bfin_ssync();
+	SSYNC();
 
 	/* Set LCR to Word Lengh 8-bit word select */
 	*pUART1_LCR = WLS_8;
-	__builtin_bfin_ssync();
+	SSYNC();
 
 	return;
 }
@@ -129,7 +129,7 @@ void serial_putc(const char c)
 	}
 
 	while (!((*pUART1_LSR) & TEMT))
-		SYNC_ALL;
+		SSYNC();
 
 	return;
 }
@@ -151,7 +151,7 @@ int serial_getc(void)
 	/* Poll for RX Interrupt */
 	while (!((isr_val =
 		 *(volatile unsigned long *)SIC_ISR1) & IRQ_UART1_RX_BIT));
-	asm("csync;");
+	CSYNC();
 
 	uart_lsr_val = *pUART1_LSR;	/* Clear status bit */
 	uart_rbr_val = *pUART1_RBR;	/* getc() */
@@ -181,7 +181,7 @@ static void local_put_char(char ch)
 
 	/* Poll for TX Interruput */
 	while (!((isr_val = *pSIC_ISR1) & IRQ_UART1_TX_BIT)) ;
-	asm("csync;");
+	CSYNC();
 
 	*pUART1_THR = ch;	/* putc() */
 
