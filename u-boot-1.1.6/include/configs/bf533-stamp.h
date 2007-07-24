@@ -283,7 +283,7 @@
 #define CONFIG_BAUDRATE		57600
 #define CFG_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 
-#define CFG_PROMPT MK_STR(CONFIG_HOSTNAME) "> "
+#define CFG_PROMPT "bfin> "
 
 #if (CONFIG_COMMANDS & CFG_CMD_KGDB)
 #define CFG_CBSIZE	1024		/* Console I/O Buffer Size */

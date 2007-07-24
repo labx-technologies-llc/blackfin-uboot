@@ -218,7 +218,7 @@
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
 
-#define CFG_PROMPT MK_STR(CONFIG_HOSTNAME) "> "
+#define CFG_PROMPT "bfin> "
 
 #if (CONFIG_COMMANDS & CFG_CMD_KGDB)
 #define	CFG_CBSIZE		1024	/* Console I/O Buffer Size */
