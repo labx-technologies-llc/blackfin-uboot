@@ -27,6 +27,8 @@
 
 include $(TOPDIR)/config.mk
 
+CFLAGS += -DBFIN_BOARD_NAME='"$(BOARD)"'
+
 LIB	= $(obj)lib$(ARCH).a
 
 SOBJS	= memcpy.o memcmp.o memset.o memmove.o

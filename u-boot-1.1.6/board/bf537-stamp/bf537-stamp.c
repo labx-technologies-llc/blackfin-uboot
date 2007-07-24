@@ -36,7 +36,6 @@
 
 int checkboard(void)
 {
-	printf("CPU:   ADSP " MK_STR(BFIN_CPU) " Rev.: 0.%d\n", bfin_revid());
 	printf("Board: ADI BF537 stamp board\n");
 	printf("       Support: http://blackfin.uclinux.org/\n");
 	return 0;

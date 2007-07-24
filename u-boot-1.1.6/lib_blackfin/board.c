@@ -52,6 +52,8 @@ int post_flag;
 extern flash_info_t flash_info[];
 #endif
 
+const char version_string[] = U_BOOT_VERSION" (" __DATE__ " - " __TIME__ ")";
+
 static inline u_long get_vco(void)
 {
 	u_long msel;
@@ -118,9 +120,9 @@ void *sbrk(ptrdiff_t increment)
 
 static int display_banner(void)
 {
-	sprintf(version_string, VERSION_STRING_FORMAT, VERSION_STRING);
-	printf("%s\n", version_string);
-	return (0);
+	printf("\n\n%s\n\n", version_string);
+	printf("CPU:   ADSP " MK_STR(BFIN_CPU) " (Detected Rev: 0.%d)\n", bfin_revid());
+	return 0;
 }
 
 static void display_flash_config(ulong size)
@@ -164,7 +166,6 @@ static void display_global_data(void)
 	       bd->bi_enetaddr[1],
 	       bd->bi_enetaddr[2],
 	       bd->bi_enetaddr[3], bd->bi_enetaddr[4], bd->bi_enetaddr[5]);
-	printf("---bi_arch_number:%x\n", bd->bi_arch_number);
 	printf("---bi_boot_params:%x\n", bd->bi_boot_params);
 	printf("---bi_memstart:%x\n", bd->bi_memstart);
 	printf("---bi_memsize:%x\n", bd->bi_memsize);
@@ -274,6 +275,13 @@ void board_init_f(ulong bootflag)
 	gd->bd = bd;
 	memset((void *)bd, 0, sizeof(bd_t));
 
+	bd->bi_r_version = version_string;
+	bd->bi_cpu = MK_STR(BFIN_CPU);
+	bd->bi_board_name = BFIN_BOARD_NAME;
+	bd->bi_vco = get_vco();
+	bd->bi_cclk = get_cclk();
+	bd->bi_sclk = get_sclk();
+
 	/* Initialize */
 	irq_init();
 	env_init();		/* initialize environment */
@@ -293,8 +301,10 @@ void board_init_f(ulong bootflag)
 	rtc_init();
 #endif
 	timer_init();
+
 	printf("Clock: VCO: %lu MHz, Core: %lu MHz, System: %lu MHz\n",
 	       get_vco() / 1000000, get_cclk() / 1000000, get_sclk() / 1000000);
+
 	printf("SDRAM: ");
 	print_size(initdram(0), "\n");
 #if defined(CONFIG_POST)
@@ -302,6 +312,7 @@ void board_init_f(ulong bootflag)
 	post_bootmode_init();
 	post_run(NULL, POST_ROM | post_bootmode_get(0));
 #endif
+
 	board_init_r((gd_t *) gd, 0x20000010);
 }
 
