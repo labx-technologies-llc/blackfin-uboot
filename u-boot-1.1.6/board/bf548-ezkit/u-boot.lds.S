@@ -102,9 +102,9 @@ SECTIONS
 	. = ALIGN(256);
 	__init_end = .;
 
-	__bss_start = .;
 	.bss :
 	{
+		__bss_start = .;
 		*(.sbss) *(.scommon)
 		*(.dynbss)
 		*(.bss)
