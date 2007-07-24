@@ -83,6 +83,7 @@ set TEST_SPI_FLASH			 1
 set TEST_TFTP_WITH_ETHTOOL               1
 
 
+set UBOOT_PROMPT             "bfin>"
 
 if { $board_type == "BF533-STAMP" } {
 
@@ -91,7 +92,6 @@ set BDINFO_FLASHSIZE        "0x00400000"
 set KERNEL_FLASH_LOC        "0x20100000"
 set KERNEL_FLASH_END        "0x203FFFFF"
 set BIG_ELF_LOAD_ADDRESS    "0x3000000"
-set UBOOT_PROMPT             "bf533>"
 
 set L1_INSTRUCT_SRAM_ADDRESS "0xffa0b000"
 
@@ -104,7 +104,6 @@ set BDINFO_FLASHSIZE        "0x00400000"
 set KERNEL_FLASH_LOC        "0x20100000"
 set KERNEL_FLASH_END        "0x203EFFFF"
 set BIG_ELF_LOAD_ADDRESS    "0x2000000"
-set UBOOT_PROMPT             "bf537>"
 set L1_INSTRUCT_SRAM_ADDRESS "0xffa0b000"
 set BDINFO_MEMSIZE           64*1024*1024
 
@@ -115,7 +114,6 @@ set TEST_DATE_SET                        0
 set TEST_DATE_SET_AFTER_POWER_CYCLE      0
 set TEST_SPI_FLASH			 0
 
-set UBOOT_PROMPT            "ezkit>"
 set BDINFO_FLASHSIZE        "0x00800000"
 set KERNEL_FLASH_LOC        "0x20100000"
 set KERNEL_FLASH_END        "0x207FFFFF"
@@ -128,7 +126,6 @@ set BDINFO_MEMSIZE           64*1024*1024
 
 set TEST_SPI_FLASH			 0
 
-set UBOOT_PROMPT               "ezkit>"
 set BDINFO_FLASHSIZE           "0x00220000"
 set KERNEL_FLASH_LOC           "0x20040000"
 set KERNEL_FLASH_END           "0x2021ffff"
@@ -142,7 +139,6 @@ set BDINFO_MEMSIZE           32*1024*1024
 
 } elseif { $board_type == "BF537-EZKIT" } {
 
-set UBOOT_PROMPT                ">"
 set TEST_SPI_FLASH			 0
 
 } else { 
