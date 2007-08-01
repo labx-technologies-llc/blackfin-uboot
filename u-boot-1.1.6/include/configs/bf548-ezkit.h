@@ -17,10 +17,6 @@
 /* Set default serial console for bf537 */
 #define CONFIG_UART_CONSOLE	0
 
-/* This sets the default state of the cache on U-Boot's boot */
-#define CONFIG_ICACHE_ON
-#define CONFIG_DCACHE_ON
-
 /* Define if want to do post memory test */
 #undef CONFIG_POST_TEST
 
@@ -129,10 +125,8 @@
 	 CFG_CMD_CACHE   | \
 	 CFG_CMD_JFFS2   | \
 	 CFG_CMD_DHCP    | \
+	 ADD_NAND_CMD    | \
 	 CFG_CMD_EEPROM)
-
-#define CONFIG_BFIN_COMMANDS \
-	( CFG_BFIN_CMD_CPLBINFO )
 
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"
 
@@ -165,7 +159,7 @@
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
 
-#define CFG_PROMPT "bfin> "
+#define CFG_PROMPT MK_STR(CONFIG_HOSTNAME) "> "
 
 #if (CONFIG_COMMANDS & CFG_CMD_KGDB)
 #define	CFG_CBSIZE		1024	/* Console I/O Buffer Size */
@@ -250,12 +244,18 @@
 				break;		\
 	} while (0)
 
-#define BFIN_NAND_CLE          (1<<2)                  /* A2 -> Command Enable */
-#define BFIN_NAND_ALE          (1<<1)                  /* A1 -> Address Enable */
-
-#define WRITE_NAND_COMMAND(d, adr) do{ *(volatile __u8 *)((unsigned long)adr | BFIN_NAND_CLE) = (__u8)(d); } while(0)
-#define WRITE_NAND_ADDRESS(d, adr) do{ *(volatile __u8 *)((unsigned long)adr | BFIN_NAND_ALE) = (__u8)(d); } while(0)
-#define WRITE_NAND(d, adr) do{ *(volatile __u8 *)((unsigned long)adr) = (__u8)d; } while(0)
+#define WRITE_NAND_COMMAND(d, adr)					\
+	do {								\
+		* (volatile __u8 *)((unsigned long)adr) = (__u8)(d);	\
+	} while (0)
+#define WRITE_NAND_ADDRESS(d, adr)					\
+	do {								\
+		*(volatile __u8 * )((unsigned long)adr) = (__u8)(d);	\
+	} while (0)
+#define WRITE_NAND(d, adr)						\
+	do {								\
+		*(volatile __u8 *)((unsigned long)adr) = (__u8)d;	\
+	} while (0)
 #define READ_NAND(adr) ((volatile unsigned char)(*(volatile __u8 *)(unsigned long)adr))
 
 /*
