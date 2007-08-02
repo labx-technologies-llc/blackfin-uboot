@@ -17,6 +17,10 @@
 /* Set default serial console for bf537 */
 #define CONFIG_UART_CONSOLE	0
 
+/* This sets the default state of the cache on U-Boot's boot */
+#define CONFIG_ICACHE_ON
+#define CONFIG_DCACHE_ON
+
 /* Define if want to do post memory test */
 #undef CONFIG_POST_TEST
 
@@ -128,6 +132,9 @@
 	 ADD_NAND_CMD    | \
 	 CFG_CMD_EEPROM)
 
+#define CONFIG_BFIN_COMMANDS \
+	( CFG_BFIN_CMD_CPLBINFO )
+
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"
 
 #if (BFIN_BOOT_MODE == BFIN_BOOT_PARA)
@@ -159,7 +166,7 @@
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
 
-#define CFG_PROMPT MK_STR(CONFIG_HOSTNAME) "> "
+#define CFG_PROMPT  "bfin> "
 
 #if (CONFIG_COMMANDS & CFG_CMD_KGDB)
 #define	CFG_CBSIZE		1024	/* Console I/O Buffer Size */
