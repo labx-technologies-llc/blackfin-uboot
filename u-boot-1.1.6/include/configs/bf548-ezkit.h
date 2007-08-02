@@ -202,7 +202,7 @@
 #define CFG_MAX_FLASH_SECT	259	/* max number of sectors on one chip */
 #if (BFIN_BOOT_MODE == BFIN_BOOT_PARA) || (BFIN_BOOT_MODE == BFIN_BOOT_UART)    /* for bf537-stamp, usrt boot mode still store env in flash */
 #define	CFG_ENV_IS_IN_FLASH	1
-#define CFG_ENV_ADDR		0x20020000
+#define CFG_ENV_ADDR		0x20002000
 #define CFG_ENV_OFFSET		(CFG_ENV_ADDR - CFG_FLASH_BASE)
 #elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CFG_ENV_IS_IN_EEPROM           1
