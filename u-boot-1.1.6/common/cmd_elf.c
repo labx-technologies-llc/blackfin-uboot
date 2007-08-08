@@ -65,6 +65,8 @@ int do_bootelf (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	 */
 	if (dcache_status ())
 		dcache_disable ();
+	if (icache_status())
+		icache_disable();
 
 	/* pass cmdline to the kernel. */
 	cmdline = make_command_line();
