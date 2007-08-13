@@ -49,10 +49,6 @@ SECTIONS
 		lib_generic/zlib.o		(.text)
 		board/bf561-ezkit/bf561-ezkit.o		(.text)
 
-		dxe_init_start = .;
-		cpu/bf561/init_sdram.o	(.text)
-		dxe_init_end = .;
-
 		. = DEFINED(env_offset) ? env_offset : .;
 		common/environment.o	(.text)
 

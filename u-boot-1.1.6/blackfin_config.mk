@@ -28,3 +28,11 @@ PLATFORM_CPPFLAGS += -DCONFIG_BLACKFIN -ffixed-P5 -fomit-frame-pointer
 
 CONFIG_CPU := $(strip $(shell echo 'BFIN_CPU' | $(CPP) -P -include $(TOPDIR)/include/configs/$(BOARD).h - 2>/dev/null | tail -n 1))
 PLATFORM_RELFLAGS += -mcpu=$(CONFIG_CPU)
+
+BFIN_BOOT_MODE := $(shell \
+	sed -n '/^\#define[[:space:]]*BFIN_BOOT_MODE[[:space:]]/s:.*[[:space:]]*BFIN_:BFIN_:p' \
+	$(SRCTREE)/include/configs/$(BOARD).h)
+
+ifneq ($(BFIN_BOOT_MODE),BFIN_BOOT_BYPASS)
+LDR_FLAGS += --initcode $(obj)cpu/$(CPU)/init_sdram.o
+endif

@@ -25,11 +25,8 @@
 #TEXT_BASE = do-not-use-me
 
 # Set some default LDR flags based on boot mode.
-BOOT_MODE := $(shell \
-	sed -n '/^\#define[[:space:]]*BFIN_BOOT_MODE[[:space:]]/s:.*[[:space:]]*BFIN_:BFIN_:p' \
-	$(SRCTREE)/include/configs/bf548-ezkit.h)
 LDR_FLAGS-BFIN_BOOT_PARA       := --dma 6
 LDR_FLAGS-BFIN_BOOT_FIFO       := --dma 1
 LDR_FLAGS-BFIN_BOOT_SPI_MASTER := --dma 1
 LDR_FLAGS-BFIN_BOOT_UART       := --dma 1
-LDR_FLAGS += $(LDR_FLAGS-$(BOOT_MODE))
+LDR_FLAGS += $(LDR_FLAGS-$(BFIN_BOOT_MODE))

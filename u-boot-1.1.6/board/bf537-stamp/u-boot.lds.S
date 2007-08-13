@@ -57,10 +57,6 @@ SECTIONS
 		common/dlmalloc.o		(.text)
 		lib_generic/crc32.o		(.text)
 
-		dxe_init_start = .;
-		cpu/bf537/init_sdram.o	(.text)
-		dxe_init_end = .;
-
 		. = DEFINED(env_offset) ? env_offset : .;
 		common/environment.o	(.text)
 

@@ -28,9 +28,15 @@ include $(TOPDIR)/config.mk
 
 LIB	= $(obj)lib$(CPU).a
 
-START	= start.o
-SOBJS	= interrupt.o cache.o flush.o init_sdram.o
-COBJS	= cpu.o traps.o ints.o serial.o interrupts.o video.o i2c.o
+START	:= start.o
+SOBJS	:= interrupt.o cache.o flush.o
+COBJS	:= cpu.o traps.o ints.o serial.o interrupts.o video.o i2c.o
+
+ifeq ($(BFIN_BOOT_MODE),BFIN_BOOT_BYPASS)
+SOBJS   += init_sdram.o
+else
+EXTRA   := init_sdram.o
+endif
 
 SRCS	:= $(START:.o=.S) $(SOBJS:.o=.S) $(COBJS:.o=.c)
 OBJS	:= $(addprefix $(obj),$(COBJS) $(SOBJS))
