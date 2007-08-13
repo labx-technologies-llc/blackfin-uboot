@@ -136,6 +136,19 @@ set BIG_ELF_LOAD_ADDRESS        "0x1000000"
 set TEST_JFFS2				 0
 set BDINFO_MEMSIZE           32*1024*1024
 
+} elseif { $board_type == "BF548-EZKIT" } {
+
+#set TEST_SPI_FLASH                       0
+
+set BDINFO_FLASHSIZE           "0x02000000"
+set KERNEL_FLASH_LOC           "0x20100000"
+set KERNEL_FLASH_END           "0x205fffff"
+set L1_INSTRUCT_SRAM_ADDRESS   "0xffa03000"
+
+set BIG_ELF_LOAD_ADDRESS        "0x1000000"
+
+set BDINFO_MEMSIZE           64*1024*1024
+
 
 } elseif { $board_type == "BF537-EZKIT" } {
 
@@ -2111,7 +2124,6 @@ if { $flinfo_bank_result==$TEST_PASS && $flinfo_sector_result==$TEST_PASS} {
 }
 
 send "\r"
-sleep 5
 set timeout 15
 while 1 {
     expect {

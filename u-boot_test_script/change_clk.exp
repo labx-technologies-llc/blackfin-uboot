@@ -1,8 +1,5 @@
 #!/usr/bin/expect
 
-set uboot_path ~/checkouts/u-boot/u-boot-1.1.6/ 
-
-
 proc usage {} {
     global argv0
 
@@ -56,6 +53,11 @@ set board_type       [lindex $argv 0]
 set num              0
 if { $argc > 1} {
 set num              [lindex $argv 1]
+}
+
+set checkout_path /home/test/checkouts 
+if { $argc > 2} {
+set checkout_path       [lindex $argv 2]
 }
 
 if { $board_type == "BF533-STAMP" } {
@@ -159,15 +161,15 @@ if { $board_type == "BF533-STAMP" } {
     exit
 } 
 
-if { $argc > 4} {
-set vco_mult         [lindex $argv 2]
-set cclk_div         [lindex $argv 3]
-set sclk_div         [lindex $argv 4]
+if { $argc > 5} {
+set vco_mult         [lindex $argv 3]
+set cclk_div         [lindex $argv 4]
+set sclk_div         [lindex $argv 5]
 
 }
 puts "VCO_MULT: $vco_mult ,CCLK_DIV: $cclk_div , SCLK_DIV $sclk_div ."
 
-cd $uboot_path
+cd $checkout_path/u-boot/u-boot-1.1.6/
 sleep 3
  set timeout 2
       spawn ex include/configs/$config_file
