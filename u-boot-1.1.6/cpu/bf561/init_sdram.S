@@ -195,3 +195,29 @@ skip:
 	ASTAT  = [SP++];
 	RTS;
 ENDPROC(_init_sdram)
+
+ENTRY(_init_vlev)
+	[--SP] = ASTAT;
+	[--SP] = RETS;
+	[--SP] = (R7:0);
+	[--SP] = P0;
+
+	P0.h = hi(VR_CTL);
+	P0.l = lo(VR_CTL);
+	R1 = W[P0](Z);
+	R7 = CONFIG_VLEV;
+	R7 <<= 16;
+	R2 = 0x0404(Z);
+	R7 = R7|R2;
+	R2 = DEPOSIT(R1, R7);
+	W[P0] = R2;
+	CLI R1;
+	IDLE;
+	STI R1;
+
+	P0 = [SP++];
+	(R7:0) = [SP++];
+	RETS   = [SP++];
+	ASTAT  = [SP++];
+	RTS;
+ENDPROC(_init_vlev)

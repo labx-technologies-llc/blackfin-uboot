@@ -136,12 +136,15 @@ _start:
 	[p0] = r0;
 	SSYNC;
 
+	sp.l = LO(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);
+	sp.h = HI(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);
+
+	call _init_vlev;
+
 #if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 	/* In bypass mode, we don't have an LDR with an init block
 	 * so we need to explicitly call it ourselves.
 	 */
-	sp.l = LO(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);
-	sp.h = HI(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);
 	call _init_sdram;
 #endif
 

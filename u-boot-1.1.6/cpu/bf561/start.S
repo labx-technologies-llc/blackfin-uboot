@@ -125,6 +125,8 @@ _start:
 	sp.l = LO(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);
 	sp.h = HI(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);
 
+	call _init_vlev;
+
 	/*
 	 * Check if the code is in SDRAM
 	 * If the code is in SDRAM, skip SDRAM initializaiton

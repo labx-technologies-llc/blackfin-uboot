@@ -319,3 +319,39 @@
 #endif
 
 #define flash_EBIU_AMBCTL0	flash_EBIU_AMBCTL0_WAT | flash_EBIU_AMBCTL0_RAT | flash_EBIU_AMBCTL0_HT | flash_EBIU_AMBCTL0_ST | flash_EBIU_AMBCTL0_TT | CONFIG_FLASH_SPEED_RDYEN
+
+#define	BFIN_VLEV_085	0x6	/* VLEV = 0.85 V (-5% - +10% Accuracy) */
+#define	BFIN_VLEV_090	0x7	/* VLEV = 0.90 V (-5% - +10% Accuracy) */
+#define	BFIN_VLEV_095	0x8	/* VLEV = 0.95 V (-5% - +10% Accuracy) */
+#define	BFIN_VLEV_100	0x9	/* VLEV = 1.00 V (-5% - +10% Accuracy) */
+#define	BFIN_VLEV_105	0xA	/* VLEV = 1.05 V (-5% - +10% Accuracy) */
+#define	BFIN_VLEV_110	0xB	/* VLEV = 1.10 V (-5% - +10% Accuracy) */
+#define	BFIN_VLEV_115	0xC	/* VLEV = 1.15 V (-5% - +10% Accuracy) */
+#define	BFIN_VLEV_120	0xD	/* VLEV = 1.20 V (-5% - +10% Accuracy) */
+#define	BFIN_VLEV_125	0xE	/* VLEV = 1.25 V (-5% - +10% Accuracy) */
+#define	BFIN_VLEV_130	0xF	/* VLEV = 1.30 V (-5% - +10% Accuracy) */
+
+#define BFIN_CCLK 	((CONFIG_CLKIN_HZ * CONFIG_VCO_MULT) / CONFIG_CCLK_DIV)
+
+#if defined(__ADSPBF533__) || defined(__ADSPBF532__) || defined(__ADSPBF531__)
+#define CCLK_VLEV_120	400000000
+#define CCLK_VLEV_125	533000000
+#endif
+
+#if defined(__ADSPBF537__) || defined(__ADSPBF536__) || defined(__ADSPBF534__)
+#define CCLK_VLEV_120	401000000
+#define CCLK_VLEV_125	401000000
+#endif
+
+#if defined(__ADSPBF561__)
+#define CCLK_VLEV_120	300000000
+#define CCLK_VLEV_125	501000000
+#endif
+
+#if BFIN_CCLK < CCLK_VLEV_120
+#define CONFIG_VLEV	      BFIN_VLEV_120
+#elif BFIN_CCLK < CCLK_VLEV_125
+#define CONFIG_VLEV	      BFIN_VLEV_125
+#else
+#define CONFIG_VLEV	      BFIN_VLEV_130
+#endif
