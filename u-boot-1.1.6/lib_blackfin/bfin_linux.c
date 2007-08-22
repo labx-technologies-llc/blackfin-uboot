@@ -43,8 +43,6 @@
 #define SHOW_BOOT_PROGRESS(arg)
 #endif
 
-#define CMD_LINE_ADDR 0xFFB00000	/* L1 scratchpad */
-
 #ifdef SHARED_RESOURCES
 extern void swap_to(int device_id);
 #endif

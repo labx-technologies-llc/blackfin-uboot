@@ -6,7 +6,7 @@ Index: u-boot-1.1.6-mainline/common/cmd_elf.c
  #include <net.h>
  #include <elf.h>
  
-+#define CMD_LINE_ADDR 0xFF900000  /* L1 scratchpad */
++
 +static char *make_command_line(void);
 +
  #if defined(CONFIG_WALNUT) || defined(CFG_VXWORKS_MAC_PTR)

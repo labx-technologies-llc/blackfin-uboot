@@ -21,7 +21,6 @@
 
 #if (CONFIG_COMMANDS & CFG_CMD_ELF)
 
-#define CMD_LINE_ADDR 0xFF900000  /* L1 scratchpad */
 static char *make_command_line(void);
 
 #if defined(CONFIG_WALNUT) || defined(CFG_VXWORKS_MAC_PTR)
