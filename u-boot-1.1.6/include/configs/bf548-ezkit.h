@@ -81,12 +81,16 @@
 /*
  * Network Settings
  */
+#if (CONFIG_DRIVER_SMSC9118)
 /* network support */
 #define CONFIG_IPADDR           192.168.0.15
 #define CONFIG_NETMASK          255.255.255.0
 #define CONFIG_GATEWAYIP        192.168.0.1
 #define CONFIG_SERVERIP         192.168.0.2
 #define CONFIG_HOSTNAME         BF548
+#define CONFIG_BFIN_CMD		(CFG_CMD_PING	| \
+				CFG_CMD_DHCP)
+#endif
 
 #define CONFIG_ROOTPATH		/romfs
 /* Uncomment next line to use fixed MAC address */
@@ -127,11 +131,13 @@
 #endif
 
 #define CONFIG_COMMANDS \
-	(CONFIG_CMD_DFL  | \
+	(CONFIG_BFIN_CMD | \
+	 CONFIG_CMD_DFL  | \
 	 CFG_CMD_ELF     | \
 	 CFG_CMD_CACHE   | \
 	 CFG_CMD_JFFS2   | \
-	 CFG_CMD_DHCP    | \
+	 CFG_CMD_DATE	 | \
+	 ADD_IDE_CMD	 | \
 	 ADD_NAND_CMD    | \
 	 CFG_CMD_EEPROM)
 
