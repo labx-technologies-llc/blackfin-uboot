@@ -359,6 +359,8 @@ static int SetupSystemRegs(int *opmode)
 	int count = 0;
 	/* Enable PHY output */
 	*pVR_CTL |= PHYCLKOE;
+	/* Set all the pins to peripheral mode */
+	*pPORTH_FER = 0xFFFF;
 	/* MDC  = 2.5 MHz */
 	sysctl = SET_MDCDIV(24);
 	/* Odd word alignment for Receive Frame DMA word */

@@ -245,7 +245,7 @@ $(obj)u-boot.bin:	$(obj)u-boot
 		$(OBJCOPY) ${OBJCFLAGS} -O binary $< $@
 
 $(obj)u-boot.ldr:	$(obj)u-boot
-		$(LDR) -T $(CPU) -f -c $@ $< $(LDR_FLAGS)
+		$(LDR) -T $(CONFIG_CPU) -f -c $@ $< $(LDR_FLAGS)
 
 $(obj)u-boot.img:	$(obj)u-boot.bin
 		./tools/mkimage -A $(ARCH) -T firmware -C none \
@@ -2244,7 +2244,10 @@ ADI_BOARDS = \
 	bf548-ezkit bf537-stamp bf561-ezkit
 
 $(ADI_BOARDS:%=%_config)	: unconfig
-	@$(MKCONFIG) $(@:_config=) blackfin $(firstword $(subst -, ,$(@:_config=))) $(@:_config=)
+	@$(MKCONFIG) $(@:_config=) blackfin blackfin $(@:_config=)
+	@[ "$(SRCTREE)" != "$(OBJTREE)" ] && LNPREFIX="../../include2/asm/" || LNPREFIX="" ; \
+		rm -f include/asm-blackfin/arch ; \
+		ln -s ${LNPREFIX}arch-$(firstword $(subst -, ,$(@:_config=))) include/asm-blackfin/arch
 
 $(ADI_BOARDS):
 	$(MAKE) $@_config

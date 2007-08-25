@@ -47,10 +47,10 @@ SECTIONS
 		 * it linked after the configuration sector.
 		 */
 
-		cpu/bf548/start.o		(.text)
-		cpu/bf548/traps.o		(.text)
-		cpu/bf548/interrupt.o	(.text)
-		cpu/bf548/serial.o		(.text)
+		cpu/blackfin/start.o		(.text)
+		cpu/blackfin/traps.o		(.text)
+		cpu/blackfin/interrupt.o	(.text)
+		cpu/blackfin/serial.o		(.text)
 		common/dlmalloc.o		(.text)
 		lib_generic/crc32.o		(.text)
 

@@ -46,4 +46,17 @@
 # endif
 #endif
 
+/* Since we use these to program PLL registers directly,
+ * make sure the values are sane and won't screw us up.
+ */
+#if (CONFIG_VCO_MULT & 0x3F) != CONFIG_VCO_MULT
+# error CONFIG_VCO_MULT: Invalid value: must fit in 6 bits (0 - 63)
+#endif
+#if (CONFIG_CLKIN_HALF & 0x1) != CONFIG_CLKIN_HALF
+# error CONFIG_CLKIN_HALF: Invalid value: must be 0 or 1
+#endif
+#if (CONFIG_PLL_BYPASS & 0x1) != CONFIG_PLL_BYPASS
+# error CONFIG_PLL_BYPASS: Invalid value: must be 0 or 1
+#endif
+
 #endif

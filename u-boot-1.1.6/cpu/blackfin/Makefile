@@ -1,8 +1,8 @@
-# U-boot - blackfin_config.mk
+# U-boot - Makefile
 #
 # Copyright (c) 2005-2007 Analog Devices Inc.
 #
-# (C) Copyright 2000-2002
+# (C) Copyright 2000-2004
 # Wolfgang Denk, DENX Software Engineering, wd@denx.de.
 #
 # See file CREDITS for list of people who contributed to this
@@ -24,19 +24,34 @@
 # MA 02110-1301 USA
 #
 
-PLATFORM_CPPFLAGS += -DCONFIG_BLACKFIN -ffixed-P5 -fomit-frame-pointer
+include $(TOPDIR)/config.mk
 
-CONFIG_CPU := $(strip $(shell echo 'BFIN_CPU' | $(CPP) -P -include $(TOPDIR)/include/configs/$(BOARD).h - 2>/dev/null | tail -n 1))
-PLATFORM_RELFLAGS += -mcpu=$(CONFIG_CPU)
+LIB	= $(obj)lib$(CPU).a
 
-BFIN_BOOT_MODE := $(shell \
-	sed -n '/^\#define[[:space:]]*BFIN_BOOT_MODE[[:space:]]/s:.*[[:space:]]*BFIN_:BFIN_:p' \
-	$(SRCTREE)/include/configs/$(BOARD).h)
+START	:= start.o
+SOBJS	:= interrupt.o cache.o flush.o
+COBJS	:= cpu.o traps.o ints.o serial.o interrupts.o video.o i2c.o
 
-ifneq ($(BFIN_BOOT_MODE),BFIN_BOOT_BYPASS)
-LDR_FLAGS += --initcode $(obj)cpu/$(CPU)/init_sdram.o
+ifeq ($(BFIN_BOOT_MODE),BFIN_BOOT_BYPASS)
+SOBJS   += init_sdram.o
+else
+EXTRA   := init_sdram.o
 endif
 
-ifneq ($(findstring s,$(MAKEFLAGS)),)
-LDR_FLAGS += --quiet
-endif
+SRCS	:= $(START:.o=.S) $(SOBJS:.o=.S) $(COBJS:.o=.c)
+OBJS	:= $(addprefix $(obj),$(COBJS) $(SOBJS))
+START	:= $(addprefix $(obj),$(START))
+
+all:	$(obj).depend $(START) $(LIB) $(obj).depend $(EXTRA)
+
+$(LIB):	$(OBJS)
+	$(AR) $(ARFLAGS) $@ $(OBJS)
+
+#########################################################################
+
+# defines $(obj).depend target
+include $(SRCTREE)/rules.mk
+
+sinclude $(obj).depend
+
+#########################################################################
