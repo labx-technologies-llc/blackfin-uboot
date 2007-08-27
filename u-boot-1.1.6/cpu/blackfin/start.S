@@ -151,7 +151,7 @@ _start:
 	sp.l = LO(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);
 	sp.h = HI(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);
 
-#ifndef __ADSPBF54x__
+#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 	call _init_vlev;
 #endif
 
