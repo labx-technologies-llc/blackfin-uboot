@@ -275,10 +275,28 @@
 /* 512k reserved for u-boot */
 #define CFG_JFFS2_FIRST_SECTOR	15
 
-#define CONFIG_SPI
-
 #define FLASH_TOT_SECT		71
 #define CFG_FLASH_SIZE		0x400000
+
+/*
+ * Serial Flash Infomation
+ */
+	/* 	  NAME	    Sector Size	   Sectors
+	 *	 m25p05     32 * 1024        2
+	 *	 m25p10     32 * 1024        4
+	 *	 m25p20     64 * 1024        4
+	 *	 m25p40     64 * 1024        8
+	 *	 m25p80     64 * 1024        16
+	 *	 m25p16     64 * 1024        32
+	 *	 m25p32     64 * 1024        64
+	 *	 m25p64     64 * 1024        128
+	 *	 m25p128   256 * 1024        64
+	 */
+
+#define CONFIG_SPI
+
+#define CONFIG_SPI_FLASH_NUM_SECTORS	(128)
+#define CONFIG_SPI_FLASH_SECTOR_SIZE	(64 * 1024)
 
 /*
  * Board NAND Infomation

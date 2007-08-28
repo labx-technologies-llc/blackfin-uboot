@@ -9,8 +9,18 @@
 
 //Application definitions
 
+#ifndef CONFIG_SPI_FLASH_NUM_SECTORS
 #define	NUM_SECTORS 	128	/* number of sectors */
-#define SECTOR_SIZE		0x10000
+#else
+#define NUM_SECTORS	CONFIG_SPI_FLASH_NUM_SECTORS
+#endif
+
+#ifndef CONFIG_SPI_FLASH_SECTOR_SIZE
+#define	SECTOR_SIZE 	0x10000
+#else
+#define SECTOR_SIZE	CONFIG_SPI_FLASH_SECTOR_SIZE
+#endif
+
 #define NOP_NUM		1000
 
 #define COMMON_SPI_SETTINGS (SPE|MSTR|CPHA|CPOL) //Settings to the SPI_CTL
