@@ -149,8 +149,8 @@
 #if (BFIN_BOOT_MODE == BFIN_BOOT_PARA)
 # define BOOT_ENV_SETTINGS \
 	"update=tftpboot 0x1000000 u-boot.ldr;" \
-		"protect off 0x20000000 0x2007FFFF;" \
-		"erase 0x20000000 0x2007FFFF;cp.b 0x1000000 0x20000000 $(filesize)\0"
+		"protect off 0x20000000 0x2003FFFF;" \
+		"erase 0x20000000 0x2003FFFF;cp.b 0x1000000 0x20000000 $(filesize)\0"
 #elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 # define BOOT_ENV_SETTINGS \
 	"update=tftpboot 0x1000000 u-boot.ldr;" \
