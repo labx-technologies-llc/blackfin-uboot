@@ -96,7 +96,8 @@ void trap_c(struct pt_regs *regs)
 					break;
 		}
 		if (i == ARRAY_SIZE(bfin_memory_map)) {
-			printf("CPLB exception outside of memory map\n");
+			printf("%cCPLB exception outside of memory map at 0x%p\n",
+				(data ? 'D' : 'I'), new_cplb_addr);
 			do_reset(NULL, 0, 0, NULL);
 		} else
 			debug("CPLB addr %p matches map 0x%p - 0x%p\n", new_cplb_addr, bfin_memory_map[i].start, bfin_memory_map[i].end);
