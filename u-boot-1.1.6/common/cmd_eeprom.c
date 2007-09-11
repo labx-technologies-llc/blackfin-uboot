@@ -106,6 +106,10 @@ int do_eeprom ( cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 			return rcode;
 		}
 	}
+# ifdef CONFIG_SPI
+	else if (argc == 2 && strcmp (argv[1], "info") == 0)
+			return eeprom_info ();
+# endif
 
 	printf ("Usage:\n%s\n", cmdtp->usage);
 	return 1;
