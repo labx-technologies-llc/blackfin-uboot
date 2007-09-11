@@ -469,14 +469,14 @@ static int enable_writing(void)
 	return -1;
 }
 
-static long address_to_sector(unsigned long offset)
+static long address_to_sector(unsigned long address)
 {
-	if (offset > (flash.num_sectors * flash.sector_size) - 1)
+	if (address > (flash.num_sectors * flash.sector_size) - 1)
 		return -1;
-	return offset / flash.sector_size;
+	return address / flash.sector_size;
 }
 
-static int erase_sector(int sector)
+static int erase_sector(int address)
 {
 	/* sector gets checked in higher function, so assume it's valid
 	 * here and figure out the offset of the sector in flash
@@ -490,7 +490,7 @@ static int erase_sector(int sector)
 	 */
 	SPI_ON();
 	spi_write_read_byte(flash.ops->erase);
-	transmit_address(sector * flash.sector_size);
+	transmit_address(address);
 	SPI_OFF();
 
 	return wait_for_ready_status();
@@ -556,7 +556,7 @@ ssize_t spi_write(uchar *addr, int alen, uchar *buffer, int len)
 	int start_sector, end_sector;
 	int start_byte, end_byte;
 	uchar *temp;
-	int i, num;
+	int num;
 
 	spi_detect_part();
 
@@ -583,29 +583,40 @@ ssize_t spi_write(uchar *addr, int alen, uchar *buffer, int len)
 	temp = malloc(flash.sector_size);
 
 	for (num = start_sector; num <= end_sector; num++) {
-		if (read_flash(num * flash.sector_size, flash.sector_size, temp)) {
-			puts("Read sector failed! ");
-			len = 0;
-			break;
+		unsigned long address = num * flash.sector_size;
+
+		/* Optimization when spanning sectors: no point in reading in
+		 * a sector if we're going to be clobbering the whole thing.
+		 */
+		if (num > start_sector && num < end_sector) {
+			if (read_flash(address, flash.sector_size, temp)) {
+				puts("Read sector failed! ");
+				len = 0;
+				break;
+			}
 		}
-		start_byte = num * flash.sector_size;
-		end_byte = (num + 1) * flash.sector_size - 1;
-		if (start_byte < offset)
-			start_byte = offset;
+
+		start_byte = max(address, offset);
+		end_byte = address + flash.sector_size - 1;
 		if (end_byte > (offset + len))
 			end_byte = (offset + len - 1);
-		for (i = start_byte; i <= end_byte; i++)
-			temp[i - num * flash.sector_size] = buffer[i - offset];
-		if (erase_sector(num)) {
+
+		memcpy(temp + start_byte - address,
+			buffer + start_byte - offset,
+			end_byte - start_byte + 1);
+
+		if (erase_sector(address)) {
 			puts("Erase sector failed! ");
 			len = 0;
 			break;
 		}
-		if (write_sector(num * flash.sector_size, flash.sector_size, temp)) {
+
+		if (write_sector(address, flash.sector_size, temp)) {
 			puts("Write sector failed! ");
 			len = 0;
 			break;
 		}
+
 		puts(".");
 	}
 
