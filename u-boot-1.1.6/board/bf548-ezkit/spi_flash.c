@@ -25,21 +25,29 @@
 
 struct flash_info {
 	char     *name;
-	uint8_t  id;
+	uint16_t id;
 	unsigned sector_size;
 	unsigned num_sectors;
 };
 
+static struct flash_info flash_spansion_serial_flash[] = {
+	{ "S25LF016", 0x0215, 64 * 1024, 32 },
+	{ "S25LF032", 0x0216, 64 * 1024, 64 },
+	{ "S25FL064", 0x0217, 64 * 1024, 128 },
+	{ "S25LF0128", 0x0218, 256 * 1024, 64 },
+	{ NULL, 0, 0, 0 }
+};
+
 static struct flash_info flash_st_serial_flash[] = {
-	{ "m25p05", 0x10, 32 * 1024, 2 },
-	{ "m25p10", 0x11, 32 * 1024, 4 },
-	{ "m25p20", 0x12, 64 * 1024, 4 },
-	{ "m25p40", 0x13, 64 * 1024, 8 },
-	{ "m25p16", 0x15, 64 * 1024, 32 },
-	{ "m25p32", 0x16, 64 * 1024, 64 },
-	{ "m25p64", 0x17, 64 * 1024, 128 },
-	{ "m25p128", 0x18, 256 * 1024, 64 },
-	{ NULL, 0, 0, 0 },
+	{ "m25p05", 0x2010, 32 * 1024, 2 },
+	{ "m25p10", 0x2011, 32 * 1024, 4 },
+	{ "m25p20", 0x2012, 64 * 1024, 4 },
+	{ "m25p40", 0x2013, 64 * 1024, 8 },
+	{ "m25p16", 0x2015, 64 * 1024, 32 },
+	{ "m25p32", 0x2016, 64 * 1024, 64 },
+	{ "m25p64", 0x2017, 64 * 1024, 128 },
+	{ "m25p128", 0x2018, 256 * 1024, 64 },
+	{ NULL, 0, 0, 0 }
 };
 
 static struct flash_info flash_atmel_dataflash[] = {
@@ -50,18 +58,47 @@ static struct flash_info flash_atmel_dataflash[] = {
 	{ "AT45DB161x", 0x2c, 528, 4096 },
 	{ "AT45DB321x", 0x34, 528, 8192 },
 	{ "AT45DB642x", 0x3c, 1056, 8192 },
-	{ NULL, 0, 0, 0 },
+	{ NULL, 0, 0, 0 }
+};
+
+static struct flash_info flash_winbond_serial_flash[] = {
+	{ "W25X10", 0x3011, 16 * 256, 32 },
+	{ "W25X20", 0x3012, 16 * 256, 64 },
+	{ "W25X40", 0x3013, 16 * 256, 128 },
+	{ "W25X80", 0x3014, 16 * 256, 256 },
+	{ "W25P80", 0x2014, 256 * 256, 16 },
+	{ "W25P16", 0x2015, 256 * 256, 32 },
+	{ NULL, 0, 0, 0 }
 };
 
 struct flash_ops {
 	uint8_t read, write, erase, status;
 };
 
+#ifdef CONFIG_SPI_FLASH_FAST_READ
+# define OP_READ 0x0B
+#else
+# define OP_READ 0x03
+#endif
+static struct flash_ops flash_st_ops = {
+	.read = OP_READ,
+	.write = 0x02,
+	.erase = 0xD8,
+	.status = 0x05,
+};
+
+static struct flash_ops flash_atmel_ops = {
+	.read = OP_READ,
+	.write = 0x82,
+	.erase = 0x81,
+	.status = 0xD7,
+};
+
 struct manufacturer_info {
 	const char *name;
 	uint8_t id;
 	struct flash_info *flashes;
-	struct flash_ops ops;
+	struct flash_ops *ops;
 };
 
 static struct {
@@ -74,42 +111,42 @@ static struct {
 } flash;
 
 enum {
-	JED_MANU_ST = 0x20,
-	JED_MANU_ATMEL = 0x1F,
+	JED_MANU_SPANSION = 0x01,
+	JED_MANU_ST       = 0x20,
+	JED_MANU_ATMEL    = 0x1F,
+	JED_MANU_WINBOND  = 0xEF,
 };
 
-#ifdef CONFIG_SPI_FLASH_FAST_READ
-# define OP_READ 0x0B
-#else
-# define OP_READ 0x03
-#endif
 static struct manufacturer_info flash_manufacturers[] = {
+	{
+		.name = "Spansion",
+		.id = JED_MANU_SPANSION,
+		.flashes = flash_spansion_serial_flash,
+		.ops = &flash_st_ops,
+	},
 	{
 		.name = "ST",
 		.id = JED_MANU_ST,
 		.flashes = flash_st_serial_flash,
-		.ops = {
-			.read = OP_READ,
-			.write = 0x02,
-			.erase = 0xD8,
-			.status = 0x05,
-		},
+		.ops = &flash_st_ops,
 	},
 	{
 		.name = "Atmel",
 		.id = JED_MANU_ATMEL,
 		.flashes = flash_atmel_dataflash,
-		.ops = {
-			.read = OP_READ,
-			.write = 0x82,
-			.erase = 0x81,
-			.status = 0xD7,
-		},
-	}
+		.ops = &flash_atmel_ops,
+	},
+	{
+		.name = "Winbond",
+		.id = JED_MANU_WINBOND,
+		.flashes = flash_winbond_serial_flash,
+		.ops = &flash_st_ops,
+	},
 };
 
 #define	TIMEOUT	5000	/* timeout of 5 seconds */
 
+/* BF54x support */
 #ifndef pSPI_CTL
 # define pSPI_CTL  pSPI0_CTL
 # define pSPI_BAUD pSPI0_BAUD
@@ -123,27 +160,46 @@ static struct manufacturer_info flash_manufacturers[] = {
 # define SPI0_SEL1	0x0010
 #endif
 
+/* Default to the SPI SSEL that we boot off of:
+ *	BF54x, BF537, (everything new?): SSEL1
+ *	BF533, BF561: SSEL2
+ */
+#if defined(__ADSPBF531__) || defined(__ADSPBF532__) || \
+    defined(__ADSPBF533__) || defined(__ADSPBF561__)
+# define CONFIG_SPI_FLASH_SSEL 2
+#else
+# define CONFIG_SPI_FLASH_SSEL 1
+#endif
+#define SSEL_MASK (1 << CONFIG_SPI_FLASH_SSEL)
+
 static void SPI_ON(void)
 {
-	/* sets up the PF10 to be the slave select of the SPI */
+	/* Setup the SPI controller by:
+	 *	- enabling pins: SSEL, MOSI, MISO, SCK
+	 *	- initate communication upon read of RDBR
+	 *	- assert the SSEL for our device
+	 *	- toggle the value to reset the chip
+	 */
 #ifdef __ADSPBF54x__
 	*pPORTE_FER |= (SPI0_SCK | SPI0_MOSI | SPI0_MISO | SPI0_SEL1);
-#else
+#elif defined(__ADSPBF534__) || defined(__ADSPBF536__) || defined(__ADSPBF537__)
 	*pPORTF_FER |= (PF10 | PF11 | PF12 | PF13);
 #endif
-	*pSPI_FLG = 0xFF02;
+
+	*pSPI_FLG = 0xFF00 | SSEL_MASK;
 	*pSPI_BAUD = CONFIG_SPI_BAUD;
-	*pSPI_CTL = (SPE|MSTR|CPHA|CPOL|0x01);	/* transmit upon reads of SPI_RDBR */
+	*pSPI_CTL = (SPE|MSTR|CPHA|CPOL|0x01);
 	SSYNC();
 
-	*pSPI_FLG = 0xFD02;
+	*pSPI_FLG = ((0xFF & ~SSEL_MASK) << 8) | SSEL_MASK;
 	SSYNC();
 }
 
 static void SPI_OFF(void)
 {
-	*pSPI_CTL = 0x0400;	/* disable SPI */
-	*pSPI_FLG = 0;
+	/* put SPI settings back to reset state */
+	*pSPI_CTL = 0x0400;
+	*pSPI_FLG = 0xFF00;
 	*pSPI_BAUD = 0;
 	SSYNC();
 }
@@ -154,11 +210,14 @@ static uint8_t spi_write_read_byte(uint8_t transmit)
 	SSYNC();
 
 	while ((*pSPI_STAT & TXS))
-		continue;
+		if (ctrlc())
+			break;
 	while (!(*pSPI_STAT & SPIF))
-		continue;
+		if (ctrlc())
+			break;
 	while (!(*pSPI_STAT & RXS))
-		continue;
+		if (ctrlc())
+			break;
 
 	/* Read dummy to empty the receive register */
 	return *pSPI_RDBR;
@@ -184,7 +243,9 @@ static int wait_for_ready_status(void)
 
 	while (get_timer(0) - start < TIMEOUT) {
 		switch (flash.manufacturer_id) {
+		case JED_MANU_SPANSION:
 		case JED_MANU_ST:
+		case JED_MANU_WINBOND:
 			if (!(read_status_register() & 0x01))
 				return 0;
 			break;
@@ -209,14 +270,14 @@ static int wait_for_ready_status(void)
  * are compatible with the JEDEC standard (JEP106) and use that to
  * setup other operating conditions.
  */
-static void spi_detect_part(void)
+static int spi_detect_part(void)
 {
+	uint16_t dev_id;
 	size_t i;
 
 	static char called_init;
 	if (called_init)
-		return;
-	called_init = 1;
+		return 0;
 
 	SPI_ON();
 
@@ -238,49 +299,48 @@ static void spi_detect_part(void)
 
 	SPI_OFF();
 
+	dev_id = (flash.device_id1 << 8) | flash.device_id2;
+
 	for (i = 0; i < ARRAY_SIZE(flash_manufacturers); ++i) {
 		if (flash.manufacturer_id == flash_manufacturers[i].id)
 			break;
 	}
-	if (i == ARRAY_SIZE(flash_manufacturers)) {
-		puts("Warning: Unknown SPI manufacturer\n");
-		return;
-	}
+	if (i == ARRAY_SIZE(flash_manufacturers))
+		goto unknown;
+
 	flash.manufacturer = &flash_manufacturers[i];
-	flash.ops = &flash_manufacturers[i].ops;
+	flash.ops = flash_manufacturers[i].ops;
 
 	switch (flash.manufacturer_id) {
+	case JED_MANU_SPANSION:
 	case JED_MANU_ST:
-		for (i = 0; i < ARRAY_SIZE(flash_st_serial_flash); ++i) {
-			if (flash.device_id2 == flash_st_serial_flash[i].id)
+	case JED_MANU_WINBOND:
+		for (i = 0; flash.manufacturer->flashes[i].name; ++i) {
+			if (dev_id == flash.manufacturer->flashes[i].id)
 				break;
 		}
-		if (i == ARRAY_SIZE(flash_st_serial_flash)) {
-			puts("Warning: Unknown SPI flash!\n");
-			return;
-		}
+		if (!flash.manufacturer->flashes[i].name)
+			goto unknown;
 
-		flash.flash = &flash_st_serial_flash[i];
-		flash.sector_size = flash_st_serial_flash[i].sector_size;
-		flash.num_sectors = flash_st_serial_flash[i].num_sectors;
+		flash.flash = &flash.manufacturer->flashes[i];
+		flash.sector_size = flash.flash->sector_size;
+		flash.num_sectors = flash.flash->num_sectors;
 		flash.write_length = 256;
 		break;
 
 	case JED_MANU_ATMEL: {
 		uint8_t status = read_status_register();
 
-		for (i = 0; i < ARRAY_SIZE(flash_atmel_dataflash); ++i) {
-			if ((status & 0x3c) == flash_atmel_dataflash[i].id)
+		for (i = 0; flash.manufacturer->flashes[i].name; ++i) {
+			if ((status & 0x3c) == flash.manufacturer->flashes[i].id)
 				break;
 		}
-		if (i == ARRAY_SIZE(flash_atmel_dataflash)) {
-			puts("Warning: Unknown SPI flash!\n");
-			return;
-		}
+		if (!flash.manufacturer->flashes[i].name)
+			goto unknown;
 
-		flash.flash = &flash_atmel_dataflash[i];
-		flash.sector_size = flash_atmel_dataflash[i].sector_size;
-		flash.num_sectors = flash_atmel_dataflash[i].num_sectors;
+		flash.flash = &flash.manufacturer->flashes[i];
+		flash.sector_size = flash.flash->sector_size;
+		flash.num_sectors = flash.flash->num_sectors;
 
 		/* see if flash is in "power of 2" mode */
 		if (status & 0x1)
@@ -290,6 +350,14 @@ static void spi_detect_part(void)
 		break;
 	}
 	}
+
+	called_init = 1;
+	return 0;
+
+ unknown:
+	printf("Unknown SPI device: 0x%02X 0x%02X 0x%02X\n",
+		flash.manufacturer_id, flash.device_id1, flash.device_id2);
+	return 1;
 }
 
 /*
@@ -330,7 +398,9 @@ void spi_init_r(void)
 	size_t test_count, errors;
 	uint8_t pattern;
 
-	spi_detect_part();
+	if (spi_detect_part())
+		return;
+	eeprom_info();
 
 	ulong lengths[] = {
 		flash.write_length,
@@ -463,7 +533,7 @@ static int enable_writing(void)
 {
 	ulong start;
 
-	if (flash.manufacturer_id != JED_MANU_ST)
+	if (flash.manufacturer_id == JED_MANU_ATMEL)
 		return 0;
 
 	/* A write enable instruction must previously have been executed */
@@ -576,7 +646,8 @@ ssize_t spi_write(uchar *addr, int alen, uchar *buffer, int len)
 	uchar *temp;
 	int num;
 
-	spi_detect_part();
+	if (spi_detect_part())
+		return 0;
 
 	offset = addr[0] << 16 | addr[1] << 8 | addr[2];
 
@@ -649,7 +720,8 @@ ssize_t spi_write(uchar *addr, int alen, uchar *buffer, int len)
 ssize_t spi_read(uchar *addr, int alen, uchar *buffer, int len)
 {
 	unsigned long offset;
-	spi_detect_part();
+	if (spi_detect_part())
+		return 0;
 	offset = addr[0] << 16 | addr[1] << 8 | addr[2];
 	read_flash(offset, len, buffer);
 	return len;
@@ -660,7 +732,8 @@ ssize_t spi_read(uchar *addr, int alen, uchar *buffer, int len)
  */
 int eeprom_info(void)
 {
-	spi_detect_part();
+	if (spi_detect_part())
+		return 1;
 
 	printf("SPI Device: %s 0x%02X (%s) 0x%02X 0x%02X\n"
 		"Parameters: num sectors = %i, sector size = %i, write size = %i\n"
