@@ -909,7 +909,39 @@ if {$from_type == $COPY_TEST_FLASH} {
     set timeout 480
     set erase_flag $FAILURE
     set copy_flag  $FAILURE
-    
+    set unprotect_flag  $FAILURE
+   
+    send -s "protect off $flash_from_erase_start $flash_from_erase_end\r"
+    while 1 {
+        expect {
+
+            "done" {
+                send_user "\ngot done indicator\n"
+                set unprotect_flag $SUCCESS
+            }
+
+            -re "Un-Protected \[0-9]+ sectors" {
+                send_user "\ngot Un-Protected N sectors indicator\n"
+                set unprotect_flag $SUCCESS
+            }
+
+            $UBOOT_PROMPT {
+                break
+            }
+
+            timeout {
+                send_user "ERROR: timeout during unprotect flash\n"
+                recover
+                return $TEST_INFO
+            }
+        }
+    }
+    if {$unprotect_flag==$FAILURE} {
+        send_user "ERROR: failed to unprotect flash, can't run cp test\n"
+        return $TEST_INFO
+    }
+
+ 
     send -s "erase $flash_from_erase_start $flash_from_erase_end\r"
     while 1 {
 	expect {
@@ -1012,7 +1044,38 @@ if {$to_type == $COPY_TEST_FLASH} {
     send_user "We're copying to flash\n"
     set timeout 480
     set erase_flag $FAILURE
-    
+    set unprotect_flag  $FAILURE
+
+    send -s "protect off  $flash_to_erase_start $flash_to_erase_end\r"
+    while 1 {
+        expect {
+
+            "done" {
+                send_user "\ngot done indicator\n"
+                set unprotect_flag $SUCCESS
+            }
+
+            -re "Un-Protected \[0-9]+ sectors" {
+                send_user "\ngot Un-Protected N sectors indicator\n"
+                set unprotect_flag $SUCCESS
+            }
+
+            $UBOOT_PROMPT {
+                break
+            }
+
+            timeout {
+                send_user "ERROR: timeout during unprotect flash\n"
+                recover
+                return $TEST_INFO
+            }
+        }
+    }
+    if {$unprotect_flag==$FAILURE} {
+        send_user "ERROR: failed to unprotect flash, can't run cp test\n"
+        return $TEST_INFO
+    }
+ 
     send -s "erase $flash_to_erase_start $flash_to_erase_end\r"
     while 1 {
 	expect {
@@ -3602,6 +3665,25 @@ the cp and cmp test\n"
 	record_test_result $cmp_loc $TEST_FAIL
     }
 }
+
+# Reboot out of the kernel and back to u-boot.
+send -s "reset\r"
+set timeout 20
+    while 1 {
+        expect {
+            "Hit any key" {
+             sleep 2
+             send "\r"
+             break
+            }
+            timeout {
+                send_user "ERROR: u-boot failed to reset\n"
+                #recover
+                break
+            }
+        }
+    }
+
 }
 
 ###############################################################################################################################
