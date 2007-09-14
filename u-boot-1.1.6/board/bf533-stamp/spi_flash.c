@@ -30,6 +30,7 @@ struct flash_info {
 	unsigned num_sectors;
 };
 
+/* SPI Speeds: 50 MHz / 33 MHz */
 static struct flash_info flash_spansion_serial_flash[] = {
 	{ "S25LF016", 0x0215, 64 * 1024, 32 },
 	{ "S25LF032", 0x0216, 64 * 1024, 64 },
@@ -38,6 +39,7 @@ static struct flash_info flash_spansion_serial_flash[] = {
 	{ NULL, 0, 0, 0 }
 };
 
+/* SPI Speeds: 50 MHz / 20 MHz */
 static struct flash_info flash_st_serial_flash[] = {
 	{ "m25p05", 0x2010, 32 * 1024, 2 },
 	{ "m25p10", 0x2011, 32 * 1024, 4 },
@@ -50,6 +52,7 @@ static struct flash_info flash_st_serial_flash[] = {
 	{ NULL, 0, 0, 0 }
 };
 
+/* SPI Speeds: 66 MHz / 33 MHz */
 static struct flash_info flash_atmel_dataflash[] = {
 	{ "AT45DB011x", 0x0c, 264, 512 },
 	{ "AT45DB021x", 0x14, 264, 1025 },
@@ -61,6 +64,7 @@ static struct flash_info flash_atmel_dataflash[] = {
 	{ NULL, 0, 0, 0 }
 };
 
+/* SPI Speed: 50 MHz / 25 MHz or 40 MHz / 20 MHz */
 static struct flash_info flash_winbond_serial_flash[] = {
 	{ "W25X10", 0x3011, 16 * 256, 32 },
 	{ "W25X20", 0x3012, 16 * 256, 64 },
@@ -92,6 +96,13 @@ static struct flash_ops flash_atmel_ops = {
 	.write = 0x82,
 	.erase = 0x81,
 	.status = 0xD7,
+};
+
+static struct flash_ops flash_winbond_ops = {
+	.read = OP_READ,
+	.write = 0x02,
+	.erase = 0x20,
+	.status = 0x05,
 };
 
 struct manufacturer_info {
@@ -140,7 +151,7 @@ static struct manufacturer_info flash_manufacturers[] = {
 		.name = "Winbond",
 		.id = JED_MANU_WINBOND,
 		.flashes = flash_winbond_serial_flash,
-		.ops = &flash_st_ops,
+		.ops = &flash_winbond_ops,
 	},
 };
 
@@ -428,7 +439,7 @@ void spi_init_r(void)
 
 	test_count = 0;
 	errors = 0;
-	pattern = 0xFF;
+	pattern = 0x00;
 
 	for (i = 0; i < 16; ++i) {	/* 16 = 8 bits * 2 iterations */
 		for (l = 0; l < ARRAY_SIZE(lengths); ++l) {
@@ -476,7 +487,7 @@ void spi_init_r(void)
 		/* invert the pattern every other run and shift out bits slowly */
 		pattern ^= 0xFF;
 		if (i % 2)
-			pattern >>= 1;
+			pattern = (pattern | 0x01) << 1;
 	}
 
 	if (errors)
@@ -745,4 +756,4 @@ int eeprom_info(void)
 	return 0;
 }
 
-#endif				/* CONFIG_SPI */
+#endif
