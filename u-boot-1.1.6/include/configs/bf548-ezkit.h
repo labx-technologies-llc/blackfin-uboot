@@ -52,14 +52,6 @@
 #define CONFIG_SPI_BAUD_INITBLOCK	4
 #endif
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
-#if (CONFIG_SCLK_HZ / (2*CONFIG_SPI_BAUD) > 20000000)
-#define CONFIG_SPI_FLASH_FAST_READ 1 /* Needed if SPI_CLK > 20 MHz */
-#else
-#undef CONFIG_SPI_FLASH_FAST_READ
-#endif
-#endif
-
 #define CONFIG_MEM_SIZE			64             /* 128, 64, 32, 16 */
 #define CONFIG_MEM_ADD_WDTH		10             /* 8, 9, 10, 11    */
 #define CONFIG_MEM_MT46V32M16P_6T	1

@@ -8,6 +8,12 @@
  * Licensed under the GPL-2 or later.
  */
 
+/* Configuration options:
+ * CONFIG_SPI_BAUD - value to load into SPI_BAUD (divisor of SCLK to get SPI CLK)
+ * CONFIG_SPI_FLASH_SLOW_READ - force usage of the slower read
+ *		WARNING: make sure your SCLK + SPI_BAUD is slow enough
+ */
+
 #include <common.h>
 #include <linux/ctype.h>
 #include <malloc.h>
@@ -79,10 +85,10 @@ struct flash_ops {
 	uint8_t read, write, erase, status;
 };
 
-#ifdef CONFIG_SPI_FLASH_FAST_READ
-# define OP_READ 0x0B
-#else
+#ifdef CONFIG_SPI_FLASH_SLOW_READ
 # define OP_READ 0x03
+#else
+# define OP_READ 0x0B
 #endif
 static struct flash_ops flash_st_ops = {
 	.read = OP_READ,
@@ -187,7 +193,7 @@ static void SPI_ON(void)
 {
 	/* Setup the SPI controller by:
 	 *	- enabling pins: SSEL, MOSI, MISO, SCK
-	 *	- initate communication upon read of RDBR
+	 *	- initate communication upon write of TDBR
 	 *	- assert the SSEL for our device
 	 *	- toggle the value to reset the chip
 	 */
@@ -522,8 +528,8 @@ static int read_flash(unsigned long address, long count, uchar *buffer)
 	spi_write_read_byte(flash.ops->read);
 	transmit_address(address);
 
-#ifdef CONFIG_SPI_FLASH_FAST_READ
-	/* Send dummy for FAST_READ */
+#ifndef CONFIG_SPI_FLASH_SLOW_READ
+	/* Send dummy byte when doing SPI fast reads */
 	spi_write_read_byte(0);
 #endif
 
