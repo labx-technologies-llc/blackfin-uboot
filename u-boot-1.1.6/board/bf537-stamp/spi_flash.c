@@ -191,6 +191,11 @@ static struct manufacturer_info flash_manufacturers[] = {
 
 static void SPI_ON(void)
 {
+	/* [#3541] This delay appears to be necessary, but not sure
+	 * exactly why as the history behind it is non-existant.
+	 */
+	udelay(CONFIG_CCLK_HZ / 25000000);
+
 	/* Setup the SPI controller by:
 	 *	- enabling pins: SSEL, MOSI, MISO, SCK
 	 *	- initate communication upon write of TDBR
