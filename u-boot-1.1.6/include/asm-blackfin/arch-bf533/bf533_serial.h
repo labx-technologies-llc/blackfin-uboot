@@ -25,6 +25,10 @@
 #ifndef _BF533_SERIAL_H_
 #define _BF533_SERIAL_H_
 
+#define IRQ_UART_RX_BIT		0x4000
+#define IRQ_UART_TX_BIT		0x8000
+#define IRQ_UART_ERROR_BIT	0x40
+
 #define BYTE_REF(addr)		(*((volatile char*)addr))
 #define HALFWORD_REF(addr)	(*((volatile short*)addr))
 #define WORD_REF(addr)		(*((volatile long*)addr))

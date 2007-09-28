@@ -25,6 +25,10 @@
 #ifndef _BF561_SERIAL_H_
 #define _BF561_SERIAL_H_
 
+#define	IRQ_UART_RX_BIT		0x10000000
+#define	IRQ_UART_TX_BIT		0x20000000
+#define	IRQ_UART_ERROR_BIT	0x200
+
 #define BYTE_REF(addr)		(*((volatile char*)addr))
 #define HALFWORD_REF(addr)	(*((volatile short*)addr))
 #define WORD_REF(addr)		(*((volatile long*)addr))

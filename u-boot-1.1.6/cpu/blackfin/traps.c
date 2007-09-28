@@ -35,8 +35,6 @@
 
 #include <common.h>
 #include <linux/types.h>
-#include <asm/errno.h>
-#include <asm/irq.h>
 #include <asm/system.h>
 #include <asm/traps.h>
 #include "cpu.h"

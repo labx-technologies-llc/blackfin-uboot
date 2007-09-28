@@ -25,6 +25,21 @@
 #ifndef _BF537_SERIAL_H_
 #define _BF537_SERIAL_H_
 
+#define IRQ_UART0_RX_BIT   0x0800
+#define IRQ_UART0_TX_BIT   0x1000
+#define IRQ_UART1_RX_BIT   0x2000
+#define IRQ_UART1_TX_BIT   0x4000
+
+#if (CONFIG_UART_CONSOLE == 1)
+#define IRQ_UART_RX_BIT   IRQ_UART1_RX_BIT
+#define IRQ_UART_TX_BIT   IRQ_UART1_TX_BIT
+#else
+#define IRQ_UART_RX_BIT   IRQ_UART0_RX_BIT
+#define IRQ_UART_TX_BIT   IRQ_UART0_TX_BIT
+#endif
+
+#define IRQ_UART_ERROR_BIT	0x40
+
 #define BYTE_REF(addr)		(*((volatile char*)addr))
 #define HALFWORD_REF(addr)	(*((volatile short*)addr))
 #define WORD_REF(addr)		(*((volatile long*)addr))
