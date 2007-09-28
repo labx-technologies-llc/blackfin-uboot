@@ -515,4 +515,8 @@ ERROR_CODE WriteData( unsigned long ulStart, long lCount, int *pnData )
 	return ErrorCode;
 }
 
+int eeprom_info(void)
+{
+}
+
 #endif	/* CONFIG_SPI */
