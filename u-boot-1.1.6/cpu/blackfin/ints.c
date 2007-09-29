@@ -37,9 +37,7 @@
  */
 
 #include <common.h>
-#include <linux/stddef.h>
 #include <asm/system.h>
-#include <asm/traps.h>
 #include <asm/io.h>
 #include <asm/blackfin.h>
 #include "cpu.h"
@@ -98,19 +96,4 @@ void irq_init(void)
 	local_irq_enable();
 	*(unsigned volatile long *)IMASK = 0xffbf;
 	CSYNC();
-}
-
-void exception_handle(void)
-{
-#if defined (CONFIG_PANIC_HANG)
-	display_excp();
-#else
-	udelay(100000);		/* allow messages to go out */
-	do_reset(NULL, 0, 0, NULL);
-#endif
-}
-
-void display_excp(void)
-{
-	printf("Exception!\n");
 }
