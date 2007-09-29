@@ -41,7 +41,6 @@
 #include <asm/system.h>
 #include <asm/traps.h>
 #include <asm/io.h>
-#include <asm/setup.h>
 #include <asm/blackfin.h>
 #include "cpu.h"
 

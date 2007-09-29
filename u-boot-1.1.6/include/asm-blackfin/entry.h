@@ -26,7 +26,6 @@
 #define __BLACKFIN_ENTRY_H
 
 #include <linux/config.h>
-#include <asm/setup.h>
 
 /*
  * Stack layout in 'ret_from_exception':
