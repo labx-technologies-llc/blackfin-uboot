@@ -42,7 +42,6 @@
 
 #include <common.h>
 #include <asm/system.h>
-#include <asm/segment.h>
 #include <asm/bitops.h>
 #include <asm/delay.h>
 #include <asm/io.h>

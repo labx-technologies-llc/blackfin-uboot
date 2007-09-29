@@ -28,7 +28,6 @@
 #include <linux/config.h>	/* get configuration macros */
 #include <asm/linkage.h>
 #include <asm/blackfin.h>
-#include <asm/segment.h>
 #include <asm/entry.h>
 
 #define prepare_to_switch()	do { } while(0)
