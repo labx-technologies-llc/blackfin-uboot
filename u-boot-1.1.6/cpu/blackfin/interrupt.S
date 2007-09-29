@@ -42,7 +42,6 @@
 #include <config.h>
 #include <asm/blackfin.h>
 #include <asm/entry.h>
-#include <asm/blackfin_defs.h>
 
 .text
 .align 2
