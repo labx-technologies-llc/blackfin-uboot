@@ -41,6 +41,10 @@ extern u_long get_sclk(void);
 
 #define bfin_revid() (*pCHIPID >> 28)
 
+#else
+
+#include <asm/linkage.h>
+
 #endif
 
 #include <asm/arch/anomaly.h>
