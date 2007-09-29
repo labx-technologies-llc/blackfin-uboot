@@ -39,15 +39,12 @@
  * MA 02110-1301 USA
  */
 
-#include <config.h>
 #include <asm/blackfin.h>
 #include <asm/entry.h>
 
 .text
-.align 2
 
-.global _trap
-_trap:
+ENTRY(_trap)
 	SAVE_ALL_SYS
 	r0 = sp;	/* stack frame pt_regs pointer argument ==> r0 */
 	sp += -12;
@@ -55,3 +52,4 @@ _trap:
 	sp += 12;
 	RESTORE_ALL_SYS
 	rtx;
+ENDPROC(_trap)
