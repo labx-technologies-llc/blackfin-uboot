@@ -79,7 +79,7 @@ void irq_init(void)
 #else
 	*(unsigned volatile long *)(SIC_IMASK) = SIC_UNMASK_ALL;
 #endif
-	cli();
+	local_irq_disable();
 	*(unsigned volatile long *)EVT_NMI_ADDR = (unsigned long)blackfin_no_irqs;
 	*(unsigned volatile long *)EVT_EXCEPTION_ADDR = (unsigned long)trap;
 	*(unsigned volatile long *)EVT_HARDWARE_ERROR_ADDR = (unsigned long)blackfin_no_irqs;
@@ -96,7 +96,7 @@ void irq_init(void)
 	*(unsigned volatile long *)EVT_IVG15_ADDR = (unsigned long)blackfin_no_irqs;
 	*(unsigned volatile long *)ILAT = 0;
 	CSYNC();
-	sti();
+	local_irq_enable();
 	*(unsigned volatile long *)IMASK = 0xffbf;
 	CSYNC();
 }

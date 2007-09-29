@@ -70,12 +70,12 @@ ulong get_tbclk(void)
 
 void enable_interrupts(void)
 {
-	restore_flags(int_flag);
+	local_irq_restore(int_flag);
 }
 
 int disable_interrupts(void)
 {
-	save_and_cli(int_flag);
+	local_irq_save(int_flag);
 	return 1;
 }
 

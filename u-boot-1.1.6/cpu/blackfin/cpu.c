@@ -56,22 +56,22 @@ int cleanup_before_linux(void)
 
 void icache_enable(void)
 {
-	cli();
+	local_irq_disable();
 	SSYNC();
 	asm(" .align 8; ");
 	*pIMEM_CONTROL |= (IMC | ENICPLB);
 	SSYNC();
-	sti();
+	local_irq_enable();
 }
 
 void icache_disable(void)
 {
-	cli();
+	local_irq_disable();
 	SSYNC();
 	asm(" .align 8; ");
 	*pIMEM_CONTROL &= ~(IMC | ENICPLB);
 	SSYNC();
-	sti();
+	local_irq_enable();
 }
 
 int icache_status(void)
@@ -84,22 +84,22 @@ int icache_status(void)
 
 void dcache_enable(void)
 {
-	cli();
+	local_irq_disable();
 	SSYNC();
 	asm(" .align 8; ");
 	*pDMEM_CONTROL |= (ACACHE_BCACHE | ENDCPLB | PORT_PREF0);
 	SSYNC();
-	sti();
+	local_irq_enable();
 }
 
 void dcache_disable(void)
 {
-	cli();
+	local_irq_disable();
 	SSYNC();
 	asm(" .align 8; ");
 	*pDMEM_CONTROL &= ~(ACACHE_BCACHE | ENDCPLB | PORT_PREF0);
 	SSYNC();
-	sti();
+	local_irq_enable();
 }
 
 int dcache_status(void)
