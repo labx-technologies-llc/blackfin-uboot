@@ -25,25 +25,19 @@
  * MA 02110-1301 USA
  */
 
-/* for now: just dummy functions to satisfy the linker */
-#include <config.h>
 #include <common.h>
 #include <asm/blackfin.h>
 #include "cache.h"
 
-void flush_cache(unsigned long dummy1, unsigned long dummy2)
+void flush_cache(unsigned long addr, unsigned long size)
 {
-	if ((dummy1 >= L1_ISRAM) && (dummy1 < L1_ISRAM_END))
-		return;
-	if ((dummy1 >= DATA_BANKA_SRAM) && (dummy1 < DATA_BANKA_SRAM_END))
-		return;
-	if ((dummy1 >= DATA_BANKB_SRAM) && (dummy1 < DATA_BANKB_SRAM_END))
+	/* no need to flush stuff in on chip memory (L1/L2/etc...) */
+	if (addr >= 0xE0000000)
 		return;
 
 	if (icache_status())
-		blackfin_icache_flush_range((void*)dummy1, (void*)(dummy1 + dummy2));
-	if (dcache_status())
-		blackfin_dcache_flush_range((void*)dummy1, (void*)(dummy1 + dummy2));
+		blackfin_icache_flush_range((void *)addr, (void *)(addr + size));
 
-	return;
+	if (dcache_status())
+		blackfin_dcache_flush_range((void *)addr, (void *)(addr + size));
 }
