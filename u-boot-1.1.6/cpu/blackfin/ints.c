@@ -64,7 +64,7 @@ void blackfin_irq_panic(int reason, struct pt_regs *regs)
 void blackfin_no_irqs(void)
 {
 	printf("\n\nUnhandled IRQ (should not have been any IRQs)\n\n");
-	do_reset(NULL, 0, 0, NULL);
+	bfin_reset();
 }
 
 void irq_init(void)

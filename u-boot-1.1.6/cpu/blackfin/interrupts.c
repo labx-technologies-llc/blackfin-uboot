@@ -112,6 +112,7 @@ void udelay(unsigned long usec)
 	return;
 }
 
+#define MAX_TIM_LOAD	0xFFFFFFFF
 void timer_init(void)
 {
 	*pTCNTL = 0x1;

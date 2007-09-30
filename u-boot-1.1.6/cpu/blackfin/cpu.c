@@ -31,26 +31,19 @@
 #include <asm/entry.h>
 #include <asm/cplb.h>
 #include <asm/io.h>
+#include "cpu.h"
 
 #define CACHE_ON 1
 #define CACHE_OFF 0
 
-int do_reset(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
+void bfin_reset(void)
 {
-	__asm__ __volatile__("cli r3;" "P0 = %0;" "JUMP (P0);"::"r"(L1_ISRAM)
-	    );
-
-	return 0;
+	while (1)
+		__asm__ __volatile__("cli r3;" "P0 = %0;" "JUMP (P0);"::"r"(L1_ISRAM));
 }
-
-/* These functions are just used to satisfy the linker */
-int cpu_init(void)
+int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 {
-	return 0;
-}
-
-int cleanup_before_linux(void)
-{
+	bfin_reset();
 	return 0;
 }
 
