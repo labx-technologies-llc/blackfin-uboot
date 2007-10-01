@@ -38,7 +38,6 @@
 #include <asm/system.h>
 #include <asm/traps.h>
 #include "cpu.h"
-#include <asm/memory-map.h>
 #include <asm/arch/anomaly.h>
 #include <asm/cplb.h>
 #include <asm/io.h>
@@ -48,6 +47,39 @@ void process_int(unsigned long vec, struct pt_regs *fp)
 	printf("interrupt\n");
 	return;
 }
+
+/* The purpose of this map is to provide a mapping of address<->cplb settings
+ * rather than an exact map of what is actually addressable on the part.  This
+ * map covers all current Blackfin parts.  If you try to access an address that
+ * is in this map but not actually on the part, you won't get an exception and
+ * reboot, you'll get an external hardware addressing error and reboot.  Since
+ * only the ends matter (you did something wrong and the board reset), the means
+ * are largely irrelevant.
+ */
+struct memory_map {
+	uint32_t start, end;
+	uint32_t data_flags, inst_flags;
+};
+const struct memory_map const bfin_memory_map[] = {
+	{	/* external memory */
+		.start = 0x00000000,
+		.end   = 0x20000000,
+		.data_flags = SDRAM_DGENERIC,
+		.inst_flags = SDRAM_IGENERIC,
+	},
+	{	/* async banks */
+		.start = 0x20000000,
+		.end   = 0x30000000,
+		.data_flags = SDRAM_EBIU,
+		.inst_flags = SDRAM_INON_CHBL,
+	},
+	{	/* everything on chip */
+		.start = 0xE0000000,
+		.end   = 0xFFFFFFFF,
+		.data_flags = L1_DMEMORY,
+		.inst_flags = L1_IMEMORY,
+	}
+};
 
 void trap_c(struct pt_regs *regs)
 {
@@ -84,14 +116,10 @@ void trap_c(struct pt_regs *regs)
 		new_cplb_addr = (*(uint32_t *)(data ? pDCPLB_FAULT_ADDR : pICPLB_FAULT_ADDR)) & ~(4 * 1024 * 1024 - 1);
 
 		for (i = 0; i < ARRAY_SIZE(bfin_memory_map); ++i) {
-			/* if the exception is inside this range ... */
+			/* if the exception is inside this range, lets use it */
 			if (new_cplb_addr >= bfin_memory_map[i].start &&
 			    new_cplb_addr < bfin_memory_map[i].end)
-				/* and it is the right type for this range ... */
-				if ((data && bfin_memory_map[i].data) ||
-				    (!data && bfin_memory_map[i].inst))
-					/* lets use it */
-					break;
+				break;
 		}
 		if (i == ARRAY_SIZE(bfin_memory_map)) {
 			printf("%cCPLB exception outside of memory map at 0x%p\n",
