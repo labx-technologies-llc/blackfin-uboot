@@ -8,7 +8,7 @@
 #include <asm/blackfin-config-pre.h>
 
 #define BFIN_CPU             bf548-0.0
-#define BFIN_BOOT_MODE       BFIN_BOOT_UART
+#define BFIN_BOOT_MODE       BFIN_BOOT_PARA
 
 #define CFG_LONGHELP		1
 #define CONFIG_CMDLINE_EDITING	1
