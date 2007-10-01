@@ -158,29 +158,38 @@ static void *dma_memcpy(void *dest, const void *src, size_t count)
  * @src: Where to copy from
  * @count: The size of the area.
  *
- * You should not use this function to access IO space, use memcpy_toio()
- * or memcpy_fromio() instead.
+ * We need to have this wrapper in memcpy() as common code may call memcpy()
+ * to load up L1 regions.  Consider loading an ELF which has sections with
+ * LMA's pointing to L1.  The common code ELF loader will simply use memcpy()
+ * to move the ELF's sections into the right place.  We need to catch that
+ * here and redirect to dma_memcpy().
  */
-extern void *memcpy_ASM(void *dest, const void *src, size_t count);
-void *memcpy(void *dest, const void *src, size_t count)
+extern void *memcpy_ASM(void *dst, const void *src, size_t count);
+void *memcpy(void *dst, const void *src, size_t count)
 {
-	char *tmp = (char *) dest, *s = (char *) src;
+	unsigned long dst_ul = (unsigned long)dst;
+	unsigned long src_ul = (unsigned long)src;
 
 	if (dcache_status())
 		blackfin_dcache_flush_range(src, src+count);
-	/* L1_ISRAM can only be accessed via dma */
-	if ((tmp >= (char *)L1_ISRAM) && (tmp < (char *)L1_ISRAM_END)) {
+
+	if (dst_ul >= L1_ISRAM && dst_ul < L1_ISRAM_END) {
 		/* L1 is the destination */
-		dma_memcpy(dest, src, count);
-	} else if ((s >= (char *)L1_ISRAM) && (s < (char *)L1_ISRAM_END)) {
+		dma_memcpy(dst, src, count);
+
+	} else if (src_ul >= L1_ISRAM && src_ul < L1_ISRAM_END) {
 		/* L1 is the source */
-		dma_memcpy(dest, src, count);
+		dma_memcpy(dst, src, count);
 
 		if (icache_status())
-			blackfin_icache_flush_range(dest, dest+count);
+			blackfin_icache_flush_range(dst, dst+count);
+
 		if (dcache_status())
-			blackfin_dcache_invalidate_range(dest, dest+count);
+			blackfin_dcache_invalidate_range(dst, dst+count);
+
 	} else
-		memcpy_ASM(dest, src, count);
-	return dest;
+		/* No L1 is involved, so just call regular memcpy */
+		memcpy_ASM(dst, src, count);
+
+	return dst;
 }
