@@ -516,24 +516,16 @@ ENTRY(_real_start)
 	w[p0] = r0;
 #endif
 
-	/* Initialize BSS Section with 0 s */
-	p1.l = __bss_start;
-	p1.h = __bss_start;
-	p2.l = _end;
-	p2.h = _end;
-	r1 = p1;
-	r2 = p2;
-	r3 = r2 - r1;
-	r3 = r3 >> 2;
-	p3 = r3;
-	lsetup (_clear_bss, _clear_bss_end ) lc1 = p3;
-	CC = p2<=p1;
-	if CC jump _clear_bss_skip;
-	r0 = 0;
-_clear_bss:
-_clear_bss_end:
-	[p1++] = r0;
-_clear_bss_skip:
+	/* Initialize BSS section ... we know that memset()
+	 * does not use the BSS, so it is safe to call here
+	 */
+	r0.l = __bss_start;
+	r0.h = __bss_start;
+	r1 = 0 (x);
+	r2.l = _end;
+	r2.h = _end;
+	r2 = r2 - r0;
+	call _memset;
 
 #if defined(CONFIG_POST)
 	p0.l = _post_flag;
