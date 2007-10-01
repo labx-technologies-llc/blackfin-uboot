@@ -39,9 +39,6 @@
 #include <config.h>
 #include <asm/blackfin.h>
 
-.global __bss_start;
-.global _start;
-.global _exit;
 #if defined(CONFIG_POST)
 .global _memory_post_test;
 .global _post_flag;
@@ -66,8 +63,7 @@
 #endif
 
 .text
-_start:
-
+ENTRY(_start)
 	R0 = 0x32;
 	SYSCFG = R0;
 	SSYNC;
@@ -204,12 +200,12 @@ _start:
 	idle;                           /* Wait for the PLL to stablize    */
 	sti r2;                         /* Enable interrupts               */
 
-check_again:
+.Lcheck_again:
 	p0.h = hi(PLL_STAT);
 	p0.l = lo(PLL_STAT);
 	R0 = W[P0](Z);
 	CC = BITTST(R0,5);
-	if ! CC jump check_again;
+	if ! CC jump .Lcheck_again;
 
 	/* Configure SCLK & CCLK Dividers */
 	r0 = (CONFIG_CCLK_ACT_DIV | CONFIG_SCLK_DIV);
@@ -271,16 +267,16 @@ check_again:
 	 * so we need to explicitly call it ourselves.  If we're already
 	 * executing out of SDRAM though, skip this part.
 	 */
-	call get_pc;
+	call _get_pc;
 	r3.l = 0x0;
 	r3.h = 0x2000;
 
 	cc = r0 < r3 (iu);
-	if cc jump sdram_initialized;
+	if cc jump .Lsdram_initialized;
 
 	call _init_sdram;
 
-sdram_initialized:
+.Lsdram_initialized:
 #endif
 
 #if defined(CONFIG_POST)
@@ -390,7 +386,7 @@ POST_DATA_DMA_DONE:
 #endif
 
 	/* relocate into to RAM */
-	call get_pc;
+	call _get_pc;
 .Loffset:
 	r2.l = .Loffset;
 	r2.h = .Loffset;
@@ -407,11 +403,11 @@ POST_DATA_DMA_DONE:
 	p3 = 0x04;
 	p4.l = LO(CFG_MONITOR_BASE + CFG_MONITOR_LEN);
 	p4.h = HI(CFG_MONITOR_BASE + CFG_MONITOR_LEN);
-loop1:
+.Lloop1:
 	r1 = [p1 ++ p3];
 	[p2 ++ p3] = r1;
 	cc=p2==p4;
-	if !cc jump loop1;
+	if !cc jump .Lloop1;
 	/*
 	 * configure STACK
 	 */
@@ -440,17 +436,17 @@ loop1:
 	r0.h = HI(IVG15_POS);
 	[p0] = r0;
 	raise 15;
-	p0.l = WAIT_HERE;
-	p0.h = WAIT_HERE;
+	p0.l = .LWAIT_HERE;
+	p0.h = .LWAIT_HERE;
 	reti = p0;
 	rti;
 
-WAIT_HERE:
-	jump WAIT_HERE;
+.LWAIT_HERE:
+	jump .LWAIT_HERE;
+ENDPROC(_start)
 
-.global _real_start;
-_real_start:
-	[ -- sp ] = reti;
+ENTRY(_real_start)
+	[--SP] = reti;
 
 #ifdef __ADSPBF54x__
 	/* Port H: PH8 - PH13 == A4 - A9
@@ -549,7 +545,9 @@ _clear_bss_skip:
 	p0.l = _board_init_f;
 	p0.h = _board_init_f;
 	jump (p0);
+ENDPROC(_real_start)
 
-get_pc:
+ENTRY(_get_pc)
 	r0 = rets;
 	rts;
+ENDPROC(_get_pc)
