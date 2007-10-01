@@ -41,19 +41,29 @@
  */
 
 #include <common.h>
-#include <asm/system.h>
+#include <asm/blackfin.h>
 #include <asm/bitops.h>
 #include <asm/delay.h>
 #include <asm/io.h>
-#include "serial.h"
 
 #ifdef __ADSPBF54x__
 #define IRQ_UART1_RX_BIT		0x0200 //SIC_ISR1
 #define IRQ_UART1_TX_BIT		0x0400 //SIC_ISR1
 #define IRQ_UART1_ERROR_BIT	0x40 //SIC_ISR1
+#define ACCESS_LATCH	do {} while (0)
+#define ACCESS_PORT_IER	do {} while (0)
+#else
+#define ACCESS_LATCH	*pUART_LCR |= UART_LCR_DLAB;
+#define ACCESS_PORT_IER	*pUART_LCR &= (~UART_LCR_DLAB);
 #endif
 
-void calc_baud(void)
+static int baud_table[5] = { 9600, 19200, 38400, 57600, 115200 };
+static struct {
+	unsigned char dl_high;
+	unsigned char dl_low;
+} hw_baud_table[5];
+
+static void calc_baud(void)
 {
 	unsigned char i;
 	int temp;
@@ -148,6 +158,34 @@ int serial_init(void)
 	return 0;
 }
 
+static void local_put_char(char ch)
+{
+	uint32_t isr_val;
+
+	/* Poll for TX Interruput */
+#ifdef __ADSPBF54x__
+	do {
+		isr_val = *pSIC_ISR1;
+	} while (!(isr_val & IRQ_UART1_TX_BIT));
+#else
+	do {
+		isr_val = *pSIC_ISR;
+	} while (!(isr_val & IRQ_UART_TX_BIT));
+#endif
+	CSYNC();
+
+#ifdef __ADSPBF54x__
+	*pUART1_THR = ch;	/* putc() */
+
+	if (isr_val & IRQ_UART1_ERROR_BIT)
+#else
+	*pUART_THR = ch;	/* putc() */
+
+	if (isr_val & IRQ_UART_ERROR_BIT)
+#endif
+		printf("?");
+}
+
 void serial_putc(const char c)
 {
 #ifdef __ADSPBF54x__
@@ -220,32 +258,4 @@ void serial_puts(const char *s)
 {
 	while (*s)
 		serial_putc(*s++);
-}
-
-static void local_put_char(char ch)
-{
-	uint32_t isr_val;
-
-	/* Poll for TX Interruput */
-#ifdef __ADSPBF54x__
-	do {
-		isr_val = *pSIC_ISR1;
-	} while (!(isr_val & IRQ_UART1_TX_BIT));
-#else
-	do {
-		isr_val = *pSIC_ISR;
-	} while (!(isr_val & IRQ_UART_TX_BIT));
-#endif
-	CSYNC();
-
-#ifdef __ADSPBF54x__
-	*pUART1_THR = ch;	/* putc() */
-
-	if (isr_val & IRQ_UART1_ERROR_BIT)
-#else
-	*pUART_THR = ch;	/* putc() */
-
-	if (isr_val & IRQ_UART_ERROR_BIT)
-#endif
-		printf("?");
 }
