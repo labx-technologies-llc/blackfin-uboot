@@ -38,8 +38,10 @@
 
 void bfin_reset(void)
 {
+	*pWDOG_CNT = 0x0010;
+	*pWDOG_CTL = 0x0000;
 	while (1)
-		__asm__ __volatile__("cli r3;" "P0 = %0;" "JUMP (P0);"::"r"(L1_ISRAM));
+		SSYNC();
 }
 int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 {

@@ -520,50 +520,6 @@ _real_start:
 	w[p0] = r0;
 #endif
 
-	/* DMA reset code to Hi of L1 SRAM */
-copy:
-	/* P1 Points to the beginning of SYSTEM MMR Space */
-	P1.H = hi(SYSMMR_BASE);
-	P1.L = lo(SYSMMR_BASE);
-
-	R0.H = reset_start;	/* Source Address (high) */
-	R0.L = reset_start;	/* Source Address (low) */
-	R1.H = reset_end;
-	R1.L = reset_end;
-	R2 = R1 - R0;		/* Count */
-	R1.H = hi(L1_ISRAM);	/* Destination Address (high) */
-	R1.L = lo(L1_ISRAM);	/* Destination Address (low) */
-	R3.L = DMAEN;		/* Source DMAConfig Value (8-bit words) */
-	R4.L = (DI_EN | WNR | DMAEN);	/* Destination DMAConfig Value (8-bit words) */
-
-DMA:
-	R6 = 0x1 (Z);
-	W[P1+OFFSET_(MDMA_S0_X_MODIFY)] = R6;	/* Source Modify = 1 */
-	W[P1+OFFSET_(MDMA_D0_X_MODIFY)] = R6;	/* Destination Modify = 1 */
-
-	[P1+OFFSET_(MDMA_S0_START_ADDR)] = R0;	/* Set Source Base Address */
-	W[P1+OFFSET_(MDMA_S0_X_COUNT)] = R2;	/* Set Source Count */
-	/* Set Source  DMAConfig = DMA Enable,
-	Memory Read,  8-Bit Transfers, 1-D DMA, Flow - Stop */
-	W[P1+OFFSET_(MDMA_S0_CONFIG)] = R3;
-
-	[P1+OFFSET_(MDMA_D0_START_ADDR)] = R1;	/* Set Destination Base Address */
-	W[P1+OFFSET_(MDMA_D0_X_COUNT)] = R2;	/* Set Destination Count */
-	/* Set Destination DMAConfig = DMA Enable,
-	Memory Write, 8-Bit Transfers, 1-D DMA, Flow - Stop, IOC */
-	W[P1+OFFSET_(MDMA_D0_CONFIG)] = R4;
-
-WAIT_DMA_DONE:
-	p0.h = hi(MDMA_D0_IRQ_STATUS);
-	p0.l = lo(MDMA_D0_IRQ_STATUS);
-	R0 = W[P0](Z);
-	CC = BITTST(R0, 0);
-	if ! CC jump WAIT_DMA_DONE
-
-	/* Write 1 to clear DMA interrupt */
-	R0 = 0x1;
-	W[P1+OFFSET_(MDMA_D0_IRQ_STATUS)] = R0;
-
 	/* Initialize BSS Section with 0 s */
 	p1.l = __bss_start;
 	p1.h = __bss_start;
@@ -594,23 +550,6 @@ _clear_bss_skip:
 	p0.h = _board_init_f;
 	jump (p0);
 
-reset_start:
-	p0.h = HI(WDOG_CNT);
-	p0.l = LO(WDOG_CNT);
-	r0 = 0x0010;
-	w[p0] = r0;
-	p0.h = HI(WDOG_CTL);
-	p0.l = LO(WDOG_CTL);
-	r0 = 0x0000;
-	w[p0] = r0;
-reset_wait:
-	jump reset_wait;
-
-reset_end:
-	nop;
-
-_exit:
-	jump.s	_exit;
 get_pc:
 	r0 = rets;
 	rts;
