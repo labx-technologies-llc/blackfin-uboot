@@ -93,7 +93,8 @@ void irq_init(void)
 	*(unsigned volatile long *)EVT_IVG15_ADDR = (unsigned long)blackfin_no_irqs;
 	*(unsigned volatile long *)ILAT = 0;
 	CSYNC();
+	/* enable all interrupts except for core timer */
+	irq_flags = 0xffffffbf;
 	local_irq_enable();
-	*(unsigned volatile long *)IMASK = 0xffbf;
 	CSYNC();
 }
