@@ -46,15 +46,36 @@
 #include <asm/delay.h>
 #include <asm/io.h>
 
+#if defined(pUART_LSR) && (CONFIG_UART_CONSOLE != 0)
+# error CONFIG_UART_CONSOLE must be 0 on parts with only one UART
+#endif
+
+#ifndef pUART_LSR
+# if (CONFIG_UART_CONSOLE == 1)
+#  define pUART_DLH  pUART1_DLH
+#  define pUART_DLL  pUART1_DLL
+#  define pUART_GCTL pUART1_GCTL
+#  define pUART_LCR  pUART1_LCR
+#  define pUART_LSR  pUART1_LSR
+#  define pUART_RBR  pUART1_RBR
+#  define pUART_THR  pUART1_THR
+# elif (CONFIG_UART_CONSOLE == 0)
+#  define pUART_DLH  pUART0_DLH
+#  define pUART_DLL  pUART0_DLL
+#  define pUART_GCTL pUART0_GCTL
+#  define pUART_LCR  pUART0_LCR
+#  define pUART_LSR  pUART0_LSR
+#  define pUART_RBR  pUART0_RBR
+#  define pUART_THR  pUART0_THR
+# endif
+#endif
+
 #ifdef __ADSPBF54x__
-#define IRQ_UART1_RX_BIT		0x0200 //SIC_ISR1
-#define IRQ_UART1_TX_BIT		0x0400 //SIC_ISR1
-#define IRQ_UART1_ERROR_BIT	0x40 //SIC_ISR1
-#define ACCESS_LATCH	do {} while (0)
-#define ACCESS_PORT_IER	do {} while (0)
+# define ACCESS_LATCH()
+# define ACCESS_PORT_IER()
 #else
-#define ACCESS_LATCH	*pUART_LCR |= UART_LCR_DLAB;
-#define ACCESS_PORT_IER	*pUART_LCR &= (~UART_LCR_DLAB);
+# define ACCESS_LATCH()    (*pUART_LCR |= DLAB)
+# define ACCESS_PORT_IER() (*pUART_LCR &= ~DLAB)
 #endif
 
 static int baud_table[5] = { 9600, 19200, 38400, 57600, 115200 };
@@ -97,39 +118,12 @@ void serial_setbrg(void)
 	SSYNC();
 #endif
 
-#ifdef __ADSPBF54x__
 	/* Enable UART */
-	*pUART1_GCTL |= UCEN;
+	*pUART_GCTL |= UCEN;
 	SSYNC();
 
 	/* Set DLAB in LCR to Access DLL and DLH */
-	ACCESS_LATCH;
-	SSYNC();
-
-	*pUART1_DLL = hw_baud_table[i].dl_low;
-	SSYNC();
-	*pUART1_DLH = hw_baud_table[i].dl_high;
-	SSYNC();
-
-	/* Clear DLAB in LCR to Access THR RBR IER */
-	ACCESS_PORT_IER;
-	SSYNC();
-
-	/* Enable ERBFI and ELSI interrupts
-	 * to poll SIC_ISR register*/
-	*pUART1_IER_SET = ELSI_S | ERBFI_S | ETBEI_S;
-	SSYNC();
-
-	/* Set LCR to Word Lengh 8-bit word select */
-	*pUART1_LCR = WLS_8;
-	SSYNC();
-#else
-	/* Enable UART */
-	*pUART_GCTL |= UART_GCTL_UCEN;
-	SSYNC();
-
-	/* Set DLAB in LCR to Access DLL and DLH */
-	ACCESS_LATCH;
+	ACCESS_LATCH();
 	SSYNC();
 
 	*pUART_DLL = hw_baud_table[i].dl_low;
@@ -138,18 +132,11 @@ void serial_setbrg(void)
 	SSYNC();
 
 	/* Clear DLAB in LCR to Access THR RBR IER */
-	ACCESS_PORT_IER;
-	SSYNC();
-
-	/* Enable ERBFI and ELSI interrupts
-	 * to poll SIC_ISR register*/
-	*pUART_IER = UART_IER_ELSI | UART_IER_ERBFI | UART_IER_ETBEI;
-	SSYNC();
+	ACCESS_PORT_IER();
 
 	/* Set LCR to Word Lengh 8-bit word select */
-	*pUART_LCR = UART_LCR_WLS8;
+	*pUART_LCR = WLS(8);
 	SSYNC();
-#endif
 }
 
 int serial_init(void)
@@ -158,100 +145,51 @@ int serial_init(void)
 	return 0;
 }
 
-static void local_put_char(char ch)
-{
-	uint32_t isr_val;
-
-	/* Poll for TX Interruput */
-#ifdef __ADSPBF54x__
-	do {
-		isr_val = *pSIC_ISR1;
-	} while (!(isr_val & IRQ_UART1_TX_BIT));
-#else
-	do {
-		isr_val = *pSIC_ISR;
-	} while (!(isr_val & IRQ_UART_TX_BIT));
-#endif
-	CSYNC();
-
-#ifdef __ADSPBF54x__
-	*pUART1_THR = ch;	/* putc() */
-
-	if (isr_val & IRQ_UART1_ERROR_BIT)
-#else
-	*pUART_THR = ch;	/* putc() */
-
-	if (isr_val & IRQ_UART_ERROR_BIT)
-#endif
-		printf("?");
-}
-
 void serial_putc(const char c)
 {
-#ifdef __ADSPBF54x__
-	if (*pUART1_LSR & TEMT) {
-#else
-	if (*pUART_LSR & UART_LSR_TEMT) {
-#endif
-		if (c == '\n')
-			serial_putc('\r');
+	/* send a \r for compatibility */
+	if (c == '\n')
+		serial_putc('\r');
 
-		local_put_char(c);
-	}
+	/* wait for the THR to clear up */
+	while (!(*pUART_LSR & THRE))
+		continue;
 
-#ifdef __ADSPBF54x__
-	while (!(*pUART1_LSR & TEMT))
-#else
-	while (!(*pUART_LSR & UART_LSR_TEMT))
-#endif
+	/* queue the character for transmission */
+	*pUART_THR = c;
+	SSYNC();
+
+	/* wait for both the THR and the TSR to empty
+	 * XXX: do we really care ?  the THRE check above
+	 * prevents transmit overflows, and if we're worried
+	 * about baud changes, we can move the TEMT check to
+	 * serial_setbrg() ...
+	 */
+	while (!(*pUART_LSR & TEMT))
 		SSYNC();
 }
 
 int serial_tstc(void)
 {
-#ifdef __ADSPBF54x__
-	return (*pUART1_LSR & DR) ? 1 : 0;
-#else
-	return (*pUART_LSR & UART_LSR_DR) ? 1 : 0;
-#endif
+	return (*pUART_LSR & DR) ? 1 : 0;
 }
 
 int serial_getc(void)
 {
-	unsigned short uart_lsr_val, uart_rbr_val;
-	uint32_t isr_val;
-	int ret;
+	uint16_t uart_lsr_val, uart_rbr_val;
 
-	/* Poll for RX Interrupt */
-#ifdef __ADSPBF54x__
-	do {
-		isr_val = *pSIC_ISR1;
-	} while (!(isr_val & IRQ_UART1_RX_BIT));
-#else
-	do {
-		isr_val = *pSIC_ISR;
-	} while (!(isr_val & IRQ_UART_RX_BIT));
-#endif
-	CSYNC();
+	/* wait for data ! */
+	while (!serial_tstc())
+		continue;
 
-#ifdef __ADSPBF54x__
-	uart_lsr_val = *pUART1_LSR;	/* Clear status bit */
-	uart_rbr_val = *pUART1_RBR;	/* getc() */
-#else
-	uart_lsr_val = *pUART_LSR;	/* Clear status bit */
-	uart_rbr_val = *pUART_RBR;	/* getc() */
-#endif
+	/* clear the status and grab the new byte */
+	uart_lsr_val = *pUART_LSR;
+	uart_rbr_val = *pUART_RBR;
 
-#ifdef __ADSPBF54x__
-	if (isr_val & IRQ_UART1_ERROR_BIT)
-#else
-	if (isr_val & IRQ_UART_ERROR_BIT)
-#endif
-		ret = -1;
+	if (uart_lsr_val & (OE|PE|FE|BI))
+		return -1;
 	else
-		ret = uart_rbr_val & 0xff;
-
-	return ret;
+		return uart_rbr_val & 0xFF;
 }
 
 void serial_puts(const char *s)

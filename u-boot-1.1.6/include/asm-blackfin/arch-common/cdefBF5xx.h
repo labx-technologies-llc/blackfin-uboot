@@ -18,19 +18,15 @@
 #elif defined(__ADSPBF533__)
 	#include <asm/arch-bf533/cdefBF533.h>
 	#include <asm/arch-bf533/defBF533_extn.h>
-	#include <asm/arch-bf533/bf533_serial.h>
 #elif defined(__ADSPBF537__)
 	#include <asm/arch-bf537/cdefBF537.h>
 	#include <asm/arch-bf537/defBF537_extn.h>
-	#include <asm/arch-bf537/bf537_serial.h>
 #elif defined(__ADSPBF561__)
 	#include <asm/arch-bf561/cdefBF561.h>
 	#include <asm/arch-bf561/defBF561_extn.h>
-	#include <asm/arch-bf561/bf561_serial.h>
 #elif defined(__ADSPBF54x__)
 	#include <asm/arch-bf548/cdefBF549.h>
 	#include <asm/arch-bf548/defBF54x_extn.h>
-	#include <asm/arch-bf548/bf54x_serial.h>
 #elif defined(__ADSPBF535__)
 	#include <asm/cpu/cdefBF5d35.h>
 #elif defined(__AD6532__)

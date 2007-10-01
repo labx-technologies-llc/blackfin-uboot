@@ -524,39 +524,6 @@
 #define pUART1_SCR		((volatile unsigned short *)UART1_SCR)
 #define pUART1_GCTL		((volatile unsigned short *)UART1_GCTL)
 
-/* default UART controller */
-#if (CONFIG_UART_CONSOLE==1)
-
-#define pUART_THR		pUART1_THR
-#define pUART_RBR		pUART1_RBR
-#define pUART_DLL		pUART1_DLL
-#define pUART_IER		pUART1_IER
-#define pUART_DLH		pUART1_DLH
-#define pUART_IIR		pUART1_IIR
-#define pUART_LCR		pUART1_LCR
-#define pUART_MCR		pUART1_MCR
-#define pUART_LSR		pUART1_LSR
-#define pUART_MSR		pUART1_MSR
-#define pUART_SCR		pUART1_SCR
-#define pUART_GCTL		pUART1_GCTL
-
-#else
-
-#define pUART_THR		pUART0_THR
-#define pUART_RBR		pUART0_RBR
-#define pUART_DLL		pUART0_DLL
-#define pUART_IER		pUART0_IER
-#define pUART_DLH		pUART0_DLH
-#define pUART_IIR		pUART0_IIR
-#define pUART_LCR		pUART0_LCR
-#define pUART_MCR		pUART0_MCR
-#define pUART_LSR		pUART0_LSR
-#define pUART_MSR		pUART0_MSR
-#define pUART_SCR		pUART0_SCR
-#define pUART_GCTL		pUART0_GCTL
-
-#endif
-
 /* CAN Controller		(0xFFC02A00 - 0xFFC02FFF) */
 /* For Mailboxes 0-15 */
 #define pCAN_MC1		((volatile unsigned short *)CAN_MC1)

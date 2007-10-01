@@ -8,14 +8,13 @@
 #include <asm/blackfin-config-pre.h>
 
 #define BFIN_CPU             bf548-0.0
-#define BFIN_BOOT_MODE       BFIN_BOOT_PARA
+#define BFIN_BOOT_MODE       BFIN_BOOT_UART
 
 #define CFG_LONGHELP		1
 #define CONFIG_CMDLINE_EDITING	1
 #define CONFIG_BAUDRATE		57600
 #define CONFIG_LDR_LOAD_BAUD	115200
-/* Set default serial console for bf537 */
-#define CONFIG_UART_CONSOLE	0
+#define CONFIG_UART_CONSOLE	1
 
 /* This sets the default state of the cache on U-Boot's boot */
 #define CONFIG_ICACHE_ON
