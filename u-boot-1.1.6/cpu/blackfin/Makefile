@@ -28,24 +28,33 @@ include $(TOPDIR)/config.mk
 
 LIB	= $(obj)lib$(CPU).a
 
-START	:= start.o
-SOBJS	:= interrupt.o cache.o flush.o
-COBJS	:= cpu.o traps.o ints.o serial.o interrupts.o video.o i2c.o
+EXTRA    := bootrom.h
+SEXTRA   := start.o
+SOBJS    := interrupt.o cache.o flush.o
+COBJS    := cpu.o traps.o ints.o serial.o interrupts.o video.o i2c.o
 
 ifeq ($(BFIN_BOOT_MODE),BFIN_BOOT_BYPASS)
-SOBJS   += init_sdram.o
+SOBJS    += init_sdram.o
 else
-EXTRA   := init_sdram.o
+SEXTRA   += init_sdram.o
 endif
 
-SRCS	:= $(START:.o=.S) $(SOBJS:.o=.S) $(COBJS:.o=.c)
-OBJS	:= $(addprefix $(obj),$(COBJS) $(SOBJS))
-START	:= $(addprefix $(obj),$(START))
+SRCS     := $(SEXTRA:.o=.S) $(SOBJS:.o=.S) $(COBJS:.o=.c)
+OBJS     := $(addprefix $(obj),$(COBJS) $(SOBJS))
+EXTRA    := $(addprefix $(obj),$(EXTRA))
+SEXTRA   := $(addprefix $(obj),$(SEXTRA))
 
-all:	$(obj).depend $(START) $(LIB) $(obj).depend $(EXTRA)
+all:	$(obj).depend $(LIB) $(obj).depend $(EXTRA) $(SEXTRA)
 
 $(LIB):	$(OBJS)
 	$(AR) $(ARFLAGS) $@ $(OBJS)
+
+$(OBJS): $(obj)bootrom-asm-offsets.h
+$(obj)bootrom-asm-offsets.s: bootrom-asm-offsets.c
+	$(CC) $(CFLAGS) -S $^ -o $@.tmp
+	mv $@.tmp $@
+$(obj)bootrom-asm-offsets.h: $(obj)bootrom-asm-offsets.s
+	sed -ne "/^->/{s:^->\([^ ]*\) [\$$#]*\([^ ]*\) \(.*\):#define \1 \2 /* \3 */:; s:->::; p;}" $^ > $@
 
 #########################################################################
 
