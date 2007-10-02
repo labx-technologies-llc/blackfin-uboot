@@ -70,28 +70,29 @@ void blackfin_no_irqs(void)
 void irq_init(void)
 {
 #ifdef SIC_IMASK0
-	*(unsigned volatile long *)(SIC_IMASK0) = 0;
-	*(unsigned volatile long *)(SIC_IMASK1) = 0;
-	*(unsigned volatile long *)(SIC_IMASK2) = 0;
+	bfin_write_SIC_IMASK0(0);
+	bfin_write_SIC_IMASK1(0);
+	bfin_write_SIC_IMASK2(0);
+#elif defined(SICA_IMASK0)
+	bfin_write_SICA_IMASK0(0);
+	bfin_write_SICA_IMASK1(0);
 #else
-	*(unsigned volatile long *)(SIC_IMASK) = SIC_UNMASK_ALL;
+	bfin_write_SIC_IMASK(0);
 #endif
-	local_irq_disable();
-	*(unsigned volatile long *)EVT_NMI_ADDR = (unsigned long)blackfin_no_irqs;
-	*(unsigned volatile long *)EVT_EXCEPTION_ADDR = (unsigned long)trap;
-	*(unsigned volatile long *)EVT_HARDWARE_ERROR_ADDR = (unsigned long)blackfin_no_irqs;
-	*(unsigned volatile long *)EVT_RESET_ADDR = (unsigned long)blackfin_no_irqs;
-	*(unsigned volatile long *)EVT_TIMER_ADDR = (unsigned long)blackfin_no_irqs;
-	*(unsigned volatile long *)EVT_IVG7_ADDR = (unsigned long)blackfin_no_irqs;
-	*(unsigned volatile long *)EVT_IVG8_ADDR = (unsigned long)blackfin_no_irqs;
-	*(unsigned volatile long *)EVT_IVG9_ADDR = (unsigned long)blackfin_no_irqs;
-	*(unsigned volatile long *)EVT_IVG10_ADDR = (unsigned long)blackfin_no_irqs;
-	*(unsigned volatile long *)EVT_IVG11_ADDR = (unsigned long)blackfin_no_irqs;
-	*(unsigned volatile long *)EVT_IVG12_ADDR = (unsigned long)blackfin_no_irqs;
-	*(unsigned volatile long *)EVT_IVG13_ADDR = (unsigned long)blackfin_no_irqs;
-	*(unsigned volatile long *)EVT_IVG14_ADDR = (unsigned long)blackfin_no_irqs;
-	*(unsigned volatile long *)EVT_IVG15_ADDR = (unsigned long)blackfin_no_irqs;
-	*(unsigned volatile long *)ILAT = 0;
+	bfin_write_EVT2(blackfin_no_irqs);	/* NMI */
+	bfin_write_EVT3(trap);	/* exceptions */
+	bfin_write_EVT5(blackfin_no_irqs);	/* hardware error */
+	bfin_write_EVT6(blackfin_no_irqs);	/* core timer */
+	bfin_write_EVT7(blackfin_no_irqs);
+	bfin_write_EVT8(blackfin_no_irqs);
+	bfin_write_EVT9(blackfin_no_irqs);
+	bfin_write_EVT10(blackfin_no_irqs);
+	bfin_write_EVT11(blackfin_no_irqs);
+	bfin_write_EVT12(blackfin_no_irqs);
+	bfin_write_EVT13(blackfin_no_irqs);
+	bfin_write_EVT14(blackfin_no_irqs);
+	bfin_write_EVT15(blackfin_no_irqs);
+	bfin_write_ILAT(0);
 	CSYNC();
 	/* enable all interrupts except for core timer */
 	irq_flags = 0xffffffbf;

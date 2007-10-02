@@ -26,11 +26,11 @@
  */
 
 #include <common.h>
-#include <asm/blackfin.h>
 #include <command.h>
-#include <asm/entry.h>
+#include <asm/blackfin.h>
 #include <asm/cplb.h>
 #include <asm/io.h>
+#include <asm/mach-common/bits/mpu.h>
 #include "cpu.h"
 
 #define CACHE_ON 1
@@ -38,8 +38,13 @@
 
 void bfin_reset(void)
 {
+#ifdef pWDOGA_CNT
+	*pWDOGA_CNT = 0x0010;
+	*pWDOGA_CTL = 0x0000;
+#else
 	*pWDOG_CNT = 0x0010;
 	*pWDOG_CTL = 0x0000;
+#endif
 	while (1)
 		SSYNC();
 }

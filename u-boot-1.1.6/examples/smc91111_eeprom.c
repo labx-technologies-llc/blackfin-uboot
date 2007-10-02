@@ -33,6 +33,11 @@
 
 #ifdef CONFIG_DRIVER_SMC91111
 
+#ifdef pFIO0_DIR
+# define pFIO_DIR    pFIO0_DIR
+# define pFIO_FLAG_S pFIO0_FLAG_S
+#endif
+
 #define SMC_BASE_ADDRESS CONFIG_SMC91111_BASE
 #define EEPROM		0x1;
 #define MAC		0x2;

@@ -13,6 +13,7 @@
 #include <command.h>
 #include <asm/blackfin.h>
 #include <asm/cplb.h>
+#include <asm/mach-common/bits/mpu.h>
 
 #if CONFIG_BFIN_COMMANDS & CFG_BFIN_CMD_CPLBINFO
 

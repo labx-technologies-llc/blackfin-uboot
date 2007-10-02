@@ -9,6 +9,8 @@
 #ifndef __ASM_BLACKFIN_CPLB_H__
 #define __ASM_BLACKFIN_CPLB_H__
 
+#include <asm/mach-common/bits/mpu.h>
+
 #define CONFIG_BLKFIN_WT
 
 #define CPLB_ENABLE_ICACHE_P	0

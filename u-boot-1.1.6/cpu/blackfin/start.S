@@ -35,9 +35,11 @@
  *       board/$(board_name)/config.mk for a valid u-boot.bin
  */
 
-#include <linux/config.h>
 #include <config.h>
 #include <asm/blackfin.h>
+#include <asm/mach-common/bits/core.h>
+#include <asm/mach-common/bits/dma.h>
+#include <asm/mach-common/bits/pll.h>
 
 #if defined(CONFIG_POST)
 .global _memory_post_test;
@@ -123,10 +125,12 @@ ENTRY(_start)
 	w[p0] = r0;
 	SSYNC;
 
-	/* Clear EVT registers */
-	p0.h = HI(EVT_EMULATION_ADDR + 8);
-	p0.l = LO(EVT_EMULATION_ADDR + 8);
-	p1 = 14;
+	/* Clear EVT registers -- no point in clearing out
+	 * EVT0 (EMU) or EVT1 (RESET), so skip them.
+	 */
+	p0.h = HI(EVT2);
+	p0.l = LO(EVT2);
+	p1 = (((EVT15 - EVT2) / 4) + 1);
 	r1 = 0;
 	LSETUP(4, 4) lc0 = p1;
 	[p0++] = r1;
@@ -221,15 +225,15 @@ ENTRY(_start)
 	 * we need to read MAC address from FLASH
 	 */
 #if defined(__ADSPBF54x__)
-	p2.h = HI(EBIU_AMCBCTL1);
-	p2.l = LO(EBIU_AMCBCTL1);
+	p2.h = HI(EBIU_AMBCTL1);
+	p2.l = LO(EBIU_AMBCTL1);
 	r0.h = HI(AMBCTL1VAL);
 	r0.l = LO(AMBCTL1VAL);
 	[p2] = r0;
 	ssync;
 
-	p2.h = HI(EBIU_AMCBCTL0);
-	p2.l = LO(EBIU_AMCBCTL0);
+	p2.h = HI(EBIU_AMBCTL0);
+	p2.l = LO(EBIU_AMBCTL0);
 	r0.h = HI(AMBCTL0VAL);
 	r0.l = LO(AMBCTL0VAL);
 	[p2] = r0;
@@ -299,8 +303,8 @@ postcopy:
 	R1.H = HI(CFG_FLASH_BASE);
 	R1.L = LO(CFG_FLASH_BASE);
 	R0 = R0 + R1;		/* Source Address */
-	R1.H = hi(L1_ISRAM);    /* Destination Address (high) */
-	R1.L = lo(L1_ISRAM);    /* Destination Address (low) */
+	R1.H = hi(L1_INST_SRAM);    /* Destination Address (high) */
+	R1.L = lo(L1_INST_SRAM);    /* Destination Address (low) */
 	R3.L = DMAEN;           /* Source DMAConfig Value (8-bit words) */
 	/* Destination DMAConfig Value (8-bit words) */
 	R4.L = (DI_EN | WNR | DMAEN);
@@ -423,8 +427,8 @@ POST_DATA_DMA_DONE:
 	 */
 
 	/* To keep ourselves in the supervisor mode */
-	p0.l = LO(EVT_IVG15_ADDR);
-	p0.h = HI(EVT_IVG15_ADDR);
+	p0.l = LO(EVT15);
+	p0.h = HI(EVT15);
 
 	p1.l = _real_start;
 	p1.h = _real_start;
@@ -432,8 +436,8 @@ POST_DATA_DMA_DONE:
 
 	p0.l = LO(IMASK);
 	p0.h = HI(IMASK);
-	r0.l = LO(IVG15_POS);
-	r0.h = HI(IVG15_POS);
+	r0.l = LO(EVT_IVG15);
+	r0.h = HI(EVT_IVG15);
 	[p0] = r0;
 	raise 15;
 	p0.l = .LWAIT_HERE;

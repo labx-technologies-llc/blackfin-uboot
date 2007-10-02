@@ -28,6 +28,9 @@
 #include <net.h>
 #include <command.h>
 #include "ether_bf537.h"
+#include <asm/mach-common/bits/dma.h>
+#include <asm/mach-common/bits/emac.h>
+#include <asm/mach-common/bits/pll.h>
 
 #ifdef CONFIG_POST
 #include <post.h>

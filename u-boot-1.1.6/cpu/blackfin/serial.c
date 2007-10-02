@@ -42,9 +42,7 @@
 
 #include <common.h>
 #include <asm/blackfin.h>
-#include <asm/bitops.h>
-#include <asm/delay.h>
-#include <asm/io.h>
+#include <asm/mach-common/bits/uart.h>
 
 #if defined(pUART_LSR) && (CONFIG_UART_CONSOLE != 0)
 # error CONFIG_UART_CONSOLE must be 0 on parts with only one UART
@@ -135,7 +133,7 @@ void serial_setbrg(void)
 	ACCESS_PORT_IER();
 
 	/* Set LCR to Word Lengh 8-bit word select */
-	*pUART_LCR = WLS(8);
+	*pUART_LCR = WLS_8;
 	SSYNC();
 }
 

@@ -9,8 +9,9 @@
 
 #include <config.h>
 #include <asm/blackfin.h>
-#include <asm/linkage.h>
 #include <asm/mem_init.h>
+#include <asm/mach-common/bits/ebiu.h>
+#include <asm/mach-common/bits/pll.h>
 
 .macro init_vlev
 	P0.h = hi(VR_CTL);
@@ -153,12 +154,12 @@ ENTRY(_init_sdram)
 	R7.l = 0x40EB;
 	R7.h = 0x0;
 	CC = R6 == R7;
-	if CC jump skip_vr_ctl;
+	if CC jump .Lskip_vr_ctl;
  	CLI R6;
 	w[P5] = R7.l;
 	IDLE;
 	STI R6;
-skip_vr_ctl: nop;
+.Lskip_vr_ctl: nop;
 
 	/***********************************
 	* PLL divider register             *
@@ -181,12 +182,12 @@ skip_vr_ctl: nop;
 	R6 = w[P5](z);
 	R7 = PLL_CTL_VAL (z);
 	CC = R6 == R7;
-	if CC jump skip_pll_ctl;
+	if CC jump .Lskip_pll_ctl;
 	CLI R6;
 	w[P5] = R7.l;
 	IDLE;
 	STI R6;
-skip_pll_ctl: nop;
+.Lskip_pll_ctl: nop;
 
 #if (BFIN_BOOT_MODE == BFIN_BOOT_UART)
 	P5.l = lo(UART1_DLL);
@@ -455,12 +456,12 @@ ENTRY(_init_sdram)
 	idle;				/* Wait for the PLL to stablize */
 	sti r2;				/* Enable interrupts */
 
-check_again:
+.Lcheck_again:
 	p0.h = hi(PLL_STAT);
 	p0.l = lo(PLL_STAT);
 	R0 = W[P0](Z);
 	CC = BITTST(R0,5);
-	if ! CC jump check_again;
+	if ! CC jump .Lcheck_again;
 
 	/* Configure SCLK & CCLK Dividers */
 	r0 = (CONFIG_CCLK_ACT_DIV | CONFIG_SCLK_DIV);
@@ -530,10 +531,10 @@ check_again:
 	p0.l = lo(EBIU_SDSTAT);
 	r2.l = w[p0];
 	cc = bittst(r2,3);
-	if !cc jump skip;
+	if !cc jump .Lskip;
 	NOP;
 	BITSET (R0, 23);
-skip:
+.Lskip:
 	[P2] = R0;
 	SSYNC;
 

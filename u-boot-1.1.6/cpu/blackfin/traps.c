@@ -35,12 +35,12 @@
 
 #include <common.h>
 #include <linux/types.h>
-#include <asm/system.h>
 #include <asm/traps.h>
-#include "cpu.h"
-#include <asm/arch/anomaly.h>
 #include <asm/cplb.h>
 #include <asm/io.h>
+#include <asm/mach-common/bits/core.h>
+#include <asm/mach-common/bits/mpu.h>
+#include "cpu.h"
 
 void process_int(unsigned long vec, struct pt_regs *fp)
 {
@@ -83,7 +83,7 @@ const struct memory_map const bfin_memory_map[] = {
 
 void trap_c(struct pt_regs *regs)
 {
-	uint32_t trapnr = (regs->seqstat) & SEQSTAT_EXCAUSE;
+	uint32_t trapnr = (regs->seqstat & EXCAUSE);
 	bool data = false;
 
 	switch (trapnr) {

@@ -3,10 +3,10 @@
  * Licensed under the GPL-2 or later.
  */
 
-#include <asm/linkage.h>
-#include <asm/cplb.h>
 #include <config.h>
 #include <asm/blackfin.h>
+#include <asm/cplb.h>
+#include <asm/mach-common/bits/mpu.h>
 
 .text
 

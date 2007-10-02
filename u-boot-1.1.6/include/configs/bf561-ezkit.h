@@ -131,7 +131,6 @@
 #define CONFIG_BOOTCOMMAND	"run ramboot"
 #define CONFIG_BOOTARGS		"root=/dev/mtdblock0 rw"
 
-#include<asm/arch-common/def_LPBlackfin.h>
 #define CMD_LINE_ADDR           L1_SRAM_SCRATCH /* L1 scratchpad */
 
 #if (CONFIG_DRIVER_SMC91111)

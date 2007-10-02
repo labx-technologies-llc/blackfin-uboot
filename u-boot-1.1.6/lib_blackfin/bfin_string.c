@@ -29,6 +29,7 @@
 #include <config.h>
 #include <asm/blackfin.h>
 #include <asm/io.h>
+#include <asm/mach-common/bits/dma.h>
 #include "cache.h"
 
 char *strcpy(char *dest, const char *src)
@@ -117,35 +118,47 @@ int strncmp(const char *cs, const char *ct, size_t count)
 	return __res1;
 }
 
+#ifdef bfin_write_MDMA1_D0_IRQ_STATUS
+# define bfin_write_MDMA_D0_IRQ_STATUS bfin_write_MDMA1_D0_IRQ_STATUS
+# define bfin_write_MDMA_D0_START_ADDR bfin_write_MDMA1_D0_START_ADDR
+# define bfin_write_MDMA_D0_X_COUNT    bfin_write_MDMA1_D0_X_COUNT
+# define bfin_write_MDMA_D0_X_MODIFY   bfin_write_MDMA1_D0_X_MODIFY
+# define bfin_write_MDMA_D0_CONFIG     bfin_write_MDMA1_D0_CONFIG
+# define bfin_write_MDMA_S0_START_ADDR bfin_write_MDMA1_S0_START_ADDR
+# define bfin_write_MDMA_S0_X_COUNT    bfin_write_MDMA1_S0_X_COUNT
+# define bfin_write_MDMA_S0_X_MODIFY   bfin_write_MDMA1_S0_X_MODIFY
+# define bfin_write_MDMA_S0_CONFIG     bfin_write_MDMA1_S0_CONFIG
+# define bfin_write_MDMA_D0_IRQ_STATUS bfin_write_MDMA1_D0_IRQ_STATUS
+# define bfin_read_MDMA_D0_IRQ_STATUS  bfin_read_MDMA1_D0_IRQ_STATUS
+#endif
 static void *dma_memcpy(void *dest, const void *src, size_t count)
 {
-	*pMDMA_D0_IRQ_STATUS = DMA_DONE | DMA_ERR;
+	bfin_write_MDMA_D0_IRQ_STATUS(DMA_DONE | DMA_ERR);
 
 	/* Copy sram functions from sdram to sram */
 	/* Setup destination start address */
-	*pMDMA_D0_START_ADDR = (volatile void **)dest;
+	bfin_write_MDMA_D0_START_ADDR(dest);
 	/* Setup destination xcount */
-	*pMDMA_D0_X_COUNT = count;
+	bfin_write_MDMA_D0_X_COUNT(count);
 	/* Setup destination xmodify */
-	*pMDMA_D0_X_MODIFY = 1;
+	bfin_write_MDMA_D0_X_MODIFY(1);
 
 	/* Setup Source start address */
-	*pMDMA_S0_START_ADDR = (volatile void **)src;
+	bfin_write_MDMA_S0_START_ADDR(src);
 	/* Setup Source xcount */
-	*pMDMA_S0_X_COUNT = count;
+	bfin_write_MDMA_S0_X_COUNT(count);
 	/* Setup Source xmodify */
-	*pMDMA_S0_X_MODIFY = 1;
+	bfin_write_MDMA_S0_X_MODIFY(1);
 
 	/* Enable source DMA */
-	*pMDMA_S0_CONFIG = (DMAEN);
+	bfin_write_MDMA_S0_CONFIG(DMAEN);
 	SSYNC();
 
-	*pMDMA_D0_CONFIG = (WNR | DMAEN);
+	bfin_write_MDMA_D0_CONFIG(WNR | DMAEN);
 
-	while (*pMDMA_D0_IRQ_STATUS & DMA_RUN) {
-		*pMDMA_D0_IRQ_STATUS |= (DMA_DONE | DMA_ERR);
-	}
-	*pMDMA_D0_IRQ_STATUS |= (DMA_DONE | DMA_ERR);
+	while (bfin_read_MDMA_D0_IRQ_STATUS() & DMA_RUN)
+		bfin_write_MDMA_D0_IRQ_STATUS(bfin_read_MDMA_D0_IRQ_STATUS() | DMA_DONE | DMA_ERR);
+	bfin_write_MDMA_D0_IRQ_STATUS(bfin_read_MDMA_D0_IRQ_STATUS() | DMA_DONE | DMA_ERR);
 
 	dest += count;
 	src += count;
@@ -173,11 +186,11 @@ void *memcpy(void *dst, const void *src, size_t count)
 	if (dcache_status())
 		blackfin_dcache_flush_range(src, src+count);
 
-	if (dst_ul >= L1_ISRAM && dst_ul < L1_ISRAM_END) {
+	if (dst_ul >= L1_INST_SRAM && dst_ul < L1_INST_SRAM_END) {
 		/* L1 is the destination */
 		dma_memcpy(dst, src, count);
 
-	} else if (src_ul >= L1_ISRAM && src_ul < L1_ISRAM_END) {
+	} else if (src_ul >= L1_INST_SRAM && src_ul < L1_INST_SRAM_END) {
 		/* L1 is the source */
 		dma_memcpy(dst, src, count);
 

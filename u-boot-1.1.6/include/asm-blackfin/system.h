@@ -25,10 +25,6 @@
 #ifndef _BLACKFIN_SYSTEM_H
 #define _BLACKFIN_SYSTEM_H
 
-#include <asm/linkage.h>
-#include <asm/blackfin.h>
-#include <asm/entry.h>
-
 /*
  * Interrupt configuring macros.
  */

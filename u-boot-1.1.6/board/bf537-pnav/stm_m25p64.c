@@ -4,6 +4,7 @@
 #include <common.h>
 #include <linux/ctype.h>
 #include <asm/io.h>
+#include <asm/mach-common/bits/spi.h>
 
 #if defined(CONFIG_SPI)
 
@@ -517,6 +518,7 @@ ERROR_CODE WriteData( unsigned long ulStart, long lCount, int *pnData )
 
 int eeprom_info(void)
 {
+	return 1;
 }
 
 #endif	/* CONFIG_SPI */

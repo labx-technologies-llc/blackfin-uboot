@@ -32,6 +32,9 @@
 
 #include <asm/blackfin.h>
 #include <asm/net.h>
+#include <asm/mach-common/bits/dma.h>
+#include <asm/mach-common/bits/emac.h>
+#include <asm/mach-common/bits/pll.h>
 
 #include "bfin_mac.h"
 

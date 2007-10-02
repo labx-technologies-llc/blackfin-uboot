@@ -15,9 +15,9 @@
  */
 
 #include <common.h>
-#include <linux/ctype.h>
 #include <malloc.h>
 #include <asm/io.h>
+#include <asm/mach-common/bits/spi.h>
 
 /* Forcibly phase out these */
 #ifdef CONFIG_SPI_FLASH_NUM_SECTORS
