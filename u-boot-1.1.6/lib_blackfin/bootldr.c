@@ -26,34 +26,34 @@
 
 int do_bootldr(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 {
-	uint32_t addr, entry;
+	void *addr;
 	uint32_t *data;
 
 	/* Get the address */
 	if (argc < 2)
-		addr = load_addr;
+		addr = (void *)load_addr;
 	else
-		addr = simple_strtoul(argv[1], NULL, 16);
+		addr = (void *)simple_strtoul(argv[1], NULL, 16);
 
 	/* Check if it is a LDR file */
-	data = (uint32_t *)addr;
+	data = addr;
+#ifdef __ADSPBF54x__
+	if ((*data & 0xFF000000) == 0xAD000000 && data[2] == 0x00000000) {
+#else
 	if (*data == 0xFF800060 || *data == 0xFF800040 || *data == 0xFF800020) {
+#endif
 		/* We want to boot from FLASH or SDRAM */
-		entry = _BOOTROM_BOOT_DXE_FLASH;
-		printf("## Booting ldr image at 0x%08lx ...\n", addr);
+		printf("## Booting ldr image at 0x%p ...\n", addr);
 
 		icache_disable();
 		dcache_disable();
 
 		__asm__(
-			"R7 = %0;\n"
-			"P0 = %1;\n"
-			"JUMP (P0);\n":
-			: "d"(addr), "a"(entry)
-			: "R7", "P0");
-
+			"jump (%1);"
+			:
+			: "q7" (addr), "a" (_BOOTROM_BOOT_DXE_FLASH));
 	} else
-		printf("## No ldr image at address 0x%08lx\n", addr);
+		printf("## No ldr image at address 0x%p\n", addr);
 
 	return 0;
 }
