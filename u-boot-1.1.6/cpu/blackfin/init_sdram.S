@@ -76,10 +76,6 @@ ENTRY(_init_sdram)
 	[--SP] = (R7:0);
 	[--SP] = (P5:0);
 
-#if (BFIN_BOOT_MODE != BFIN_BOOT_BYPASS)
-	init_vlev
-#endif
-
 #if (BFIN_BOOT_MODE == BFIN_BOOT_UART)
 	/* force RTS rather than relying on auto RTS */
 	P3.h = hi(UART1_MCR);
@@ -116,6 +112,10 @@ ENTRY(_init_sdram)
 	R1 += -1;
 	CC = R1 == 0;
 	IF !CC jump .Lcheck_again;
+#endif
+
+#if (BFIN_BOOT_MODE != BFIN_BOOT_BYPASS)
+	init_vlev
 #endif
 
 	/*************************************************
