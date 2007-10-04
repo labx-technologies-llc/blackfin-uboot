@@ -76,6 +76,29 @@
 # define ACCESS_PORT_IER() (*pUART_LCR &= ~DLAB)
 #endif
 
+static void serial_do_portmux(void)
+{
+#ifdef __ADSPBF52x__
+	if (CONFIG_UART_CONSOLE == 0) {
+		bfin_write_PORTG_MUX((bfin_read_PORTG_MUX() & ~PORT_x_MUX_2_MASK) | PORT_x_MUX_2_FUNC_3);
+		bfin_write_PORTG_FER(bfin_read_PORTG_FER() | PG7 | PG8);
+	} else if (CONFIG_UART_CONSOLE == 1) {
+		bfin_write_PORTF_MUX((bfin_read_PORTF_MUX() & ~PORT_x_MUX_5_MASK) | PORT_x_MUX_5_FUNC_3);
+		bfin_write_PORTF_FER(bfin_read_PORTF_FER() | PF14 | PF15);
+	}
+	SSYNC();
+#elif defined(__ADSPBF537__) || defined(__ADSPBF536__) || defined(__ADSPBF534__)
+	if (CONFIG_UART_CONSOLE == 0) {
+		bfin_write_PORT_MUX(bfin_read_PORT_MUX() & ~PFDE);
+		bfin_write_PORTF_FER(bfin_read_PORTF_FER() | PF0 | PF1);
+	} else if (CONFIG_UART_CONSOLE == 1) {
+		bfin_write_PORT_MUX(bfin_read_PORT_MUX() & ~PFTE);
+		bfin_write_PORTF_FER(bfin_read_PORTF_FER() | PF2 | PF3);
+	}
+	SSYNC();
+#endif
+}
+
 static int baud_table[5] = { 9600, 19200, 38400, 57600, 115200 };
 static struct {
 	unsigned char dl_high;
@@ -110,11 +133,8 @@ void serial_setbrg(void)
 		if (gd->baudrate == baud_table[i])
 			break;
 
-#ifdef PORTF_FER
-	/* Enable UART peripheral pins */
-	*pPORTF_FER |= 0xF;
-	SSYNC();
-#endif
+	/* handle portmux crap on different Blackfins */
+	serial_do_portmux();
 
 	/* Enable UART */
 	*pUART_GCTL |= UCEN;
