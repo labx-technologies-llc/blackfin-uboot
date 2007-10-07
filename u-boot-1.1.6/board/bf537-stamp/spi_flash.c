@@ -189,28 +189,37 @@ static struct manufacturer_info flash_manufacturers[] = {
 #endif
 #define SSEL_MASK (1 << CONFIG_SPI_FLASH_SSEL)
 
-static void SPI_ON(void)
+static void SPI_INIT(void)
 {
 	/* [#3541] This delay appears to be necessary, but not sure
 	 * exactly why as the history behind it is non-existant.
 	 */
 	udelay(CONFIG_CCLK_HZ / 25000000);
 
-	/* Setup the SPI controller by:
-	 *	- enabling pins: SSEL, MOSI, MISO, SCK
-	 *	- initate communication upon write of TDBR
-	 *	- assert the SSEL for our device
-	 *	- toggle the value to reset the chip
-	 */
+	/* enable SPI pins: SSEL, MOSI, MISO, SCK */
 #ifdef __ADSPBF54x__
 	*pPORTE_FER |= (SPI0_SCK | SPI0_MOSI | SPI0_MISO | SPI0_SEL1);
 #elif defined(__ADSPBF534__) || defined(__ADSPBF536__) || defined(__ADSPBF537__)
 	*pPORTF_FER |= (PF10 | PF11 | PF12 | PF13);
 #endif
 
-	*pSPI_FLG = 0xFF00 | SSEL_MASK;
-	*pSPI_BAUD = CONFIG_SPI_BAUD;
+	/* initate communication upon write of TDBR */
 	*pSPI_CTL = (SPE|MSTR|CPHA|CPOL|0x01);
+	*pSPI_BAUD = CONFIG_SPI_BAUD;
+}
+
+static void SPI_DEINIT(void)
+{
+	/* put SPI settings back to reset state */
+	*pSPI_CTL = 0x0400;
+	*pSPI_BAUD = 0;
+	SSYNC();
+}
+
+static void SPI_ON(void)
+{
+	/* toggle SSEL to reset the device so it'll take a new command */
+	*pSPI_FLG = 0xFF00 | SSEL_MASK;
 	SSYNC();
 
 	*pSPI_FLG = ((0xFF & ~SSEL_MASK) << 8) | SSEL_MASK;
@@ -220,9 +229,7 @@ static void SPI_ON(void)
 static void SPI_OFF(void)
 {
 	/* put SPI settings back to reset state */
-	*pSPI_CTL = 0x0400;
 	*pSPI_FLG = 0xFF00;
-	*pSPI_BAUD = 0;
 	SSYNC();
 }
 
@@ -420,8 +427,10 @@ void spi_init_r(void)
 	size_t test_count, errors;
 	uint8_t pattern;
 
+	SPI_INIT();
+
 	if (spi_detect_part())
-		return;
+		goto out;
 	eeprom_info();
 
 	ulong lengths[] = {
@@ -467,7 +476,7 @@ void spi_init_r(void)
 				for (c = 0; c < 4; ++c) {	/* 4 is just a random repeat count */
 					if (ctrlc()) {
 						puts("\nAbort\n");
-						return;
+						goto out;
 					}
 
 					/* make sure background fill pattern != pattern */
@@ -505,6 +514,10 @@ void spi_init_r(void)
 		printf("SPI FAIL: Out of %i tests, there were %i errors ;(\n", test_count, errors);
 	else
 		printf("SPI PASS: %i tests worked!\n", test_count);
+
+ out:
+	SPI_DEINIT();
+
 #endif
 }
 
@@ -665,11 +678,13 @@ ssize_t spi_write(uchar *addr, int alen, uchar *buffer, int len)
 	unsigned long offset;
 	int start_sector, end_sector;
 	int start_byte, end_byte;
-	uchar *temp;
-	int num;
+	uchar *temp = NULL;
+	int num, ret = 0;
+
+	SPI_INIT();
 
 	if (spi_detect_part())
-		return 0;
+		goto out;
 
 	offset = addr[0] << 16 | addr[1] << 8 | addr[2];
 
@@ -718,22 +733,25 @@ ssize_t spi_write(uchar *addr, int alen, uchar *buffer, int len)
 
 		if (erase_sector(address)) {
 			puts("Erase sector failed! ");
-			len = 0;
-			break;
+			goto out;
 		}
 
 		if (write_sector(address, flash.sector_size, temp)) {
 			puts("Write sector failed! ");
-			len = 0;
-			break;
+			goto out;
 		}
 
 		puts(".");
 	}
 
+	ret = len;
+
+ out:
 	free(temp);
 
-	return len;
+	SPI_DEINIT();
+
+	return ret;
 }
 
 /*
@@ -742,10 +760,18 @@ ssize_t spi_write(uchar *addr, int alen, uchar *buffer, int len)
 ssize_t spi_read(uchar *addr, int alen, uchar *buffer, int len)
 {
 	unsigned long offset;
+
+	SPI_INIT();
+
 	if (spi_detect_part())
-		return 0;
-	offset = addr[0] << 16 | addr[1] << 8 | addr[2];
-	read_flash(offset, len, buffer);
+		len = 0;
+	else {
+		offset = addr[0] << 16 | addr[1] << 8 | addr[2];
+		read_flash(offset, len, buffer);
+	}
+
+	SPI_DEINIT();
+
 	return len;
 }
 
@@ -754,17 +780,23 @@ ssize_t spi_read(uchar *addr, int alen, uchar *buffer, int len)
  */
 int eeprom_info(void)
 {
+	int ret = 0;
+
+	SPI_INIT();
+
 	if (spi_detect_part())
-		return 1;
+		ret = 1;
+	else
+		printf("SPI Device: %s 0x%02X (%s) 0x%02X 0x%02X\n"
+			"Parameters: num sectors = %i, sector size = %i, write size = %i\n"
+			"Status: 0x%02X\n",
+			flash.flash->name, flash.manufacturer_id, flash.manufacturer->name,
+			flash.device_id1, flash.device_id2, flash.num_sectors,
+			flash.sector_size, flash.write_length, read_status_register());
 
-	printf("SPI Device: %s 0x%02X (%s) 0x%02X 0x%02X\n"
-		"Parameters: num sectors = %i, sector size = %i, write size = %i\n"
-		"Status: 0x%02X\n",
-		flash.flash->name, flash.manufacturer_id, flash.manufacturer->name,
-		flash.device_id1, flash.device_id2, flash.num_sectors,
-		flash.sector_size, flash.write_length, read_status_register());
+	SPI_DEINIT();
 
-	return 0;
+	return ret;
 }
 
 #endif
