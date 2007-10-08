@@ -72,7 +72,9 @@ void irq_init(void)
 #ifdef SIC_IMASK0
 	bfin_write_SIC_IMASK0(0);
 	bfin_write_SIC_IMASK1(0);
+# ifdef SIC_IMASK2
 	bfin_write_SIC_IMASK2(0);
+# endif
 #elif defined(SICA_IMASK0)
 	bfin_write_SICA_IMASK0(0);
 	bfin_write_SICA_IMASK1(0);
