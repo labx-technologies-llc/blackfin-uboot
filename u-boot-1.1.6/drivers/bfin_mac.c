@@ -361,7 +361,7 @@ static int SetupSystemRegs(int *opmode)
 	u16 sysctl, phydat;
 	int count = 0;
 	/* Enable PHY output */
-	*pVR_CTL |= PHYCLKOE;
+	*pVR_CTL |= CLKBUFOE;
 	/* Set all the pins to peripheral mode */
 
 #ifndef CONFIG_BFIN_MAC_RMII
