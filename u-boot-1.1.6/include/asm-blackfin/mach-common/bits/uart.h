@@ -28,8 +28,23 @@
 #define WLS_P0			0x00
 
 /* UARTx_MCR Mask */
+#define XOFF			0x01	/* Transmitter off */
+#define MRTS			0x02	/* Manual Request to Send */
+#define RFIT			0x04	/* Receive FIFO IRQ Threshold */
+#define RFRT			0x08	/* Receive FIFO RTS Threshold */
 #define LOOP_ENA		0x10	/* Loopback Mode Enable */
-#define LOOP_ENA_P		0x04
+#define FCPOL			0x20	/* Flow Control Pin Polarity */
+#define ARTS			0x40	/* Auto RTS generation for RX handshake */
+#define ACTS			0x80	/* Auto CTS operation for TX handshake */
+
+#define XOFF_P			0
+#define MRTS_P			1
+#define RFIT_P			2
+#define RFRT_P			3
+#define LOOP_ENA_P		4
+#define FCPOL_P			5
+#define ARTS_P			6
+#define ACTS_P			7
 
 /* UARTx_LSR Masks */
 #define DR			0x01	/* Data Ready */
