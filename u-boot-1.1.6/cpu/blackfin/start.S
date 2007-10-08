@@ -227,41 +227,41 @@ ENTRY(_start)
 #if defined(__ADSPBF54x__)
 	p2.h = HI(EBIU_AMBCTL1);
 	p2.l = LO(EBIU_AMBCTL1);
-	r0.h = HI(AMBCTL1VAL);
-	r0.l = LO(AMBCTL1VAL);
+	r0.h = HI(CONFIG_EBIU_AMBCTL1_VAL);
+	r0.l = LO(CONFIG_EBIU_AMBCTL1_VAL);
 	[p2] = r0;
 	ssync;
 
 	p2.h = HI(EBIU_AMBCTL0);
 	p2.l = LO(EBIU_AMBCTL0);
-	r0.h = HI(AMBCTL0VAL);
-	r0.l = LO(AMBCTL0VAL);
+	r0.h = HI(CONFIG_EBIU_AMBCTL0_VAL);
+	r0.l = LO(CONFIG_EBIU_AMBCTL0_VAL);
 	[p2] = r0;
 	ssync;
 
 	p2.h = HI(EBIU_AMGCTL);
 	p2.l = LO(EBIU_AMGCTL);
-	r0 = AMGCTLVAL;
+	r0 = CONFIG_EBIU_AMGCTL_VAL;
 	w[p2] = r0;
 	ssync;
 #elif defined(__ADSPBF537__)
 	p2.h = HI(EBIU_AMBCTL1);
 	p2.l = LO(EBIU_AMBCTL1);
-	r0.h = HI(AMBCTL1VAL);
-	r0.l = LO(AMBCTL1VAL);
+	r0.h = HI(CONFIG_EBIU_AMBCTL1_VAL);
+	r0.l = LO(CONFIG_EBIU_AMBCTL1_VAL);
 	[p2] = r0;
 	ssync;
 
 	p2.h = HI(EBIU_AMBCTL0);
 	p2.l = LO(EBIU_AMBCTL0);
-	r0.h = HI(AMBCTL0VAL);
-	r0.l = LO(AMBCTL0VAL);
+	r0.h = HI(CONFIG_EBIU_AMBCTL0_VAL);
+	r0.l = LO(CONFIG_EBIU_AMBCTL0_VAL);
 	[p2] = r0;
 	ssync;
 
 	p2.h = HI(EBIU_AMGCTL);
 	p2.l = LO(EBIU_AMGCTL);
-	r0 = AMGCTLVAL;
+	r0 = CONFIG_EBIU_AMGCTL_VAL;
 	w[p2] = r0;
 	ssync;
 #endif

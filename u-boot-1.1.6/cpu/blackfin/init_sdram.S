@@ -478,21 +478,21 @@ ENTRY(_init_sdram)
 
 	p2.h = HI(EBIU_AMBCTL1);
 	p2.l = LO(EBIU_AMBCTL1);
-	r0.h = HI(AMBCTL1VAL);
-	r0.l = LO(AMBCTL1VAL);
+	r0.h = HI(CONFIG_EBIU_AMBCTL1_VAL);
+	r0.l = LO(CONFIG_EBIU_AMBCTL1_VAL);
 	[p2] = r0;
 	ssync;
 
 	p2.h = HI(EBIU_AMBCTL0);
 	p2.l = LO(EBIU_AMBCTL0);
-	r0.h = HI(AMBCTL0VAL);
-	r0.l = LO(AMBCTL0VAL);
+	r0.h = HI(CONFIG_EBIU_AMBCTL0_VAL);
+	r0.l = LO(CONFIG_EBIU_AMBCTL0_VAL);
 	[p2] = r0;
 	ssync;
 
 	p2.h = HI(EBIU_AMGCTL);
 	p2.l = LO(EBIU_AMGCTL);
-	r0 = AMGCTLVAL;
+	r0 = CONFIG_EBIU_AMGCTL_VAL;
 	w[p2] = r0;
 	ssync;
 
@@ -502,7 +502,7 @@ ENTRY(_init_sdram)
 	 */
 	p0.l = lo(EBIU_SDRRC);
 	p0.h = hi(EBIU_SDRRC);
-	r0 = mem_SDRRC;
+	r0 = CONFIG_EBIU_SDRRC_VAL;
 	w[p0] = r0.l;
 	ssync;
 
@@ -511,7 +511,7 @@ ENTRY(_init_sdram)
 	 */
 	p0.l = LO(EBIU_SDBCTL);
 	p0.h = HI(EBIU_SDBCTL);
-	r0 = mem_SDBCTL;
+	r0 = CONFIG_EBIU_SDBCTL_VAL;
 	w[p0] = r0.l;
 	ssync;
 
@@ -539,8 +539,8 @@ ENTRY(_init_sdram)
 	SSYNC;
 
 	/* Write in the new value in the register */
-	R0.L = lo(mem_SDGCTL);
-	R0.H = hi(mem_SDGCTL);
+	R0.L = lo(CONFIG_EBIU_SDGCTL_VAL);
+	R0.H = hi(CONFIG_EBIU_SDGCTL_VAL);
 	[P2] = R0;
 	SSYNC;
 	nop;
