@@ -99,7 +99,7 @@ int bfin_EMAC_initialize(bd_t *bis)
 		hang();
 
 	memset(dev, 0, sizeof(*dev));
-	sprintf(dev->name, "BF537 ETHERNET");
+	sprintf(dev->name, "Blackfin EMAC");
 
 	dev->iobase = 0;
 	dev->priv = 0;
