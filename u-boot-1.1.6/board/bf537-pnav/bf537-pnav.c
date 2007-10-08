@@ -30,7 +30,6 @@
 #include <command.h>
 #include <asm/blackfin.h>
 #include <asm/io.h>
-#include "ether_bf537.h"
 
 #define POST_WORD_ADDR 0xFF903FFC
 
