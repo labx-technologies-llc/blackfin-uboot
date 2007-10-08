@@ -201,6 +201,9 @@ static void SPI_INIT(void)
 	*pPORTE_FER |= (SPI0_SCK | SPI0_MOSI | SPI0_MISO | SPI0_SEL1);
 #elif defined(__ADSPBF534__) || defined(__ADSPBF536__) || defined(__ADSPBF537__)
 	*pPORTF_FER |= (PF10 | PF11 | PF12 | PF13);
+#elif defined(__ADSPBF52x__)
+	bfin_write_PORTG_MUX((bfin_read_PORTG_MUX() & ~PORT_x_MUX_0_MASK) | PORT_x_MUX_0_FUNC_3);
+	bfin_write_PORTG_FER(bfin_read_PORTG_FER() | PG1 | PG2 | PG3 | PG4);
 #endif
 
 	/* initate communication upon write of TDBR */
