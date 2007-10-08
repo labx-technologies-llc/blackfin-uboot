@@ -39,35 +39,57 @@
 #define VSTAT			0x0080		/* Voltage Regulator Has Reached Programmed Voltage */
 
 /* VR_CTL Masks */
-#define	FREQ			0x0003		/* Switching Oscillator Frequency For Regulator */
-#define	HIBERNATE		0x0000		/* Powerdown/Bypass On-Board Regulation */
-#define	FREQ_333		0x0001		/* Switching Frequency Is 333 kHz */
-#define	FREQ_667		0x0002		/* Switching Frequency Is 667 kHz */
-#define	FREQ_1000		0x0003		/* Switching Frequency Is 1 MHz */
+#ifdef __ADSPBF52x__
+#define FREQ_MASK		0x3000		/* Switching Oscillator Frequency For Regulator */
+#define FREQ_HIBERNATE		0x0000		/* Powerdown/Bypass On-Board Regulation */
+#define FREQ_1000		0x3000		/* Switching Frequency Is 1 MHz */
+#else
+#define FREQ_MASK		0x0003		/* Switching Oscillator Frequency For Regulator */
+#define FREQ_HIBERNATE		0x0000		/* Powerdown/Bypass On-Board Regulation */
+#define FREQ_333		0x0001		/* Switching Frequency Is 333 kHz */
+#define FREQ_667		0x0002		/* Switching Frequency Is 667 kHz */
+#define FREQ_1000		0x0003		/* Switching Frequency Is 1 MHz */
+#endif
 
-#define GAIN			0x000C		/* Voltage Level Gain */
-#define	GAIN_5			0x0000		/* GAIN = 5 */
-#define	GAIN_10			0x0004		/* GAIN = 10 */
-#define	GAIN_20			0x0008		/* GAIN = 20 */
-#define	GAIN_50			0x000C		/* GAIN = 50 */
+#define GAIN_MASK		0x000C		/* Voltage Level Gain */
+#define GAIN_5			0x0000		/* GAIN = 5 */
+#define GAIN_10			0x0004		/* GAIN = 10 */
+#define GAIN_20			0x0008		/* GAIN = 20 */
+#define GAIN_50			0x000C		/* GAIN = 50 */
 
-#define	VLEV			0x00F0		/* Internal Voltage Level */
-#define	VLEV_085		0x0060		/* VLEV = 0.85 V (-5% - +10% Accuracy) */
-#define	VLEV_090		0x0070		/* VLEV = 0.90 V (-5% - +10% Accuracy) */
-#define	VLEV_095		0x0080		/* VLEV = 0.95 V (-5% - +10% Accuracy) */
-#define	VLEV_100		0x0090		/* VLEV = 1.00 V (-5% - +10% Accuracy) */
-#define	VLEV_105		0x00A0		/* VLEV = 1.05 V (-5% - +10% Accuracy) */
-#define	VLEV_110		0x00B0		/* VLEV = 1.10 V (-5% - +10% Accuracy) */
-#define	VLEV_115		0x00C0		/* VLEV = 1.15 V (-5% - +10% Accuracy) */
-#define	VLEV_120		0x00D0		/* VLEV = 1.20 V (-5% - +10% Accuracy) */
-#define	VLEV_125		0x00E0		/* VLEV = 1.25 V (-5% - +10% Accuracy) */
-#define	VLEV_130		0x00F0		/* VLEV = 1.30 V (-5% - +10% Accuracy) */
+#ifdef __ADSPBF52x__
+#define VLEV_MASK		0x00F0		/* Internal Voltage Level */
+#define VLEV_085		0x0040		/* VLEV = 0.85 V (-5% - +10% Accuracy) */
+#define VLEV_090		0x0050		/* VLEV = 0.90 V (-5% - +10% Accuracy) */
+#define VLEV_095		0x0060		/* VLEV = 0.95 V (-5% - +10% Accuracy) */
+#define VLEV_100		0x0070		/* VLEV = 1.00 V (-5% - +10% Accuracy) */
+#define VLEV_105		0x0080		/* VLEV = 1.05 V (-5% - +10% Accuracy) */
+#define VLEV_110		0x0090		/* VLEV = 1.10 V (-5% - +10% Accuracy) */
+#define VLEV_115		0x00A0		/* VLEV = 1.15 V (-5% - +10% Accuracy) */
+#define VLEV_120		0x00B0		/* VLEV = 1.20 V (-5% - +10% Accuracy) */
+#else
+#define VLEV_MASK		0x00F0		/* Internal Voltage Level */
+#define VLEV_085		0x0060		/* VLEV = 0.85 V (-5% - +10% Accuracy) */
+#define VLEV_090		0x0070		/* VLEV = 0.90 V (-5% - +10% Accuracy) */
+#define VLEV_095		0x0080		/* VLEV = 0.95 V (-5% - +10% Accuracy) */
+#define VLEV_100		0x0090		/* VLEV = 1.00 V (-5% - +10% Accuracy) */
+#define VLEV_105		0x00A0		/* VLEV = 1.05 V (-5% - +10% Accuracy) */
+#define VLEV_110		0x00B0		/* VLEV = 1.10 V (-5% - +10% Accuracy) */
+#define VLEV_115		0x00C0		/* VLEV = 1.15 V (-5% - +10% Accuracy) */
+#define VLEV_120		0x00D0		/* VLEV = 1.20 V (-5% - +10% Accuracy) */
+#define VLEV_125		0x00E0		/* VLEV = 1.25 V (-5% - +10% Accuracy) */
+#define VLEV_130		0x00F0		/* VLEV = 1.30 V (-5% - +10% Accuracy) */
+#endif
 
-#define	WAKE			0x0100		/* Enable RTC/Reset Wakeup From Hibernate */
-#define	CANWE			0x0200		/* Enable CAN Wakeup From Hibernate */
-#define	PHYWE			0x0400		/* Enable PHY Wakeup From Hibernate */
-#define	CLKBUFOE		0x4000		/* CLKIN Buffer Output Enable */
-#define	PHYCLKOE		CLKBUFOE	/* Alternative legacy name for the above */
-#define	CKELOW			0x8000		/* Enable Drive CKE Low During Reset */
+#define WAKE			0x0100		/* Enable RTC/Reset Wakeup From Hibernate */
+#define CANWE			0x0200		/* Enable CAN Wakeup From Hibernate */
+#define PHYWE			0x0400		/* Enable PHY Wakeup From Hibernate */
+#define GPWE			0x0400		/* General-purpose Wakeup From Hibernate */
+#define MXVRWE			0x0400		/* MXVR Wakeup From Hibernate */
+#define USBWE			0x0800		/* USB Wakeup From Hibernate */
+#define KPADWE			0x1000		/* Keypad Wakeup From Hibernate */
+#define ROTWE			0x2000		/* Rotary Counter Wakeup From Hibernate */
+#define CLKBUFOE		0x4000		/* CLKIN Buffer Output Enable */
+#define CKELOW			0x8000		/* Enable Drive CKE Low During Reset */
 
 #endif
