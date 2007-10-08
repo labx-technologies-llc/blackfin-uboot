@@ -20,8 +20,6 @@
 #define CONFIG_BOOTCOMMAND	"tftp $(loadaddr) linux"
 /* #define CONFIG_BOOTARGS		"root=/dev/mtdblock0 rw" */
 
-#define CMD_LINE_ADDR           L1_SRAM_SCRATCH /* L1 scratchpad */
-
 #define CONFIG_DRIVER_SMC91111	1
 #define CONFIG_SMC91111_BASE	0x20310300
 

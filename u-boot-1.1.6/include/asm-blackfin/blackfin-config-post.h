@@ -59,4 +59,9 @@
 # error CONFIG_PLL_BYPASS: Invalid value: must be 0 or 1
 #endif
 
+/* Using L1 scratch pad makes sense for everyone by default. */
+#ifndef CMD_LINE_ADDR
+# define CMD_LINE_ADDR L1_SRAM_SCRATCH
+#endif
+
 #endif

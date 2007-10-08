@@ -185,8 +185,6 @@
 
 #define CONFIG_BOOTARGS		"root=/dev/mtdblock0 rw"
 
-#define CMD_LINE_ADDR           L1_SRAM_SCRATCH /* L1 scratchpad */
-
 #if (CONFIG_DRIVER_SMC91111)
 #define CONFIG_COMMANDS1	(CONFIG_CMD_DFL | \
 				 CFG_CMD_PING   | \
