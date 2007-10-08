@@ -9,9 +9,9 @@
 
 #include <config.h>
 #include <asm/blackfin.h>
-#include <asm/mem_init.h>
 #include <asm/mach-common/bits/ebiu.h>
 #include <asm/mach-common/bits/pll.h>
+#include "mem_init.h"
 
 .macro init_vlev
 	P0.h = hi(VR_CTL);
