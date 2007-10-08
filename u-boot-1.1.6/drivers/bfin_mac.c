@@ -363,7 +363,21 @@ static int SetupSystemRegs(int *opmode)
 	/* Enable PHY output */
 	*pVR_CTL |= PHYCLKOE;
 	/* Set all the pins to peripheral mode */
+
+#ifndef CONFIG_BFIN_MAC_RMII
 	*pPORTH_FER = 0xFFFF;
+#ifdef __ADSPBF52x__
+	*pPORTH_MUX = PORT_x_MUX_0_FUNC_2 | PORT_x_MUX_1_FUNC_2 | PORT_x_MUX_2_FUNC_2;
+#endif
+#else
+#if defined(__ADSPBF536__) || defined(__ADSPBF537__)
+	*pPORTH_FER = 0xC373;
+#endif
+#ifdef __ADSPBF52x__
+	*pPORTH_FER = 0x01FF;
+	*pPORTH_MUX = PORT_x_MUX_0_FUNC_2 | PORT_x_MUX_1_FUNC_2;
+#endif
+#endif
 	/* MDC  = 2.5 MHz */
 	sysctl = SET_MDCDIV(24);
 	/* Odd word alignment for Receive Frame DMA word */
