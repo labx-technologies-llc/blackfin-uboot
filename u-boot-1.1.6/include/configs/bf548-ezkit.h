@@ -183,8 +183,6 @@
 #define CFG_GBL_DATA_ADDR	(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
 #define CONFIG_STACKBASE	(CFG_GBL_DATA_ADDR  - 4)
 
-#define	CFG_BOOTMAPSZ		(8 << 20)	/* Initial Memory map for Linux */
-
 #define CFG_FLASH_CFI		/* The flash is CFI compatible */
 #define CFG_FLASH_CFI_DRIVER	/* Use common CFI driver */
 #define CFG_FLASH_BASE		0x20000000

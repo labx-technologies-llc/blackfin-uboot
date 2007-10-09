@@ -239,7 +239,6 @@
 #define CFG_GBL_DATA_ADDR	(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
 #define CONFIG_STACKBASE	(CFG_GBL_DATA_ADDR  - 4)
 
-#define	CFG_BOOTMAPSZ		(8 << 20)	/* Initial Memory map for Linux */
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	71	/* max number of sectors on one chip */
 

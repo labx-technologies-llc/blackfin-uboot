@@ -193,8 +193,6 @@
 #define CFG_GBL_DATA_ADDR	(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
 #define CONFIG_STACKBASE	(CFG_GBL_DATA_ADDR  - 4)
 
-#define	CFG_BOOTMAPSZ		(8 << 20)	/* Initial Memory map for Linux */
-
 #if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) || (BFIN_BOOT_MODE == BFIN_BOOT_UART)
 /* for bf537-stamp, usrt boot mode still store env in flash */
 #define	CFG_ENV_IS_IN_FLASH	1

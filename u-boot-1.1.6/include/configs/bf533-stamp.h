@@ -369,7 +369,6 @@
 /*
  * FLASH organization and environment definitions
  */
-#define	CFG_BOOTMAPSZ		(8 << 20)/* Initial Memory map for Linux */
 
 /* 0xFF, 0xBBC3BBc3, 0x99B39983 */
 /*#define CONFIG_EBIU_AMGCTL_VAL		(AMBEN_P0 | AMBEN_P1 | AMBEN_P2 | AMCKEN)

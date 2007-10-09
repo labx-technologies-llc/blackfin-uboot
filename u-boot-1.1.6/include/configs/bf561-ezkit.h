@@ -199,8 +199,6 @@
 /*
  * FLASH organization and environment definitions
  */
-#define	CFG_BOOTMAPSZ		(8 << 20)	/* Initial Memory map for Linux */
-
 #define CONFIG_EBIU_AMGCTL_VAL		0x3F
 #define CONFIG_EBIU_AMBCTL0_VAL		0x7BB07BB0
 #define CONFIG_EBIU_AMBCTL1_VAL		0xFFC27BB0
