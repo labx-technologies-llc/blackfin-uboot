@@ -30,7 +30,7 @@
 #define pTCOUNT                        ((volatile uint32_t *)TCOUNT) /* Core Timer Count Register */
 #define bfin_read_TCOUNT()             bfin_read32(TCOUNT)
 #define bfin_write_TCOUNT(val)         bfin_write32(TCOUNT, val)
-#define pSRAM_BASE_ADDR                ((volatile uint32_t *)SRAM_BASE_ADDR) /* SRAM Base Address (Read Only) */
+#define pSRAM_BASE_ADDR                ((volatile void * *)SRAM_BASE_ADDR) /* SRAM Base Address (Read Only) */
 #define bfin_read_SRAM_BASE_ADDR()     bfin_readPTR(SRAM_BASE_ADDR)
 #define bfin_write_SRAM_BASE_ADDR(val) bfin_writePTR(SRAM_BASE_ADDR, val)
 #define pDMEM_CONTROL                  ((volatile uint32_t *)DMEM_CONTROL) /* Data memory control */
@@ -42,52 +42,52 @@
 #define pDCPLB_FAULT_ADDR              ((volatile uint32_t *)DCPLB_FAULT_ADDR)
 #define bfin_read_DCPLB_FAULT_ADDR()   bfin_read32(DCPLB_FAULT_ADDR)
 #define bfin_write_DCPLB_FAULT_ADDR(val) bfin_write32(DCPLB_FAULT_ADDR, val)
-#define pDCPLB_ADDR0                   ((volatile uint32_t *)DCPLB_ADDR0) /* Data Cache Protection Lookaside Buffer 0 */
+#define pDCPLB_ADDR0                   ((volatile void * *)DCPLB_ADDR0) /* Data Cache Protection Lookaside Buffer 0 */
 #define bfin_read_DCPLB_ADDR0()        bfin_readPTR(DCPLB_ADDR0)
 #define bfin_write_DCPLB_ADDR0(val)    bfin_writePTR(DCPLB_ADDR0, val)
-#define pDCPLB_ADDR1                   ((volatile uint32_t *)DCPLB_ADDR1) /* Data Cache Protection Lookaside Buffer 1 */
+#define pDCPLB_ADDR1                   ((volatile void * *)DCPLB_ADDR1) /* Data Cache Protection Lookaside Buffer 1 */
 #define bfin_read_DCPLB_ADDR1()        bfin_readPTR(DCPLB_ADDR1)
 #define bfin_write_DCPLB_ADDR1(val)    bfin_writePTR(DCPLB_ADDR1, val)
-#define pDCPLB_ADDR2                   ((volatile uint32_t *)DCPLB_ADDR2) /* Data Cache Protection Lookaside Buffer 2 */
+#define pDCPLB_ADDR2                   ((volatile void * *)DCPLB_ADDR2) /* Data Cache Protection Lookaside Buffer 2 */
 #define bfin_read_DCPLB_ADDR2()        bfin_readPTR(DCPLB_ADDR2)
 #define bfin_write_DCPLB_ADDR2(val)    bfin_writePTR(DCPLB_ADDR2, val)
-#define pDCPLB_ADDR3                   ((volatile uint32_t *)DCPLB_ADDR3) /* Data Cache Protection Lookaside Buffer 3 */
+#define pDCPLB_ADDR3                   ((volatile void * *)DCPLB_ADDR3) /* Data Cache Protection Lookaside Buffer 3 */
 #define bfin_read_DCPLB_ADDR3()        bfin_readPTR(DCPLB_ADDR3)
 #define bfin_write_DCPLB_ADDR3(val)    bfin_writePTR(DCPLB_ADDR3, val)
-#define pDCPLB_ADDR4                   ((volatile uint32_t *)DCPLB_ADDR4) /* Data Cache Protection Lookaside Buffer 4 */
+#define pDCPLB_ADDR4                   ((volatile void * *)DCPLB_ADDR4) /* Data Cache Protection Lookaside Buffer 4 */
 #define bfin_read_DCPLB_ADDR4()        bfin_readPTR(DCPLB_ADDR4)
 #define bfin_write_DCPLB_ADDR4(val)    bfin_writePTR(DCPLB_ADDR4, val)
-#define pDCPLB_ADDR5                   ((volatile uint32_t *)DCPLB_ADDR5) /* Data Cache Protection Lookaside Buffer 5 */
+#define pDCPLB_ADDR5                   ((volatile void * *)DCPLB_ADDR5) /* Data Cache Protection Lookaside Buffer 5 */
 #define bfin_read_DCPLB_ADDR5()        bfin_readPTR(DCPLB_ADDR5)
 #define bfin_write_DCPLB_ADDR5(val)    bfin_writePTR(DCPLB_ADDR5, val)
-#define pDCPLB_ADDR6                   ((volatile uint32_t *)DCPLB_ADDR6) /* Data Cache Protection Lookaside Buffer 6 */
+#define pDCPLB_ADDR6                   ((volatile void * *)DCPLB_ADDR6) /* Data Cache Protection Lookaside Buffer 6 */
 #define bfin_read_DCPLB_ADDR6()        bfin_readPTR(DCPLB_ADDR6)
 #define bfin_write_DCPLB_ADDR6(val)    bfin_writePTR(DCPLB_ADDR6, val)
-#define pDCPLB_ADDR7                   ((volatile uint32_t *)DCPLB_ADDR7) /* Data Cache Protection Lookaside Buffer 7 */
+#define pDCPLB_ADDR7                   ((volatile void * *)DCPLB_ADDR7) /* Data Cache Protection Lookaside Buffer 7 */
 #define bfin_read_DCPLB_ADDR7()        bfin_readPTR(DCPLB_ADDR7)
 #define bfin_write_DCPLB_ADDR7(val)    bfin_writePTR(DCPLB_ADDR7, val)
-#define pDCPLB_ADDR8                   ((volatile uint32_t *)DCPLB_ADDR8) /* Data Cache Protection Lookaside Buffer 8 */
+#define pDCPLB_ADDR8                   ((volatile void * *)DCPLB_ADDR8) /* Data Cache Protection Lookaside Buffer 8 */
 #define bfin_read_DCPLB_ADDR8()        bfin_readPTR(DCPLB_ADDR8)
 #define bfin_write_DCPLB_ADDR8(val)    bfin_writePTR(DCPLB_ADDR8, val)
-#define pDCPLB_ADDR9                   ((volatile uint32_t *)DCPLB_ADDR9) /* Data Cache Protection Lookaside Buffer 9 */
+#define pDCPLB_ADDR9                   ((volatile void * *)DCPLB_ADDR9) /* Data Cache Protection Lookaside Buffer 9 */
 #define bfin_read_DCPLB_ADDR9()        bfin_readPTR(DCPLB_ADDR9)
 #define bfin_write_DCPLB_ADDR9(val)    bfin_writePTR(DCPLB_ADDR9, val)
-#define pDCPLB_ADDR10                  ((volatile uint32_t *)DCPLB_ADDR10) /* Data Cache Protection Lookaside Buffer 10 */
+#define pDCPLB_ADDR10                  ((volatile void * *)DCPLB_ADDR10) /* Data Cache Protection Lookaside Buffer 10 */
 #define bfin_read_DCPLB_ADDR10()       bfin_readPTR(DCPLB_ADDR10)
 #define bfin_write_DCPLB_ADDR10(val)   bfin_writePTR(DCPLB_ADDR10, val)
-#define pDCPLB_ADDR11                  ((volatile uint32_t *)DCPLB_ADDR11) /* Data Cache Protection Lookaside Buffer 11 */
+#define pDCPLB_ADDR11                  ((volatile void * *)DCPLB_ADDR11) /* Data Cache Protection Lookaside Buffer 11 */
 #define bfin_read_DCPLB_ADDR11()       bfin_readPTR(DCPLB_ADDR11)
 #define bfin_write_DCPLB_ADDR11(val)   bfin_writePTR(DCPLB_ADDR11, val)
-#define pDCPLB_ADDR12                  ((volatile uint32_t *)DCPLB_ADDR12) /* Data Cache Protection Lookaside Buffer 12 */
+#define pDCPLB_ADDR12                  ((volatile void * *)DCPLB_ADDR12) /* Data Cache Protection Lookaside Buffer 12 */
 #define bfin_read_DCPLB_ADDR12()       bfin_readPTR(DCPLB_ADDR12)
 #define bfin_write_DCPLB_ADDR12(val)   bfin_writePTR(DCPLB_ADDR12, val)
-#define pDCPLB_ADDR13                  ((volatile uint32_t *)DCPLB_ADDR13) /* Data Cache Protection Lookaside Buffer 13 */
+#define pDCPLB_ADDR13                  ((volatile void * *)DCPLB_ADDR13) /* Data Cache Protection Lookaside Buffer 13 */
 #define bfin_read_DCPLB_ADDR13()       bfin_readPTR(DCPLB_ADDR13)
 #define bfin_write_DCPLB_ADDR13(val)   bfin_writePTR(DCPLB_ADDR13, val)
-#define pDCPLB_ADDR14                  ((volatile uint32_t *)DCPLB_ADDR14) /* Data Cache Protection Lookaside Buffer 14 */
+#define pDCPLB_ADDR14                  ((volatile void * *)DCPLB_ADDR14) /* Data Cache Protection Lookaside Buffer 14 */
 #define bfin_read_DCPLB_ADDR14()       bfin_readPTR(DCPLB_ADDR14)
 #define bfin_write_DCPLB_ADDR14(val)   bfin_writePTR(DCPLB_ADDR14, val)
-#define pDCPLB_ADDR15                  ((volatile uint32_t *)DCPLB_ADDR15) /* Data Cache Protection Lookaside Buffer 15 */
+#define pDCPLB_ADDR15                  ((volatile void * *)DCPLB_ADDR15) /* Data Cache Protection Lookaside Buffer 15 */
 #define bfin_read_DCPLB_ADDR15()       bfin_readPTR(DCPLB_ADDR15)
 #define bfin_write_DCPLB_ADDR15(val)   bfin_writePTR(DCPLB_ADDR15, val)
 #define pDCPLB_DATA0                   ((volatile uint32_t *)DCPLB_DATA0) /* Data Cache 0 Status */
@@ -147,52 +147,52 @@
 #define pDTEST_DATA1                   ((volatile uint32_t *)DTEST_DATA1) /* Data Test Data Register */
 #define bfin_read_DTEST_DATA1()        bfin_read32(DTEST_DATA1)
 #define bfin_write_DTEST_DATA1(val)    bfin_write32(DTEST_DATA1, val)
-#define pEVT0                          ((volatile uint32_t *)EVT0) /* Event Vector 0 ESR Address */
+#define pEVT0                          ((volatile void * *)EVT0) /* Event Vector 0 ESR Address */
 #define bfin_read_EVT0()               bfin_readPTR(EVT0)
 #define bfin_write_EVT0(val)           bfin_writePTR(EVT0, val)
-#define pEVT1                          ((volatile uint32_t *)EVT1) /* Event Vector 1 ESR Address */
+#define pEVT1                          ((volatile void * *)EVT1) /* Event Vector 1 ESR Address */
 #define bfin_read_EVT1()               bfin_readPTR(EVT1)
 #define bfin_write_EVT1(val)           bfin_writePTR(EVT1, val)
-#define pEVT2                          ((volatile uint32_t *)EVT2) /* Event Vector 2 ESR Address */
+#define pEVT2                          ((volatile void * *)EVT2) /* Event Vector 2 ESR Address */
 #define bfin_read_EVT2()               bfin_readPTR(EVT2)
 #define bfin_write_EVT2(val)           bfin_writePTR(EVT2, val)
-#define pEVT3                          ((volatile uint32_t *)EVT3) /* Event Vector 3 ESR Address */
+#define pEVT3                          ((volatile void * *)EVT3) /* Event Vector 3 ESR Address */
 #define bfin_read_EVT3()               bfin_readPTR(EVT3)
 #define bfin_write_EVT3(val)           bfin_writePTR(EVT3, val)
-#define pEVT4                          ((volatile uint32_t *)EVT4) /* Event Vector 4 ESR Address */
+#define pEVT4                          ((volatile void * *)EVT4) /* Event Vector 4 ESR Address */
 #define bfin_read_EVT4()               bfin_readPTR(EVT4)
 #define bfin_write_EVT4(val)           bfin_writePTR(EVT4, val)
-#define pEVT5                          ((volatile uint32_t *)EVT5) /* Event Vector 5 ESR Address */
+#define pEVT5                          ((volatile void * *)EVT5) /* Event Vector 5 ESR Address */
 #define bfin_read_EVT5()               bfin_readPTR(EVT5)
 #define bfin_write_EVT5(val)           bfin_writePTR(EVT5, val)
-#define pEVT6                          ((volatile uint32_t *)EVT6) /* Event Vector 6 ESR Address */
+#define pEVT6                          ((volatile void * *)EVT6) /* Event Vector 6 ESR Address */
 #define bfin_read_EVT6()               bfin_readPTR(EVT6)
 #define bfin_write_EVT6(val)           bfin_writePTR(EVT6, val)
-#define pEVT7                          ((volatile uint32_t *)EVT7) /* Event Vector 7 ESR Address */
+#define pEVT7                          ((volatile void * *)EVT7) /* Event Vector 7 ESR Address */
 #define bfin_read_EVT7()               bfin_readPTR(EVT7)
 #define bfin_write_EVT7(val)           bfin_writePTR(EVT7, val)
-#define pEVT8                          ((volatile uint32_t *)EVT8) /* Event Vector 8 ESR Address */
+#define pEVT8                          ((volatile void * *)EVT8) /* Event Vector 8 ESR Address */
 #define bfin_read_EVT8()               bfin_readPTR(EVT8)
 #define bfin_write_EVT8(val)           bfin_writePTR(EVT8, val)
-#define pEVT9                          ((volatile uint32_t *)EVT9) /* Event Vector 9 ESR Address */
+#define pEVT9                          ((volatile void * *)EVT9) /* Event Vector 9 ESR Address */
 #define bfin_read_EVT9()               bfin_readPTR(EVT9)
 #define bfin_write_EVT9(val)           bfin_writePTR(EVT9, val)
-#define pEVT10                         ((volatile uint32_t *)EVT10) /* Event Vector 10 ESR Address */
+#define pEVT10                         ((volatile void * *)EVT10) /* Event Vector 10 ESR Address */
 #define bfin_read_EVT10()              bfin_readPTR(EVT10)
 #define bfin_write_EVT10(val)          bfin_writePTR(EVT10, val)
-#define pEVT11                         ((volatile uint32_t *)EVT11) /* Event Vector 11 ESR Address */
+#define pEVT11                         ((volatile void * *)EVT11) /* Event Vector 11 ESR Address */
 #define bfin_read_EVT11()              bfin_readPTR(EVT11)
 #define bfin_write_EVT11(val)          bfin_writePTR(EVT11, val)
-#define pEVT12                         ((volatile uint32_t *)EVT12) /* Event Vector 12 ESR Address */
+#define pEVT12                         ((volatile void * *)EVT12) /* Event Vector 12 ESR Address */
 #define bfin_read_EVT12()              bfin_readPTR(EVT12)
 #define bfin_write_EVT12(val)          bfin_writePTR(EVT12, val)
-#define pEVT13                         ((volatile uint32_t *)EVT13) /* Event Vector 13 ESR Address */
+#define pEVT13                         ((volatile void * *)EVT13) /* Event Vector 13 ESR Address */
 #define bfin_read_EVT13()              bfin_readPTR(EVT13)
 #define bfin_write_EVT13(val)          bfin_writePTR(EVT13, val)
-#define pEVT14                         ((volatile uint32_t *)EVT14) /* Event Vector 14 ESR Address */
+#define pEVT14                         ((volatile void * *)EVT14) /* Event Vector 14 ESR Address */
 #define bfin_read_EVT14()              bfin_readPTR(EVT14)
 #define bfin_write_EVT14(val)          bfin_writePTR(EVT14, val)
-#define pEVT15                         ((volatile uint32_t *)EVT15) /* Event Vector 15 ESR Address */
+#define pEVT15                         ((volatile void * *)EVT15) /* Event Vector 15 ESR Address */
 #define bfin_read_EVT15()              bfin_readPTR(EVT15)
 #define bfin_write_EVT15(val)          bfin_writePTR(EVT15, val)
 #define pIMEM_CONTROL                  ((volatile uint32_t *)IMEM_CONTROL) /* Instruction Memory Control */
@@ -204,52 +204,52 @@
 #define pICPLB_FAULT_ADDR              ((volatile uint32_t *)ICPLB_FAULT_ADDR)
 #define bfin_read_ICPLB_FAULT_ADDR()   bfin_read32(ICPLB_FAULT_ADDR)
 #define bfin_write_ICPLB_FAULT_ADDR(val) bfin_write32(ICPLB_FAULT_ADDR, val)
-#define pICPLB_ADDR0                   ((volatile uint32_t *)ICPLB_ADDR0) /* Instruction Cacheability Protection Lookaside Buffer 0 */
+#define pICPLB_ADDR0                   ((volatile void * *)ICPLB_ADDR0) /* Instruction Cacheability Protection Lookaside Buffer 0 */
 #define bfin_read_ICPLB_ADDR0()        bfin_readPTR(ICPLB_ADDR0)
 #define bfin_write_ICPLB_ADDR0(val)    bfin_writePTR(ICPLB_ADDR0, val)
-#define pICPLB_ADDR1                   ((volatile uint32_t *)ICPLB_ADDR1) /* Instruction Cacheability Protection Lookaside Buffer 1 */
+#define pICPLB_ADDR1                   ((volatile void * *)ICPLB_ADDR1) /* Instruction Cacheability Protection Lookaside Buffer 1 */
 #define bfin_read_ICPLB_ADDR1()        bfin_readPTR(ICPLB_ADDR1)
 #define bfin_write_ICPLB_ADDR1(val)    bfin_writePTR(ICPLB_ADDR1, val)
-#define pICPLB_ADDR2                   ((volatile uint32_t *)ICPLB_ADDR2) /* Instruction Cacheability Protection Lookaside Buffer 2 */
+#define pICPLB_ADDR2                   ((volatile void * *)ICPLB_ADDR2) /* Instruction Cacheability Protection Lookaside Buffer 2 */
 #define bfin_read_ICPLB_ADDR2()        bfin_readPTR(ICPLB_ADDR2)
 #define bfin_write_ICPLB_ADDR2(val)    bfin_writePTR(ICPLB_ADDR2, val)
-#define pICPLB_ADDR3                   ((volatile uint32_t *)ICPLB_ADDR3) /* Instruction Cacheability Protection Lookaside Buffer 3 */
+#define pICPLB_ADDR3                   ((volatile void * *)ICPLB_ADDR3) /* Instruction Cacheability Protection Lookaside Buffer 3 */
 #define bfin_read_ICPLB_ADDR3()        bfin_readPTR(ICPLB_ADDR3)
 #define bfin_write_ICPLB_ADDR3(val)    bfin_writePTR(ICPLB_ADDR3, val)
-#define pICPLB_ADDR4                   ((volatile uint32_t *)ICPLB_ADDR4) /* Instruction Cacheability Protection Lookaside Buffer 4 */
+#define pICPLB_ADDR4                   ((volatile void * *)ICPLB_ADDR4) /* Instruction Cacheability Protection Lookaside Buffer 4 */
 #define bfin_read_ICPLB_ADDR4()        bfin_readPTR(ICPLB_ADDR4)
 #define bfin_write_ICPLB_ADDR4(val)    bfin_writePTR(ICPLB_ADDR4, val)
-#define pICPLB_ADDR5                   ((volatile uint32_t *)ICPLB_ADDR5) /* Instruction Cacheability Protection Lookaside Buffer 5 */
+#define pICPLB_ADDR5                   ((volatile void * *)ICPLB_ADDR5) /* Instruction Cacheability Protection Lookaside Buffer 5 */
 #define bfin_read_ICPLB_ADDR5()        bfin_readPTR(ICPLB_ADDR5)
 #define bfin_write_ICPLB_ADDR5(val)    bfin_writePTR(ICPLB_ADDR5, val)
-#define pICPLB_ADDR6                   ((volatile uint32_t *)ICPLB_ADDR6) /* Instruction Cacheability Protection Lookaside Buffer 6 */
+#define pICPLB_ADDR6                   ((volatile void * *)ICPLB_ADDR6) /* Instruction Cacheability Protection Lookaside Buffer 6 */
 #define bfin_read_ICPLB_ADDR6()        bfin_readPTR(ICPLB_ADDR6)
 #define bfin_write_ICPLB_ADDR6(val)    bfin_writePTR(ICPLB_ADDR6, val)
-#define pICPLB_ADDR7                   ((volatile uint32_t *)ICPLB_ADDR7) /* Instruction Cacheability Protection Lookaside Buffer 7 */
+#define pICPLB_ADDR7                   ((volatile void * *)ICPLB_ADDR7) /* Instruction Cacheability Protection Lookaside Buffer 7 */
 #define bfin_read_ICPLB_ADDR7()        bfin_readPTR(ICPLB_ADDR7)
 #define bfin_write_ICPLB_ADDR7(val)    bfin_writePTR(ICPLB_ADDR7, val)
-#define pICPLB_ADDR8                   ((volatile uint32_t *)ICPLB_ADDR8) /* Instruction Cacheability Protection Lookaside Buffer 8 */
+#define pICPLB_ADDR8                   ((volatile void * *)ICPLB_ADDR8) /* Instruction Cacheability Protection Lookaside Buffer 8 */
 #define bfin_read_ICPLB_ADDR8()        bfin_readPTR(ICPLB_ADDR8)
 #define bfin_write_ICPLB_ADDR8(val)    bfin_writePTR(ICPLB_ADDR8, val)
-#define pICPLB_ADDR9                   ((volatile uint32_t *)ICPLB_ADDR9) /* Instruction Cacheability Protection Lookaside Buffer 9 */
+#define pICPLB_ADDR9                   ((volatile void * *)ICPLB_ADDR9) /* Instruction Cacheability Protection Lookaside Buffer 9 */
 #define bfin_read_ICPLB_ADDR9()        bfin_readPTR(ICPLB_ADDR9)
 #define bfin_write_ICPLB_ADDR9(val)    bfin_writePTR(ICPLB_ADDR9, val)
-#define pICPLB_ADDR10                  ((volatile uint32_t *)ICPLB_ADDR10) /* Instruction Cacheability Protection Lookaside Buffer 10 */
+#define pICPLB_ADDR10                  ((volatile void * *)ICPLB_ADDR10) /* Instruction Cacheability Protection Lookaside Buffer 10 */
 #define bfin_read_ICPLB_ADDR10()       bfin_readPTR(ICPLB_ADDR10)
 #define bfin_write_ICPLB_ADDR10(val)   bfin_writePTR(ICPLB_ADDR10, val)
-#define pICPLB_ADDR11                  ((volatile uint32_t *)ICPLB_ADDR11) /* Instruction Cacheability Protection Lookaside Buffer 11 */
+#define pICPLB_ADDR11                  ((volatile void * *)ICPLB_ADDR11) /* Instruction Cacheability Protection Lookaside Buffer 11 */
 #define bfin_read_ICPLB_ADDR11()       bfin_readPTR(ICPLB_ADDR11)
 #define bfin_write_ICPLB_ADDR11(val)   bfin_writePTR(ICPLB_ADDR11, val)
-#define pICPLB_ADDR12                  ((volatile uint32_t *)ICPLB_ADDR12) /* Instruction Cacheability Protection Lookaside Buffer 12 */
+#define pICPLB_ADDR12                  ((volatile void * *)ICPLB_ADDR12) /* Instruction Cacheability Protection Lookaside Buffer 12 */
 #define bfin_read_ICPLB_ADDR12()       bfin_readPTR(ICPLB_ADDR12)
 #define bfin_write_ICPLB_ADDR12(val)   bfin_writePTR(ICPLB_ADDR12, val)
-#define pICPLB_ADDR13                  ((volatile uint32_t *)ICPLB_ADDR13) /* Instruction Cacheability Protection Lookaside Buffer 13 */
+#define pICPLB_ADDR13                  ((volatile void * *)ICPLB_ADDR13) /* Instruction Cacheability Protection Lookaside Buffer 13 */
 #define bfin_read_ICPLB_ADDR13()       bfin_readPTR(ICPLB_ADDR13)
 #define bfin_write_ICPLB_ADDR13(val)   bfin_writePTR(ICPLB_ADDR13, val)
-#define pICPLB_ADDR14                  ((volatile uint32_t *)ICPLB_ADDR14) /* Instruction Cacheability Protection Lookaside Buffer 14 */
+#define pICPLB_ADDR14                  ((volatile void * *)ICPLB_ADDR14) /* Instruction Cacheability Protection Lookaside Buffer 14 */
 #define bfin_read_ICPLB_ADDR14()       bfin_readPTR(ICPLB_ADDR14)
 #define bfin_write_ICPLB_ADDR14(val)   bfin_writePTR(ICPLB_ADDR14, val)
-#define pICPLB_ADDR15                  ((volatile uint32_t *)ICPLB_ADDR15) /* Instruction Cacheability Protection Lookaside Buffer 15 */
+#define pICPLB_ADDR15                  ((volatile void * *)ICPLB_ADDR15) /* Instruction Cacheability Protection Lookaside Buffer 15 */
 #define bfin_read_ICPLB_ADDR15()       bfin_readPTR(ICPLB_ADDR15)
 #define bfin_write_ICPLB_ADDR15(val)   bfin_writePTR(ICPLB_ADDR15, val)
 #define pICPLB_DATA0                   ((volatile uint32_t *)ICPLB_DATA0) /* Instruction Cache 0 Status */
@@ -918,7 +918,7 @@
 #define pTBUFSTAT                      ((volatile uint32_t *)TBUFSTAT) /* Trace Buffer Status Register */
 #define bfin_read_TBUFSTAT()           bfin_read32(TBUFSTAT)
 #define bfin_write_TBUFSTAT(val)       bfin_write32(TBUFSTAT, val)
-#define pTBUF                          ((volatile uint32_t *)TBUF) /* Trace Buffer */
+#define pTBUF                          ((volatile void * *)TBUF) /* Trace Buffer */
 #define bfin_read_TBUF()               bfin_readPTR(TBUF)
 #define bfin_write_TBUF(val)           bfin_writePTR(TBUF, val)
 #define pPFCTL                         ((volatile uint32_t *)PFCTL)

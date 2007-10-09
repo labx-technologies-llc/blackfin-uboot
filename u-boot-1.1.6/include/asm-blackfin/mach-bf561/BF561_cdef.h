@@ -19,7 +19,7 @@
 #define pDCPLB_STATUS                  ((volatile uint32_t *)DCPLB_STATUS)
 #define bfin_read_DCPLB_STATUS()       bfin_read32(DCPLB_STATUS)
 #define bfin_write_DCPLB_STATUS(val)   bfin_write32(DCPLB_STATUS, val)
-#define pDCPLB_FAULT_ADDR              ((volatile uint32_t *)DCPLB_FAULT_ADDR)
+#define pDCPLB_FAULT_ADDR              ((volatile void * *)DCPLB_FAULT_ADDR)
 #define bfin_read_DCPLB_FAULT_ADDR()   bfin_readPTR(DCPLB_FAULT_ADDR)
 #define bfin_write_DCPLB_FAULT_ADDR(val) bfin_writePTR(DCPLB_FAULT_ADDR, val)
 #define pDCPLB_ADDR0                   ((volatile uint32_t *)DCPLB_ADDR0)

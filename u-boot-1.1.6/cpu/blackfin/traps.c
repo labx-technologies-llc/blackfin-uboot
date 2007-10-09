@@ -113,7 +113,7 @@ void trap_c(struct pt_regs *regs)
 		static size_t last_evicted;
 		size_t i;
 
-		new_cplb_addr = (*(uint32_t *)(data ? pDCPLB_FAULT_ADDR : pICPLB_FAULT_ADDR)) & ~(4 * 1024 * 1024 - 1);
+		new_cplb_addr = (data ? bfin_read_DCPLB_FAULT_ADDR() : bfin_read_ICPLB_FAULT_ADDR()) & ~(4 * 1024 * 1024 - 1);
 
 		for (i = 0; i < ARRAY_SIZE(bfin_memory_map); ++i) {
 			/* if the exception is inside this range, lets use it */

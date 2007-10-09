@@ -444,10 +444,10 @@
 #define pEBIU_SDSTAT                   ((volatile uint16_t *)EBIU_SDSTAT) /* SDRAM Status Register */
 #define bfin_read_EBIU_SDSTAT()        bfin_read16(EBIU_SDSTAT)
 #define bfin_write_EBIU_SDSTAT(val)    bfin_write16(EBIU_SDSTAT, val)
-#define pDMA0_NEXT_DESC_PTR            ((volatile uint32_t *)DMA0_NEXT_DESC_PTR) /* DMA Channel 0 Next Descriptor Pointer Register */
+#define pDMA0_NEXT_DESC_PTR            ((volatile void * *)DMA0_NEXT_DESC_PTR) /* DMA Channel 0 Next Descriptor Pointer Register */
 #define bfin_read_DMA0_NEXT_DESC_PTR() bfin_readPTR(DMA0_NEXT_DESC_PTR)
 #define bfin_write_DMA0_NEXT_DESC_PTR(val) bfin_writePTR(DMA0_NEXT_DESC_PTR, val)
-#define pDMA0_START_ADDR               ((volatile uint32_t *)DMA0_START_ADDR) /* DMA Channel 0 Start Address Register */
+#define pDMA0_START_ADDR               ((volatile void * *)DMA0_START_ADDR) /* DMA Channel 0 Start Address Register */
 #define bfin_read_DMA0_START_ADDR()    bfin_readPTR(DMA0_START_ADDR)
 #define bfin_write_DMA0_START_ADDR(val) bfin_writePTR(DMA0_START_ADDR, val)
 #define pDMA0_CONFIG                   ((volatile uint16_t *)DMA0_CONFIG) /* DMA Channel 0 Configuration Register */
@@ -465,10 +465,10 @@
 #define pDMA0_Y_MODIFY                 ((volatile uint16_t *)DMA0_Y_MODIFY) /* DMA Channel 0 Y Modify Register */
 #define bfin_read_DMA0_Y_MODIFY()      bfin_read16(DMA0_Y_MODIFY)
 #define bfin_write_DMA0_Y_MODIFY(val)  bfin_write16(DMA0_Y_MODIFY, val)
-#define pDMA0_CURR_DESC_PTR            ((volatile uint32_t *)DMA0_CURR_DESC_PTR) /* DMA Channel 0 Current Descriptor Pointer Register */
+#define pDMA0_CURR_DESC_PTR            ((volatile void * *)DMA0_CURR_DESC_PTR) /* DMA Channel 0 Current Descriptor Pointer Register */
 #define bfin_read_DMA0_CURR_DESC_PTR() bfin_readPTR(DMA0_CURR_DESC_PTR)
 #define bfin_write_DMA0_CURR_DESC_PTR(val) bfin_writePTR(DMA0_CURR_DESC_PTR, val)
-#define pDMA0_CURR_ADDR                ((volatile uint32_t *)DMA0_CURR_ADDR) /* DMA Channel 0 Current Address Register */
+#define pDMA0_CURR_ADDR                ((volatile void * *)DMA0_CURR_ADDR) /* DMA Channel 0 Current Address Register */
 #define bfin_read_DMA0_CURR_ADDR()     bfin_readPTR(DMA0_CURR_ADDR)
 #define bfin_write_DMA0_CURR_ADDR(val) bfin_writePTR(DMA0_CURR_ADDR, val)
 #define pDMA0_IRQ_STATUS               ((volatile uint16_t *)DMA0_IRQ_STATUS) /* DMA Channel 0 Interrupt/Status Register */
@@ -483,10 +483,10 @@
 #define pDMA0_CURR_Y_COUNT             ((volatile uint16_t *)DMA0_CURR_Y_COUNT) /* DMA Channel 0 Current Y Count Register */
 #define bfin_read_DMA0_CURR_Y_COUNT()  bfin_read16(DMA0_CURR_Y_COUNT)
 #define bfin_write_DMA0_CURR_Y_COUNT(val) bfin_write16(DMA0_CURR_Y_COUNT, val)
-#define pDMA1_NEXT_DESC_PTR            ((volatile uint32_t *)DMA1_NEXT_DESC_PTR) /* DMA Channel 1 Next Descriptor Pointer Register */
+#define pDMA1_NEXT_DESC_PTR            ((volatile void * *)DMA1_NEXT_DESC_PTR) /* DMA Channel 1 Next Descriptor Pointer Register */
 #define bfin_read_DMA1_NEXT_DESC_PTR() bfin_readPTR(DMA1_NEXT_DESC_PTR)
 #define bfin_write_DMA1_NEXT_DESC_PTR(val) bfin_writePTR(DMA1_NEXT_DESC_PTR, val)
-#define pDMA1_START_ADDR               ((volatile uint32_t *)DMA1_START_ADDR) /* DMA Channel 1 Start Address Register */
+#define pDMA1_START_ADDR               ((volatile void * *)DMA1_START_ADDR) /* DMA Channel 1 Start Address Register */
 #define bfin_read_DMA1_START_ADDR()    bfin_readPTR(DMA1_START_ADDR)
 #define bfin_write_DMA1_START_ADDR(val) bfin_writePTR(DMA1_START_ADDR, val)
 #define pDMA1_CONFIG                   ((volatile uint16_t *)DMA1_CONFIG) /* DMA Channel 1 Configuration Register */
@@ -504,10 +504,10 @@
 #define pDMA1_Y_MODIFY                 ((volatile uint16_t *)DMA1_Y_MODIFY) /* DMA Channel 1 Y Modify Register */
 #define bfin_read_DMA1_Y_MODIFY()      bfin_read16(DMA1_Y_MODIFY)
 #define bfin_write_DMA1_Y_MODIFY(val)  bfin_write16(DMA1_Y_MODIFY, val)
-#define pDMA1_CURR_DESC_PTR            ((volatile uint32_t *)DMA1_CURR_DESC_PTR) /* DMA Channel 1 Current Descriptor Pointer Register */
+#define pDMA1_CURR_DESC_PTR            ((volatile void * *)DMA1_CURR_DESC_PTR) /* DMA Channel 1 Current Descriptor Pointer Register */
 #define bfin_read_DMA1_CURR_DESC_PTR() bfin_readPTR(DMA1_CURR_DESC_PTR)
 #define bfin_write_DMA1_CURR_DESC_PTR(val) bfin_writePTR(DMA1_CURR_DESC_PTR, val)
-#define pDMA1_CURR_ADDR                ((volatile uint32_t *)DMA1_CURR_ADDR) /* DMA Channel 1 Current Address Register */
+#define pDMA1_CURR_ADDR                ((volatile void * *)DMA1_CURR_ADDR) /* DMA Channel 1 Current Address Register */
 #define bfin_read_DMA1_CURR_ADDR()     bfin_readPTR(DMA1_CURR_ADDR)
 #define bfin_write_DMA1_CURR_ADDR(val) bfin_writePTR(DMA1_CURR_ADDR, val)
 #define pDMA1_IRQ_STATUS               ((volatile uint16_t *)DMA1_IRQ_STATUS) /* DMA Channel 1 Interrupt/Status Register */
@@ -522,10 +522,10 @@
 #define pDMA1_CURR_Y_COUNT             ((volatile uint16_t *)DMA1_CURR_Y_COUNT) /* DMA Channel 1 Current Y Count Register */
 #define bfin_read_DMA1_CURR_Y_COUNT()  bfin_read16(DMA1_CURR_Y_COUNT)
 #define bfin_write_DMA1_CURR_Y_COUNT(val) bfin_write16(DMA1_CURR_Y_COUNT, val)
-#define pDMA2_NEXT_DESC_PTR            ((volatile uint32_t *)DMA2_NEXT_DESC_PTR) /* DMA Channel 2 Next Descriptor Pointer Register */
+#define pDMA2_NEXT_DESC_PTR            ((volatile void * *)DMA2_NEXT_DESC_PTR) /* DMA Channel 2 Next Descriptor Pointer Register */
 #define bfin_read_DMA2_NEXT_DESC_PTR() bfin_readPTR(DMA2_NEXT_DESC_PTR)
 #define bfin_write_DMA2_NEXT_DESC_PTR(val) bfin_writePTR(DMA2_NEXT_DESC_PTR, val)
-#define pDMA2_START_ADDR               ((volatile uint32_t *)DMA2_START_ADDR) /* DMA Channel 2 Start Address Register */
+#define pDMA2_START_ADDR               ((volatile void * *)DMA2_START_ADDR) /* DMA Channel 2 Start Address Register */
 #define bfin_read_DMA2_START_ADDR()    bfin_readPTR(DMA2_START_ADDR)
 #define bfin_write_DMA2_START_ADDR(val) bfin_writePTR(DMA2_START_ADDR, val)
 #define pDMA2_CONFIG                   ((volatile uint16_t *)DMA2_CONFIG) /* DMA Channel 2 Configuration Register */
@@ -543,10 +543,10 @@
 #define pDMA2_Y_MODIFY                 ((volatile uint16_t *)DMA2_Y_MODIFY) /* DMA Channel 2 Y Modify Register */
 #define bfin_read_DMA2_Y_MODIFY()      bfin_read16(DMA2_Y_MODIFY)
 #define bfin_write_DMA2_Y_MODIFY(val)  bfin_write16(DMA2_Y_MODIFY, val)
-#define pDMA2_CURR_DESC_PTR            ((volatile uint32_t *)DMA2_CURR_DESC_PTR) /* DMA Channel 2 Current Descriptor Pointer Register */
+#define pDMA2_CURR_DESC_PTR            ((volatile void * *)DMA2_CURR_DESC_PTR) /* DMA Channel 2 Current Descriptor Pointer Register */
 #define bfin_read_DMA2_CURR_DESC_PTR() bfin_readPTR(DMA2_CURR_DESC_PTR)
 #define bfin_write_DMA2_CURR_DESC_PTR(val) bfin_writePTR(DMA2_CURR_DESC_PTR, val)
-#define pDMA2_CURR_ADDR                ((volatile uint32_t *)DMA2_CURR_ADDR) /* DMA Channel 2 Current Address Register */
+#define pDMA2_CURR_ADDR                ((volatile void * *)DMA2_CURR_ADDR) /* DMA Channel 2 Current Address Register */
 #define bfin_read_DMA2_CURR_ADDR()     bfin_readPTR(DMA2_CURR_ADDR)
 #define bfin_write_DMA2_CURR_ADDR(val) bfin_writePTR(DMA2_CURR_ADDR, val)
 #define pDMA2_IRQ_STATUS               ((volatile uint16_t *)DMA2_IRQ_STATUS) /* DMA Channel 2 Interrupt/Status Register */
@@ -561,10 +561,10 @@
 #define pDMA2_CURR_Y_COUNT             ((volatile uint16_t *)DMA2_CURR_Y_COUNT) /* DMA Channel 2 Current Y Count Register */
 #define bfin_read_DMA2_CURR_Y_COUNT()  bfin_read16(DMA2_CURR_Y_COUNT)
 #define bfin_write_DMA2_CURR_Y_COUNT(val) bfin_write16(DMA2_CURR_Y_COUNT, val)
-#define pDMA3_NEXT_DESC_PTR            ((volatile uint32_t *)DMA3_NEXT_DESC_PTR) /* DMA Channel 3 Next Descriptor Pointer Register */
+#define pDMA3_NEXT_DESC_PTR            ((volatile void * *)DMA3_NEXT_DESC_PTR) /* DMA Channel 3 Next Descriptor Pointer Register */
 #define bfin_read_DMA3_NEXT_DESC_PTR() bfin_readPTR(DMA3_NEXT_DESC_PTR)
 #define bfin_write_DMA3_NEXT_DESC_PTR(val) bfin_writePTR(DMA3_NEXT_DESC_PTR, val)
-#define pDMA3_START_ADDR               ((volatile uint32_t *)DMA3_START_ADDR) /* DMA Channel 3 Start Address Register */
+#define pDMA3_START_ADDR               ((volatile void * *)DMA3_START_ADDR) /* DMA Channel 3 Start Address Register */
 #define bfin_read_DMA3_START_ADDR()    bfin_readPTR(DMA3_START_ADDR)
 #define bfin_write_DMA3_START_ADDR(val) bfin_writePTR(DMA3_START_ADDR, val)
 #define pDMA3_CONFIG                   ((volatile uint16_t *)DMA3_CONFIG) /* DMA Channel 3 Configuration Register */
@@ -582,10 +582,10 @@
 #define pDMA3_Y_MODIFY                 ((volatile uint16_t *)DMA3_Y_MODIFY) /* DMA Channel 3 Y Modify Register */
 #define bfin_read_DMA3_Y_MODIFY()      bfin_read16(DMA3_Y_MODIFY)
 #define bfin_write_DMA3_Y_MODIFY(val)  bfin_write16(DMA3_Y_MODIFY, val)
-#define pDMA3_CURR_DESC_PTR            ((volatile uint32_t *)DMA3_CURR_DESC_PTR) /* DMA Channel 3 Current Descriptor Pointer Register */
+#define pDMA3_CURR_DESC_PTR            ((volatile void * *)DMA3_CURR_DESC_PTR) /* DMA Channel 3 Current Descriptor Pointer Register */
 #define bfin_read_DMA3_CURR_DESC_PTR() bfin_readPTR(DMA3_CURR_DESC_PTR)
 #define bfin_write_DMA3_CURR_DESC_PTR(val) bfin_writePTR(DMA3_CURR_DESC_PTR, val)
-#define pDMA3_CURR_ADDR                ((volatile uint32_t *)DMA3_CURR_ADDR) /* DMA Channel 3 Current Address Register */
+#define pDMA3_CURR_ADDR                ((volatile void * *)DMA3_CURR_ADDR) /* DMA Channel 3 Current Address Register */
 #define bfin_read_DMA3_CURR_ADDR()     bfin_readPTR(DMA3_CURR_ADDR)
 #define bfin_write_DMA3_CURR_ADDR(val) bfin_writePTR(DMA3_CURR_ADDR, val)
 #define pDMA3_IRQ_STATUS               ((volatile uint16_t *)DMA3_IRQ_STATUS) /* DMA Channel 3 Interrupt/Status Register */
@@ -600,10 +600,10 @@
 #define pDMA3_CURR_Y_COUNT             ((volatile uint16_t *)DMA3_CURR_Y_COUNT) /* DMA Channel 3 Current Y Count Register */
 #define bfin_read_DMA3_CURR_Y_COUNT()  bfin_read16(DMA3_CURR_Y_COUNT)
 #define bfin_write_DMA3_CURR_Y_COUNT(val) bfin_write16(DMA3_CURR_Y_COUNT, val)
-#define pDMA4_NEXT_DESC_PTR            ((volatile uint32_t *)DMA4_NEXT_DESC_PTR) /* DMA Channel 4 Next Descriptor Pointer Register */
+#define pDMA4_NEXT_DESC_PTR            ((volatile void * *)DMA4_NEXT_DESC_PTR) /* DMA Channel 4 Next Descriptor Pointer Register */
 #define bfin_read_DMA4_NEXT_DESC_PTR() bfin_readPTR(DMA4_NEXT_DESC_PTR)
 #define bfin_write_DMA4_NEXT_DESC_PTR(val) bfin_writePTR(DMA4_NEXT_DESC_PTR, val)
-#define pDMA4_START_ADDR               ((volatile uint32_t *)DMA4_START_ADDR) /* DMA Channel 4 Start Address Register */
+#define pDMA4_START_ADDR               ((volatile void * *)DMA4_START_ADDR) /* DMA Channel 4 Start Address Register */
 #define bfin_read_DMA4_START_ADDR()    bfin_readPTR(DMA4_START_ADDR)
 #define bfin_write_DMA4_START_ADDR(val) bfin_writePTR(DMA4_START_ADDR, val)
 #define pDMA4_CONFIG                   ((volatile uint16_t *)DMA4_CONFIG) /* DMA Channel 4 Configuration Register */
@@ -621,10 +621,10 @@
 #define pDMA4_Y_MODIFY                 ((volatile uint16_t *)DMA4_Y_MODIFY) /* DMA Channel 4 Y Modify Register */
 #define bfin_read_DMA4_Y_MODIFY()      bfin_read16(DMA4_Y_MODIFY)
 #define bfin_write_DMA4_Y_MODIFY(val)  bfin_write16(DMA4_Y_MODIFY, val)
-#define pDMA4_CURR_DESC_PTR            ((volatile uint32_t *)DMA4_CURR_DESC_PTR) /* DMA Channel 4 Current Descriptor Pointer Register */
+#define pDMA4_CURR_DESC_PTR            ((volatile void * *)DMA4_CURR_DESC_PTR) /* DMA Channel 4 Current Descriptor Pointer Register */
 #define bfin_read_DMA4_CURR_DESC_PTR() bfin_readPTR(DMA4_CURR_DESC_PTR)
 #define bfin_write_DMA4_CURR_DESC_PTR(val) bfin_writePTR(DMA4_CURR_DESC_PTR, val)
-#define pDMA4_CURR_ADDR                ((volatile uint32_t *)DMA4_CURR_ADDR) /* DMA Channel 4 Current Address Register */
+#define pDMA4_CURR_ADDR                ((volatile void * *)DMA4_CURR_ADDR) /* DMA Channel 4 Current Address Register */
 #define bfin_read_DMA4_CURR_ADDR()     bfin_readPTR(DMA4_CURR_ADDR)
 #define bfin_write_DMA4_CURR_ADDR(val) bfin_writePTR(DMA4_CURR_ADDR, val)
 #define pDMA4_IRQ_STATUS               ((volatile uint16_t *)DMA4_IRQ_STATUS) /* DMA Channel 4 Interrupt/Status Register */
@@ -639,10 +639,10 @@
 #define pDMA4_CURR_Y_COUNT             ((volatile uint16_t *)DMA4_CURR_Y_COUNT) /* DMA Channel 4 Current Y Count Register */
 #define bfin_read_DMA4_CURR_Y_COUNT()  bfin_read16(DMA4_CURR_Y_COUNT)
 #define bfin_write_DMA4_CURR_Y_COUNT(val) bfin_write16(DMA4_CURR_Y_COUNT, val)
-#define pDMA5_NEXT_DESC_PTR            ((volatile uint32_t *)DMA5_NEXT_DESC_PTR) /* DMA Channel 5 Next Descriptor Pointer Register */
+#define pDMA5_NEXT_DESC_PTR            ((volatile void * *)DMA5_NEXT_DESC_PTR) /* DMA Channel 5 Next Descriptor Pointer Register */
 #define bfin_read_DMA5_NEXT_DESC_PTR() bfin_readPTR(DMA5_NEXT_DESC_PTR)
 #define bfin_write_DMA5_NEXT_DESC_PTR(val) bfin_writePTR(DMA5_NEXT_DESC_PTR, val)
-#define pDMA5_START_ADDR               ((volatile uint32_t *)DMA5_START_ADDR) /* DMA Channel 5 Start Address Register */
+#define pDMA5_START_ADDR               ((volatile void * *)DMA5_START_ADDR) /* DMA Channel 5 Start Address Register */
 #define bfin_read_DMA5_START_ADDR()    bfin_readPTR(DMA5_START_ADDR)
 #define bfin_write_DMA5_START_ADDR(val) bfin_writePTR(DMA5_START_ADDR, val)
 #define pDMA5_CONFIG                   ((volatile uint16_t *)DMA5_CONFIG) /* DMA Channel 5 Configuration Register */
@@ -660,10 +660,10 @@
 #define pDMA5_Y_MODIFY                 ((volatile uint16_t *)DMA5_Y_MODIFY) /* DMA Channel 5 Y Modify Register */
 #define bfin_read_DMA5_Y_MODIFY()      bfin_read16(DMA5_Y_MODIFY)
 #define bfin_write_DMA5_Y_MODIFY(val)  bfin_write16(DMA5_Y_MODIFY, val)
-#define pDMA5_CURR_DESC_PTR            ((volatile uint32_t *)DMA5_CURR_DESC_PTR) /* DMA Channel 5 Current Descriptor Pointer Register */
+#define pDMA5_CURR_DESC_PTR            ((volatile void * *)DMA5_CURR_DESC_PTR) /* DMA Channel 5 Current Descriptor Pointer Register */
 #define bfin_read_DMA5_CURR_DESC_PTR() bfin_readPTR(DMA5_CURR_DESC_PTR)
 #define bfin_write_DMA5_CURR_DESC_PTR(val) bfin_writePTR(DMA5_CURR_DESC_PTR, val)
-#define pDMA5_CURR_ADDR                ((volatile uint32_t *)DMA5_CURR_ADDR) /* DMA Channel 5 Current Address Register */
+#define pDMA5_CURR_ADDR                ((volatile void * *)DMA5_CURR_ADDR) /* DMA Channel 5 Current Address Register */
 #define bfin_read_DMA5_CURR_ADDR()     bfin_readPTR(DMA5_CURR_ADDR)
 #define bfin_write_DMA5_CURR_ADDR(val) bfin_writePTR(DMA5_CURR_ADDR, val)
 #define pDMA5_IRQ_STATUS               ((volatile uint16_t *)DMA5_IRQ_STATUS) /* DMA Channel 5 Interrupt/Status Register */
@@ -681,7 +681,7 @@
 #define pDMA6_NEXT_DESC_PTR            ((volatile uint32_t *)DMA6_NEXT_DESC_PTR) /* DMA Channel 6 Next Descriptor Pointer Register */
 #define bfin_read_DMA6_NEXT_DESC_PTR() bfin_read32(DMA6_NEXT_DESC_PTR)
 #define bfin_write_DMA6_NEXT_DESC_PTR(val) bfin_write32(DMA6_NEXT_DESC_PTR, val)
-#define pDMA6_START_ADDR               ((volatile uint32_t *)DMA6_START_ADDR) /* DMA Channel 6 Start Address Register */
+#define pDMA6_START_ADDR               ((volatile void * *)DMA6_START_ADDR) /* DMA Channel 6 Start Address Register */
 #define bfin_read_DMA6_START_ADDR()    bfin_readPTR(DMA6_START_ADDR)
 #define bfin_write_DMA6_START_ADDR(val) bfin_writePTR(DMA6_START_ADDR, val)
 #define pDMA6_CONFIG                   ((volatile uint16_t *)DMA6_CONFIG) /* DMA Channel 6 Configuration Register */
@@ -699,10 +699,10 @@
 #define pDMA6_Y_MODIFY                 ((volatile uint16_t *)DMA6_Y_MODIFY) /* DMA Channel 6 Y Modify Register */
 #define bfin_read_DMA6_Y_MODIFY()      bfin_read16(DMA6_Y_MODIFY)
 #define bfin_write_DMA6_Y_MODIFY(val)  bfin_write16(DMA6_Y_MODIFY, val)
-#define pDMA6_CURR_DESC_PTR            ((volatile uint32_t *)DMA6_CURR_DESC_PTR) /* DMA Channel 6 Current Descriptor Pointer Register */
+#define pDMA6_CURR_DESC_PTR            ((volatile void * *)DMA6_CURR_DESC_PTR) /* DMA Channel 6 Current Descriptor Pointer Register */
 #define bfin_read_DMA6_CURR_DESC_PTR() bfin_readPTR(DMA6_CURR_DESC_PTR)
 #define bfin_write_DMA6_CURR_DESC_PTR(val) bfin_writePTR(DMA6_CURR_DESC_PTR, val)
-#define pDMA6_CURR_ADDR                ((volatile uint32_t *)DMA6_CURR_ADDR) /* DMA Channel 6 Current Address Register */
+#define pDMA6_CURR_ADDR                ((volatile void * *)DMA6_CURR_ADDR) /* DMA Channel 6 Current Address Register */
 #define bfin_read_DMA6_CURR_ADDR()     bfin_readPTR(DMA6_CURR_ADDR)
 #define bfin_write_DMA6_CURR_ADDR(val) bfin_writePTR(DMA6_CURR_ADDR, val)
 #define pDMA6_IRQ_STATUS               ((volatile uint16_t *)DMA6_IRQ_STATUS) /* DMA Channel 6 Interrupt/Status Register */
@@ -717,10 +717,10 @@
 #define pDMA6_CURR_Y_COUNT             ((volatile uint16_t *)DMA6_CURR_Y_COUNT) /* DMA Channel 6 Current Y Count Register */
 #define bfin_read_DMA6_CURR_Y_COUNT()  bfin_read16(DMA6_CURR_Y_COUNT)
 #define bfin_write_DMA6_CURR_Y_COUNT(val) bfin_write16(DMA6_CURR_Y_COUNT, val)
-#define pDMA7_NEXT_DESC_PTR            ((volatile uint32_t *)DMA7_NEXT_DESC_PTR) /* DMA Channel 7 Next Descriptor Pointer Register */
+#define pDMA7_NEXT_DESC_PTR            ((volatile void * *)DMA7_NEXT_DESC_PTR) /* DMA Channel 7 Next Descriptor Pointer Register */
 #define bfin_read_DMA7_NEXT_DESC_PTR() bfin_readPTR(DMA7_NEXT_DESC_PTR)
 #define bfin_write_DMA7_NEXT_DESC_PTR(val) bfin_writePTR(DMA7_NEXT_DESC_PTR, val)
-#define pDMA7_START_ADDR               ((volatile uint32_t *)DMA7_START_ADDR) /* DMA Channel 7 Start Address Register */
+#define pDMA7_START_ADDR               ((volatile void * *)DMA7_START_ADDR) /* DMA Channel 7 Start Address Register */
 #define bfin_read_DMA7_START_ADDR()    bfin_readPTR(DMA7_START_ADDR)
 #define bfin_write_DMA7_START_ADDR(val) bfin_writePTR(DMA7_START_ADDR, val)
 #define pDMA7_CONFIG                   ((volatile uint16_t *)DMA7_CONFIG) /* DMA Channel 7 Configuration Register */
@@ -738,10 +738,10 @@
 #define pDMA7_Y_MODIFY                 ((volatile uint16_t *)DMA7_Y_MODIFY) /* DMA Channel 7 Y Modify Register */
 #define bfin_read_DMA7_Y_MODIFY()      bfin_read16(DMA7_Y_MODIFY)
 #define bfin_write_DMA7_Y_MODIFY(val)  bfin_write16(DMA7_Y_MODIFY, val)
-#define pDMA7_CURR_DESC_PTR            ((volatile uint32_t *)DMA7_CURR_DESC_PTR) /* DMA Channel 7 Current Descriptor Pointer Register */
+#define pDMA7_CURR_DESC_PTR            ((volatile void * *)DMA7_CURR_DESC_PTR) /* DMA Channel 7 Current Descriptor Pointer Register */
 #define bfin_read_DMA7_CURR_DESC_PTR() bfin_readPTR(DMA7_CURR_DESC_PTR)
 #define bfin_write_DMA7_CURR_DESC_PTR(val) bfin_writePTR(DMA7_CURR_DESC_PTR, val)
-#define pDMA7_CURR_ADDR                ((volatile uint32_t *)DMA7_CURR_ADDR) /* DMA Channel 7 Current Address Register */
+#define pDMA7_CURR_ADDR                ((volatile void * *)DMA7_CURR_ADDR) /* DMA Channel 7 Current Address Register */
 #define bfin_read_DMA7_CURR_ADDR()     bfin_readPTR(DMA7_CURR_ADDR)
 #define bfin_write_DMA7_CURR_ADDR(val) bfin_writePTR(DMA7_CURR_ADDR, val)
 #define pDMA7_IRQ_STATUS               ((volatile uint16_t *)DMA7_IRQ_STATUS) /* DMA Channel 7 Interrupt/Status Register */
@@ -756,10 +756,10 @@
 #define pDMA7_CURR_Y_COUNT             ((volatile uint16_t *)DMA7_CURR_Y_COUNT) /* DMA Channel 7 Current Y Count Register */
 #define bfin_read_DMA7_CURR_Y_COUNT()  bfin_read16(DMA7_CURR_Y_COUNT)
 #define bfin_write_DMA7_CURR_Y_COUNT(val) bfin_write16(DMA7_CURR_Y_COUNT, val)
-#define pDMA8_NEXT_DESC_PTR            ((volatile uint32_t *)DMA8_NEXT_DESC_PTR) /* DMA Channel 8 Next Descriptor Pointer Register */
+#define pDMA8_NEXT_DESC_PTR            ((volatile void * *)DMA8_NEXT_DESC_PTR) /* DMA Channel 8 Next Descriptor Pointer Register */
 #define bfin_read_DMA8_NEXT_DESC_PTR() bfin_readPTR(DMA8_NEXT_DESC_PTR)
 #define bfin_write_DMA8_NEXT_DESC_PTR(val) bfin_writePTR(DMA8_NEXT_DESC_PTR, val)
-#define pDMA8_START_ADDR               ((volatile uint32_t *)DMA8_START_ADDR) /* DMA Channel 8 Start Address Register */
+#define pDMA8_START_ADDR               ((volatile void * *)DMA8_START_ADDR) /* DMA Channel 8 Start Address Register */
 #define bfin_read_DMA8_START_ADDR()    bfin_readPTR(DMA8_START_ADDR)
 #define bfin_write_DMA8_START_ADDR(val) bfin_writePTR(DMA8_START_ADDR, val)
 #define pDMA8_CONFIG                   ((volatile uint16_t *)DMA8_CONFIG) /* DMA Channel 8 Configuration Register */
@@ -777,10 +777,10 @@
 #define pDMA8_Y_MODIFY                 ((volatile uint16_t *)DMA8_Y_MODIFY) /* DMA Channel 8 Y Modify Register */
 #define bfin_read_DMA8_Y_MODIFY()      bfin_read16(DMA8_Y_MODIFY)
 #define bfin_write_DMA8_Y_MODIFY(val)  bfin_write16(DMA8_Y_MODIFY, val)
-#define pDMA8_CURR_DESC_PTR            ((volatile uint32_t *)DMA8_CURR_DESC_PTR) /* DMA Channel 8 Current Descriptor Pointer Register */
+#define pDMA8_CURR_DESC_PTR            ((volatile void * *)DMA8_CURR_DESC_PTR) /* DMA Channel 8 Current Descriptor Pointer Register */
 #define bfin_read_DMA8_CURR_DESC_PTR() bfin_readPTR(DMA8_CURR_DESC_PTR)
 #define bfin_write_DMA8_CURR_DESC_PTR(val) bfin_writePTR(DMA8_CURR_DESC_PTR, val)
-#define pDMA8_CURR_ADDR                ((volatile uint32_t *)DMA8_CURR_ADDR) /* DMA Channel 8 Current Address Register */
+#define pDMA8_CURR_ADDR                ((volatile void * *)DMA8_CURR_ADDR) /* DMA Channel 8 Current Address Register */
 #define bfin_read_DMA8_CURR_ADDR()     bfin_readPTR(DMA8_CURR_ADDR)
 #define bfin_write_DMA8_CURR_ADDR(val) bfin_writePTR(DMA8_CURR_ADDR, val)
 #define pDMA8_IRQ_STATUS               ((volatile uint16_t *)DMA8_IRQ_STATUS) /* DMA Channel 8 Interrupt/Status Register */
@@ -795,10 +795,10 @@
 #define pDMA8_CURR_Y_COUNT             ((volatile uint16_t *)DMA8_CURR_Y_COUNT) /* DMA Channel 8 Current Y Count Register */
 #define bfin_read_DMA8_CURR_Y_COUNT()  bfin_read16(DMA8_CURR_Y_COUNT)
 #define bfin_write_DMA8_CURR_Y_COUNT(val) bfin_write16(DMA8_CURR_Y_COUNT, val)
-#define pDMA9_NEXT_DESC_PTR            ((volatile uint32_t *)DMA9_NEXT_DESC_PTR) /* DMA Channel 9 Next Descriptor Pointer Register */
+#define pDMA9_NEXT_DESC_PTR            ((volatile void * *)DMA9_NEXT_DESC_PTR) /* DMA Channel 9 Next Descriptor Pointer Register */
 #define bfin_read_DMA9_NEXT_DESC_PTR() bfin_readPTR(DMA9_NEXT_DESC_PTR)
 #define bfin_write_DMA9_NEXT_DESC_PTR(val) bfin_writePTR(DMA9_NEXT_DESC_PTR, val)
-#define pDMA9_START_ADDR               ((volatile uint32_t *)DMA9_START_ADDR) /* DMA Channel 9 Start Address Register */
+#define pDMA9_START_ADDR               ((volatile void * *)DMA9_START_ADDR) /* DMA Channel 9 Start Address Register */
 #define bfin_read_DMA9_START_ADDR()    bfin_readPTR(DMA9_START_ADDR)
 #define bfin_write_DMA9_START_ADDR(val) bfin_writePTR(DMA9_START_ADDR, val)
 #define pDMA9_CONFIG                   ((volatile uint16_t *)DMA9_CONFIG) /* DMA Channel 9 Configuration Register */
@@ -816,10 +816,10 @@
 #define pDMA9_Y_MODIFY                 ((volatile uint16_t *)DMA9_Y_MODIFY) /* DMA Channel 9 Y Modify Register */
 #define bfin_read_DMA9_Y_MODIFY()      bfin_read16(DMA9_Y_MODIFY)
 #define bfin_write_DMA9_Y_MODIFY(val)  bfin_write16(DMA9_Y_MODIFY, val)
-#define pDMA9_CURR_DESC_PTR            ((volatile uint32_t *)DMA9_CURR_DESC_PTR) /* DMA Channel 9 Current Descriptor Pointer Register */
+#define pDMA9_CURR_DESC_PTR            ((volatile void * *)DMA9_CURR_DESC_PTR) /* DMA Channel 9 Current Descriptor Pointer Register */
 #define bfin_read_DMA9_CURR_DESC_PTR() bfin_readPTR(DMA9_CURR_DESC_PTR)
 #define bfin_write_DMA9_CURR_DESC_PTR(val) bfin_writePTR(DMA9_CURR_DESC_PTR, val)
-#define pDMA9_CURR_ADDR                ((volatile uint32_t *)DMA9_CURR_ADDR) /* DMA Channel 9 Current Address Register */
+#define pDMA9_CURR_ADDR                ((volatile void * *)DMA9_CURR_ADDR) /* DMA Channel 9 Current Address Register */
 #define bfin_read_DMA9_CURR_ADDR()     bfin_readPTR(DMA9_CURR_ADDR)
 #define bfin_write_DMA9_CURR_ADDR(val) bfin_writePTR(DMA9_CURR_ADDR, val)
 #define pDMA9_IRQ_STATUS               ((volatile uint16_t *)DMA9_IRQ_STATUS) /* DMA Channel 9 Interrupt/Status Register */
@@ -834,10 +834,10 @@
 #define pDMA9_CURR_Y_COUNT             ((volatile uint16_t *)DMA9_CURR_Y_COUNT) /* DMA Channel 9 Current Y Count Register */
 #define bfin_read_DMA9_CURR_Y_COUNT()  bfin_read16(DMA9_CURR_Y_COUNT)
 #define bfin_write_DMA9_CURR_Y_COUNT(val) bfin_write16(DMA9_CURR_Y_COUNT, val)
-#define pDMA10_NEXT_DESC_PTR           ((volatile uint32_t *)DMA10_NEXT_DESC_PTR) /* DMA Channel 10 Next Descriptor Pointer Register */
+#define pDMA10_NEXT_DESC_PTR           ((volatile void * *)DMA10_NEXT_DESC_PTR) /* DMA Channel 10 Next Descriptor Pointer Register */
 #define bfin_read_DMA10_NEXT_DESC_PTR() bfin_readPTR(DMA10_NEXT_DESC_PTR)
 #define bfin_write_DMA10_NEXT_DESC_PTR(val) bfin_writePTR(DMA10_NEXT_DESC_PTR, val)
-#define pDMA10_START_ADDR              ((volatile uint32_t *)DMA10_START_ADDR) /* DMA Channel 10 Start Address Register */
+#define pDMA10_START_ADDR              ((volatile void * *)DMA10_START_ADDR) /* DMA Channel 10 Start Address Register */
 #define bfin_read_DMA10_START_ADDR()   bfin_readPTR(DMA10_START_ADDR)
 #define bfin_write_DMA10_START_ADDR(val) bfin_writePTR(DMA10_START_ADDR, val)
 #define pDMA10_CONFIG                  ((volatile uint16_t *)DMA10_CONFIG) /* DMA Channel 10 Configuration Register */
@@ -855,10 +855,10 @@
 #define pDMA10_Y_MODIFY                ((volatile uint16_t *)DMA10_Y_MODIFY) /* DMA Channel 10 Y Modify Register */
 #define bfin_read_DMA10_Y_MODIFY()     bfin_read16(DMA10_Y_MODIFY)
 #define bfin_write_DMA10_Y_MODIFY(val) bfin_write16(DMA10_Y_MODIFY, val)
-#define pDMA10_CURR_DESC_PTR           ((volatile uint32_t *)DMA10_CURR_DESC_PTR) /* DMA Channel 10 Current Descriptor Pointer Register */
+#define pDMA10_CURR_DESC_PTR           ((volatile void * *)DMA10_CURR_DESC_PTR) /* DMA Channel 10 Current Descriptor Pointer Register */
 #define bfin_read_DMA10_CURR_DESC_PTR() bfin_readPTR(DMA10_CURR_DESC_PTR)
 #define bfin_write_DMA10_CURR_DESC_PTR(val) bfin_writePTR(DMA10_CURR_DESC_PTR, val)
-#define pDMA10_CURR_ADDR               ((volatile uint32_t *)DMA10_CURR_ADDR) /* DMA Channel 10 Current Address Register */
+#define pDMA10_CURR_ADDR               ((volatile void * *)DMA10_CURR_ADDR) /* DMA Channel 10 Current Address Register */
 #define bfin_read_DMA10_CURR_ADDR()    bfin_readPTR(DMA10_CURR_ADDR)
 #define bfin_write_DMA10_CURR_ADDR(val) bfin_writePTR(DMA10_CURR_ADDR, val)
 #define pDMA10_IRQ_STATUS              ((volatile uint16_t *)DMA10_IRQ_STATUS) /* DMA Channel 10 Interrupt/Status Register */
@@ -873,10 +873,10 @@
 #define pDMA10_CURR_Y_COUNT            ((volatile uint16_t *)DMA10_CURR_Y_COUNT) /* DMA Channel 10 Current Y Count Register */
 #define bfin_read_DMA10_CURR_Y_COUNT() bfin_read16(DMA10_CURR_Y_COUNT)
 #define bfin_write_DMA10_CURR_Y_COUNT(val) bfin_write16(DMA10_CURR_Y_COUNT, val)
-#define pDMA11_NEXT_DESC_PTR           ((volatile uint32_t *)DMA11_NEXT_DESC_PTR) /* DMA Channel 11 Next Descriptor Pointer Register */
+#define pDMA11_NEXT_DESC_PTR           ((volatile void * *)DMA11_NEXT_DESC_PTR) /* DMA Channel 11 Next Descriptor Pointer Register */
 #define bfin_read_DMA11_NEXT_DESC_PTR() bfin_readPTR(DMA11_NEXT_DESC_PTR)
 #define bfin_write_DMA11_NEXT_DESC_PTR(val) bfin_writePTR(DMA11_NEXT_DESC_PTR, val)
-#define pDMA11_START_ADDR              ((volatile uint32_t *)DMA11_START_ADDR) /* DMA Channel 11 Start Address Register */
+#define pDMA11_START_ADDR              ((volatile void * *)DMA11_START_ADDR) /* DMA Channel 11 Start Address Register */
 #define bfin_read_DMA11_START_ADDR()   bfin_readPTR(DMA11_START_ADDR)
 #define bfin_write_DMA11_START_ADDR(val) bfin_writePTR(DMA11_START_ADDR, val)
 #define pDMA11_CONFIG                  ((volatile uint16_t *)DMA11_CONFIG) /* DMA Channel 11 Configuration Register */
@@ -894,10 +894,10 @@
 #define pDMA11_Y_MODIFY                ((volatile uint16_t *)DMA11_Y_MODIFY) /* DMA Channel 11 Y Modify Register */
 #define bfin_read_DMA11_Y_MODIFY()     bfin_read16(DMA11_Y_MODIFY)
 #define bfin_write_DMA11_Y_MODIFY(val) bfin_write16(DMA11_Y_MODIFY, val)
-#define pDMA11_CURR_DESC_PTR           ((volatile uint32_t *)DMA11_CURR_DESC_PTR) /* DMA Channel 11 Current Descriptor Pointer Register */
+#define pDMA11_CURR_DESC_PTR           ((volatile void * *)DMA11_CURR_DESC_PTR) /* DMA Channel 11 Current Descriptor Pointer Register */
 #define bfin_read_DMA11_CURR_DESC_PTR() bfin_readPTR(DMA11_CURR_DESC_PTR)
 #define bfin_write_DMA11_CURR_DESC_PTR(val) bfin_writePTR(DMA11_CURR_DESC_PTR, val)
-#define pDMA11_CURR_ADDR               ((volatile uint32_t *)DMA11_CURR_ADDR) /* DMA Channel 11 Current Address Register */
+#define pDMA11_CURR_ADDR               ((volatile void * *)DMA11_CURR_ADDR) /* DMA Channel 11 Current Address Register */
 #define bfin_read_DMA11_CURR_ADDR()    bfin_readPTR(DMA11_CURR_ADDR)
 #define bfin_write_DMA11_CURR_ADDR(val) bfin_writePTR(DMA11_CURR_ADDR, val)
 #define pDMA11_IRQ_STATUS              ((volatile uint16_t *)DMA11_IRQ_STATUS) /* DMA Channel 11 Interrupt/Status Register */
@@ -912,10 +912,10 @@
 #define pDMA11_CURR_Y_COUNT            ((volatile uint16_t *)DMA11_CURR_Y_COUNT) /* DMA Channel 11 Current Y Count Register */
 #define bfin_read_DMA11_CURR_Y_COUNT() bfin_read16(DMA11_CURR_Y_COUNT)
 #define bfin_write_DMA11_CURR_Y_COUNT(val) bfin_write16(DMA11_CURR_Y_COUNT, val)
-#define pMDMA_S0_NEXT_DESC_PTR         ((volatile uint32_t *)MDMA_S0_NEXT_DESC_PTR) /* MemDMA Stream 0 Source Next Descriptor Pointer Register */
+#define pMDMA_S0_NEXT_DESC_PTR         ((volatile void * *)MDMA_S0_NEXT_DESC_PTR) /* MemDMA Stream 0 Source Next Descriptor Pointer Register */
 #define bfin_read_MDMA_S0_NEXT_DESC_PTR() bfin_readPTR(MDMA_S0_NEXT_DESC_PTR)
 #define bfin_write_MDMA_S0_NEXT_DESC_PTR(val) bfin_writePTR(MDMA_S0_NEXT_DESC_PTR, val)
-#define pMDMA_S0_START_ADDR            ((volatile uint32_t *)MDMA_S0_START_ADDR) /* MemDMA Stream 0 Source Start Address Register */
+#define pMDMA_S0_START_ADDR            ((volatile void * *)MDMA_S0_START_ADDR) /* MemDMA Stream 0 Source Start Address Register */
 #define bfin_read_MDMA_S0_START_ADDR() bfin_readPTR(MDMA_S0_START_ADDR)
 #define bfin_write_MDMA_S0_START_ADDR(val) bfin_writePTR(MDMA_S0_START_ADDR, val)
 #define pMDMA_S0_CONFIG                ((volatile uint16_t *)MDMA_S0_CONFIG) /* MemDMA Stream 0 Source Configuration Register */
@@ -933,10 +933,10 @@
 #define pMDMA_S0_Y_MODIFY              ((volatile uint16_t *)MDMA_S0_Y_MODIFY) /* MemDMA Stream 0 Source Y Modify Register */
 #define bfin_read_MDMA_S0_Y_MODIFY()   bfin_read16(MDMA_S0_Y_MODIFY)
 #define bfin_write_MDMA_S0_Y_MODIFY(val) bfin_write16(MDMA_S0_Y_MODIFY, val)
-#define pMDMA_S0_CURR_DESC_PTR         ((volatile uint32_t *)MDMA_S0_CURR_DESC_PTR) /* MemDMA Stream 0 Source Current Descriptor Pointer Register */
+#define pMDMA_S0_CURR_DESC_PTR         ((volatile void * *)MDMA_S0_CURR_DESC_PTR) /* MemDMA Stream 0 Source Current Descriptor Pointer Register */
 #define bfin_read_MDMA_S0_CURR_DESC_PTR() bfin_readPTR(MDMA_S0_CURR_DESC_PTR)
 #define bfin_write_MDMA_S0_CURR_DESC_PTR(val) bfin_writePTR(MDMA_S0_CURR_DESC_PTR, val)
-#define pMDMA_S0_CURR_ADDR             ((volatile uint32_t *)MDMA_S0_CURR_ADDR) /* MemDMA Stream 0 Source Current Address Register */
+#define pMDMA_S0_CURR_ADDR             ((volatile void * *)MDMA_S0_CURR_ADDR) /* MemDMA Stream 0 Source Current Address Register */
 #define bfin_read_MDMA_S0_CURR_ADDR()  bfin_readPTR(MDMA_S0_CURR_ADDR)
 #define bfin_write_MDMA_S0_CURR_ADDR(val) bfin_writePTR(MDMA_S0_CURR_ADDR, val)
 #define pMDMA_S0_IRQ_STATUS            ((volatile uint16_t *)MDMA_S0_IRQ_STATUS) /* MemDMA Stream 0 Source Interrupt/Status Register */
@@ -951,10 +951,10 @@
 #define pMDMA_S0_CURR_Y_COUNT          ((volatile uint16_t *)MDMA_S0_CURR_Y_COUNT) /* MemDMA Stream 0 Source Current Y Count Register */
 #define bfin_read_MDMA_S0_CURR_Y_COUNT() bfin_read16(MDMA_S0_CURR_Y_COUNT)
 #define bfin_write_MDMA_S0_CURR_Y_COUNT(val) bfin_write16(MDMA_S0_CURR_Y_COUNT, val)
-#define pMDMA_D0_NEXT_DESC_PTR         ((volatile uint32_t *)MDMA_D0_NEXT_DESC_PTR) /* MemDMA Stream 0 Destination Next Descriptor Pointer Register */
+#define pMDMA_D0_NEXT_DESC_PTR         ((volatile void * *)MDMA_D0_NEXT_DESC_PTR) /* MemDMA Stream 0 Destination Next Descriptor Pointer Register */
 #define bfin_read_MDMA_D0_NEXT_DESC_PTR() bfin_readPTR(MDMA_D0_NEXT_DESC_PTR)
 #define bfin_write_MDMA_D0_NEXT_DESC_PTR(val) bfin_writePTR(MDMA_D0_NEXT_DESC_PTR, val)
-#define pMDMA_D0_START_ADDR            ((volatile uint32_t *)MDMA_D0_START_ADDR) /* MemDMA Stream 0 Destination Start Address Register */
+#define pMDMA_D0_START_ADDR            ((volatile void * *)MDMA_D0_START_ADDR) /* MemDMA Stream 0 Destination Start Address Register */
 #define bfin_read_MDMA_D0_START_ADDR() bfin_readPTR(MDMA_D0_START_ADDR)
 #define bfin_write_MDMA_D0_START_ADDR(val) bfin_writePTR(MDMA_D0_START_ADDR, val)
 #define pMDMA_D0_CONFIG                ((volatile uint16_t *)MDMA_D0_CONFIG) /* MemDMA Stream 0 Destination Configuration Register */
@@ -972,10 +972,10 @@
 #define pMDMA_D0_Y_MODIFY              ((volatile uint16_t *)MDMA_D0_Y_MODIFY) /* MemDMA Stream 0 Destination Y Modify Register */
 #define bfin_read_MDMA_D0_Y_MODIFY()   bfin_read16(MDMA_D0_Y_MODIFY)
 #define bfin_write_MDMA_D0_Y_MODIFY(val) bfin_write16(MDMA_D0_Y_MODIFY, val)
-#define pMDMA_D0_CURR_DESC_PTR         ((volatile uint32_t *)MDMA_D0_CURR_DESC_PTR) /* MemDMA Stream 0 Destination Current Descriptor Pointer Register */
+#define pMDMA_D0_CURR_DESC_PTR         ((volatile void * *)MDMA_D0_CURR_DESC_PTR) /* MemDMA Stream 0 Destination Current Descriptor Pointer Register */
 #define bfin_read_MDMA_D0_CURR_DESC_PTR() bfin_readPTR(MDMA_D0_CURR_DESC_PTR)
 #define bfin_write_MDMA_D0_CURR_DESC_PTR(val) bfin_writePTR(MDMA_D0_CURR_DESC_PTR, val)
-#define pMDMA_D0_CURR_ADDR             ((volatile uint32_t *)MDMA_D0_CURR_ADDR) /* MemDMA Stream 0 Destination Current Address Register */
+#define pMDMA_D0_CURR_ADDR             ((volatile void * *)MDMA_D0_CURR_ADDR) /* MemDMA Stream 0 Destination Current Address Register */
 #define bfin_read_MDMA_D0_CURR_ADDR()  bfin_readPTR(MDMA_D0_CURR_ADDR)
 #define bfin_write_MDMA_D0_CURR_ADDR(val) bfin_writePTR(MDMA_D0_CURR_ADDR, val)
 #define pMDMA_D0_IRQ_STATUS            ((volatile uint16_t *)MDMA_D0_IRQ_STATUS) /* MemDMA Stream 0 Destination Interrupt/Status Register */
@@ -990,10 +990,10 @@
 #define pMDMA_D0_CURR_Y_COUNT          ((volatile uint16_t *)MDMA_D0_CURR_Y_COUNT) /* MemDMA Stream 0 Destination Current Y Count Register */
 #define bfin_read_MDMA_D0_CURR_Y_COUNT() bfin_read16(MDMA_D0_CURR_Y_COUNT)
 #define bfin_write_MDMA_D0_CURR_Y_COUNT(val) bfin_write16(MDMA_D0_CURR_Y_COUNT, val)
-#define pMDMA_S1_NEXT_DESC_PTR         ((volatile uint32_t *)MDMA_S1_NEXT_DESC_PTR) /* MemDMA Stream 1 Source Next Descriptor Pointer Register */
+#define pMDMA_S1_NEXT_DESC_PTR         ((volatile void * *)MDMA_S1_NEXT_DESC_PTR) /* MemDMA Stream 1 Source Next Descriptor Pointer Register */
 #define bfin_read_MDMA_S1_NEXT_DESC_PTR() bfin_readPTR(MDMA_S1_NEXT_DESC_PTR)
 #define bfin_write_MDMA_S1_NEXT_DESC_PTR(val) bfin_writePTR(MDMA_S1_NEXT_DESC_PTR, val)
-#define pMDMA_S1_START_ADDR            ((volatile uint32_t *)MDMA_S1_START_ADDR) /* MemDMA Stream 1 Source Start Address Register */
+#define pMDMA_S1_START_ADDR            ((volatile void * *)MDMA_S1_START_ADDR) /* MemDMA Stream 1 Source Start Address Register */
 #define bfin_read_MDMA_S1_START_ADDR() bfin_readPTR(MDMA_S1_START_ADDR)
 #define bfin_write_MDMA_S1_START_ADDR(val) bfin_writePTR(MDMA_S1_START_ADDR, val)
 #define pMDMA_S1_CONFIG                ((volatile uint16_t *)MDMA_S1_CONFIG) /* MemDMA Stream 1 Source Configuration Register */
@@ -1011,10 +1011,10 @@
 #define pMDMA_S1_Y_MODIFY              ((volatile uint16_t *)MDMA_S1_Y_MODIFY) /* MemDMA Stream 1 Source Y Modify Register */
 #define bfin_read_MDMA_S1_Y_MODIFY()   bfin_read16(MDMA_S1_Y_MODIFY)
 #define bfin_write_MDMA_S1_Y_MODIFY(val) bfin_write16(MDMA_S1_Y_MODIFY, val)
-#define pMDMA_S1_CURR_DESC_PTR         ((volatile uint32_t *)MDMA_S1_CURR_DESC_PTR) /* MemDMA Stream 1 Source Current Descriptor Pointer Register */
+#define pMDMA_S1_CURR_DESC_PTR         ((volatile void * *)MDMA_S1_CURR_DESC_PTR) /* MemDMA Stream 1 Source Current Descriptor Pointer Register */
 #define bfin_read_MDMA_S1_CURR_DESC_PTR() bfin_readPTR(MDMA_S1_CURR_DESC_PTR)
 #define bfin_write_MDMA_S1_CURR_DESC_PTR(val) bfin_writePTR(MDMA_S1_CURR_DESC_PTR, val)
-#define pMDMA_S1_CURR_ADDR             ((volatile uint32_t *)MDMA_S1_CURR_ADDR) /* MemDMA Stream 1 Source Current Address Register */
+#define pMDMA_S1_CURR_ADDR             ((volatile void * *)MDMA_S1_CURR_ADDR) /* MemDMA Stream 1 Source Current Address Register */
 #define bfin_read_MDMA_S1_CURR_ADDR()  bfin_readPTR(MDMA_S1_CURR_ADDR)
 #define bfin_write_MDMA_S1_CURR_ADDR(val) bfin_writePTR(MDMA_S1_CURR_ADDR, val)
 #define pMDMA_S1_IRQ_STATUS            ((volatile uint16_t *)MDMA_S1_IRQ_STATUS) /* MemDMA Stream 1 Source Interrupt/Status Register */
@@ -1029,10 +1029,10 @@
 #define pMDMA_S1_CURR_Y_COUNT          ((volatile uint16_t *)MDMA_S1_CURR_Y_COUNT) /* MemDMA Stream 1 Source Current Y Count Register */
 #define bfin_read_MDMA_S1_CURR_Y_COUNT() bfin_read16(MDMA_S1_CURR_Y_COUNT)
 #define bfin_write_MDMA_S1_CURR_Y_COUNT(val) bfin_write16(MDMA_S1_CURR_Y_COUNT, val)
-#define pMDMA_D1_NEXT_DESC_PTR         ((volatile uint32_t *)MDMA_D1_NEXT_DESC_PTR) /* MemDMA Stream 1 Destination Next Descriptor Pointer Register */
+#define pMDMA_D1_NEXT_DESC_PTR         ((volatile void * *)MDMA_D1_NEXT_DESC_PTR) /* MemDMA Stream 1 Destination Next Descriptor Pointer Register */
 #define bfin_read_MDMA_D1_NEXT_DESC_PTR() bfin_readPTR(MDMA_D1_NEXT_DESC_PTR)
 #define bfin_write_MDMA_D1_NEXT_DESC_PTR(val) bfin_writePTR(MDMA_D1_NEXT_DESC_PTR, val)
-#define pMDMA_D1_START_ADDR            ((volatile uint32_t *)MDMA_D1_START_ADDR) /* MemDMA Stream 1 Destination Start Address Register */
+#define pMDMA_D1_START_ADDR            ((volatile void * *)MDMA_D1_START_ADDR) /* MemDMA Stream 1 Destination Start Address Register */
 #define bfin_read_MDMA_D1_START_ADDR() bfin_readPTR(MDMA_D1_START_ADDR)
 #define bfin_write_MDMA_D1_START_ADDR(val) bfin_writePTR(MDMA_D1_START_ADDR, val)
 #define pMDMA_D1_CONFIG                ((volatile uint16_t *)MDMA_D1_CONFIG) /* MemDMA Stream 1 Destination Configuration Register */
@@ -1050,10 +1050,10 @@
 #define pMDMA_D1_Y_MODIFY              ((volatile uint16_t *)MDMA_D1_Y_MODIFY) /* MemDMA Stream 1 Destination Y Modify Register */
 #define bfin_read_MDMA_D1_Y_MODIFY()   bfin_read16(MDMA_D1_Y_MODIFY)
 #define bfin_write_MDMA_D1_Y_MODIFY(val) bfin_write16(MDMA_D1_Y_MODIFY, val)
-#define pMDMA_D1_CURR_DESC_PTR         ((volatile uint32_t *)MDMA_D1_CURR_DESC_PTR) /* MemDMA Stream 1 Destination Current Descriptor Pointer Register */
+#define pMDMA_D1_CURR_DESC_PTR         ((volatile void * *)MDMA_D1_CURR_DESC_PTR) /* MemDMA Stream 1 Destination Current Descriptor Pointer Register */
 #define bfin_read_MDMA_D1_CURR_DESC_PTR() bfin_readPTR(MDMA_D1_CURR_DESC_PTR)
 #define bfin_write_MDMA_D1_CURR_DESC_PTR(val) bfin_writePTR(MDMA_D1_CURR_DESC_PTR, val)
-#define pMDMA_D1_CURR_ADDR             ((volatile uint32_t *)MDMA_D1_CURR_ADDR) /* MemDMA Stream 1 Destination Current Address Register */
+#define pMDMA_D1_CURR_ADDR             ((volatile void * *)MDMA_D1_CURR_ADDR) /* MemDMA Stream 1 Destination Current Address Register */
 #define bfin_read_MDMA_D1_CURR_ADDR()  bfin_readPTR(MDMA_D1_CURR_ADDR)
 #define bfin_write_MDMA_D1_CURR_ADDR(val) bfin_writePTR(MDMA_D1_CURR_ADDR, val)
 #define pMDMA_D1_IRQ_STATUS            ((volatile uint16_t *)MDMA_D1_IRQ_STATUS) /* MemDMA Stream 1 Destination Interrupt/Status Register */
@@ -1488,7 +1488,7 @@
 #define pTBUFSTAT                      ((volatile uint32_t *)TBUFSTAT) /* Trace Buffer Status Register */
 #define bfin_read_TBUFSTAT()           bfin_read32(TBUFSTAT)
 #define bfin_write_TBUFSTAT(val)       bfin_write32(TBUFSTAT, val)
-#define pTBUF                          ((volatile uint32_t *)TBUF) /* Trace Buffer */
+#define pTBUF                          ((volatile void * *)TBUF) /* Trace Buffer */
 #define bfin_read_TBUF()               bfin_readPTR(TBUF)
 #define bfin_write_TBUF(val)           bfin_writePTR(TBUF, val)
 #define pPFCTL                         ((volatile uint32_t *)PFCTL)
