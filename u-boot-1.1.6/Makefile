@@ -2240,7 +2240,7 @@ suzaku_config:	unconfig
 ## Analog Devices
 #########################################################################
 ADI_BOARDS = \
-	bf533-ezkit bf533-stamp bf537-pnav \
+	bf527-ezkit bf533-ezkit bf533-stamp bf537-pnav \
 	bf548-ezkit bf537-stamp bf561-ezkit
 
 $(ADI_BOARDS:%=%_config)	: unconfig

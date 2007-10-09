@@ -1,8 +1,5 @@
-# U-boot - blackfin_config.mk
 #
-# Copyright (c) 2005-2007 Analog Devices Inc.
-#
-# (C) Copyright 2000-2002
+# (C) Copyright 2001
 # Wolfgang Denk, DENX Software Engineering, wd@denx.de.
 #
 # See file CREDITS for list of people who contributed to this
@@ -20,23 +17,12 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
-# MA 02110-1301 USA
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+# MA 02111-1307 USA
 #
 
-PLATFORM_CPPFLAGS += -DCONFIG_BLACKFIN -ffixed-P5 -fomit-frame-pointer
+# This is not actually used for Blackfin boards so do not change it
+#TEXT_BASE = do-not-use-me
 
-CONFIG_CPU := $(strip $(shell echo 'BFIN_CPU' | $(CPP) -P -include $(TOPDIR)/include/configs/$(BOARD).h - 2>/dev/null | tail -n 1))
-PLATFORM_RELFLAGS += -mcpu=$(CONFIG_CPU)
-
-BFIN_BOOT_MODE := $(shell \
-	sed -n '/^\#define[[:space:]]*BFIN_BOOT_MODE[[:space:]]/s:.*[[:space:]]*BFIN_:BFIN_:p' \
-	$(SRCTREE)/include/configs/$(BOARD).h)
-
-ifneq ($(BFIN_BOOT_MODE),BFIN_BOOT_BYPASS)
-LDR_FLAGS += --initcode $(obj)cpu/$(CPU)/initcode.o
-endif
-
-ifneq ($(findstring s,$(MAKEFLAGS)),)
-LDR_FLAGS += --quiet
-endif
+# Set some default LDR flags based on boot mode.
+LDR_FLAGS += $(LDR_FLAGS-$(BFIN_BOOT_MODE))

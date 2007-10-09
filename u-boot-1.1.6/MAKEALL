@@ -313,6 +313,7 @@ LIST_avr32="atstk1002"
 #########################################################################
 
 LIST_blackfin=" \
+	bf527-ezkit
 	bf533-ezkit
 	bf533-stamp
 	bf537-stamp
@@ -322,6 +323,7 @@ LIST_blackfin=" \
 "
 procs() {
 	case ${target} in
+		bf52[257]*)  echo bf52{2,5,7};;
 		bf53[123]*)  echo bf53{1,2,3};;
 		bf53[467]*)  echo bf53{4,6,7};;
 		bf54[2489]*) echo bf54{2,4,9,8};;
