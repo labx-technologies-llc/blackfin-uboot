@@ -125,7 +125,6 @@
 #define CFG_JFFS2_FIRST_SECTOR	11
 
 #define FLASH_TOT_SECT		40
-#define CFG_FLASH_SIZE		0x220000
 
 /*
  * Initialize PSD4256 registers for using I2C

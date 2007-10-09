@@ -245,7 +245,6 @@
 
 
 #define FLASH_TOT_SECT		71
-#define CFG_FLASH_SIZE		0x400000
 
 
 /*

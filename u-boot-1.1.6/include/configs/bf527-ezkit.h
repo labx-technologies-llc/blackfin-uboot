@@ -218,7 +218,6 @@
 #define CONFIG_SPI
 
 #define FLASH_TOT_SECT		71
-#define CFG_FLASH_SIZE		0x400000
 
 /*
  * Initialize PSD4256 registers for using I2C

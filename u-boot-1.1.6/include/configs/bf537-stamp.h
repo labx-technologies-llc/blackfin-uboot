@@ -265,7 +265,6 @@
 #define CFG_JFFS2_FIRST_SECTOR	15
 
 #define FLASH_TOT_SECT		71
-#define CFG_FLASH_SIZE		0x400000
 
 /*
  * Serial Flash Infomation
