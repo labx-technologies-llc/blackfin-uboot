@@ -53,12 +53,6 @@
 
 #define CONFIG_MEM_SIZE			64             /* 128, 64, 32, 16 */
 #define CONFIG_MEM_ADD_WDTH		10             /* 8, 9, 10, 11    */
-#define CONFIG_MEM_MT46V32M16P_6T	1
-
-#define CONFIG_ASYNC_BANK0_SIZE		32
-#define CONFIG_ASYNC_BANK1_SIZE		4
-#define CONFIG_ASYNC_BANK2_SIZE		0
-#define CONFIG_ASYNC_BANK3_SIZE		0
 
 #define CONFIG_LOADS_ECHO		1
 
@@ -292,6 +286,9 @@
                                 B2WAT_7 | B2RAT_11 | B2HT_2 | B2ST_3 | B2TT_4 | ~B2RDYPOL | ~B2RDYEN)
 */
 
+#define CONFIG_EBIU_DDRCTL0_VAL              0x23FE8287
+#define CONFIG_EBIU_DDRCTL1_VAL              0x10022223
+#define CONFIG_EBIU_DDRCTL2_VAL              0x00000021
 #define CONFIG_EBIU_AMGCTL_VAL               0xFF
 #define CONFIG_EBIU_AMBCTL0_VAL              0x7BB07BB0
 #define CONFIG_EBIU_AMBCTL1_VAL              0xFFC27BB0
