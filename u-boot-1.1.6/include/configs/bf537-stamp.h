@@ -13,7 +13,11 @@
 #define CFG_LONGHELP		1
 #define CONFIG_CMDLINE_EDITING	1
 #define CONFIG_BAUDRATE		57600
+#ifndef __ADSPBF534__
 #define CONFIG_BFIN_MAC
+#define CONFIG_NETCONSOLE	1
+#define CONFIG_NET_MULTI	1
+#endif
 /* Set default serial console for bf537 */
 #define CONFIG_UART_CONSOLE	0
 /* define CONFIG_BF537_STAMP_LEDCMD to enable LED command*/
@@ -135,9 +139,6 @@
 #else
 # define ADD_NAND_CMD		0
 #endif
-
-#define CONFIG_NETCONSOLE	1
-#define CONFIG_NET_MULTI	1
 
 #ifdef CONFIG_BFIN_MAC
 # define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL | CFG_CMD_PING)

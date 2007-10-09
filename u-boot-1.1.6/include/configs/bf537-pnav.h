@@ -14,9 +14,11 @@
 #define CONFIG_CMDLINE_EDITING	1
 #define CONFIG_BAUDRATE		115200
 
+#ifndef __ADSPBF534__
 #define CONFIG_BFIN_MAC
 #define CONFIG_BFIN_MAC_RMII
 #define CONFIG_NET_MULTI	1
+#endif
 
 /* Set default serial console for bf537 */
 #define CONFIG_UART_CONSOLE	0
