@@ -714,15 +714,15 @@ ssize_t spi_write(uchar *addr, int alen, uchar *buffer, int len)
 	for (num = start_sector; num <= end_sector; num++) {
 		unsigned long address = num * flash.sector_size;
 
-		/* Optimization when spanning sectors: no point in reading in
-		 * a sector if we're going to be clobbering the whole thing.
+		/* XXX: should add an optimization when spanning sectors:
+		 * No point in reading in a sector if we're going to be
+		 * clobbering the whole thing.  Need to also add a test
+		 * case to make sure the optimization is correct.
 		 */
-		if (num > start_sector && num < end_sector) {
-			if (read_flash(address, flash.sector_size, temp)) {
-				puts("Read sector failed! ");
-				len = 0;
-				break;
-			}
+		if (read_flash(address, flash.sector_size, temp)) {
+			puts("Read sector failed! ");
+			len = 0;
+			break;
 		}
 
 		start_byte = max(address, offset);
