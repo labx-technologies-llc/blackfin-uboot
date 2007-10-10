@@ -257,6 +257,10 @@ POST_DATA_DMA_DONE:
 	r1 = r2 - r3;
 
 	r0 = r0 - r1;
+
+	cc = r0 == r3;
+	if cc jump .Lnorelocate;
+
 	p1 = r0;
 
 	p2.l = LO(CFG_MONITOR_BASE);
@@ -270,6 +274,8 @@ POST_DATA_DMA_DONE:
 	[p2 ++ p3] = r1;
 	cc=p2==p4;
 	if !cc jump .Lloop1;
+.Lnorelocate:
+
 	/*
 	 * configure STACK
 	 */
