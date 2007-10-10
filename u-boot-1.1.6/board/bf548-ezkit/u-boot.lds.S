@@ -41,22 +41,6 @@ SECTIONS
 	. = CFG_MONITOR_BASE;
 	.text :
 	{
-		/* WARNING - the following is hand-optimized to fit within
-		 * the sector before the environment sector. If it throws
-		 * an error during compilation remove an object here to get
-		 * it linked after the configuration sector.
-		 */
-
-		cpu/blackfin/start.o		(.text)
-		cpu/blackfin/traps.o		(.text)
-		cpu/blackfin/interrupt.o	(.text)
-		cpu/blackfin/serial.o		(.text)
-		common/dlmalloc.o		(.text)
-		lib_generic/crc32.o		(.text)
-
-		. = DEFINED(env_offset) ? env_offset : .;
-		common/environment.o	(.text)
-
 		*(.text)
 	} > ram
 	PROVIDE (_etext = .);
