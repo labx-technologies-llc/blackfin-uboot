@@ -189,20 +189,17 @@
 #define CFG_FLASH_PROTECTION
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	259	/* max number of sectors on one chip */
-#if (BFIN_BOOT_MODE == BFIN_BOOT_PARA) || (BFIN_BOOT_MODE == BFIN_BOOT_UART)    /* for bf537-stamp, usrt boot mode still store env in flash */
+#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#define CFG_ENV_IS_IN_EEPROM           1
+#define CFG_ENV_OFFSET                 0x4000
+#else
 #define	CFG_ENV_IS_IN_FLASH	1
 #define CFG_ENV_ADDR		0x20002000
 #define CFG_ENV_OFFSET		(CFG_ENV_ADDR - CFG_FLASH_BASE)
-#define CFG_LDRHEAD_SIZE	0x1a4	/* 0x1a4 is the length of the LDR head in para flash */
-#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
-#define CFG_ENV_IS_IN_EEPROM           1
-#define CFG_ENV_OFFSET                 0x4000
-#define CFG_ENV_HEADER                 (CFG_ENV_OFFSET + 0x16e)        /* 0x12A is the length of LDR file header */
 #endif
 #define CFG_ENV_SIZE		0x2000
 #define	CFG_ENV_SECT_SIZE	(128 << 10)	/* Total Size of Environment Sector */
-
-#define ENV_IS_EMBEDDED
+#define ENV_IS_EMBEDDED_CUSTOM
 
 /* JFFS Partition offset set  */
 #define CFG_JFFS2_FIRST_BANK 0

@@ -100,19 +100,21 @@
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	67	/* max number of sectors on one chip */
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#define CFG_ENV_IS_IN_EEPROM	1
+#define CFG_ENV_OFFSET		0x4000
+#else
 #define CFG_ENV_IS_IN_FLASH	1
 #define CFG_ENV_ADDR		0x20004000
 #define	CFG_ENV_OFFSET		(CFG_ENV_ADDR - CFG_FLASH_BASE)
-#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
-#define CFG_ENV_IS_IN_EEPROM	1
-#define CFG_ENV_OFFSET		0x4000
-#define CFG_ENV_HEADER		(CFG_ENV_OFFSET + 0x12A)	/* 0x12A is the length of LDR file header */
 #endif
-
 #define	CFG_ENV_SIZE		0x2000
 #define CFG_ENV_SECT_SIZE 	0x2000	/* Total Size of Environment Sector */
+#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #define	ENV_IS_EMBEDDED
+#else
+#define	ENV_IS_EMBEDDED_CUSTOM
+#endif
 
 #define CFG_FLASH_ERASE_TOUT	30000	/* Timeout for Chip Erase (in ms) */
 #define CFG_FLASH_ERASEBLOCK_TOUT	5000	/* Timeout for Block Erase (in ms) */

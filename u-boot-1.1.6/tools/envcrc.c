@@ -23,6 +23,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #ifndef __ASSEMBLY__
@@ -68,14 +69,14 @@
 
 extern unsigned long crc32 (unsigned long, const unsigned char *, unsigned int);
 
-#ifdef	ENV_IS_EMBEDDED
+#if defined(ENV_IS_EMBEDDED) || defined(ENV_IS_EMBEDDED_CUSTOM)
 extern unsigned int env_size;
 extern unsigned char environment;
 #endif	/* ENV_IS_EMBEDDED */
 
 int main (int argc, char **argv)
 {
-#ifdef	ENV_IS_EMBEDDED
+#if defined(ENV_IS_EMBEDDED) || defined(ENV_IS_EMBEDDED_CUSTOM)
 	int crc;
 	unsigned char *envptr = &environment,
 		*dataptr = envptr + ENV_HEADER_SIZE;
@@ -85,10 +86,27 @@ int main (int argc, char **argv)
 
 	/* Check if verbose mode is activated passing a parameter to the program */
 	if (argc > 1) {
-		printf ("CRC32 from offset %08X to %08X of environment = %08X\n",
-			(unsigned int) (dataptr - envptr),
-			(unsigned int) (dataptr - envptr) + datasize,
-			crc);
+		if (!strcmp(argv[1], "--binary")) {
+			int le = (argc > 2 ? !strcmp(argv[2], "le") : 1);
+			size_t i, start, end, step;
+			if (le) {
+				start = 0;
+				end = ENV_HEADER_SIZE;
+				step = 1;
+			} else {
+				start = ENV_HEADER_SIZE - 1;
+				end = -1;
+				step = -1;
+			}
+			for (i = start; i != end; i += step)
+				printf ("%c", (crc & (0xFF << (i * 8))) >> (i * 8));
+			fwrite (dataptr, 1, datasize, stdout);
+		} else {
+			printf ("CRC32 from offset %08X to %08X of environment = %08X\n",
+				(unsigned int) (dataptr - envptr),
+				(unsigned int) (dataptr - envptr) + datasize,
+				crc);
+		}
 	} else {
 		printf ("0x%08X\n", crc);
 	}

@@ -8,14 +8,14 @@
 #include <asm/blackfin-config-pre.h>
 
 #define BFIN_CPU             bf527-0.0
-#define BFIN_BOOT_MODE       BFIN_BOOT_UART
+#define BFIN_BOOT_MODE       BFIN_BOOT_PARA
 
 #define CFG_LONGHELP		1
 #define CONFIG_CMDLINE_EDITING	1
 #define CONFIG_BAUDRATE		57600
 #define CONFIG_UART_CONSOLE	1
 
-#ifdef __ADSPBF527__
+#if !defined(__ADSPBF522__) && !defined(__ADSPBF525__)
 #define CONFIG_BFIN_MAC
 #define CONFIG_BFIN_MAC_RMII
 #define CONFIG_NETCONSOLE	1
@@ -108,7 +108,6 @@
 # define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NET)
 #endif
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) || (BFIN_BOOT_MODE == BFIN_BOOT_UART)
 #define CONFIG_COMMANDS		(CONFIG_BFIN_CMD| \
 				 CFG_CMD_ELF	| \
 				 CFG_CMD_I2C	| \
@@ -119,16 +118,6 @@
 				 ADD_IDE_CMD	| \
 				 ADD_NAND_CMD	| \
 				 CFG_CMD_DATE)
-#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
-#define CONFIG_COMMANDS		(CONFIG_BFIN_CMD| \
-				 CFG_CMD_ELF	| \
-				 CFG_CMD_I2C	| \
-				 CFG_CMD_CACHE  | \
-				 CFG_CMD_JFFS2	| \
-				 CFG_CMD_EEPROM | \
-				 ADD_IDE_CMD	| \
-				 CFG_CMD_DATE)
-#endif
 
 #define CONFIG_BFIN_COMMANDS \
 	( CFG_BFIN_CMD_BOOTLDR | \
@@ -193,21 +182,17 @@
 #define CFG_GBL_DATA_ADDR	(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
 #define CONFIG_STACKBASE	(CFG_GBL_DATA_ADDR  - 4)
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) || (BFIN_BOOT_MODE == BFIN_BOOT_UART)
-/* for bf537-stamp, usrt boot mode still store env in flash */
+#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#define CFG_ENV_IS_IN_EEPROM	1
+#define CFG_ENV_OFFSET		0x4000
+#else
 #define	CFG_ENV_IS_IN_FLASH	1
 #define CFG_ENV_ADDR		0x20004000
 #define CFG_ENV_OFFSET		(CFG_ENV_ADDR - CFG_FLASH_BASE)
-#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
-#define CFG_ENV_IS_IN_EEPROM	1
-#define CFG_ENV_OFFSET		0x4000
-#define CFG_ENV_HEADER		(CFG_ENV_OFFSET + 0x16e) /* 0x12A is the length of LDR file header */
 #endif
 #define CFG_ENV_SIZE		0x2000
 #define	CFG_ENV_SECT_SIZE	0x2000	/* Total Size of Environment Sector */
-/* #if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) */
-#define ENV_IS_EMBEDDED
-/* #endif */
+#define ENV_IS_EMBEDDED_CUSTOM
 
 /* JFFS Partition offset set  */
 #define CFG_JFFS2_FIRST_BANK	0

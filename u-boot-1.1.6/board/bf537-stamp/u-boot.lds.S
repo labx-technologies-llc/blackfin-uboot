@@ -28,11 +28,9 @@
 #include <config.h>
 
 OUTPUT_ARCH(bfin)
-ENTRY(load)
 
 MEMORY
 {
-	load    : ORIGIN = 0x1000, LENGTH = (256 * 1024)
 	monitor : ORIGIN = (CFG_MONITOR_BASE), LENGTH = (256 * 1024)
 	l1_code : ORIGIN = 0xFFA00000, LENGTH = 0xC000
 	l1_data : ORIGIN = 0xFF900000, LENGTH = 0x4000
@@ -40,10 +38,10 @@ MEMORY
 
 SECTIONS
 {
-	load = 0x1000;
 	. = CFG_MONITOR_BASE;
 	.text :
 	{
+#ifdef ENV_IS_EMBEDDED
 		/* WARNING - the following is hand-optimized to fit within
 		 * the sector before the environment sector. If it throws
 		 * an error during compilation remove an object here to get
@@ -59,9 +57,10 @@ SECTIONS
 
 		. = DEFINED(env_offset) ? env_offset : .;
 		common/environment.o	(.text)
+#endif
 
 		*(EXCLUDE_FILE (board/bf537-stamp/post-memory.o) .text)
-	} >monitor AT>load
+	} >monitor
 	PROVIDE (_etext = .);
 
 	. = ALIGN(4) ;
@@ -71,7 +70,7 @@ SECTIONS
 		board/bf537-stamp/post-memory.o   (.text)
 		. = ALIGN(4) ;
 		PROVIDE (_etext_l1 = .);
-	} >l1_code AT>load
+	} >l1_code
 
 	.rodata :
 	{
@@ -81,7 +80,7 @@ SECTIONS
 		*(EXCLUDE_FILE (board/bf537-stamp/post-memory.o) .rodata.str1.4)
 		*(.eh_frame)
 		. = ALIGN(4);
-	} >monitor AT>load
+	} >monitor
 
 	. = ALIGN(4);
 	PROVIDE (_erodata = .);
@@ -94,7 +93,7 @@ SECTIONS
 		board/bf537-stamp/post-memory.o (.rodata.str1.4)
 		. = ALIGN(4) ;
 		PROVIDE(_erodata_l1 = .);
-	} >l1_data AT>load
+	} >l1_data
 
 	. = ALIGN(256);
 	.data :
@@ -105,21 +104,21 @@ SECTIONS
 		*(.sdata2)
 		*(.dynamic)
 		CONSTRUCTORS
-	} >monitor AT>load
+	} >monitor
 	PROVIDE (_edata = .);
 
 	___u_boot_cmd_start = .;
-	.u_boot_cmd : { *(.u_boot_cmd) } >monitor AT>load
+	.u_boot_cmd : { *(.u_boot_cmd) } >monitor
 	___u_boot_cmd_end = .;
 
 	__start___ex_table = .;
-	__ex_table : { *(__ex_table) } >monitor AT>load
+	__ex_table : { *(__ex_table) } >monitor
 	__stop___ex_table = .;
 
 	. = ALIGN(256);
 	__init_begin = .;
-	.text.init : { *(.text.init) } >monitor AT>load
-	.data.init : { *(.data.init) } >monitor AT>load
+	.text.init : { *(.text.init) } >monitor
+	.data.init : { *(.data.init) } >monitor
 	. = ALIGN(256);
 	__init_end = .;
 
@@ -130,6 +129,6 @@ SECTIONS
 		*(.dynbss)
 		*(.bss)
 		*(COMMON)
-	} >monitor AT>load
+	} >monitor
 	PROVIDE (_end = .);
 }

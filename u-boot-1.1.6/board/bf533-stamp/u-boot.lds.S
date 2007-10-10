@@ -34,6 +34,7 @@ SECTIONS
 	. = CFG_MONITOR_BASE;
 	.text :
 	{
+#ifdef ENV_IS_EMBEDDED
 		/* WARNING - the following is hand-optimized to fit within
 		 * the sector before the environment sector. If it throws
 		 * an error during compilation remove an object here to get
@@ -49,6 +50,7 @@ SECTIONS
 
 		. = DEFINED(env_offset) ? env_offset : .;
 		common/environment.o	(.text)
+#endif
 
 		*(.text)
 	}
