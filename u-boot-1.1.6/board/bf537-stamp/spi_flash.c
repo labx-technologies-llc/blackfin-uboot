@@ -792,10 +792,14 @@ int eeprom_info(void)
 	else
 		printf("SPI Device: %s 0x%02X (%s) 0x%02X 0x%02X\n"
 			"Parameters: num sectors = %i, sector size = %i, write size = %i\n"
+			"Flash Size: %i mbit (%i mbyte)\n"
 			"Status: 0x%02X\n",
 			flash.flash->name, flash.manufacturer_id, flash.manufacturer->name,
 			flash.device_id1, flash.device_id2, flash.num_sectors,
-			flash.sector_size, flash.write_length, read_status_register());
+			flash.sector_size, flash.write_length,
+			(flash.num_sectors * flash.sector_size) >> 17,
+			(flash.num_sectors * flash.sector_size) >> 20,
+			read_status_register());
 
 	SPI_DEINIT();
 
