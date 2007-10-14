@@ -82,8 +82,8 @@ int	eth_send(volatile void *packet, int length);
  *************************************************************************/
 static const char date_code[] = BUILD_NUMBER;
 
-static char * txbp; 				/* TX buffer pointer (only 1 buffer) */
-static volatile char * rxbp[PKTBUFSRX];   /* Receiver buffer queue (IP layers) */
+static uchar * txbp; 				/* TX buffer pointer (only 1 buffer) */
+static volatile uchar * rxbp[PKTBUFSRX];   /* Receiver buffer queue (IP layers) */
 static struct rxQue rxAvlQue[PKTBUFSRX]; /* Receive buffer available queue */
 static int rxNdx;				/* Current receive buffer index */
 static int rxNdxIn; 			/* Used for input */
@@ -638,7 +638,7 @@ lan9118_read(void)
 				  } else {
 						/* Drain it manually */
 						while (len--) {
-							volatile ulong tmp = *RX_FIFO_PORT;
+							*RX_FIFO_PORT;
 						}
 				  }
 			} else if (rxAvlQue[rxNdxIn].index != -1) {
