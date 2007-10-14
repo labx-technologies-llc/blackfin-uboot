@@ -194,14 +194,14 @@ endif
 
 $(obj)environment.c:
 		@rm -f $(obj)environment.c
-		ln -s $(src)../common/environment.c $(obj)environment.c
+		ln -s -f $(src)../common/environment.c $(obj)environment.c
 
 $(obj)environment.o:	$(obj)environment.c
 		$(CC) -g $(HOST_ENVIRO_CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 $(obj)crc32.c:
 		@rm -f $(obj)crc32.c
-		ln -s $(src)../lib_generic/crc32.c $(obj)crc32.c
+		ln -s -f $(src)../lib_generic/crc32.c $(obj)crc32.c
 
 $(LOGO_H):	$(obj)bmp_logo $(LOGO_BMP)
 		$(obj)./bmp_logo $(LOGO_BMP) >$@
