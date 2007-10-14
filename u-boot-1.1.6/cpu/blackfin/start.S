@@ -30,93 +30,35 @@
  * MA 02110-1301 USA
  */
 
-/*
- * Note: A change in this file subsequently requires a change in
- *       board/$(board_name)/config.mk for a valid u-boot.bin
- */
-
 #include <config.h>
 #include <asm/blackfin.h>
 #include <asm/mach-common/bits/core.h>
 #include <asm/mach-common/bits/dma.h>
 #include <asm/mach-common/bits/pll.h>
 
-#if defined(CONFIG_POST)
-.global _memory_post_test;
-.global _post_flag;
-#endif
-
 .text
 ENTRY(_start)
-	R0 = 0x32;
+	/* Disable nested interrupts and enable CYCLES for udelay() */
+	R0 = CCEN | 0x30;
 	SYSCFG = R0;
-	SSYNC;
 
-	/* As per HW reference manual DAG registers,
-	 * DATA and Address resgister shall be zero'd
-	 * in initialization, after a reset state
+	/* Zero out registers required by Blackfin ABI.
+	 * http://docs.blackfin.uclinux.org/doku.php?id=application_binary_interface
 	 */
-	r1 = 0;	/* Data registers zero'd */
-	r2 = 0;
-	r3 = 0;
-	r4 = 0;
-	r5 = 0;
-	r6 = 0;
-	r7 = 0;
+	r1 = 0 (x);
+	/* Disable circular buffers */
+	l0 = r1;
+	l1 = r1;
+	l2 = r1;
+	l3 = r1;
+	/* Disable hardware loops in case we were started by 'go' */
+	lc0 = r1;
+	lc1 = r1;
 
-	p0 = 0; /* Address registers zero'd */
-	p1 = 0;
-	p2 = 0;
-	p3 = 0;
-	p4 = 0;
-	p5 = 0;
+	/* Save RETX so we can pass it while booting Linux */
+	r7 = RETX;
 
-	i0 = 0; /* DAG Registers zero'd */
-	i1 = 0;
-	i2 = 0;
-	i3 = 0;
-	m0 = 0;
-	m1 = 0;
-	m3 = 0;
-	m3 = 0;
-	l0 = 0;
-	l1 = 0;
-	l2 = 0;
-	l3 = 0;
-	b0 = 0;
-	b1 = 0;
-	b2 = 0;
-	b3 = 0;
-
-	/* Set loop counters to zero, to make sure that
-	 * hw loops are disabled.
-	 */
-	r0  = 0;
-	lc0 = r0;
-	lc1 = r0;
-
-	SSYNC;
-
-	/* Make sure we clear soft reset ... don't bother
-	 * checking the value as reads are destructive here
-	 * and double clearing the system reset field is OK
-	 */
-	p0.h = hi(SWRST);
-	p0.l = lo(SWRST);
-	r0 = 0x0000;
-	w[p0] = r0;
-	SSYNC;
-
-	/* Clear EVT registers -- no point in clearing out
-	 * EVT0 (EMU) or EVT1 (RESET), so skip them.
-	 */
-	p0.h = HI(EVT2);
-	p0.l = LO(EVT2);
-	p1 = (((EVT15 - EVT2) / 4) + 1);
-	r1 = 0;
-	LSETUP(4, 4) lc0 = p1;
-	[p0++] = r1;
-
+	/* Set our initial stack to L1 scratch space */
 	sp.l = LO(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);
 	sp.h = HI(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);
 
@@ -129,7 +71,7 @@ ENTRY(_start)
 	 *      self refresh, and then jump there ...
 	 */
 	call _get_pc;
-	r3 = 0x0 (x);
+	r3 = 0x0;
 	r3.h = 0x2000;
 	cc = r0 < r3 (iu);
 	if cc jump .Lproc_initialized;
@@ -139,114 +81,8 @@ ENTRY(_start)
 .Lproc_initialized:
 #endif
 
-#if defined(CONFIG_POST)
-	/* DMA POST code to Hi of L1 SRAM */
-postcopy:
-	/* P1 Points to the beginning of SYSTEM MMR Space */
-	P1.H = hi(SYSMMR_BASE);
-	P1.L = lo(SYSMMR_BASE);
-
-	R0.H = _text_l1;
-	R0.L = _text_l1;
-	R1.H = _etext_l1;
-	R1.L = _etext_l1;
-	R2 = R1 - R0;           /* Count */
-	R0.H = _etext;
-	R0.L = _etext;
-	R1.H = HI(CFG_MONITOR_BASE);
-	R1.L = LO(CFG_MONITOR_BASE);
-	R0 = R0 - R1;
-	R1.H = HI(CFG_FLASH_BASE);
-	R1.L = LO(CFG_FLASH_BASE);
-	R0 = R0 + R1;		/* Source Address */
-	R1.H = hi(L1_INST_SRAM);    /* Destination Address (high) */
-	R1.L = lo(L1_INST_SRAM);    /* Destination Address (low) */
-	R3.L = DMAEN;           /* Source DMAConfig Value (8-bit words) */
-	/* Destination DMAConfig Value (8-bit words) */
-	R4.L = (DI_EN | WNR | DMAEN);
-
-	R6 = 0x1 (Z);
-	W[P1+OFFSET_(MDMA_S0_X_MODIFY)] = R6;   /* Source Modify = 1 */
-	W[P1+OFFSET_(MDMA_D0_X_MODIFY)] = R6;   /* Destination Modify = 1 */
-
-	[P1+OFFSET_(MDMA_S0_START_ADDR)] = R0;  /* Set Source Base Address */
-	W[P1+OFFSET_(MDMA_S0_X_COUNT)] = R2;    /* Set Source Count */
-	/* Set Source  DMAConfig = DMA Enable,
-	Memory Read,  8-Bit Transfers, 1-D DMA, Flow - Stop */
-	W[P1+OFFSET_(MDMA_S0_CONFIG)] = R3;
-
-	[P1+OFFSET_(MDMA_D0_START_ADDR)] = R1;  /* Set Destination Base Address */
-	W[P1+OFFSET_(MDMA_D0_X_COUNT)] = R2;    /* Set Destination Count */
-	/* Set Destination DMAConfig = DMA Enable,
-	Memory Write, 8-Bit Transfers, 1-D DMA, Flow - Stop, IOC */
-	W[P1+OFFSET_(MDMA_D0_CONFIG)] = R4;
-
-POST_DMA_DONE:
-	p0.h = hi(MDMA_D0_IRQ_STATUS);
-	p0.l = lo(MDMA_D0_IRQ_STATUS);
-	R0 = W[P0](Z);
-	CC = BITTST(R0, 0);
-	if ! CC jump POST_DMA_DONE
-
-	R0 = 0x1;
-	W[P1+OFFSET_(MDMA_D0_IRQ_STATUS)] = R0; /* Write 1 to clear DMA interrupt */
-
-	/* DMA POST data to Hi of L1 SRAM */
-	R0.H = _rodata_l1;
-	R0.L = _rodata_l1;
-	R1.H = _erodata_l1;
-	R1.L = _erodata_l1;
-	R2 = R1 - R0;           /* Count */
-	R0.H = _erodata;
-	R0.L = _erodata;
-	R1.H = HI(CFG_MONITOR_BASE);
-	R1.L = LO(CFG_MONITOR_BASE);
-	R0 = R0 - R1;
-	R1.H = HI(CFG_FLASH_BASE);
-	R1.L = LO(CFG_FLASH_BASE);
-	R0 = R0 + R1;           /* Source Address */
-	R1.H = hi(DATA_BANKB_SRAM);    /* Destination Address (high) */
-	R1.L = lo(DATA_BANKB_SRAM);    /* Destination Address (low) */
-	R3.L = DMAEN;           /* Source DMAConfig Value (8-bit words) */
-	R4.L = (DI_EN | WNR | DMAEN);   /* Destination DMAConfig Value (8-bit words) */
-
-	R6 = 0x1 (Z);
-	W[P1+OFFSET_(MDMA_S0_X_MODIFY)] = R6;   /* Source Modify = 1 */
-	W[P1+OFFSET_(MDMA_D0_X_MODIFY)] = R6;   /* Destination Modify = 1 */
-
-	[P1+OFFSET_(MDMA_S0_START_ADDR)] = R0;  /* Set Source Base Address */
-	W[P1+OFFSET_(MDMA_S0_X_COUNT)] = R2;    /* Set Source Count */
-	/* Set Source  DMAConfig = DMA Enable,
-	Memory Read,  8-Bit Transfers, 1-D DMA, Flow - Stop */
-	W[P1+OFFSET_(MDMA_S0_CONFIG)] = R3;
-
-	[P1+OFFSET_(MDMA_D0_START_ADDR)] = R1;  /* Set Destination Base Address */
-	W[P1+OFFSET_(MDMA_D0_X_COUNT)] = R2;    /* Set Destination Count */
-	/* Set Destination DMAConfig = DMA Enable,
-	Memory Write, 8-Bit Transfers, 1-D DMA, Flow - Stop, IOC */
-	W[P1+OFFSET_(MDMA_D0_CONFIG)] = R4;
-
-POST_DATA_DMA_DONE:
-	p0.h = hi(MDMA_D0_IRQ_STATUS);
-	p0.l = lo(MDMA_D0_IRQ_STATUS);
-	R0 = W[P0](Z);
-	CC = BITTST(R0, 0);
-	if ! CC jump POST_DATA_DMA_DONE
-
-	R0 = 0x1;
-	W[P1+OFFSET_(MDMA_D0_IRQ_STATUS)] = R0; /* Write 1 to clear DMA interrupt */
-
-	p0.l = _memory_post_test;
-	p0.h = _memory_post_test;
-	r0 = 0x0;
-	call (p0);
-	r7 = r0;				/* save return value */
-
-	call _init_sdram;
-#endif
-
-	/* relocate from wherever are (FLASH/RAM/etc...) to the
-	 * hardcoded monitor location in the end of RAM
+	/* Relocate from wherever are (FLASH/RAM/etc...) to the
+	 * hardcoded monitor location in the end of RAM.
 	 */
 	call _get_pc;
 .Loffset:
@@ -276,115 +112,11 @@ POST_DATA_DMA_DONE:
 	if !cc jump .Lloop1;
 .Lnorelocate:
 
-	/*
-	 * configure STACK
-	 */
+	/* Setup the actual stack in external memory */
 	r0.h = HI(CONFIG_STACKBASE);
 	r0.l = LO(CONFIG_STACKBASE);
 	sp = r0;
 	fp = sp;
-
-	/*
-	 * This next section keeps the processor in supervisor mode
-	 * during kernel boot.  Switches to user mode at end of boot.
-	 * See page 3-9 of Hardware Reference manual for documentation.
-	 */
-
-	/* To keep ourselves in the supervisor mode */
-	p0.l = LO(EVT15);
-	p0.h = HI(EVT15);
-
-	p1.l = _real_start;
-	p1.h = _real_start;
-	[p0] = p1;
-
-	p0.l = LO(IMASK);
-	p0.h = HI(IMASK);
-	r0.l = LO(EVT_IVG15);
-	r0.h = HI(EVT_IVG15);
-	[p0] = r0;
-	raise 15;
-	p0.l = .LWAIT_HERE;
-	p0.h = .LWAIT_HERE;
-	reti = p0;
-	rti;
-
-.LWAIT_HERE:
-	jump .LWAIT_HERE;
-ENDPROC(_start)
-
-ENTRY(_real_start)
-	[--SP] = reti;
-
-#ifdef __ADSPBF54x__
-	/* XXX: this needs to get moved to early-board init code */
-
-	/* Port H: PH8 - PH13 == A4 - A9
-	 * address lines of the parallel asynchronous memory interface
-	 */
-
-	/************************************************
-	* configure GPIO 				*
-	* set port H function enable register		*
-	*  configure PH8-PH13 as peripheral (not GPIO) 	*
-	*************************************************/
-	p0.l = lo(PORTH_FER);
-	p0.h = hi(PORTH_FER);
-	r0.l = 0x3F03;
-	w[p0] = r0;
-
-	/************************************************
-	* set port H MUX to configure PH8-PH13		*
-	*  1st Function (MUX = 00) (bits 16-27 == 0)	*
-	*  Set to address signals A4-A9 		*
-	*************************************************/
-	p0.l = lo(PORTH_MUX);
-	p0.h = hi(PORTH_MUX);
-	r0.l = 0x0000;
-	r0.h = 0x0000;
-	[p0] = r0;
-
-	/************************************************
-	* set port H direction register			*
-	*  enable PH8-PH13 as outputs			*
-	*************************************************/
-	p0.l = lo(PORTH_DIR_SET);
-	p0.h = hi(PORTH_DIR_SET);
-	r0.l = 0x3F00;
-	w[p0] = r0;
-
-	/* Port I: PI0 - PH14 == A10 - A24
-	 * address lines of the parallel asynchronous memory interface
-	 */
-
-	/************************************************
-	* set port I function enable register		*
-	*  configure PI0-PI14 as peripheral (not GPIO) 	*
-	*************************************************/
-	p0.l = lo(PORTI_FER);
-	p0.h = hi(PORTI_FER);
-	r0.l = 0x7fff;
-	w[p0] = r0;
-
-	/**************************************************
-	* set PORT I MUX to configure PI14-PI0 as	  *
-	* 1st Function (MUX=00) - address signals A10-A24 *
-	***************************************************/
-	p0.l = lo(PORTI_MUX);
-	p0.h = hi(PORTI_MUX);
-	r0.l = 0x0000;
-	r0.h = 0x0000;
-	w[p0] = r0;
-
-	/****************************************
-	* set PORT I direction register		*
-	*  enable PI0 - PI14 as outputs		*
-	*****************************************/
-	p0.l = lo(PORTI_DIR_SET);
-	p0.h = hi(PORTI_DIR_SET);
-	r0.l = 0x7fff;
-	w[p0] = r0;
-#endif
 
 	/* Initialize BSS section ... we know that memset()
 	 * does not use the BSS, so it is safe to call here
@@ -397,19 +129,35 @@ ENTRY(_real_start)
 	r2 = r2 - r0;
 	call _memset;
 
-#if defined(CONFIG_POST)
-	p0.l = _post_flag;
-	p0.h = _post_flag;
-	r0   = r7;
-	[p0] = r0;
-#endif
+	/* Now lower ourselves from the highest interrupt level to
+	 * the lowest.  We do this by masking all interrupts but 15,
+	 * setting the 15 handler to "board_init_f", raising the 15
+	 * interrupt, and then returning from the highest interrupt
+	 * level to the dummy "jump" until the interrupt controller
+	 * services the pending 15 interrupt.
+	 */
+	r0 = r7;
+	p0.l = LO(EVT15);
+	p0.h = HI(EVT15);
+	p1.l = _board_init_f;
+	p1.h = _board_init_f;
+	[p0] = p1;
+	p2.l = LO(IMASK);
+	p2.h = HI(IMASK);
+	r1.l = LO(EVT_IVG15);
+	r1.h = HI(EVT_IVG15);
+	[p2] = r1;
+	raise 15;
+	p3.l = .LWAIT_HERE;
+	p3.h = .LWAIT_HERE;
+	reti = p3;
+	rti;
 
-	p0.l = _board_init_f;
-	p0.h = _board_init_f;
-	jump (p0);
-ENDPROC(_real_start)
+.LWAIT_HERE:
+	jump .LWAIT_HERE;
+ENDPROC(_start)
 
-ENTRY(_get_pc)
+LENTRY(_get_pc)
 	r0 = rets;
 	rts;
 ENDPROC(_get_pc)

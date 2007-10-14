@@ -60,6 +60,8 @@
                                                 /* configuration lookup from the BOOTP/DHCP server, */
                                                 /* but not try to load any image using TFTP         */
 
+#define CONFIG_BOARD_EARLY_INIT_F 1
+
 #define CONFIG_DRIVER_SMSC9118 1
 #define CONFIG_SMSC9118_BASE 0x24000000
 

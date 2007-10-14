@@ -262,6 +262,10 @@ void board_init_f(ulong bootflag)
 	ulong addr;
 	bd_t *bd;
 
+#ifdef CONFIG_BOARD_EARLY_INIT_F
+	board_early_init_f();
+#endif
+
 	init_cplbtables();
 
 	gd = (gd_t *) (CFG_GBL_DATA_ADDR);

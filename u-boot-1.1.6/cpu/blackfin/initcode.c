@@ -15,6 +15,7 @@
 #include <asm/mach-common/bits/pll.h>
 #include <asm/mach-common/bits/uart.h>
 
+#include "bootrom.h"
 #include "mem_init.h"
 #include "serial.h"
 
@@ -201,7 +202,7 @@ static inline void serial_putc(char c)
 #endif
 
 __attribute__((saveall))
-void initcode(void)
+void initcode(boot_struct *bootstruct)
 {
 	serial_init();
 
