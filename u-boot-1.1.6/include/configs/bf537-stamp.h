@@ -230,6 +230,11 @@
 #define	CFG_SDRAM_BASE		0x00000000
 
 #define CFG_FLASH_BASE		0x20000000
+#define CFG_FLASH_CFI		/* The flash is CFI compatible */
+#define CFG_FLASH_CFI_DRIVER	/* Use common CFI driver */
+#define CFG_FLASH_PROTECTION
+#define CFG_MAX_FLASH_BANKS	1
+#define CFG_MAX_FLASH_SECT	71	/* some have 67 sectors (M29W320DB), but newer have 71 (M29W320EB) */
 
 #define	CFG_MONITOR_LEN		(256 << 10)	/* Reserve 256 kB for Monitor	*/
 #define CFG_MONITOR_BASE	(CFG_MAX_RAM_SIZE - CFG_MONITOR_LEN)
@@ -238,9 +243,6 @@
 #define CFG_GBL_DATA_SIZE	0x4000
 #define CFG_GBL_DATA_ADDR	(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
 #define CONFIG_STACKBASE	(CFG_GBL_DATA_ADDR  - 4)
-
-#define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
-#define CFG_MAX_FLASH_SECT	71	/* max number of sectors on one chip */
 
 #if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CFG_ENV_IS_IN_EEPROM	1
