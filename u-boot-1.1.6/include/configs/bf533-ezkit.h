@@ -16,6 +16,7 @@
 
 #define CFG_LONGHELP		1
 #define CONFIG_CMDLINE_EDITING	1
+#define CONFIG_ENV_OVERWRITE	1
 #define CONFIG_LOADADDR		0x01000000	/* default load address */
 #define CONFIG_BOOTCOMMAND	"tftp $(loadaddr) linux"
 /* #define CONFIG_BOOTARGS		"root=/dev/mtdblock0 rw" */

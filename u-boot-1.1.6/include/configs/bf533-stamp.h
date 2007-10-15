@@ -169,6 +169,7 @@
 
 #define CFG_LONGHELP		1
 #define CONFIG_CMDLINE_EDITING	1
+#define CONFIG_ENV_OVERWRITE	1
 
 #if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #define CFG_AUTOLOAD		"no"	/*rarpb, bootp or dhcp commands will perform only a */
