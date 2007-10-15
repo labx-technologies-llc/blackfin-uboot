@@ -72,6 +72,7 @@ static void calc_baud(void)
 	}
 }
 
+/* Setup the baudrate (brg: baudrate generator) */
 void serial_setbrg(void)
 {
 	int i;
