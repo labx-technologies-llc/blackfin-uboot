@@ -85,6 +85,8 @@ set TEST_TFTP_WITH_ETHTOOL               1
 
 set UBOOT_PROMPT             "bfin>"
 
+set NUMBER_OF_FLASH_SECTORS [get_uboot_define CFG_MAX_FLASH_SECT $uboot_test_loc ]
+
 if { $board_type == "BF533-STAMP" } {
 
 set TEST_SPI_FLASH			 0
@@ -100,6 +102,7 @@ set BDINFO_MEMSIZE           128*1024*1024
 } elseif { $board_type == "BF537-STAMP" } {
 
 set TEST_SPI_FLASH			 0
+set NUMBER_OF_FLASH_SECTORS 67
 set BDINFO_FLASHSIZE        "0x00400000"
 set KERNEL_FLASH_LOC        "0x20100000"
 set KERNEL_FLASH_END        "0x203EFFFF"
@@ -1451,7 +1454,7 @@ set BAUD_RATE [get_uboot_define CONFIG_BAUDRATE $uboot_test_loc ]
 #set CFG_LOAD_ADDR [get_uboot_define CFG_LOAD_ADDR $uboot_test_loc ]
 set CFG_LOAD_ADDR 0x1000000
 set NUMBER_OF_FLASH_BANKS   [get_uboot_define CFG_MAX_FLASH_BANKS $uboot_test_loc ]
-set NUMBER_OF_FLASH_SECTORS [get_uboot_define CFG_MAX_FLASH_SECT $uboot_test_loc ]
+#set NUMBER_OF_FLASH_SECTORS [get_uboot_define CFG_MAX_FLASH_SECT $uboot_test_loc ]
 set FLASH_BASE              [get_uboot_define CFG_FLASH_BASE $uboot_test_loc ]
 set FLASH_SECTOR_SIZE       0x4000
 set FLASH_WRITABLE_SECTOR   30   ;# Identify a flash location we can write to
