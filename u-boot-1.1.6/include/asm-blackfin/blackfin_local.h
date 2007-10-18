@@ -165,8 +165,6 @@ static inline void CSYNC(void)
 
 #else  /* __ASSEMBLY__ */
 
-#include <asm/entry.h>
-
 /* SSYNC & CSYNC implementations for assembly files */
 
 #define ssync(x) SSYNC(x)

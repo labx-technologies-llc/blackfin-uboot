@@ -75,7 +75,7 @@ void blackfin_no_irqs(void)
 		bfin_read_ILAT(),
 		bfin_read_IPEND()
 	);
-	bfin_reset();
+	bfin_reset_or_hang();
 }
 
 void irq_init(void)

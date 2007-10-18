@@ -26,21 +26,35 @@
  */
 
 #include <config.h>
+#include <asm/blackfin.h>
+#undef ALIGN
+
+/* If we don't actually load anything into L1 data, this will avoid
+ * a syntax error.  If we do actually load something into L1 data,
+ * we'll get a linker memory load error (which is what we'd want).
+ * This is here in the first place so we can quickly test building
+ * for different CPU's which may lack non-cache L1 data.
+ */
+#ifndef L1_DATA_B_SRAM
+# define L1_DATA_B_SRAM      CFG_MONITOR_BASE
+# define L1_DATA_B_SRAM_SIZE 0
+#endif
 
 OUTPUT_ARCH(bfin)
 
+/* The 0xC offset is so we don't clobber the tiny LDR jump block. */
 MEMORY
 {
-	ram     : ORIGIN = 0x03FC0000, LENGTH = (256 * 1024)
-	l1_code : ORIGIN = 0xFFA00000, LENGTH = 0xC000
-	l1_data : ORIGIN = 0xFF900000, LENGTH = 0x4000
+	ram     : ORIGIN = CFG_MONITOR_BASE, LENGTH = CFG_MONITOR_LEN
+	l1_code : ORIGIN = L1_INST_SRAM+0xC, LENGTH = L1_INST_SRAM_SIZE
+	l1_data : ORIGIN = L1_DATA_B_SRAM,   LENGTH = L1_DATA_B_SRAM_SIZE
 }
 
 SECTIONS
 {
-	. = CFG_MONITOR_BASE;
 	.text :
 	{
+#ifdef ENV_IS_EMBEDDED
 		/* WARNING - the following is hand-optimized to fit within
 		 * the sector before the environment sector. If it throws
 		 * an error during compilation remove an object here to get
@@ -56,77 +70,68 @@ SECTIONS
 
 		. = DEFINED(env_offset) ? env_offset : .;
 		common/environment.o	(.text)
+#endif
 
-		*(EXCLUDE_FILE (board/bf537-pnav/post-memory.o) .text)
-	} > ram
-	PROVIDE (_etext = .);
-
-	. = ALIGN(4) ;
-	PROVIDE (_text_l1 = .);
-	.text_l1 :
-	{
-		board/bf537-pnav/post-memory.o   (.text)
-		. = ALIGN(4) ;
-		PROVIDE (_etext_l1 = .);
-	} > l1_code AT > ram
+		*(.text)
+	} >ram
 
 	.rodata :
 	{
 		. = ALIGN(4);
-		*(EXCLUDE_FILE (board/bf537-pnav/post-memory.o) .rodata)
-		*(EXCLUDE_FILE (board/bf537-pnav/post-memory.o) .rodata1)
-		*(EXCLUDE_FILE (board/bf537-pnav/post-memory.o) .rodata.str1.4)
+		*(.rodata)
+		*(.rodata1)
+		*(.rodata.str1.4)
 		*(.eh_frame)
 		. = ALIGN(4);
-	} > ram
+	} >ram
 
-	. = ALIGN(4);
-	PROVIDE (_erodata = .);
-	.rodata_l1 :
-	{
-		. = ALIGN(4) ;
-		PROVIDE (_rodata_l1 = .);
-		board/bf537-pnav/post-memory.o (.rodata)
-		board/bf537-pnav/post-memory.o (.rodata1)
-		board/bf537-pnav/post-memory.o (.rodata.str1.4)
-		. = ALIGN(4) ;
-		PROVIDE(_erodata_l1 = .);
-	} > l1_data AT > ram
-
-	. = ALIGN(256);
 	.data :
 	{
+		. = ALIGN(256);
 		*(.data)
 		*(.data1)
 		*(.sdata)
 		*(.sdata2)
 		*(.dynamic)
 		CONSTRUCTORS
-	} > ram
-	PROVIDE (_edata = .);
+	} >ram
 
-	___u_boot_cmd_start = .;
-	.u_boot_cmd : { *(.u_boot_cmd) } > ram
-	___u_boot_cmd_end = .;
+	.u_boot_cmd :
+	{
+		___u_boot_cmd_start = .;
+		*(.u_boot_cmd)
+		___u_boot_cmd_end = .;
+	} >ram
 
-	__start___ex_table = .;
-	__ex_table : { *(__ex_table) }
-	__stop___ex_table = .;
+	.text_l1 :
+	{
+		. = ALIGN(4);
+		__stext_l1 = .;
+		*(.l1.text)
+		. = ALIGN(4);
+		__etext_l1 = .;
+	} >l1_code AT>ram
+	__stext_l1_lma = LOADADDR(.text_l1);
 
-	. = ALIGN(256);
-	__init_begin = .;
-	.text.init : { *(.text.init) }
-	.data.init : { *(.data.init) }
-	. = ALIGN(256);
-	__init_end = .;
+	.data_l1 :
+	{
+		. = ALIGN(4);
+		__sdata_l1 = .;
+		*(.l1.data)
+		*(.l1.bss)
+		. = ALIGN(4);
+		__edata_l1 = .;
+	} >l1_data AT>ram
+	__sdata_l1_lma = LOADADDR(.data_l1);
 
 	.bss :
 	{
+		. = ALIGN(4);
 		__bss_start = .;
 		*(.sbss) *(.scommon)
 		*(.dynbss)
 		*(.bss)
 		*(COMMON)
-	} > ram
-	PROVIDE (_end = .);
+		__bss_end = .;
+	} >ram
 }

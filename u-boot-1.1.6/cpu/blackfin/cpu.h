@@ -27,8 +27,7 @@
 
 #include <command.h>
 
-void bfin_reset(void) __attribute__((__noreturn__));
-int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[]);
+void bfin_reset_or_hang(void) __attribute__((__noreturn__));
 void blackfin_irq_panic(int reason, struct pt_regs *reg);
 asmlinkage void trap(void);
 void dump(struct pt_regs *regs);

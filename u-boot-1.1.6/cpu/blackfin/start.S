@@ -36,6 +36,13 @@
 #include <asm/mach-common/bits/dma.h>
 #include <asm/mach-common/bits/pll.h>
 
+/* It may seem odd that we make calls to functions even though we haven't
+ * relocated ourselves yet out of {flash,ram,wherever}.  This is OK because
+ * the "call" instruction in the Blackfin architecture is actually PC
+ * relative.  So we can call functions all we want and not worry about them
+ * not being relocated yet.
+ */
+
 .text
 ENTRY(_start)
 	/* Disable nested interrupts and enable CYCLES for udelay() */
@@ -81,6 +88,12 @@ ENTRY(_start)
 .Lproc_initialized:
 #endif
 
+	/* Inform upper layers if we had to do the relocation ourselves.
+	 * This allows us to detect whether we were loaded by 'go 0x1000'
+	 * or by the bootrom from an LDR.  "r6" is "loaded_from_ldr".
+	 */
+	r6 = 1 (x);
+
 	/* Relocate from wherever are (FLASH/RAM/etc...) to the
 	 * hardcoded monitor location in the end of RAM.
 	 */
@@ -97,6 +110,7 @@ ENTRY(_start)
 	cc = r0 == r3;
 	if cc jump .Lnorelocate;
 
+	r6 = 0 (x);
 	p1 = r0;
 
 	p2.l = LO(CFG_MONITOR_BASE);
@@ -124,8 +138,8 @@ ENTRY(_start)
 	r0.l = __bss_start;
 	r0.h = __bss_start;
 	r1 = 0 (x);
-	r2.l = _end;
-	r2.h = _end;
+	r2.l = __bss_end;
+	r2.h = __bss_end;
 	r2 = r2 - r0;
 	call _memset;
 
@@ -137,20 +151,21 @@ ENTRY(_start)
 	 * services the pending 15 interrupt.
 	 */
 	r0 = r7;
+	r1 = r6;
 	p0.l = LO(EVT15);
 	p0.h = HI(EVT15);
-	p1.l = _board_init_f;
-	p1.h = _board_init_f;
+	p1.l = _cpu_init_f;
+	p1.h = _cpu_init_f;
 	[p0] = p1;
 	p2.l = LO(IMASK);
 	p2.h = HI(IMASK);
-	r1.l = LO(EVT_IVG15);
-	r1.h = HI(EVT_IVG15);
-	[p2] = r1;
+	p3.l = LO(EVT_IVG15);
+	p3.h = HI(EVT_IVG15);
+	[p2] = p3;
 	raise 15;
-	p3.l = .LWAIT_HERE;
-	p3.h = .LWAIT_HERE;
-	reti = p3;
+	p4.l = .LWAIT_HERE;
+	p4.h = .LWAIT_HERE;
+	reti = p4;
 	rti;
 
 .LWAIT_HERE:
