@@ -106,7 +106,7 @@ int misc_init_r(void)
 	extern flash_info_t flash_info[];
 	flash_protect(FLAG_PROTECT_SET, 0x203F0000, 0x203FFFFF, &flash_info[0]);
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) && defined(CONFIG_BFIN_MAC)
 	char nid[32];
 	unsigned char *pMACaddr = (unsigned char *)0x203F0000;
 	u8 SrcAddr[6] = { 0x02, 0x80, 0xAD, 0x20, 0x31, 0xB8 };
