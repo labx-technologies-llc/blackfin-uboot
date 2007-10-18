@@ -183,6 +183,9 @@ void *memcpy(void *dst, const void *src, size_t count)
 	unsigned long dst_ul = (unsigned long)dst;
 	unsigned long src_ul = (unsigned long)src;
 
+	if (!count)
+		return dst;
+
 	if (dcache_status())
 		blackfin_dcache_flush_range(src, src+count);
 
