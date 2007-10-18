@@ -133,6 +133,7 @@ Directory Hierarchy:
   - arm926ejs	Files specific to ARM 926 CPUs
   - arm1136	Files specific to ARM 1136 CPUs
   - at32ap	Files specific to Atmel AVR32 AP CPUs
+  - blackfin	Files specific to Analog Devices Blackfin CPUs
   - i386	Files specific to i386 CPUs
   - ixp		Files specific to Intel XScale IXP CPUs
   - mcf52x2	Files specific to Freescale ColdFire MCF52x2 CPUs
@@ -158,6 +159,7 @@ Directory Hierarchy:
 - include	Header Files
 - lib_arm	Files generic to ARM	 architecture
 - lib_avr32	Files generic to AVR32	 architecture
+- lib_blackfin	Files generic to Blackfin architecture
 - lib_generic	Files generic to all	 architectures
 - lib_i386	Files generic to i386	 architecture
 - lib_m68k	Files generic to m68k	 architecture
@@ -3424,6 +3426,11 @@ On ARM, the following registers are used:
 	R15:	program counter
 
     ==> U-Boot will use R8 to hold a pointer to the global data
+
+On Blackfin, the normal C ABI (except for P5) is followed as documented here:
+	http://docs.blackfin.uclinux.org/doku.php?id=application_binary_interface
+
+    ==> U-Boot will use P5 to hold a pointer to the global data
 
 NOTE: DECLARE_GLOBAL_DATA_PTR must be used with file-global scope,
 or current versions of GCC may "optimize" the code too much.
