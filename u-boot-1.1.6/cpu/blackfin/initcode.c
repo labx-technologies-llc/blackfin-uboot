@@ -202,7 +202,7 @@ static inline void serial_putc(char c)
 #endif
 
 __attribute__((saveall))
-void initcode(boot_struct *bootstruct)
+void initcode(ADI_BOOT_DATA *bootstruct)
 {
 	serial_init();
 
