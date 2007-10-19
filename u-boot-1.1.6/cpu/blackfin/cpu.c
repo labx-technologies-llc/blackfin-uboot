@@ -76,7 +76,7 @@ void bfin_reset(void)
  */
 static inline void bfin_reset_trampoline(void)
 {
-	asm("jump (%0);" : : "qA" (bfin_reset));
+	asm("jump (%0);" : : "a" (bfin_reset));
 }
 
 __attribute__ ((__noreturn__))
