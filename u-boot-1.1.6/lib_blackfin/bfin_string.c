@@ -131,13 +131,16 @@ int strncmp(const char *cs, const char *ct, size_t count)
 # define bfin_write_MDMA_D0_IRQ_STATUS bfin_write_MDMA1_D0_IRQ_STATUS
 # define bfin_read_MDMA_D0_IRQ_STATUS  bfin_read_MDMA1_D0_IRQ_STATUS
 #endif
-static void *dma_memcpy(void *dest, const void *src, size_t count)
+static void *dma_memcpy(void *dst, const void *src, size_t count)
 {
+	if (dcache_status())
+		blackfin_dcache_flush_range(src, src + count);
+
 	bfin_write_MDMA_D0_IRQ_STATUS(DMA_DONE | DMA_ERR);
 
 	/* Copy sram functions from sdram to sram */
 	/* Setup destination start address */
-	bfin_write_MDMA_D0_START_ADDR(dest);
+	bfin_write_MDMA_D0_START_ADDR(dst);
 	/* Setup destination xcount */
 	bfin_write_MDMA_D0_X_COUNT(count);
 	/* Setup destination xmodify */
@@ -160,9 +163,13 @@ static void *dma_memcpy(void *dest, const void *src, size_t count)
 		bfin_write_MDMA_D0_IRQ_STATUS(bfin_read_MDMA_D0_IRQ_STATUS() | DMA_DONE | DMA_ERR);
 	bfin_write_MDMA_D0_IRQ_STATUS(bfin_read_MDMA_D0_IRQ_STATUS() | DMA_DONE | DMA_ERR);
 
-	dest += count;
-	src += count;
-	return dest;
+	if (icache_status())
+		blackfin_icache_flush_range(dst, dst + count);
+
+	if (dcache_status())
+		blackfin_dcache_invalidate_range(dst, dst + count);
+
+	return dst;
 }
 
 /*
@@ -186,26 +193,15 @@ void *memcpy(void *dst, const void *src, size_t count)
 	if (!count)
 		return dst;
 
-	if (dcache_status())
-		blackfin_dcache_flush_range(src, src+count);
-
 	if (dst_ul >= L1_INST_SRAM && dst_ul < L1_INST_SRAM_END) {
 		/* L1 is the destination */
-		dma_memcpy(dst, src, count);
+		return dma_memcpy(dst, src, count);
 
 	} else if (src_ul >= L1_INST_SRAM && src_ul < L1_INST_SRAM_END) {
 		/* L1 is the source */
-		dma_memcpy(dst, src, count);
-
-		if (icache_status())
-			blackfin_icache_flush_range(dst, dst+count);
-
-		if (dcache_status())
-			blackfin_dcache_invalidate_range(dst, dst+count);
+		return dma_memcpy(dst, src, count);
 
 	} else
 		/* No L1 is involved, so just call regular memcpy */
-		memcpy_ASM(dst, src, count);
-
-	return dst;
+		return memcpy_ASM(dst, src, count);
 }
