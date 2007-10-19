@@ -46,6 +46,8 @@ extern u_long get_sclk(void);
 
 # define bfin_revid() (*pCHIPID >> 28)
 
+# define addr_bfin_l1_inst(addr) ((unsigned long)addr >= L1_INST_SRAM && (unsigned long)addr < L1_INST_SRAM_END)
+
 # include <asm/system.h>
 
 #if ANOMALY_05000198

@@ -187,17 +187,14 @@ static void *dma_memcpy(void *dst, const void *src, size_t count)
 extern void *memcpy_ASM(void *dst, const void *src, size_t count);
 void *memcpy(void *dst, const void *src, size_t count)
 {
-	unsigned long dst_ul = (unsigned long)dst;
-	unsigned long src_ul = (unsigned long)src;
-
 	if (!count)
 		return dst;
 
-	if (dst_ul >= L1_INST_SRAM && dst_ul < L1_INST_SRAM_END) {
+	if (addr_bfin_l1_inst(dst)) {
 		/* L1 is the destination */
 		return dma_memcpy(dst, src, count);
 
-	} else if (src_ul >= L1_INST_SRAM && src_ul < L1_INST_SRAM_END) {
+	} else if (addr_bfin_l1_inst(src)) {
 		/* L1 is the source */
 		return dma_memcpy(dst, src, count);
 
