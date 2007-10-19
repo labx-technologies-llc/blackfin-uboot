@@ -514,6 +514,15 @@ int do_mem_cp ( cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	}
 #endif
 
+#ifdef CONFIG_BLACKFIN
+	/* See if we're copying to/from L1 inst */
+	if ((dest >= L1_INST_SRAM && dest < L1_INST_SRAM_END) ||
+	    (addr >= L1_INST_SRAM && addr < L1_INST_SRAM_END)) {
+		memcpy ((void *)dest, (void *)addr, count * size);
+		return 0;
+	}
+#endif
+
 	while (count-- > 0) {
 		if (size == 4)
 			*((ulong  *)dest) = *((ulong  *)addr);
