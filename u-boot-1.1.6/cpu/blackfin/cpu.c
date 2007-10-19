@@ -159,7 +159,7 @@ void cpu_init_f(ulong bootflag, ulong loaded_from_ldr)
 	char nops[0xC];
 	memset(nops, 0x00, sizeof(nops));
 	extern char _stext_l1;
-	memcpy(&_stext_l1, nops, sizeof(nops));
+	memcpy(&_stext_l1 - sizeof(nops), nops, sizeof(nops));
 
 	if (!loaded_from_ldr) {
 		/* Relocate sections into L1 if the LDR didn't do it -- don't
