@@ -136,13 +136,11 @@ static void display_flash_config(ulong size)
 static int init_baudrate(void)
 {
 	DECLARE_GLOBAL_DATA_PTR;
-
-	char tmp[64];
-	int i = getenv_r("baudrate", tmp, sizeof(tmp));
-	gd->bd->bi_baudrate = gd->baudrate = (i > 0)
-	    ? (int)simple_strtoul(tmp, NULL, 10)
+	char *baudrate = getenv("baudrate");
+	gd->bd->bi_baudrate = gd->baudrate = (baudrate != NULL)
+	    ? simple_strtoul(baudrate, NULL, 10)
 	    : CONFIG_BAUDRATE;
-	return (0);
+	return 0;
 }
 
 static void display_global_data(void)
@@ -268,6 +266,13 @@ void board_init_f(ulong bootflag)
 
 	init_cplbtables();
 
+#ifdef CONFIG_ICACHE_ON
+	icache_enable();
+#endif
+#ifdef CONFIG_DCACHE_ON
+	dcache_enable();
+#endif
+
 	gd = (gd_t *) (CFG_GBL_DATA_ADDR);
 	memset((void *)gd, 0, sizeof(gd_t));
 
@@ -293,12 +298,6 @@ void board_init_f(ulong bootflag)
 	init_baudrate();	/* initialze baudrate settings */
 	serial_init();		/* serial communications setup */
 	console_init_f();
-#ifdef CONFIG_ICACHE_ON
-	icache_enable();
-#endif
-#ifdef CONFIG_DCACHE_ON
-	dcache_enable();
-#endif
 	display_banner();	/* say that we are here */
 
 	checkboard();
