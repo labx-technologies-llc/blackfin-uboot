@@ -82,10 +82,10 @@ static void wait_for_complete(void)
 }
 
 /* Enable the RTC prescaler enable register */
-void rtc_init(void)
+int rtc_init(void)
 {
 	*(volatile unsigned short *)RTC_PREN = 0x1;
-	wait_for_complete();
+	return 0;
 }
 
 /* Set the time. Get the time_in_secs which is the number of seconds since Jan 1970 and set the RTC registers
@@ -105,6 +105,8 @@ void rtc_set(struct rtc_time *tmp)
 		return;
 	}
 
+	wait_for_complete();
+
 	time_in_secs =
 	    mktime(tmp->tm_year, tmp->tm_mon, tmp->tm_mday, tmp->tm_hour,
 		   tmp->tm_min, tmp->tm_sec);
@@ -123,8 +125,6 @@ void rtc_set(struct rtc_time *tmp)
 	*(volatile unsigned long *)RTC_STAT =
 	    ((n_days_1970 << DAY_BITS_OFF) | (n_hrs << HOUR_BITS_OFF) |
 	     (n_mins << MIN_BITS_OFF) | (n_secs << SEC_BITS_OFF));
-
-	wait_for_complete();
 }
 
 /* Read the time from the RTC_STAT. time_in_seconds is seconds since Jan 1970 */
@@ -138,6 +138,8 @@ void rtc_get(struct rtc_time *tmp)
 		printf("Error getting the date/time \n");
 		return;
 	}
+
+	wait_for_complete();
 
 	/* Read the RTC_STAT register */
 	cur_rtc_stat = *(volatile unsigned long *)RTC_STAT;
