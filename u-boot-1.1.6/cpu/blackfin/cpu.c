@@ -29,15 +29,11 @@
 #include <command.h>
 #include <asm/blackfin.h>
 #include <asm/cplb.h>
-#include <asm/io.h>
 #include <asm/mach-common/bits/core.h>
 #include <asm/mach-common/bits/mpu.h>
 
 #include "cpu.h"
 #include "serial.h"
-
-#define CACHE_ON 1
-#define CACHE_OFF 0
 
 #if defined(__ADSPBF561__)
 # define SYSCR_VAL 0x20	/* do not enable core b */
@@ -76,19 +72,20 @@ void bfin_reset(void)
  * PC relative call with a 25 bit immediate.  This is not enough
  * to get us from the top of SDRAM into L1.
  */
+__attribute__ ((__noreturn__))
 static inline void bfin_reset_trampoline(void)
 {
-	asm("jump (%0);" : : "a" (bfin_reset));
+	while (1)
+		asm("jump (%0);" : : "a" (bfin_reset));
 }
 
 __attribute__ ((__noreturn__))
 void bfin_reset_or_hang(void)
 {
-	while (1)
 #ifdef CONFIG_PANIC_HANG
-		continue;
+	hang();
 #else
-		bfin_reset_trampoline();
+	bfin_reset_trampoline();
 #endif
 }
 
@@ -100,58 +97,36 @@ int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 
 void icache_enable(void)
 {
-	local_irq_disable();
+	bfin_write_IMEM_CONTROL(bfin_read_IMEM_CONTROL() | (IMC | ENICPLB));
 	SSYNC();
-	asm(" .align 8; ");
-	*pIMEM_CONTROL |= (IMC | ENICPLB);
-	SSYNC();
-	local_irq_enable();
 }
 
 void icache_disable(void)
 {
-	local_irq_disable();
+	bfin_write_IMEM_CONTROL(bfin_read_IMEM_CONTROL() & ~(IMC | ENICPLB));
 	SSYNC();
-	asm(" .align 8; ");
-	*pIMEM_CONTROL &= ~(IMC | ENICPLB);
-	SSYNC();
-	local_irq_enable();
 }
 
 int icache_status(void)
 {
-	if (*pIMEM_CONTROL & (IMC | ENICPLB))
-		return CACHE_ON;
-	else
-		return CACHE_OFF;
+	return bfin_read_IMEM_CONTROL() & ENICPLB;
 }
 
 void dcache_enable(void)
 {
-	local_irq_disable();
+	bfin_write_DMEM_CONTROL(bfin_read_DMEM_CONTROL() | (ACACHE_BCACHE | ENDCPLB | PORT_PREF0));
 	SSYNC();
-	asm(" .align 8; ");
-	*pDMEM_CONTROL |= (ACACHE_BCACHE | ENDCPLB | PORT_PREF0);
-	SSYNC();
-	local_irq_enable();
 }
 
 void dcache_disable(void)
 {
-	local_irq_disable();
+	bfin_write_DMEM_CONTROL(bfin_read_DMEM_CONTROL() & ~(ACACHE_BCACHE | ENDCPLB | PORT_PREF0));
 	SSYNC();
-	asm(" .align 8; ");
-	*pDMEM_CONTROL &= ~(ACACHE_BCACHE | ENDCPLB | PORT_PREF0);
-	SSYNC();
-	local_irq_enable();
 }
 
 int dcache_status(void)
 {
-	if (*pDMEM_CONTROL & (ENDCPLB))
-		return CACHE_ON;
-	else
-		return CACHE_OFF;
+	return bfin_read_DMEM_CONTROL() & ENDCPLB;
 }
 
 __attribute__ ((__noreturn__))
