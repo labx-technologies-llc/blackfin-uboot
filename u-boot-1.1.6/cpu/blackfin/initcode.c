@@ -17,17 +17,12 @@
 
 #include "bootrom.h"
 #include "mem_init.h"
+
+#define BFIN_IN_INITCODE
 #include "serial.h"
 
-/* XXX: should unify more with serial.c */
-#ifdef CONFIG_DEBUG_INITCODE
-# define BFIN_DEBUG_INITCODE 1
-#else
-# define BFIN_DEBUG_INITCODE 0
-#endif
-
 __attribute__((always_inline))
-static inline void serial_init(void)
+static inline uint32_t serial_init(void)
 {
 #ifdef __ADSPBF54x__
 # ifdef BFIN_BOOT_UART_USE_RTS
@@ -68,10 +63,21 @@ static inline void serial_init(void)
 	}
 #endif
 
-	if (!BFIN_DEBUG_INITCODE)
-		return;
+	uint32_t old_baud = serial_early_get_baud();
 
-	serial_do_portmux();
+	if (BFIN_DEBUG_EARLY_SERIAL) {
+		serial_early_init();
+
+		/* If the UART is off, that means we need to program
+		 * the baud rate ourselves initially.
+		 */
+		if (!old_baud) {
+			old_baud = CONFIG_BAUDRATE;
+			serial_early_set_baud(CONFIG_BAUDRATE);
+		}
+	}
+
+	return old_baud;
 }
 
 __attribute__((always_inline))
@@ -88,41 +94,40 @@ static inline void serial_deinit(void)
 /* We need to reset the baud rate when we have early debug turned on
  * or when we are booting over the UART.
  * XXX: we should fix this to calc the old baud and restore it rather
- *      than hardcoding it via CONFIG_LDR_LOAD_BAUD ...
+ *      than hardcoding it via CONFIG_LDR_LOAD_BAUD ... but we have
+ *      to figure out how to avoid the division in the baud calc ...
  */
 __attribute__((always_inline))
-static inline void serial_reset_baud(void)
+static inline void serial_reset_baud(uint32_t baud)
 {
-	if (!BFIN_DEBUG_INITCODE && BFIN_BOOT_MODE != BFIN_BOOT_UART)
+	if (!BFIN_DEBUG_EARLY_SERIAL && BFIN_BOOT_MODE != BFIN_BOOT_UART)
 		return;
 
 #ifndef CONFIG_LDR_LOAD_BAUD
 # define CONFIG_LDR_LOAD_BAUD 115200
 #endif
-#define BFIN_LDR_SCLK     (CONFIG_CLKIN_HZ * CONFIG_VCO_MULT / CONFIG_SCLK_DIV)
-#define BFIN_LDR_BAUD     (BFIN_LDR_SCLK / (16 * CONFIG_LDR_LOAD_BAUD))
-#define BFIN_LDR_BAUD_HB  ((BFIN_LDR_BAUD >> 8) & 0xFF)
-#define BFIN_LDR_BAUD_LB  (BFIN_LDR_BAUD & 0xFF)
 
-	ACCESS_LATCH();
-	*pUART_DLL = BFIN_LDR_BAUD_LB;
-	*pUART_DLH = BFIN_LDR_BAUD_HB;
-	ACCESS_PORT_IER();
-	SSYNC();
+	if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+		serial_early_set_baud(baud);
+	else if (BFIN_BOOT_MODE == BFIN_BOOT_UART)
+		serial_early_set_baud(CONFIG_LDR_LOAD_BAUD);
+	else
+		serial_early_set_baud(CONFIG_BAUDRATE);
 }
 
 __attribute__((always_inline))
 static inline void serial_putc(char c)
 {
-	if (!BFIN_DEBUG_INITCODE)
+	if (!BFIN_DEBUG_EARLY_SERIAL)
 		return;
 
 	if (c == '\n')
 		*pUART_THR = '\r';
 
 	*pUART_THR = c;
+
 	while (!(*pUART_LSR & TEMT))
-		SSYNC();
+		continue;
 }
 
 
@@ -204,7 +209,23 @@ static inline void serial_putc(char c)
 __attribute__((saveall))
 void initcode(ADI_BOOT_DATA *bootstruct)
 {
-	serial_init();
+	uint32_t old_baud = serial_init();
+
+#ifdef CONFIG_WATCHDOG_HW
+# ifndef CONFIG_WATCHDOG_HW_TIMEOUT_INITCODE
+#  define CONFIG_WATCHDOG_HW_TIMEOUT_INITCODE 20000
+# endif
+	/* Program the watchdog with an initial timeout of ~20 seconds.
+	 * Hopefully that should be long enough to load the u-boot LDR
+	 * (from wherever) and then the common u-boot code can take over.
+	 * In bypass mode, the start.S would have already set a much lower
+	 * timeout, so don't clobber that.
+	 */
+	if (BFIN_BOOT_MODE != BFIN_BOOT_BYPASS) {
+		bfin_write_WDOG_CNT(MSEC_TO_SCLK(CONFIG_WATCHDOG_HW_TIMEOUT_INITCODE));
+		bfin_write_WDOG_CTL(0);
+	}
+#endif
 
 	serial_putc('S');
 
@@ -269,7 +290,7 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 	/* Since we've changed the SCLK above, we may need to update
 	 * the UART divisors (UART baud rates are based on SCLK).
 	 */
-	serial_reset_baud();
+	serial_reset_baud(old_baud);
 
 	serial_putc('F');
 
@@ -316,6 +337,7 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 #endif
 
 	serial_putc('>');
+	serial_putc('\n');
 
 	serial_deinit();
 }

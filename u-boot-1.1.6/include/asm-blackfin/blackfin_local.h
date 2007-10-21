@@ -33,6 +33,16 @@
 #define OFFSET_(x) (x & 0x0000FFFF)
 #define MK_BMSK_(x) (1 << x)
 
+/* Ideally this should be USEC not MSEC, but the USEC multiplication
+ * likes to overflow 32bit quantities which is all our assembler
+ * currently supports ;(
+ */
+#define USEC_PER_MSEC 1000
+#define MSEC_PER_SEC 1000
+#define BFIN_SCLK (100000000)
+#define SCLK_TO_MSEC(sclk) ((MSEC_PER_SEC * ((sclk) / USEC_PER_MSEC)) / (BFIN_SCLK / USEC_PER_MSEC))
+#define MSEC_TO_SCLK(msec) ((((BFIN_SCLK / USEC_PER_MSEC) * (msec)) / MSEC_PER_SEC) * USEC_PER_MSEC)
+
 #include <asm/linkage.h>
 
 #ifndef __ASSEMBLY__

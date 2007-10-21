@@ -36,6 +36,8 @@
 #include <asm/mach-common/bits/dma.h>
 #include <asm/mach-common/bits/pll.h>
 
+#include "serial.h"
+
 /* It may seem odd that we make calls to functions even though we haven't
  * relocated ourselves yet out of {flash,ram,wherever}.  This is OK because
  * the "call" instruction in the Blackfin architecture is actually PC
@@ -45,6 +47,34 @@
 
 .text
 ENTRY(_start)
+
+	/* Set our initial stack to L1 scratch space */
+	sp.l = LO(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);
+	sp.h = HI(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);
+
+#ifdef CONFIG_WATCHDOG_HW
+# ifndef CONFIG_WATCHDOG_HW_TIMEOUT_START
+#  define CONFIG_WATCHDOG_HW_TIMEOUT_START 5000
+# endif
+	/* Program the watchdog with an initial timeout of ~5 seconds.
+	 * That should be long enough to bootstrap ourselves up and
+	 * then the common u-boot code can take over.
+	 */
+	P0.L = LO(WDOG_CNT);
+	P0.H = HI(WDOG_CNT);
+	R0.L = 0;
+	R0.H = HI(MSEC_TO_SCLK(CONFIG_WATCHDOG_HW_TIMEOUT_START));
+	[P0] = R0;
+	/* fire up the watchdog - R0.L above needs to be 0x0000 */
+	W[P0 + (WDOG_CTL - WDOG_CNT)] = R0;
+#endif
+
+	/* Turn on the serial for debugging the init process */
+	serial_early_init
+	serial_early_set_baud
+
+	serial_early_putc 'I', 'n', 'i', 't', ' ', 'R', 'e', 'g', 'i', 's', 't', 'e', 'r', 's'
+
 	/* Disable nested interrupts and enable CYCLES for udelay() */
 	R0 = CCEN | 0x30;
 	SYSCFG = R0;
@@ -65,10 +95,6 @@ ENTRY(_start)
 	/* Save RETX so we can pass it while booting Linux */
 	r7 = RETX;
 
-	/* Set our initial stack to L1 scratch space */
-	sp.l = LO(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);
-	sp.h = HI(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);
-
 #if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 	/* In bypass mode, we don't have an LDR with an init block
 	 * so we need to explicitly call it ourselves.  This will
@@ -83,7 +109,12 @@ ENTRY(_start)
 	cc = r0 < r3 (iu);
 	if cc jump .Lproc_initialized;
 
+	serial_early_putc 'P', 'r', 'o', 'g', 'r', 'a', 'm', ' ', 'C', 'l', 'o', 'c', 'k', 's'
+
 	call _initcode;
+
+	/* Since we reprogrammed SCLK, we need to update the serial divisor */
+	serial_early_set_baud
 
 .Lproc_initialized:
 #endif
@@ -97,6 +128,7 @@ ENTRY(_start)
 	/* Relocate from wherever are (FLASH/RAM/etc...) to the
 	 * hardcoded monitor location in the end of RAM.
 	 */
+	serial_early_putc 'R', 'e', 'l', 'o', 'c', 'a', 't', 'e'
 	call _get_pc;
 .Loffset:
 	r2.l = .Loffset;
@@ -135,6 +167,7 @@ ENTRY(_start)
 	/* Initialize BSS section ... we know that memset()
 	 * does not use the BSS, so it is safe to call here
 	 */
+	serial_early_putc 'Z', 'e', 'r', 'o', ' ', 'B', 'S', 'S'
 	r0.l = __bss_start;
 	r0.h = __bss_start;
 	r1 = 0 (x);
@@ -150,6 +183,7 @@ ENTRY(_start)
 	 * level to the dummy "jump" until the interrupt controller
 	 * services the pending 15 interrupt.
 	 */
+	serial_early_putc 'L', 'o', 'w', 'e', 'r', ' ', 'T', 'o', ' ', '1', '5'
 	r0 = r7;
 	r1 = r6;
 	p0.l = LO(EVT15);

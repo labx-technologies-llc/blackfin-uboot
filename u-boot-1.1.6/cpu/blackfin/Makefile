@@ -44,7 +44,7 @@ EXTRA    := $(addprefix $(obj),$(EXTRA))
 CEXTRA   := $(addprefix $(obj),$(CEXTRA))
 SEXTRA   := $(addprefix $(obj),$(SEXTRA))
 
-all:	$(obj).depend $(LIB) $(obj).depend $(EXTRA) $(CEXTRA) $(SEXTRA)
+all:	$(obj).depend $(LIB) $(obj).depend $(EXTRA) $(CEXTRA) $(SEXTRA) check_initcode
 
 $(LIB):	$(OBJS)
 	$(AR) $(ARFLAGS) $@ $(OBJS)
@@ -55,6 +55,17 @@ $(obj)bootrom-asm-offsets.s: bootrom-asm-offsets.c
 	mv $@.tmp $@
 $(obj)bootrom-asm-offsets.h: $(obj)bootrom-asm-offsets.s
 	sed -ne "/^->/{s:^->\([^ ]*\) [\$$#]*\([^ ]*\) \(.*\):#define \1 \2 /* \3 */:; s:->::; p;}" $^ > $@
+
+# make sure our initcode (which goes into LDR) does not
+# have relocs or external references
+READINIT = env LC_ALL=C $(CROSS_COMPILE)readelf -s $<
+check_initcode: $(obj)initcode.o
+ifneq ($(BFIN_BOOT_MODE),BFIN_BOOT_BYPASS)
+	@if $(READINIT) | grep '\<GLOBAL\>.*\<UND\>' ; then \
+		echo "$< contains external references!" 1>&2 ; \
+		exit 1 ; \
+	fi
+endif
 
 #########################################################################
 

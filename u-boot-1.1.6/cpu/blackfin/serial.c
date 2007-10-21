@@ -44,73 +44,37 @@
 #include <asm/blackfin.h>
 #include <asm/mach-common/bits/uart.h>
 
-#if defined(pUART_LSR) && (CONFIG_UART_CONSOLE != 0)
+#if defined(UART_LSR) && (CONFIG_UART_CONSOLE != 0)
 # error CONFIG_UART_CONSOLE must be 0 on parts with only one UART
 #endif
 
 #include "serial.h"
 
-static int baud_table[5] = { 9600, 19200, 38400, 57600, 115200 };
-static struct {
-	unsigned char dl_high;
-	unsigned char dl_low;
-} hw_baud_table[5];
-
-static void calc_baud(void)
+/* Symbol for our assembly to call. */
+void serial_set_baud(uint32_t baud)
 {
-	unsigned char i;
-	int temp;
-	u_long sclk = get_sclk();
-
-	for (i = 0; i < ARRAY_SIZE(baud_table); ++i) {
-		temp = sclk / (baud_table[i] * 8);
-		if ((temp & 0x1) == 1)
-			++temp;
-		temp = temp / 2;
-		hw_baud_table[i].dl_high = (temp >> 8) & 0xFF;
-		hw_baud_table[i].dl_low = (temp) & 0xFF;
-	}
+	serial_early_set_baud(baud);
 }
 
-/* Setup the baudrate (brg: baudrate generator) */
+/* Symbol for common u-boot code to call.
+ * Setup the baudrate (brg: baudrate generator).
+ */
 void serial_setbrg(void)
 {
-	int i;
 	DECLARE_GLOBAL_DATA_PTR;
-
-	calc_baud();
-
-	/* XXX: what if baudrate is not in baud_table ? */
-	for (i = 0; i < ARRAY_SIZE(baud_table); ++i)
-		if (gd->baudrate == baud_table[i])
-			break;
-
-	/* handle portmux crap on different Blackfins */
-	serial_do_portmux();
-
-	/* Enable UART */
-	*pUART_GCTL |= UCEN;
-	SSYNC();
-
-	/* Set DLAB in LCR to Access DLL and DLH */
-	ACCESS_LATCH();
-	SSYNC();
-
-	*pUART_DLL = hw_baud_table[i].dl_low;
-	SSYNC();
-	*pUART_DLH = hw_baud_table[i].dl_high;
-	SSYNC();
-
-	/* Clear DLAB in LCR to Access THR RBR IER */
-	ACCESS_PORT_IER();
-
-	/* Set LCR to Word Lengh 8-bit word select */
-	*pUART_LCR = WLS_8;
-	SSYNC();
+	serial_set_baud(gd->baudrate);
 }
 
+/* Symbol for our assembly to call. */
+void serial_initialize(void)
+{
+	serial_early_init();
+}
+
+/* Symbol for common u-boot code to call. */
 int serial_init(void)
 {
+	serial_initialize();
 	serial_setbrg();
 	return 0;
 }
@@ -121,7 +85,7 @@ void serial_putc(const char c)
 	if (c == '\n')
 		serial_putc('\r');
 
-	/* wait for the THR to clear up */
+	/* wait for the hardware fifo to clear up */
 	while (!(*pUART_LSR & THRE))
 		continue;
 
@@ -129,14 +93,9 @@ void serial_putc(const char c)
 	*pUART_THR = c;
 	SSYNC();
 
-	/* wait for both the THR and the TSR to empty
-	 * XXX: do we really care ?  the THRE check above
-	 * prevents transmit overflows, and if we're worried
-	 * about baud changes, we can move the TEMT check to
-	 * serial_setbrg() ...
-	 */
+	/* wait for the byte to be shifted over the line */
 	while (!(*pUART_LSR & TEMT))
-		SSYNC();
+		continue;
 }
 
 int serial_tstc(void)

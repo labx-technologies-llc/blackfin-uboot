@@ -136,8 +136,9 @@ static void display_flash_config(ulong size)
 static int init_baudrate(void)
 {
 	DECLARE_GLOBAL_DATA_PTR;
-	char *baudrate = getenv("baudrate");
-	gd->bd->bi_baudrate = gd->baudrate = (baudrate != NULL)
+	char baudrate[15];
+	int i = getenv_r("baudrate", baudrate, sizeof(baudrate));
+	gd->bd->bi_baudrate = gd->baudrate = (i > 0)
 	    ? simple_strtoul(baudrate, NULL, 10)
 	    : CONFIG_BAUDRATE;
 	return 0;
@@ -241,6 +242,15 @@ void init_cplbtables(void)
 	}
 }
 
+__attribute__((always_inline))
+static inline void serial_early_puts(const char *s)
+{
+#ifdef CONFIG_DEBUG_EARLY_SERIAL
+	serial_puts("Early: ");
+	serial_puts(s);
+#endif
+}
+
 /*
  * All attempts to come up with a "common" initialization sequence
  * that works for all boards and architectures failed: some of the
@@ -261,18 +271,23 @@ void board_init_f(ulong bootflag)
 	bd_t *bd;
 
 #ifdef CONFIG_BOARD_EARLY_INIT_F
+	serial_early_puts("Board early init flash\n");
 	board_early_init_f();
 #endif
 
+	serial_early_puts("Init CPLB tables\n");
 	init_cplbtables();
 
 #ifdef CONFIG_ICACHE_ON
+	serial_early_puts("Turn on ICACHE\n");
 	icache_enable();
 #endif
 #ifdef CONFIG_DCACHE_ON
+	serial_early_puts("Turn on DCACHE\n");
 	dcache_enable();
 #endif
 
+	serial_early_puts("Init global data\n");
 	gd = (gd_t *) (CFG_GBL_DATA_ADDR);
 	memset((void *)gd, 0, sizeof(gd_t));
 
@@ -293,12 +308,18 @@ void board_init_f(ulong bootflag)
 	bd->bi_sclk = get_sclk();
 
 	/* Initialize */
+	serial_early_puts("IRQ init\n");
 	irq_init();
-	env_init();		/* initialize environment */
-	init_baudrate();	/* initialze baudrate settings */
-	serial_init();		/* serial communications setup */
+	serial_early_puts("Environment init\n");
+	env_init();
+	serial_early_puts("Baudrate init\n");
+	init_baudrate();
+	serial_early_puts("Serial init\n");
+	serial_init();
+	serial_early_puts("Console init flash\n");
 	console_init_f();
-	display_banner();	/* say that we are here */
+	serial_early_puts("End of early debugging\n");
+	display_banner();
 
 	checkboard();
 #if defined(CONFIG_RTC_BFIN) && (CONFIG_COMMANDS & CFG_CMD_DATE)

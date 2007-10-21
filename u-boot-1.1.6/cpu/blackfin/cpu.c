@@ -32,7 +32,9 @@
 #include <asm/io.h>
 #include <asm/mach-common/bits/core.h>
 #include <asm/mach-common/bits/mpu.h>
+
 #include "cpu.h"
+#include "serial.h"
 
 #define CACHE_ON 1
 #define CACHE_OFF 0
@@ -156,6 +158,7 @@ __attribute__ ((__noreturn__))
 void cpu_init_f(ulong bootflag, ulong loaded_from_ldr)
 {
 	/* Build a NOP slide over the LDR jump block.  Whee! */
+	serial_early_puts("NOP Slide\n");
 	char nops[0xC];
 	memset(nops, 0x00, sizeof(nops));
 	extern char _stext_l1;
@@ -166,6 +169,7 @@ void cpu_init_f(ulong bootflag, ulong loaded_from_ldr)
 		 * check length because the linker script does the size
 		 * checking at build time.
 		 */
+		serial_early_puts("L1 Relocate\n");
 		extern char _stext_l1, _etext_l1, _stext_l1_lma;
 		memcpy(&_stext_l1, &_stext_l1_lma, (&_etext_l1 - &_stext_l1));
 		extern char _sdata_l1, _edata_l1, _sdata_l1_lma;
@@ -179,5 +183,6 @@ void cpu_init_f(ulong bootflag, ulong loaded_from_ldr)
 	bfin_write_SWRST(DOUBLE_FAULT);
 #endif
 
+	serial_early_puts("Board init flash\n");
 	board_init_f(bootflag);
 }
