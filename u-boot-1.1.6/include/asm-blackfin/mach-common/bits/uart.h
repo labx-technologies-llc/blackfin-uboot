@@ -61,7 +61,7 @@
 #define FE_P			0x03
 #define BI_P			0x04
 #define THRE_P			0x05
-#define TEMP_P			0x06
+#define TEMT_P			0x06
 
 /* UARTx_IER Masks */
 #define ERBFI			0x01	/* Enable Receive Buffer Full Interrupt */
