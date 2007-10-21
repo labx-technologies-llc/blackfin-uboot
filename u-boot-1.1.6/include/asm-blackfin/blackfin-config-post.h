@@ -19,6 +19,11 @@
 # error BFIN_CPU: your board config needs to define this
 #endif
 
+/* Make sure the structure is properly aligned */
+#if ((CFG_GBL_DATA_ADDR & -4) != CFG_GBL_DATA_ADDR)
+# error CFG_GBL_DATA_ADDR: must be 4 byte aligned
+#endif
+
 /* Set default CONFIG_VCO_HZ if need be */
 #if !defined(CONFIG_VCO_HZ)
 # if (CONFIG_CLKIN_HALF == 0)
