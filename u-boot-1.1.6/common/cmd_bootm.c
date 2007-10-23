@@ -1439,6 +1439,10 @@ int gunzip(void *dst, int dstlen, unsigned char *src, unsigned long *lenp)
 	z_stream s;
 	int r, i, flags;
 
+	/* if memory regions overlap, whine about it */
+	if (dst + *lenp >= (void *)src && (void *)src < dst + *lenp)
+		puts ("\n   Warning: src and dst regions overlap ... ");
+
 	/* skip header */
 	i = 10;
 	flags = src[3];
