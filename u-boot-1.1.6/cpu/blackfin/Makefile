@@ -50,7 +50,10 @@ $(LIB):	$(OBJS)
 	$(AR) $(ARFLAGS) $@ $(OBJS)
 
 $(OBJS): $(obj)bootrom-asm-offsets.h
-$(obj)bootrom-asm-offsets.s: bootrom-asm-offsets.c
+$(obj)bootrom-asm-offsets.c: bootrom-asm-offsets.c.in bootrom-asm-offsets.awk bootrom.h
+	./bootrom-asm-offsets.awk bootrom.h > $@.tmp
+	mv $@.tmp $@
+$(obj)bootrom-asm-offsets.s: $(obj)bootrom-asm-offsets.c
 	$(CC) $(CFLAGS) -S $^ -o $@.tmp
 	mv $@.tmp $@
 $(obj)bootrom-asm-offsets.h: $(obj)bootrom-asm-offsets.s
