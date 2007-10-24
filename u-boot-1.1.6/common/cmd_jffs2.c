@@ -170,10 +170,17 @@ struct list_head devices;
 static struct mtd_device *current_dev = NULL;
 static u8 current_partnum = 0;
 
+#ifndef CFG_NO_FLASH
 extern int cramfs_check (struct part_info *info);
 extern int cramfs_load (char *loadoffset, struct part_info *info, char *filename);
 extern int cramfs_ls (struct part_info *info, char *filename);
 extern int cramfs_info (struct part_info *info);
+#else
+# define cramfs_check(info) (0)
+# define cramfs_load(loadoffset, info, filename) (-1)
+# define cramfs_ls(info, filename) (1)
+# define cramfs_info(info) (1)
+#endif
 
 static struct part_info* jffs2_part_info(struct mtd_device *dev, unsigned int part_num);
 

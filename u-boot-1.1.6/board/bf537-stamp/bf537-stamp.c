@@ -102,9 +102,11 @@ long int initdram(int board_type)
 /* miscellaneous platform dependent initialisations */
 int misc_init_r(void)
 {
+#ifndef CFG_NO_FLASH
 	/* we use the last sector for the MAC address / POST DXE */
 	extern flash_info_t flash_info[];
 	flash_protect(FLAG_PROTECT_SET, 0x203F0000, 0x203FFFFF, &flash_info[0]);
+#endif
 
 #if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) && defined(CONFIG_BFIN_MAC)
 	char nid[32];

@@ -28,6 +28,7 @@
 #include <malloc.h>
 
 #if (CONFIG_COMMANDS & CFG_CMD_JFFS2)
+#ifndef CFG_NO_FLASH
 
 #include <asm/byteorder.h>
 #include <linux/stat.h>
@@ -344,4 +345,5 @@ int cramfs_check (struct part_info *info)
 	return 1;
 }
 
+#endif /* CFG_NO_FLASH */
 #endif /* CFG_FS_CRAMFS */
