@@ -24,7 +24,27 @@
 #define HIB(x) (((x) >> 8) & 0xFF)
 
 #ifndef UART_LSR
-# if (CONFIG_UART_CONSOLE == 1)
+# if (CONFIG_UART_CONSOLE == 3)
+#  define pUART_DLH  pUART3_DLH
+#  define pUART_DLL  pUART3_DLL
+#  define pUART_GCTL pUART3_GCTL
+#  define pUART_LCR  pUART3_LCR
+#  define pUART_LSR  pUART3_LSR
+#  define pUART_RBR  pUART3_RBR
+#  define pUART_THR  pUART3_THR
+#  define  UART_THR   UART3_THR
+#  define  UART_LSR   UART3_LSR
+# elif (CONFIG_UART_CONSOLE == 2)
+#  define pUART_DLH  pUART2_DLH
+#  define pUART_DLL  pUART2_DLL
+#  define pUART_GCTL pUART2_GCTL
+#  define pUART_LCR  pUART2_LCR
+#  define pUART_LSR  pUART2_LSR
+#  define pUART_RBR  pUART2_RBR
+#  define pUART_THR  pUART2_THR
+#  define  UART_THR   UART2_THR
+#  define  UART_LSR   UART2_LSR
+# elif (CONFIG_UART_CONSOLE == 1)
 #  define pUART_DLH  pUART1_DLH
 #  define pUART_DLL  pUART1_DLL
 #  define pUART_GCTL pUART1_GCTL
@@ -66,21 +86,32 @@ __attribute__((always_inline))
 static inline void serial_do_portmux(void)
 {
 #ifdef __ADSPBF52x__
-	if (CONFIG_UART_CONSOLE == 0) {
-		bfin_write_PORTG_MUX((bfin_read_PORTG_MUX() & ~PORT_x_MUX_2_MASK) | PORT_x_MUX_2_FUNC_3);
-		bfin_write_PORTG_FER(bfin_read_PORTG_FER() | PG7 | PG8);
-	} else if (CONFIG_UART_CONSOLE == 1) {
-		bfin_write_PORTF_MUX((bfin_read_PORTF_MUX() & ~PORT_x_MUX_5_MASK) | PORT_x_MUX_5_FUNC_3);
-		bfin_write_PORTF_FER(bfin_read_PORTF_FER() | PF14 | PF15);
+# define DO_MUX(port, mux, tx, rx) \
+	bfin_write_PORT##port##_MUX((bfin_read_PORT##port##_MUX() & ~PORT_x_MUX_##mux##_MASK) | PORT_x_MUX_##mux##_FUNC_3); \
+	bfin_write_PORT##port##_FER(bfin_read_PORT##port##_FER() | P##port##tx | P##port##rx);
+	switch (CONFIG_UART_CONSOLE) {
+	case 0: DO_MUX(G, 2, 7, 8);   break;	/* Port G; mux 2; PG2 and PG8 */
+	case 1: DO_MUX(F, 5, 14, 15); break;	/* Port F; mux 5; PF14 and PF15 */
 	}
 	SSYNC();
 #elif defined(__ADSPBF537__) || defined(__ADSPBF536__) || defined(__ADSPBF534__)
-	if (CONFIG_UART_CONSOLE == 0) {
-		bfin_write_PORT_MUX(bfin_read_PORT_MUX() & ~PFDE);
-		bfin_write_PORTF_FER(bfin_read_PORTF_FER() | PF0 | PF1);
-	} else if (CONFIG_UART_CONSOLE == 1) {
-		bfin_write_PORT_MUX(bfin_read_PORT_MUX() & ~PFTE);
-		bfin_write_PORTF_FER(bfin_read_PORTF_FER() | PF2 | PF3);
+# define DO_MUX(func, tx, rx) \
+	bfin_write_PORT_MUX(bfin_read_PORT_MUX() & ~(func)); \
+	bfin_write_PORTF_FER(bfin_read_PORTF_FER() | PF##tx | PF##rx);
+	switch (CONFIG_UART_CONSOLE) {
+	case 0: DO_MUX(PFDE, 0, 1); break;
+	case 1: DO_MUX(PFTE, 2, 3); break;
+	}
+	SSYNC();
+#elif defined(__ADSPBF54x__)
+# define DO_MUX(port, tx, rx) \
+	bfin_write_PORT##port##_MUX((bfin_read_PORT##port##_MUX() & ~(PORT_x_MUX_##tx##_MASK | PORT_x_MUX_##rx##_MASK)) | PORT_x_MUX_##tx##_FUNC_1 | PORT_x_MUX_##rx##_FUNC_1); \
+	bfin_write_PORT##port##_FER(bfin_read_PORT##port##_FER() | P##port##tx | P##port##rx);
+	switch (CONFIG_UART_CONSOLE) {
+	case 0: DO_MUX(E, 7, 8); break;	/* Port E; PE7 and PE8 */
+	case 1: DO_MUX(H, 0, 1); break;	/* Port H; PH0 and PH1 */
+	case 2: DO_MUX(B, 4, 5); break;	/* Port B; PB4 and PB5 */
+	case 3: DO_MUX(B, 6, 7); break;	/* Port B; PB6 and PB7 */
 	}
 	SSYNC();
 #endif
