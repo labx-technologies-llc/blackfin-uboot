@@ -122,6 +122,7 @@
 	 CFG_CMD_CACHE   | \
 	 CFG_CMD_JFFS2   | \
 	 CFG_CMD_DATE	 | \
+	 CFG_CMD_NAND	 | \
 	 ADD_IDE_CMD	 | \
 	 ADD_NAND_CMD    | \
 	 CFG_CMD_EEPROM)

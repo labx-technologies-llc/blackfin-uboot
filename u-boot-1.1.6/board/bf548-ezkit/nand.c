@@ -27,6 +27,28 @@
 
 #include <nand.h>
 
+/* Bit masks for NFC_CTL */
+
+#define                    WR_DLY  0xf        /* Write Strobe Delay */
+#define                    RD_DLY  0xf0       /* Read Strobe Delay */
+#define                    NWIDTH  0x100      /* NAND Data Width */
+#define                   PG_SIZE  0x200      /* Page Size */
+
+/* Bit masks for NFC_STAT */
+
+#define                     NBUSY  0x1        /* Not Busy */
+#define                   WB_FULL  0x2        /* Write Buffer Full */
+#define                PG_WR_STAT  0x4        /* Page Write Pending */
+#define                PG_RD_STAT  0x8        /* Page Read Pending */
+#define                  WB_EMPTY  0x10       /* Write Buffer Empty */
+
+/* Bit masks for NFC_IRQSTAT */
+
+#define                  NBUSYIRQ  0x1        /* Not Busy IRQ */
+#define                    WB_OVF  0x2        /* Write Buffer Overflow */
+#define                   WB_EDGE  0x4        /* Write Buffer Edge Detect */
+#define                    RD_RDY  0x8        /* Read Data Ready */
+#define                   WR_DONE  0x10       /* Page Write Done */
 
 #define bfin_read16(addr) ({ unsigned __v; \
 			__asm__ __volatile__(\
