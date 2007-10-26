@@ -212,6 +212,9 @@ static inline void serial_early_puts(const char *s)
 #endif
 .endm
 
+/* Recursively expand calls to _serial_putc for every byte
+ * passed to us.  Append a newline when we're all done.
+ */
 .macro _serial_early_putc byte:req morebytes:vararg
 #ifdef CONFIG_DEBUG_EARLY_SERIAL
 	R0 = \byte;
@@ -226,11 +229,36 @@ static inline void serial_early_puts(const char *s)
 #endif
 .endm
 
+/* Wrapper around recurisve _serial_early_putc macro which
+ * simply prepends the string "Early: "
+ */
 .macro serial_early_putc byte:req morebytes:vararg
 #ifdef CONFIG_DEBUG_EARLY_SERIAL
 	_serial_early_putc 'E', 'a', 'r', 'l', 'y', ':', ' ', \byte, \morebytes
 #endif
 .endm
+
+/* Since we embed the string right into our .text section, we need
+ * to find its address.  We do this by getting our PC and adding 2
+ * bytes (which is the length of the jump instruction).  Then we
+ * pass this address to serial_puts().
+ */
+#ifdef CONFIG_DEBUG_EARLY_SERIAL
+# define serial_early_puts(str) \
+	call _get_pc; \
+	jump 1f; \
+	.ascii "Early:"; \
+	.ascii __FILE__; \
+	.ascii ": "; \
+	.ascii str; \
+	.asciz "\n"; \
+	.align 4; \
+1: \
+	R0 += 2; \
+	call _serial_puts;
+#else
+# define serial_early_puts(str)
+#endif
 
 #endif
 

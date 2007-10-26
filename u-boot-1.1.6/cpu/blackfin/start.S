@@ -73,7 +73,7 @@ ENTRY(_start)
 	serial_early_init
 	serial_early_set_baud
 
-	serial_early_putc 'I', 'n', 'i', 't', ' ', 'R', 'e', 'g', 'i', 's', 't', 'e', 'r', 's'
+	serial_early_puts("Init Registers");
 
 	/* Disable nested interrupts and enable CYCLES for udelay() */
 	R0 = CCEN | 0x30;
@@ -109,7 +109,7 @@ ENTRY(_start)
 	cc = r0 < r3 (iu);
 	if cc jump .Lproc_initialized;
 
-	serial_early_putc 'P', 'r', 'o', 'g', 'r', 'a', 'm', ' ', 'C', 'l', 'o', 'c', 'k', 's'
+	serial_early_puts("Program Clocks");
 
 	call _initcode;
 
@@ -128,7 +128,7 @@ ENTRY(_start)
 	/* Relocate from wherever are (FLASH/RAM/etc...) to the
 	 * hardcoded monitor location in the end of RAM.
 	 */
-	serial_early_putc 'R', 'e', 'l', 'o', 'c', 'a', 't', 'e'
+	serial_early_puts("Relocate");
 	call _get_pc;
 .Loffset:
 	r2.l = .Loffset;
@@ -167,7 +167,7 @@ ENTRY(_start)
 	/* Initialize BSS section ... we know that memset()
 	 * does not use the BSS, so it is safe to call here
 	 */
-	serial_early_putc 'Z', 'e', 'r', 'o', ' ', 'B', 'S', 'S'
+	serial_early_puts("Zero BSS");
 	r0.l = __bss_start;
 	r0.h = __bss_start;
 	r1 = 0 (x);
@@ -183,7 +183,7 @@ ENTRY(_start)
 	 * level to the dummy "jump" until the interrupt controller
 	 * services the pending 15 interrupt.
 	 */
-	serial_early_putc 'L', 'o', 'w', 'e', 'r', ' ', 'T', 'o', ' ', '1', '5'
+	serial_early_puts("Lower to 15");
 	r0 = r7;
 	r1 = r6;
 	p0.l = LO(EVT15);
