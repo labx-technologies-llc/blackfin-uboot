@@ -454,7 +454,7 @@ lan9118_open(bd_t *bis)
 			ulong macCR = GetMacReg(MAC_CR);
 			macCR |= (MAC_CR_TXEN | MAC_CR_HBDIS);
 			macCR &= ~MAC_CR_PRMS;	/* Turn off promiscuous mode */
-			macCR |= MAC_CR_BCAST;	/* Don't accept broadcast frames */
+			macCR &= ~MAC_CR_BCAST;	/* Accept broadcast frames */
 			SetMacReg(MAC_CR, macCR);
 	  }
 
