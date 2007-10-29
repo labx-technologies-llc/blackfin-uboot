@@ -115,10 +115,16 @@ int serial_getc(void)
 	uart_lsr_val = *pUART_LSR;
 	uart_rbr_val = *pUART_RBR;
 
-	if (uart_lsr_val & (OE|PE|FE|BI))
+	if (uart_lsr_val & (OE|PE|FE|BI)) {
+		/* Some parts are read-to-clear while others are
+		 * write-to-clear.  Just do the write for everyone
+		 * since it cant hurt (other than code size).
+		 */
+		*pUART_LSR = (OE|PE|FE|BI);
 		return -1;
-	else
-		return uart_rbr_val & 0xFF;
+	}
+
+	return uart_rbr_val & 0xFF;
 }
 
 void serial_puts(const char *s)
