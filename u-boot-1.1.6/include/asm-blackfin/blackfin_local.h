@@ -56,7 +56,17 @@ extern u_long get_sclk(void);
 
 # define bfin_revid() (*pCHIPID >> 28)
 
-# define addr_bfin_l1_inst(addr) ((unsigned long)addr >= L1_INST_SRAM && (unsigned long)addr < L1_INST_SRAM_END)
+/* Use DMA to move data from on chip to external memory.  While this is
+ * required for only L1 instruction (it is not directly readable by the
+ * core via data loads), it isn't a huge performance issue for other
+ * regions (it's probably even faster than core load/stores).  However,
+ * the DMA engine does not have access to the L1 scratchpad, and we
+ * cannot use DMA inside of the MMR space.
+ */
+# define addr_bfin_on_chip_mem(addr) \
+	(((unsigned long)(addr) >= 0xef000000 && (unsigned long)addr < SYSMMR_BASE) && \
+	 !((unsigned long)(addr) >= L1_SRAM_SCRATCH && \
+	   (unsigned long)(addr) < L1_SRAM_SCRATCH_END))
 
 # include <asm/system.h>
 

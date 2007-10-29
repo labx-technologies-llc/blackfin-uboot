@@ -168,7 +168,7 @@ int do_mem_md ( cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 
 #ifdef CONFIG_BLACKFIN
 		/* See if we're trying to display L1 inst */
-		if (addr_bfin_l1_inst(addr)) {
+		if (addr_bfin_on_chip_mem(addr)) {
 			memcpy (linebuf, (void *)addr, linebytes);
 			for (i=0; i<linebytes; i+= size) {
 				if (size == 4) {
@@ -363,7 +363,7 @@ int do_mem_cmp (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 #endif
 
 #ifdef CONFIG_BLACKFIN
-	if (addr_bfin_l1_inst(addr1) || addr_bfin_l1_inst(addr2)) {
+	if (addr_bfin_on_chip_mem(addr1) || addr_bfin_on_chip_mem(addr2)) {
 		puts ("Comparison with L1 instruction memory not supported.\n\r");
 		return 0;
 	}
@@ -541,7 +541,7 @@ int do_mem_cp ( cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 
 #ifdef CONFIG_BLACKFIN
 	/* See if we're copying to/from L1 inst */
-	if (addr_bfin_l1_inst(dest) || addr_bfin_l1_inst(addr)) {
+	if (addr_bfin_on_chip_mem(dest) || addr_bfin_on_chip_mem(addr)) {
 		memcpy ((void *)dest, (void *)addr, count * size);
 		return 0;
 	}
@@ -1076,7 +1076,7 @@ mod_mem(cmd_tbl_t *cmdtp, int incrflag, int flag, int argc, char *argv[])
 #endif
 
 #ifdef CONFIG_BLACKFIN
-	if (addr_bfin_l1_inst(addr)) {
+	if (addr_bfin_on_chip_mem(addr)) {
 		puts ("Can't modify L1 instruction in place. Use cp instead.\n\r");
 		return 0;
 	}

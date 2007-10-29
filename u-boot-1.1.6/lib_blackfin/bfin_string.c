@@ -190,11 +190,11 @@ void *memcpy(void *dst, const void *src, size_t count)
 	if (!count)
 		return dst;
 
-	if (addr_bfin_l1_inst(dst)) {
+	if (addr_bfin_on_chip_mem(dst)) {
 		/* L1 is the destination */
 		return dma_memcpy(dst, src, count);
 
-	} else if (addr_bfin_l1_inst(src)) {
+	} else if (addr_bfin_on_chip_mem(src)) {
 		/* L1 is the source */
 		return dma_memcpy(dst, src, count);
 
