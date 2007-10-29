@@ -27,6 +27,8 @@
 
 #include <nand.h>
 
+#include <asm/blackfin.h>
+
 /* Bit masks for NFC_CTL */
 
 #define                    WR_DLY  0xf        /* Write Strobe Delay */
@@ -49,55 +51,6 @@
 #define                   WB_EDGE  0x4        /* Write Buffer Edge Detect */
 #define                    RD_RDY  0x8        /* Read Data Ready */
 #define                   WR_DONE  0x10       /* Page Write Done */
-
-#define bfin_read16(addr) ({ unsigned __v; \
-			__asm__ __volatile__(\
-			"%0 = w[%1] (z);\n\t"\
-			: "=d"(__v) : "a"(addr)); (unsigned short)__v; })
-
-#define bfin_write16(addr, val) ({\
-			__asm__ __volatile__(\
-			"w[%0] = %1;\n\t"\
-			: : "a"(addr) , "d"(val) : "memory"); })
-
-/* NFC Registers */
-#define bfin_read_NFC_CTL()		bfin_read16(NFC_CTL)
-#define bfin_write_NFC_CTL(val)		bfin_write16(NFC_CTL, val)
-#define bfin_read_NFC_STAT()		bfin_read16(NFC_STAT)
-#define bfin_write_NFC_STAT(val)	bfin_write16(NFC_STAT, val)
-#define bfin_read_NFC_IRQSTAT()		bfin_read16(NFC_IRQSTAT)
-#define bfin_write_NFC_IRQSTAT(val)	bfin_write16(NFC_IRQSTAT, val)
-#define bfin_read_NFC_IRQMASK()		bfin_read16(NFC_IRQMASK)
-#define bfin_write_NFC_IRQMASK(val)	bfin_write16(NFC_IRQMASK, val)
-#define bfin_read_NFC_ECC0()		bfin_read16(NFC_ECC0)
-#define bfin_write_NFC_ECC0(val)	bfin_write16(NFC_ECC0, val)
-#define bfin_read_NFC_ECC1()		bfin_read16(NFC_ECC1)
-#define bfin_write_NFC_ECC1(val)	bfin_write16(NFC_ECC1, val)
-#define bfin_read_NFC_ECC2()		bfin_read16(NFC_ECC2)
-#define bfin_write_NFC_ECC2(val)	bfin_write16(NFC_ECC2, val)
-#define bfin_read_NFC_ECC3()		bfin_read16(NFC_ECC3)
-#define bfin_write_NFC_ECC3(val)	bfin_write16(NFC_ECC3, val)
-#define bfin_read_NFC_COUNT()		bfin_read16(NFC_COUNT)
-#define bfin_write_NFC_COUNT(val)	bfin_write16(NFC_COUNT, val)
-#define bfin_read_NFC_RST()		bfin_read16(NFC_RST)
-#define bfin_write_NFC_RST(val)		bfin_write16(NFC_RST, val)
-#define bfin_read_NFC_PGCTL()		bfin_read16(NFC_PGCTL)
-#define bfin_write_NFC_PGCTL(val)	bfin_write16(NFC_PGCTL, val)
-#define bfin_read_NFC_READ()		bfin_read16(NFC_READ)
-#define bfin_write_NFC_READ(val)	bfin_write16(NFC_READ, val)
-#define bfin_read_NFC_ADDR()		bfin_read16(NFC_ADDR)
-#define bfin_write_NFC_ADDR(val)	bfin_write16(NFC_ADDR, val)
-#define bfin_read_NFC_CMD()		bfin_read16(NFC_CMD)
-#define bfin_write_NFC_CMD(val)		bfin_write16(NFC_CMD, val)
-#define bfin_read_NFC_DATA_WR()		bfin_read16(NFC_DATA_WR)
-#define bfin_write_NFC_DATA_WR(val)	bfin_write16(NFC_DATA_WR, val)
-#define bfin_read_NFC_DATA_RD()		bfin_read16(NFC_DATA_RD)
-#define bfin_write_NFC_DATA_RD(val)	bfin_write16(NFC_DATA_RD, val)
-
-/* PORTJ */
-#define bfin_read_PORTJ_FER()		bfin_read16(PORTJ_FER)
-
-#define bfin_write_PORTJ_FER(val)	bfin_write16(PORTJ_FER, val)
 
 static int bf54x_nand_CLE_ALE_flag;
 #define CLE_ALE_NONE	0x0
@@ -132,23 +85,19 @@ static void bf54x_nand_hwcontrol(struct mtd_info *mtd, int cmd)
 }
 
 /*
-* bf54x_nand_write_byte
-*
-* Issue command and address cycles to the chip
-       */
-static void bf54x_nand_write_byte(struct mtd_info *mtd, int cmd)
+ * bf54x_nand_write_byte
+ *
+ * Issue command and address cycles to the chip
+ */
+static void bf54x_nand_write_byte(struct mtd_info *mtd, u_char byte)
 {
-	if (cmd == NAND_CMD_NONE)
-		return;
-
 	while (bfin_read_NFC_STAT() & WB_FULL)
 		continue;
 
 	if (bf54x_nand_CLE_ALE_flag == BF54X_CLE)
-		bfin_write_NFC_CMD(cmd);
+		bfin_write_NFC_CMD(byte);
 	else if (bf54x_nand_CLE_ALE_flag == BF54X_ALE)
-		bfin_write_NFC_ADDR(cmd);
-	return;
+		bfin_write_NFC_ADDR(byte);
 }
 
 int bf54x_nand_devready(struct mtd_info *mtd)
@@ -250,7 +199,6 @@ void board_nand_init(struct nand_chip *nand)
 	bfin_write_PORTJ_FER(val);
 
 	nand->hwcontrol = bf54x_nand_hwcontrol;
-	/*add by Jerry */
 	nand->read_buf = bf54x_nand_read_buf;
 	nand->write_buf = bf54x_nand_write_buf;
 	nand->read_byte = bf54x_nand_read_byte;
