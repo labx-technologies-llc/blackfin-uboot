@@ -11,14 +11,19 @@
 #define	RTC_HR			0x0001F000	/* Real-Time Clock Hours */
 #define	RTC_DAY			0xFFFE0000	/* Real-Time Clock Days */
 
+#define RTC_SEC_P		0
+#define RTC_MIN_P		6
+#define RTC_HR_P		12
+#define RTC_DAY_P		17
+
 /*
  * RTC_ALARM Macro
  */
-#define SET_ALARM(day, hour, min, sec) \
-	( (((day)  & 0x7FFF) << 0x11) | \
-	  (((hour) & 0x001F) << 0x0C) | \
-	  (((min)  & 0x003F) << 0x06) | \
-	  (((sec)  & 0x003F) << 0x00) )
+#define SET_ALARM(day, hr, min, sec) \
+	( (((day) << RTC_DAY_P) & RTC_DAY) | \
+	  (((hr)  << RTC_HR_P ) & RTC_HR ) | \
+	  (((min) << RTC_MIN_P) & RTC_MIN) | \
+	  (((sec) << RTC_SEC_P) & RTC_SEC) )
 
 /* RTC_ICTL and RTC_ISTAT Masks */
 #define	STOPWATCH		0x0001	/* Stopwatch Interrupt Enable */

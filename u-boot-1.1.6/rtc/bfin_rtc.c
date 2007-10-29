@@ -1,48 +1,10 @@
 /*
+ * Copyright (c) 2004-2007 Analog Devices Inc.
+ *
  * (C) Copyright 2001
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
- * See file CREDITS for list of people who contributed to this
- * project.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
- * Real Time Clock interface of ADI21535 (Blackfin) for uCLinux
- *
- * Copyright (C) 2003 Motorola Corporation.  All rights reserved.
- * 				Richard Xiao (A2590C@email.mot.com)
- *
- * Copyright (C) 1996 Paul Gortmaker
- *
- *
- *	Based on other minimal char device drivers, like Alan's
- *	watchdog, Ted's random, etc. etc.
- *
- *	1.07	Paul Gortmaker.
- *	1.08	Miquel van Smoorenburg: disallow certain things on the
- *		DEC Alpha as the CMOS clock is also used for other things.
- *	1.09	Nikita Schmidt: epoch support and some Alpha cleanup.
- *	1.09a	Pete Zaitcev: Sun SPARC
- *	1.09b	Jeff Garzik: Modularize, init cleanup
- *	1.09c	Jeff Garzik: SMP cleanup
- *	1.10    Paul Barton-Davis: add support for async I/O
- *	1.10a	Andrea Arcangeli: Alpha updates
- *	1.10b	Andrew Morton: SMP lock fix
- *	1.10c	Cesar Barros: SMP locking fixes and cleanup
- *	1.10d	Paul Gortmaker: delete paranoia check in rtc_exit
- *	1.10e   LG Soft India: Register access is different in BF533.
+ * Licensed under the GPL-2 or later.
  */
 
 #include <common.h>
@@ -52,39 +14,39 @@
 #if defined(CONFIG_RTC_BFIN) && (CONFIG_COMMANDS & CFG_CMD_DATE)
 
 #include <asm/blackfin.h>
+#include <asm/mach-common/bits/rtc.h>
 
-#define MIN_TO_SECS(_x_)	(60 * _x_)
-#define HRS_TO_SECS(_x_)	(60 * 60 * _x_)
-#define DAYS_TO_SECS(_x_)	(24 * 60 * 60 * _x_)
+#define pr_stamp() debug("%s:%s:%i: here i am\n", __FILE__, __func__, __LINE__)
 
-#define NUM_SECS_IN_DAY		(24 * 3600)
-#define NUM_SECS_IN_HOUR	(3600)
-#define NUM_SECS_IN_MIN		(60)
+#define MIN_TO_SECS(x)    (60 * (x))
+#define HRS_TO_SECS(x)    (60 * MIN_TO_SECS(x))
+#define DAYS_TO_SECS(x)   (24 * HRS_TO_SECS(x))
 
-/* Shift values for RTC_STAT register */
-#define DAY_BITS_OFF		17
-#define HOUR_BITS_OFF		12
-#define MIN_BITS_OFF		6
-#define SEC_BITS_OFF		0
+#define NUM_SECS_IN_MIN   MIN_TO_SECS(1)
+#define NUM_SECS_IN_HR    HRS_TO_SECS(1)
+#define NUM_SECS_IN_DAY   DAYS_TO_SECS(1)
 
+/* Our on-chip RTC has no notion of "reset" */
 void rtc_reset(void)
 {
-	return;			/* nothing to do */
+	return;
 }
 
 /* Wait for pending writes to complete */
 static void wait_for_complete(void)
 {
-	while (!(*(volatile unsigned short *)RTC_ISTAT & 0x8000)) {
-		printf("");
-	}
-	*(volatile unsigned short *)RTC_ISTAT = 0x8000;
+	pr_stamp();
+	while (!(bfin_read_RTC_ISTAT() & WRITE_COMPLETE))
+		if (!(bfin_read_RTC_ISTAT() & WRITE_PENDING))
+			break;
+	bfin_write_RTC_ISTAT(WRITE_COMPLETE);
 }
 
 /* Enable the RTC prescaler enable register */
 int rtc_init(void)
 {
-	*(volatile unsigned short *)RTC_PREN = 0x1;
+	pr_stamp();
+	bfin_write_RTC_PREN(0x1);
 	return 0;
 }
 
@@ -93,66 +55,63 @@ int rtc_init(void)
  */
 void rtc_set(struct rtc_time *tmp)
 {
-	unsigned long n_days_1970 = 0;
-	unsigned long n_secs_rem = 0;
-	unsigned long n_hrs = 0;
-	unsigned long n_mins = 0;
-	unsigned long n_secs = 0;
-	unsigned long time_in_secs;
+	unsigned long remain, days, hrs, mins, secs;
+
+	pr_stamp();
 
 	if (tmp == NULL) {
-		printf("Error setting the date/time \n");
+		puts("Error setting the date/time\n");
 		return;
 	}
 
 	wait_for_complete();
 
-	time_in_secs =
-	    mktime(tmp->tm_year, tmp->tm_mon, tmp->tm_mday, tmp->tm_hour,
-		   tmp->tm_min, tmp->tm_sec);
+	/* Calculate number of seconds this incoming time represents */
+	remain = mktime(tmp->tm_year, tmp->tm_mon, tmp->tm_mday,
+	                tmp->tm_hour, tmp->tm_min, tmp->tm_sec);
 
-	/* Compute no. of days since 1970 */
-	n_days_1970 = (unsigned long)(time_in_secs / (NUM_SECS_IN_DAY));
+	/* Figure out how many days since epoch */
+	days = remain / NUM_SECS_IN_DAY;
 
-	/* From the remining secs, compute the hrs(0-23), mins(0-59) and secs(0-59) */
-	n_secs_rem = (unsigned long)(time_in_secs % (NUM_SECS_IN_DAY));
-	n_hrs = n_secs_rem / (NUM_SECS_IN_HOUR);
-	n_secs_rem = n_secs_rem % (NUM_SECS_IN_HOUR);
-	n_mins = n_secs_rem / (NUM_SECS_IN_MIN);
-	n_secs = n_secs_rem % (NUM_SECS_IN_MIN);
+	/* From the remaining secs, compute the hrs(0-23), mins(0-59) and secs(0-59) */
+	remain = remain % NUM_SECS_IN_DAY;
+	hrs = remain / NUM_SECS_IN_HR;
+	remain = remain % NUM_SECS_IN_HR;
+	mins = remain / NUM_SECS_IN_MIN;
+	secs = remain % NUM_SECS_IN_MIN;
 
-	/* Store the new time in the RTC_STAT register */
-	*(volatile unsigned long *)RTC_STAT =
-	    ((n_days_1970 << DAY_BITS_OFF) | (n_hrs << HOUR_BITS_OFF) |
-	     (n_mins << MIN_BITS_OFF) | (n_secs << SEC_BITS_OFF));
+	/* Encode these time values into our RTC_STAT register */
+	bfin_write_RTC_STAT(SET_ALARM(days, hrs, mins, secs));
 }
 
 /* Read the time from the RTC_STAT. time_in_seconds is seconds since Jan 1970 */
 void rtc_get(struct rtc_time *tmp)
 {
-	unsigned long cur_rtc_stat = 0;
-	unsigned long time_in_sec;
-	unsigned long tm_sec = 0, tm_min = 0, tm_hour = 0, tm_day = 0;
+	uint32_t cur_rtc_stat;
+	int time_in_sec;
+	int tm_sec, tm_min, tm_hr, tm_day;
+
+	pr_stamp();
 
 	if (tmp == NULL) {
-		printf("Error getting the date/time \n");
+		puts("Error getting the date/time\n");
 		return;
 	}
 
 	wait_for_complete();
 
 	/* Read the RTC_STAT register */
-	cur_rtc_stat = *(volatile unsigned long *)RTC_STAT;
+	cur_rtc_stat = bfin_read_RTC_STAT();
 
-	/* Get the secs (0-59), mins (0-59), hrs (0-23) and the days since Jan 1970 */
-	tm_sec = (cur_rtc_stat >> SEC_BITS_OFF) & 0x3f;
-	tm_min = (cur_rtc_stat >> MIN_BITS_OFF) & 0x3f;
-	tm_hour = (cur_rtc_stat >> HOUR_BITS_OFF) & 0x1f;
-	tm_day = (cur_rtc_stat >> DAY_BITS_OFF) & 0x7fff;
+	/* Convert our encoded format into actual time values */
+	tm_sec = (cur_rtc_stat & RTC_SEC) >> RTC_SEC_P;
+	tm_min = (cur_rtc_stat & RTC_MIN) >> RTC_MIN_P;
+	tm_hr  = (cur_rtc_stat & RTC_HR ) >> RTC_HR_P;
+	tm_day = (cur_rtc_stat & RTC_DAY) >> RTC_DAY_P;
 
-	/* Calculate the total number of seconds since Jan 1970 */
-	time_in_sec = (tm_sec) +
-	    MIN_TO_SECS(tm_min) + HRS_TO_SECS(tm_hour) + DAYS_TO_SECS(tm_day);
+	/* Calculate the total number of seconds since epoch */
+	time_in_sec = (tm_sec) + MIN_TO_SECS(tm_min) + HRS_TO_SECS(tm_hr) + DAYS_TO_SECS(tm_day);
 	to_tm(time_in_sec, tmp);
 }
-#endif				/* CONFIG_RTC_BFIN && CFG_CMD_DATE */
+
+#endif
