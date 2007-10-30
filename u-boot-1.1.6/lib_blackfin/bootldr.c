@@ -37,7 +37,7 @@ int do_bootldr(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 
 	/* Check if it is a LDR file */
 	data = addr;
-#ifdef __ADSPBF54x__
+#if defined(__ADSPBF54x__) || defined(__ADSPBF52x__)
 	if ((*data & 0xFF000000) == 0xAD000000 && data[2] == 0x00000000) {
 #else
 	if (*data == 0xFF800060 || *data == 0xFF800040 || *data == 0xFF800020) {
