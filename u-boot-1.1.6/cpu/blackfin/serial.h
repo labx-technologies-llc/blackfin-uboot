@@ -28,6 +28,8 @@
 #  define pUART_DLH  pUART3_DLH
 #  define pUART_DLL  pUART3_DLL
 #  define pUART_GCTL pUART3_GCTL
+#  define pUART_IER  pUART3_IER
+#  define pUART_IERC pUART3_IER_CLEAR
 #  define pUART_LCR  pUART3_LCR
 #  define pUART_LSR  pUART3_LSR
 #  define pUART_RBR  pUART3_RBR
@@ -38,6 +40,8 @@
 #  define pUART_DLH  pUART2_DLH
 #  define pUART_DLL  pUART2_DLL
 #  define pUART_GCTL pUART2_GCTL
+#  define pUART_IER  pUART2_IER
+#  define pUART_IERC pUART2_IER_CLEAR
 #  define pUART_LCR  pUART2_LCR
 #  define pUART_LSR  pUART2_LSR
 #  define pUART_RBR  pUART2_RBR
@@ -48,6 +52,8 @@
 #  define pUART_DLH  pUART1_DLH
 #  define pUART_DLL  pUART1_DLL
 #  define pUART_GCTL pUART1_GCTL
+#  define pUART_IER  pUART1_IER
+#  define pUART_IERC pUART1_IER_CLEAR
 #  define pUART_LCR  pUART1_LCR
 #  define pUART_LSR  pUART1_LSR
 #  define pUART_RBR  pUART1_RBR
@@ -58,6 +64,8 @@
 #  define pUART_DLH  pUART0_DLH
 #  define pUART_DLL  pUART0_DLL
 #  define pUART_GCTL pUART0_GCTL
+#  define pUART_IER  pUART0_IER
+#  define pUART_IERC pUART0_IER_CLEAR
 #  define pUART_LCR  pUART0_LCR
 #  define pUART_LSR  pUART0_LSR
 #  define pUART_RBR  pUART0_RBR
@@ -77,9 +85,11 @@
 #ifdef __ADSPBF54x__
 # define ACCESS_LATCH()
 # define ACCESS_PORT_IER()
+# define CLEAR_IER()       (*pUART_IERC = 0)
 #else
 # define ACCESS_LATCH()    (*pUART_LCR |= DLAB)
 # define ACCESS_PORT_IER() (*pUART_LCR &= ~DLAB)
+# define CLEAR_IER()       (*pUART_IER = 0)
 #endif
 
 __attribute__((always_inline))
@@ -128,6 +138,9 @@ static inline void serial_early_init(void)
 
 	/* Set LCR to Word Lengh 8-bit word select */
 	*pUART_LCR = WLS_8;
+
+	/* Seems to be an anomaly with the IER register [#3608] */
+	CLEAR_IER();
 
 	SSYNC();
 }
