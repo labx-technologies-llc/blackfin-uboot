@@ -2245,7 +2245,7 @@ ADI_BOARDS = \
 	bf548-ezkit bf537-stamp bf561-ezkit
 
 # Third party boards:
-ADI_BOARDS += bf537-minotaur
+ADI_BOARDS += bf537-minotaur bf537-srv1
 
 $(ADI_BOARDS:%=%_config)	: unconfig
 	@$(MKCONFIG) $(@:_config=) blackfin blackfin $(@:_config=)
@@ -2296,6 +2296,7 @@ clean:
 	rm -f $(obj)board/bf533-ezkit/u-boot.lds $(obj)board/bf533-stamp/u-boot.lds
 	rm -f $(obj)board/bf537-stamp/u-boot.lds $(obj)board/bf537-pnav/u-boot.lds
 	rm -f $(obj)board/bf537-minotaur/u-boot.lds
+	rm -f $(obj)board/bf537-srv1/u-boot.lds
 	rm -f $(obj)board/bf548-ezkit/u-boot.lds
 	rm -f $(obj)board/bf561-ezkit/u-boot.lds
 	rm -f $(obj)cpu/blackfin/bootrom-asm-offsets.[chs]
