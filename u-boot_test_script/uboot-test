@@ -42,12 +42,13 @@ fi
 
   echo "Start building u-boot of $1 . Clock config is $2 ."
   cd $CHECKOUT/u-boot/u-boot-1.1.6
+  make distclean   >/dev/null  2>&1
   make clean   >/dev/null  2>&1
   make mrproper  >/dev/null  2>&1
   make $config_param  >/dev/null  2>&1
   make  >> $UBOOT_SCRIPTS/uboot_make_log  2>&1
  
-  if [ -e u-boot.bin ] ; then
+  if [ -e u-boot.bin ] && [ -e u-boot.ldr ] ; then
     cp u-boot.bin /tftpboot
     cp u-boot.ldr /tftpboot
   else

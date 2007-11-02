@@ -201,24 +201,14 @@ if { $where_are_we == "uboot" } {
    expect ">"
    send_user "set uboot environment\n"
    send -s "set ipaddr 10.100.4.50\r"
+   expect ">"
    send -s "set serverip 10.100.4.174\r"
+   expect ">"
    send -s "set bootcmd run tftp_boot\r"
+   expect ">"
    send -s "set tftp_boot tftp 0x1000000 linux\\;boote 0x1000000\r"
+   expect ">"
    send -s "save\r" 
-   set timeout 100
-   while 1 {
-   expect {
-            "Protected 1 sectors" { 
-	    break
-	    }	
-	
-            timeout {
-	    send_user "failed tftp_boot attempt\n"
-	    break
-	    }
-	  }
-    }
- 
   expect ">"
   send -s "run tftp_boot\r"
   while 1 {
