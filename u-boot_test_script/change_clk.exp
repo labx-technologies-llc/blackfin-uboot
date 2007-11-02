@@ -166,7 +166,7 @@ if { $board_type == "BF533-STAMP" } {
 	   set sclk_div  4
 	}
 } elseif { $board_type == "BF548-EZKIT" } {
-    set config_file bf561-ezkit.h
+    set config_file bf548-ezkit.h
         if { $num == "0" } {
            set vco_mult  21
            set cclk_div  1

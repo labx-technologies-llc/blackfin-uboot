@@ -35,7 +35,13 @@ exit 2
 fi
   cp $CHECKOUT/u-boot/u-boot_test_script/*.exp $UBOOT_SCRIPTS
 
+  if [ $# -gt 1 ] ; then
   $UBOOT_SCRIPTS/change_clk.exp $1 $2 $CHECKOUT >$UBOOT_SCRIPTS/uboot_make_log  2>&1
+  fi
+  
+  if [ $# -gt 2 ] ; then
+  $UBOOT_SCRIPTS/boot_config.exp $1 $3 $CHECKOUT >$UBOOT_SCRIPTS/uboot_make_log  2>&1
+  fi
 
   export PATH=/opt/uClinux/bfin-uclinux/bin:/opt/uClinux/bfin-elf/bin:/opt/uClinux/bfin-linux-uclibc/bin:$PATH
   rm /tftpboot/u-boot.bin
