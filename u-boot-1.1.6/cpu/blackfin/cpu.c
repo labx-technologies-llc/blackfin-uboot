@@ -35,34 +35,27 @@
 #include "cpu.h"
 #include "serial.h"
 
-#if defined(__ADSPBF561__)
-# define SYSCR_VAL 0x20	/* do not enable core b */
-#else
-# define SYSCR_VAL 0x0
-#endif
-
-/* A system soft reset makes external memory unusable
- * so force this function into L1.
+/* A system soft reset makes external memory unusable so force
+ * this function into L1.  We use the compiler ssync here rather
+ * than SSYNC() because it's safe (no interrupts and such) and
+ * we save some L1.  We do not need to force sanity in the SYSCR
+ * register as the BMODE selection bit is cleared by the soft
+ * reset while the Core B bit (on dual core parts) is cleared by
+ * the core reset.
  */
 __attribute__ ((__l1_text__, __noreturn__))
 void bfin_reset(void)
 {
-	/* force BMODE and disable Core B (as needed) */
-	bfin_write_SYSCR(SYSCR_VAL);
-
-	/* we use the asm(ssync) here rather than SSYNC() because
-	 * it's safe (no interrupts and such) and we save some L1
-	 */
-	asm("ssync;");
-
 	while (1) {
-		/* initiate system soft reset with magic 0x7 */
+		/* Not entirely sure why this ssync is needed ... */
+		__builtin_bfin_ssync();
+		/* Initiate system software reset of peripherals */
 		bfin_write_SWRST(0x7);
-		asm("ssync;");
-		/* clear system soft reset */
+		__builtin_bfin_ssync();
+		/* Clear system software reset */
 		bfin_write_SWRST(0);
-		asm("ssync;");
-		/* issue core reset */
+		__builtin_bfin_ssync();
+		/* Issue core reset */
 		asm("raise 1");
 	}
 }
