@@ -336,9 +336,9 @@ lan9118_open(bd_t *bis)
 	  int timeout;
 	  int i;
 
+#ifdef DEBUG
 	  printf("DRIVER_VERSION : %X, ", DRIVER_VERSION);
 	  printf("DATECODE : %s\r\n", BUILD_NUMBER);
-#ifdef		DEBUG
 	  TotalInts = 0;
 	  TotalRXE = 0;
 	  TotalBytes = 0;
@@ -347,21 +347,6 @@ lan9118_open(bd_t *bis)
 			use_smsc9118 = 1;
 	  }
 #endif
-
-	  /* Because we just came out of h/w reset we can't be sure that
-	   * the chip has completed reset and may have to implement the
-	   * workaround for Errata 5, stepping A0.	Therefore we need to
-	   * check the ID_REV in little endian, the reset default.
-	   */
-	  if (((*ID_REV & ID_REV_ID_MASK) == ID_REV_CHIP_118) ||
-	      ((*ID_REV & ID_REV_ID_MASK) == ID_REV_CHIP_218))
-	  {
-			printf("LAN9x18 (0x%08x) detected.\n", *ID_REV);
-	  } else {
-			printf("Failed to detect LAN9118. ID_REV = 0x%08x\n", *ID_REV);
-		    RetVal = FALSE;
-		    goto done;
-	  }
 
 	  /* Does SoftReset to 118 */
 	  *HW_CFG = HW_CFG_SRST;
@@ -812,6 +797,24 @@ static int lan9118_write(volatile void *ptr, int len)
 int	eth_init(bd_t *bd)
 {
 	return lan9118_open(bd);
+}
+
+int smsc9118_initialize(bd_t *bd)
+{
+	/* Because we just came out of h/w reset we can't be sure that
+	 * the chip has completed reset and may have to implement the
+	 * workaround for Errata 5, stepping A0.	Therefore we need to
+	 * check the ID_REV in little endian, the reset default.
+	 */
+	if (((*ID_REV & ID_REV_ID_MASK) == ID_REV_CHIP_118) ||
+	    ((*ID_REV & ID_REV_ID_MASK) == ID_REV_CHIP_218))
+	{
+		printf("LAN9x18 (0x%08x) detected at 0x%08x\n", *ID_REV, CONFIG_SMSC9118_BASE);
+		return 0;
+	} else {
+		printf("Failed to detect LAN9118 (ID_REV = 0x%08x) at 0x%08x\n", *ID_REV, CONFIG_SMSC9118_BASE);
+		return -1;
+	}
 }
 
 void eth_halt(void)
