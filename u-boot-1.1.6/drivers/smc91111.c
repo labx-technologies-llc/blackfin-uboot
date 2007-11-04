@@ -161,7 +161,9 @@ extern int eth_rx(void);
 extern int eth_send(volatile void *packet, int length);
 
 #ifdef SHARED_RESOURCES
-	extern void swap_to(int device_id);
+extern void swap_to(int device_id);
+#else
+# define swap_to(device_id)
 #endif
 
 /*
@@ -1516,11 +1518,31 @@ static void print_packet( byte * buf, int length )
 }
 #endif
 
-int eth_init(bd_t *bd) {
-#ifdef SHARED_RESOURCES
+int eth_init(bd_t *bd)
+{
 	swap_to(ETHERNET);
-#endif
 	return (smc_open(bd));
+}
+
+#define UPPER_BYTE_MASK  0xFF00
+#define SMC_IDENT        0x3300
+int smc9111_initialize(bd_t *bd)
+{
+	int ret;
+
+	swap_to(ETHERNET);
+
+	if ((SMC_inw(BANK_SELECT) & UPPER_BYTE_MASK) != SMC_IDENT) {
+		printf("Unable to find SMC91111 at 0X%08X\n", SMC_BASE_ADDRESS);
+		ret = -1;
+	} else {
+		printf("SMC91111 at 0x%08X\n", SMC_BASE_ADDRESS);
+		ret = 0;
+	}
+
+	swap_to(FLASH);
+
+	return ret;
 }
 
 void eth_halt() {

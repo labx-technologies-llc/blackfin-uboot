@@ -468,6 +468,7 @@ extern int at91rm9200_miiphy_initialize(bd_t *bis);
 extern int emac4xx_miiphy_initialize(bd_t *bis);
 extern int mcf52x2_miiphy_initialize(bd_t *bis);
 extern int ns7520_miiphy_initialize(bd_t *bis);
+extern int smc9111_initialize(bd_t *bis);
 extern int smsc9118_initialize(bd_t *bis);
 
 int eth_initialize(bd_t *bis)
@@ -488,6 +489,9 @@ int eth_initialize(bd_t *bis)
 #endif
 #if defined(CONFIG_NETARM)
 	ns7520_miiphy_initialize(bis);
+#endif
+#if defined(CONFIG_DRIVER_SMC91111)
+	smc9111_initialize(bis);
 #endif
 #if defined(CONFIG_DRIVER_SMSC9118)
 	smsc9118_initialize(bis);
