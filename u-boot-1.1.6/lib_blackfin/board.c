@@ -27,19 +27,18 @@
 
 #include <common.h>
 #include <command.h>
-#include <malloc.h>
 #include <devices.h>
-#include <version.h>
-#include <net.h>
 #include <environment.h>
 #include <i2c.h>
-#include <asm/mach-common/bits/mpu.h>
-#include "blackfin_board.h"
+#include <malloc.h>
+#include <net.h>
+#include <version.h>
+
 #include <asm/cplb.h>
-#include "../drivers/smc91111.h"
+#include <asm/mach-common/bits/mpu.h>
 
 #if (CONFIG_COMMANDS & CFG_CMD_NAND)
-#include <nand.h>
+#include <nand.h>	/* cannot even include nand.h if it isnt configured */
 #endif
 
 #if defined(CONFIG_POST)
@@ -47,15 +46,19 @@
 int post_flag;
 #endif
 
-#undef DEBUG
+const char version_string[] = U_BOOT_VERSION " (" __DATE__ " - " __TIME__ ")";
 
-#ifndef CFG_NO_FLASH
-extern flash_info_t flash_info[];
+__attribute__((always_inline))
+static inline void serial_early_puts(const char *s)
+{
+#ifdef CONFIG_DEBUG_EARLY_SERIAL
+	serial_puts("Early: ");
+	serial_puts(s);
 #endif
+}
 
-const char version_string[] = U_BOOT_VERSION" (" __DATE__ " - " __TIME__ ")";
-
-static inline u_long get_vco(void)
+/* Get the input voltage */
+static u_long get_vco(void)
 {
 	u_long msel;
 	u_long vco;
@@ -70,7 +73,7 @@ static inline u_long get_vco(void)
 	return vco;
 }
 
-/*Get the Core clock*/
+/* Get the Core clock */
 u_long get_cclk(void)
 {
 	u_long csel, ssel;
@@ -98,25 +101,27 @@ u_long get_sclk(void)
 	return get_vco() / ssel;
 }
 
+static void *mem_malloc_start, *mem_malloc_end, *mem_malloc_brk;
+
 static void mem_malloc_init(void)
 {
-	mem_malloc_start = CFG_MALLOC_BASE;
-	mem_malloc_end = (CFG_MALLOC_BASE + CFG_MALLOC_LEN);
+	mem_malloc_start = (void *)CFG_MALLOC_BASE;
+	mem_malloc_end = (void *)(CFG_MALLOC_BASE + CFG_MALLOC_LEN);
 	mem_malloc_brk = mem_malloc_start;
-	memset((void *)mem_malloc_start, 0, mem_malloc_end - mem_malloc_start);
+	memset(mem_malloc_start, 0, mem_malloc_end - mem_malloc_start);
 }
 
 void *sbrk(ptrdiff_t increment)
 {
-	ulong old = mem_malloc_brk;
-	ulong new = old + increment;
+	void *old = mem_malloc_brk;
+	void *new = old + increment;
 
-	if ((new < mem_malloc_start) || (new > mem_malloc_end)) {
-		return (NULL);
-	}
+	if (new < mem_malloc_start || new > mem_malloc_end)
+		return NULL;
+
 	mem_malloc_brk = new;
 
-	return ((void *)old);
+	return old;
 }
 
 static int display_banner(void)
@@ -124,13 +129,6 @@ static int display_banner(void)
 	printf("\n\n%s\n\n", version_string);
 	printf("CPU:   ADSP " MK_STR(BFIN_CPU) " (Detected Rev: 0.%d)\n", bfin_revid());
 	return 0;
-}
-
-static void display_flash_config(ulong size)
-{
-	puts("FLASH: ");
-	print_size(size, "\n");
-	return;
 }
 
 static int init_baudrate(void)
@@ -146,33 +144,33 @@ static int init_baudrate(void)
 
 static void display_global_data(void)
 {
-#ifdef DEBUG
+#ifdef CONFIG_DEBUG_EARLY_SERIAL
 	DECLARE_GLOBAL_DATA_PTR;
 	bd_t *bd;
 	bd = gd->bd;
-	printf("--flags:%x\n", gd->flags);
-	printf("--board_type:%x\n", gd->board_type);
-	printf("--baudrate:%x\n", gd->baudrate);
-	printf("--have_console:%x\n", gd->have_console);
-	printf("--ram_size:%x\n", gd->ram_size);
-	printf("--reloc_off:%x\n", gd->reloc_off);
-	printf("--env_addr:%x\n", gd->env_addr);
-	printf("--env_valid:%x\n", gd->env_valid);
-	printf("--bd:%x %x\n", gd->bd, bd);
-	printf("---bi_baudrate:%x\n", bd->bi_baudrate);
-	printf("---bi_ip_addr:%x\n", bd->bi_ip_addr);
-	printf("---bi_enetaddr:%x %x %x %x %x %x\n",
-	       bd->bi_enetaddr[0],
-	       bd->bi_enetaddr[1],
-	       bd->bi_enetaddr[2],
-	       bd->bi_enetaddr[3], bd->bi_enetaddr[4], bd->bi_enetaddr[5]);
-	printf("---bi_boot_params:%x\n", bd->bi_boot_params);
-	printf("---bi_memstart:%x\n", bd->bi_memstart);
-	printf("---bi_memsize:%x\n", bd->bi_memsize);
-	printf("---bi_flashstart:%x\n", bd->bi_flashstart);
-	printf("---bi_flashsize:%x\n", bd->bi_flashsize);
-	printf("---bi_flashoffset:%x\n", bd->bi_flashoffset);
-	printf("--jt:%x *:%x\n", gd->jt, *(gd->jt));
+	printf(" gd: %x\n", gd);
+	printf(" |-flags: %x\n", gd->flags);
+	printf(" |-board_type: %x\n", gd->board_type);
+	printf(" |-baudrate: %i\n", gd->baudrate);
+	printf(" |-have_console: %x\n", gd->have_console);
+	printf(" |-ram_size: %x\n", gd->ram_size);
+	printf(" |-reloc_off: %x\n", gd->reloc_off);
+	printf(" |-env_addr: %x\n", gd->env_addr);
+	printf(" |-env_valid: %x\n", gd->env_valid);
+	printf(" |-jt(%x): %x\n", gd->jt, *(gd->jt));
+	printf(" \\-bd: %x\n", gd->bd);
+	printf("   |-bi_baudrate: %x\n", bd->bi_baudrate);
+	printf("   |-bi_ip_addr: %x\n", bd->bi_ip_addr);
+	printf("   |-bi_enetaddr: %x %x %x %x %x %x\n",
+	       bd->bi_enetaddr[0], bd->bi_enetaddr[1],
+	       bd->bi_enetaddr[2], bd->bi_enetaddr[3],
+	       bd->bi_enetaddr[4], bd->bi_enetaddr[5]);
+	printf("   |-bi_boot_params: %x\n", bd->bi_boot_params);
+	printf("   |-bi_memstart: %x\n", bd->bi_memstart);
+	printf("   |-bi_memsize: %x\n", bd->bi_memsize);
+	printf("   |-bi_flashstart: %x\n", bd->bi_flashstart);
+	printf("   |-bi_flashsize: %x\n", bd->bi_flashsize);
+	printf("   \\-bi_flashoffset: %x\n", bd->bi_flashoffset);
 #endif
 }
 
@@ -242,15 +240,6 @@ void init_cplbtables(void)
 	}
 }
 
-__attribute__((always_inline))
-static inline void serial_early_puts(const char *s)
-{
-#ifdef CONFIG_DEBUG_EARLY_SERIAL
-	serial_puts("Early: ");
-	serial_puts(s);
-#endif
-}
-
 /*
  * All attempts to come up with a "common" initialization sequence
  * that works for all boards and architectures failed: some of the
@@ -263,6 +252,11 @@ static inline void serial_early_puts(const char *s)
  * argument, and returns an integer return code, where 0 means
  * "continue" and != 0 means "fatal error, hang the system".
  */
+
+extern int exception_init(void);
+extern int irq_init(void);
+extern int rtc_init(void);
+extern int timer_init(void);
 
 void board_init_f(ulong bootflag)
 {
@@ -277,6 +271,9 @@ void board_init_f(ulong bootflag)
 
 	serial_early_puts("Init CPLB tables\n");
 	init_cplbtables();
+
+	serial_early_puts("Exceptions setup\n");
+	exception_init();
 
 #ifdef CONFIG_ICACHE_ON
 	serial_early_puts("Turn on ICACHE\n");
@@ -330,7 +327,7 @@ void board_init_f(ulong bootflag)
 	printf("Clock: VCO: %lu MHz, Core: %lu MHz, System: %lu MHz\n",
 	       get_vco() / 1000000, get_cclk() / 1000000, get_sclk() / 1000000);
 
-	printf("SDRAM: ");
+	printf("RAM:   ");
 	print_size(initdram(0), "\n");
 #if defined(CONFIG_POST)
 	post_init_f();
@@ -354,7 +351,6 @@ static int init_func_i2c(void)
 void board_init_r(gd_t * id, ulong dest_addr)
 {
 	DECLARE_GLOBAL_DATA_PTR;
-	ulong size;
 	extern void malloc_bin_reloc(void);
 	char *s, *e;
 	bd_t *bd;
@@ -371,8 +367,10 @@ void board_init_r(gd_t * id, ulong dest_addr)
 #if	!defined(CFG_NO_FLASH)
 	/* There are some other pointer constants we must deal with */
 	/* configure available FLASH banks */
-	size = flash_init();
-	display_flash_config(size);
+	extern flash_info_t flash_info[];
+	ulong size = flash_init();
+	puts("Flash: ");
+	print_size(size, "\n");
 	flash_protect(FLAG_PROTECT_SET, CFG_FLASH_BASE,
 		      CFG_FLASH_BASE + 0x1ffff, &flash_info[0]);
 	bd->bi_flashstart = CFG_FLASH_BASE;
@@ -435,27 +433,11 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	misc_init_r();
 #endif
 
-#ifdef CONFIG_BFIN_MAC
+#if (CONFIG_COMMANDS & CFG_CMD_NET)
 	printf("Net:   ");
-	eth_initialize(bd);
+	eth_initialize(gd->bd);
 #endif
 
-#ifdef CONFIG_DRIVER_SMC91111
-#ifdef SHARED_RESOURCES
-	/* Switch to Ethernet */
-	swap_to(ETHERNET);
-#endif
-	if ((SMC_inw(BANK_SELECT) & UPPER_BYTE_MASK) != SMC_IDENT) {
-		printf("ERROR: Can't find SMC91111 at address %x\n",
-		       SMC_BASE_ADDRESS);
-	} else {
-		printf("Net:   SMC91111 at 0x%08X\n", SMC_BASE_ADDRESS);
-	}
-
-#ifdef SHARED_RESOURCES
-	swap_to(FLASH);
-#endif
-#endif
 #if defined(CONFIG_SOFT_I2C) || defined(CONFIG_HARD_I2C)
 	init_func_i2c();
 #endif

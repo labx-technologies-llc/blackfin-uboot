@@ -79,11 +79,6 @@ int disable_interrupts(void)
 	return 1;
 }
 
-int interrupt_init(void)
-{
-	return (0);
-}
-
 void udelay(unsigned long usec)
 {
 	unsigned long delay, start, stop;
@@ -113,7 +108,7 @@ void udelay(unsigned long usec)
 }
 
 #define MAX_TIM_LOAD	0xFFFFFFFF
-void timer_init(void)
+int timer_init(void)
 {
 	*pTCNTL = 0x1;
 	*pTSCALE = 0x0;
@@ -124,6 +119,8 @@ void timer_init(void)
 
 	timestamp = 0;
 	last_time = 0;
+
+	return 0;
 }
 
 /*

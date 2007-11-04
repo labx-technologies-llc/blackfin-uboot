@@ -78,7 +78,13 @@ void blackfin_no_irqs(void)
 	bfin_reset_or_hang();
 }
 
-void irq_init(void)
+int exception_init(void)
+{
+	bfin_write_EVT3(trap);
+	return 0;
+}
+
+int irq_init(void)
 {
 #ifdef SIC_IMASK0
 	bfin_write_SIC_IMASK0(0);
@@ -93,7 +99,6 @@ void irq_init(void)
 	bfin_write_SIC_IMASK(0);
 #endif
 	bfin_write_EVT2(blackfin_no_irqs);	/* NMI */
-	bfin_write_EVT3(trap);	/* exceptions */
 	bfin_write_EVT5(blackfin_no_irqs);	/* hardware error */
 	bfin_write_EVT6(blackfin_no_irqs);	/* core timer */
 	bfin_write_EVT7(blackfin_no_irqs);
@@ -111,4 +116,5 @@ void irq_init(void)
 	irq_flags = 0xffffffbf;
 	local_irq_enable();
 	CSYNC();
+	return 0;
 }
