@@ -25,6 +25,12 @@
 
 #if (CONFIG_COMMANDS & CFG_CMD_NAND)
 
+#ifdef DEBUG
+# define pr_stamp() printf("%s:%s:%i: here i am\n", __FILE__, __func__, __LINE__)
+#else
+# define pr_stamp()
+#endif
+
 #include <nand.h>
 
 #include <asm/blackfin.h>
@@ -62,8 +68,9 @@ static int bf54x_nand_CLE_ALE_flag;
  */
 static void bf54x_nand_hwcontrol(struct mtd_info *mtd, int cmd)
 {
-	switch (cmd) {
+	pr_stamp();
 
+	switch (cmd) {
 	case NAND_CTL_SETCLE:
 		bf54x_nand_CLE_ALE_flag = BF54X_CLE;
 		break;
@@ -81,7 +88,6 @@ static void bf54x_nand_hwcontrol(struct mtd_info *mtd, int cmd)
 	case NAND_CTL_CLRNCE:
 		break;
 	}
-
 }
 
 /*
@@ -91,8 +97,11 @@ static void bf54x_nand_hwcontrol(struct mtd_info *mtd, int cmd)
  */
 static void bf54x_nand_write_byte(struct mtd_info *mtd, u_char byte)
 {
+	pr_stamp();
+
 	while (bfin_read_NFC_STAT() & WB_FULL)
-		continue;
+		if (ctrlc())
+			return;
 
 	if (bf54x_nand_CLE_ALE_flag == BF54X_CLE)
 		bfin_write_NFC_CMD(byte);
@@ -102,6 +111,8 @@ static void bf54x_nand_write_byte(struct mtd_info *mtd, u_char byte)
 
 int bf54x_nand_devready(struct mtd_info *mtd)
 {
+	pr_stamp();
+
 	unsigned short val = bfin_read_NFC_IRQSTAT();
 
 	if ((val & NBUSYIRQ) == NBUSYIRQ)
@@ -115,6 +126,8 @@ int bf54x_nand_devready(struct mtd_info *mtd)
 */
 static void bf54x_nand_read_buf(struct mtd_info *mtd, uint8_t *buf, int len)
 {
+	pr_stamp();
+
 	int i;
 	unsigned short val;
 
@@ -122,15 +135,17 @@ static void bf54x_nand_read_buf(struct mtd_info *mtd, uint8_t *buf, int len)
 	 * Data reads are requested by first writing to NFC_DATA_RD
 	* and then reading back from NFC_READ.
 	*/
-	for (i = 0; i < len; i++) {
+	for (i = 0; i < len; ++i) {
 		while (bfin_read_NFC_STAT() & WB_FULL)
-			continue;
+			if (ctrlc())
+				return;
 
 		/* Contents do not matter */
 		bfin_write_NFC_DATA_RD(0x0000);
 
 		while ((bfin_read_NFC_IRQSTAT() & RD_RDY) != RD_RDY)
-			continue;
+			if (ctrlc())
+				return;
 
 		buf[i] = bfin_read_NFC_READ();
 
@@ -142,21 +157,24 @@ static void bf54x_nand_read_buf(struct mtd_info *mtd, uint8_t *buf, int len)
 
 static uint8_t bf54x_nand_read_byte(struct mtd_info *mtd)
 {
+	pr_stamp();
+
 	uint8_t val;
-
 	bf54x_nand_read_buf(mtd, &val, 1);
-
 	return val;
 }
 
 static void bf54x_nand_write_buf(struct mtd_info *mtd,
 	const uint8_t *buf, int len)
 {
+	pr_stamp();
+
 	int i;
 
-	for (i = 0; i < len; i++) {
+	for (i = 0; i < len; ++i) {
 		while (bfin_read_NFC_STAT() & WB_FULL)
-			continue;
+			if (ctrlc())
+				return;
 
 		bfin_write_NFC_DATA_WR(buf[i]);
 	}
@@ -182,6 +200,8 @@ static void bf54x_nand_write_buf(struct mtd_info *mtd,
  */
 void board_nand_init(struct nand_chip *nand)
 {
+	pr_stamp();
+
 	unsigned short val;
 
 	val = bfin_read_NFC_CTL();
