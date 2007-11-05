@@ -458,5 +458,9 @@ void board_init_r(gd_t * id, ulong dest_addr)
 void hang(void)
 {
 	puts("### ERROR ### Please RESET the board ###\n");
-	for (;;) ;
+	while (1)
+		/* If a JTAG emulator is hooked up, we'll automatically trigger
+		 * a breakpoint in it.  If one isn't, this is just a NOP.
+		 */
+		asm("emuexcpt;");
 }
