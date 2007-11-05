@@ -46,37 +46,65 @@ extern void cf_outb(unsigned char val, volatile unsigned char *addr);
  * memory location directly.
  */
 
-#define readb(addr)		({ unsigned char __v = (*(volatile unsigned char *) (addr)); SSYNC(); __v; })
-#define readw(addr)		({ unsigned short __v = (*(volatile unsigned short *) (addr)); SSYNC(); __v; })
-#define readl(addr)		({ unsigned int __v = (*(volatile unsigned int *) (addr)); SSYNC(); __v; })
+#ifndef __ASSEMBLY__
 
-#define writeb(b, addr)		{((*(volatile unsigned char *) (addr)) = (b)); SSYNC(); }
-#define writew(b, addr)		{((*(volatile unsigned short *) (addr)) = (b)); SSYNC(); }
-#define writel(b, addr)		{((*(volatile unsigned int *) (addr)) = (b)); SSYNC(); }
+static inline unsigned char readb(const volatile void *addr)
+{
+	unsigned int val;
+	int tmp;
+
+	__asm__ __volatile__ ("cli %1;\n\t"
+			"NOP; NOP; SSYNC;\n\t"
+			"%0 = b [%2] (z);\n\t"
+			"sti %1;\n\t"
+			: "=d"(val), "=d"(tmp): "a"(addr));
+
+	return (unsigned char) val;
+}
+
+static inline unsigned short readw(const volatile void *addr)
+{
+	unsigned int val;
+	int tmp;
+
+	__asm__ __volatile__ ("cli %1;\n\t"
+			"NOP; NOP; SSYNC;\n\t"
+			"%0 = w [%2] (z);\n\t"
+			"sti %1;\n\t"
+			: "=d"(val), "=d"(tmp): "a"(addr));
+
+	return (unsigned short) val;
+}
+
+static inline unsigned int readl(const volatile void *addr)
+{
+	unsigned int val;
+	int tmp;
+
+	__asm__ __volatile__ ("cli %1;\n\t"
+			"NOP; NOP; SSYNC;\n\t"
+			"%0 = [%2];\n\t"
+			"sti %1;\n\t"
+			: "=d"(val), "=d"(tmp): "a"(addr));
+	return val;
+}
+
+#endif /*  __ASSEMBLY__ */
+
+#define writeb(b, addr) (void)((*(volatile unsigned char *) (addr)) = (b))
+#define writew(b, addr) (void)((*(volatile unsigned short *) (addr)) = (b))
+#define writel(b, addr) (void)((*(volatile unsigned int *) (addr)) = (b))
 
 #define memset_io(a, b, c)	memset((void *)(a), (b), (c))
 #define memcpy_fromio(a, b, c)	memcpy((a), (void *)(b), (c))
 #define memcpy_toio(a, b, c)	memcpy((void *)(a), (b), (c))
 
-#define inb_p(addr)		readb((addr) + BF533_PCIIO_BASE)
 #define inb(addr)		cf_inb((volatile unsigned char *)(addr))
-
 #define outb(x, addr)		cf_outb((unsigned char)(x), (volatile unsigned char *)(addr))
-#define outb_p(x, addr)		outb(x, (addr) + BF533_PCIIO_BASE)
 
-#define inw(addr)		readw((addr) + BF533_PCIIO_BASE)
-#define inl(addr)		readl((addr) + BF533_PCIIO_BASE)
-
-#define outw(x, addr)		writew(x, (addr) + BF533_PCIIO_BASE)
-#define outl(x, addr)		writel(x, (addr) + BF533_PCIIO_BASE)
-
-#define insb(port, addr, count)	memcpy((void *)addr, (void *)(BF533_PCIIO_BASE + port), count)
 #define insw(port, addr, count)	cf_insw((unsigned short *)addr, (unsigned short *)(port), (count))
-#define insl(port, addr, count)	memcpy((void *)addr, (void *)(BF533_PCIIO_BASE + port), (4*count))
 
-#define outsb(port, addr, count)	memcpy((void *)(BF533_PCIIO_BASE + port), (void *)addr, count)
 #define outsw(port, addr, count)	cf_outsw((unsigned short *)(port), (unsigned short *)addr, (count))
-#define outsl(port, addr, count)	memcpy((void *)(BF533_PCIIO_BASE + port), (void *)addr, (4*count))
 
 #define IO_SPACE_LIMIT		0xffff
 
