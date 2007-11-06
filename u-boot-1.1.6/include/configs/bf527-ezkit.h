@@ -30,7 +30,6 @@
 #define CONFIG_DCACHE_ON
 
 #define CONFIG_RTC_BFIN		1
-#define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
 
 /* CONFIG_CLKIN_HZ is any value in Hz				*/
 #define CONFIG_CLKIN_HZ		25000000
@@ -94,15 +93,6 @@
 /* #define CONFIG_ETHADDR	02:80:ad:20:31:e8 */
 /* This is the routine that copies the MAC in Flash to the 'ethaddr' setting */
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_UART)
-# define CONFIG_BOOTDELAY	-1
-#else
-# define CONFIG_BOOTDELAY	5
-#endif
-
-#define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
-#define CONFIG_BOOTCOMMAND 	"run ramboot"
-
 #ifdef CONFIG_BFIN_MAC
 # define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL | CFG_CMD_PING)
 #else
@@ -120,39 +110,60 @@
 				 ADD_NAND_CMD	| \
 				 CFG_CMD_DATE)
 
+/* This must be included AFTER the definition of CONFIG_COMMANDS (if any) */
+#include <cmd_confdefs.h>
+
 #define CONFIG_BFIN_COMMANDS \
 	( CFG_BFIN_CMD_BOOTLDR | \
 	  CFG_BFIN_CMD_CPLBINFO )
 
-#define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"
-#define CONFIG_LOADADDR	0x1000000
-
-#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
-# define BOOT_ENV_UPDATE_FLASH \
-	"eeprom write $(loadaddr) 0x0 $(filesize);\0"
+#if (BFIN_BOOT_MODE == BFIN_BOOT_UART)
+# define CONFIG_BOOTDELAY    -1
 #else
-# define BOOT_ENV_UPDATE_FLASH \
-	"protect off 0x20000000 0x2003FFFF;" \
-	"erase 0x20000000 0x2003FFFF;" \
-	"cp.b $(loadaddr) 0x20000000 $(filesize)\0"
+# define CONFIG_BOOTDELAY    5
+#endif
+
+#define CONFIG_BOOTCOMMAND   "run ramboot"
+#define CONFIG_BOOTARGS      "root=/dev/mtdblock0 rw"
+#define CONFIG_LOADADDR      0x1000000
+
+#if (CONFIG_COMMANDS & CFG_CMD_NET)
+# if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#  define UBOOT_ENV_UPDATE \
+		"eeprom write $(loadaddr) 0x0 $(filesize)"
+# else
+#  define UBOOT_ENV_UPDATE \
+		"protect off 0x20000000 0x2003FFFF;" \
+		"erase 0x20000000 0x2003FFFF;" \
+		"cp.b $(loadaddr) 0x20000000 $(filesize)"
+# endif
+# define NETWORK_ENV_SETTINGS \
+	"ubootfile=u-boot.ldr\0" \
+	"update=" \
+		"tftp $(loadaddr) $(ubootfile);" \
+		UBOOT_ENV_UPDATE \
+		"\0" \
+	"addip=set bootargs $(bootargs) ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask):$(hostname):eth0:off\0" \
+	"ramargs=set bootargs root=/dev/mtdblock0 rw\0" \
+	"ramboot=" \
+		"tftp $(loadaddr) uImage;" \
+		"run ramargs;" \
+		"run addip;" \
+		"bootm" \
+		"\0" \
+	"nfsargs=set bootargs root=/dev/nfs rw nfsroot=$(serverip):$(rootpath),tcp,nfsvers=3\0" \
+	"nfsboot=" \
+		"tftp $(loadaddr) vmImage;" \
+		"run nfsargs;" \
+		"run addip;" \
+		"bootm" \
+		"\0"
+#else
+# define NETWORK_ENV_SETTINGS
 #endif
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"nfsargs=setenv bootargs root=/dev/nfs rw " \
-		"nfsroot=$(serverip):$(rootpath)\0" \
-	"addip=setenv bootargs $(bootargs) " \
-		"ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask)" \
-		":$(hostname):eth0:off\0" \
-	"ramboot=tftpboot $(loadaddr) linux;" \
-		"run ramargs;run addip;bootelf\0" \
-	"nfsboot=tftpboot $(loadaddr) linux;" \
-		"run nfsargs;run addip;bootelf\0" \
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" \
-	"flashboot=bootm 0x20100000\0" \
-	"update=tftpboot $(loadaddr) u-boot.ldr;" \
-		BOOT_ENV_UPDATE_FLASH
-
-/* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
-#include <cmd_confdefs.h>
+	NETWORK_ENV_SETTINGS \
+	"flashboot=bootm 0x20100000\0"
 
 #define CFG_PROMPT "bfin> "
 

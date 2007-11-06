@@ -16,7 +16,6 @@
 #define CONFIG_BAUDRATE		57600
 /* Set default serial console for bf537 */
 #define CONFIG_UART_CONSOLE	0
-#define CONFIG_BOOTDELAY	5
 
 #define CONFIG_PANIC_HANG 1
 
@@ -105,7 +104,6 @@
 #define CFG_MEMTEST_START	0x0	/* memtest works on */
 #define CFG_MEMTEST_END		( (CONFIG_MEM_SIZE - 1) * 1024*1024)	/* 1 ... 63 MB in DRAM */
 
-#define	CONFIG_LOADADDR		0x01000000	/* default load address */
 #define CFG_LOAD_ADDR		CONFIG_LOADADDR
 #define	CFG_MONITOR_LEN		(256 << 10)	/* Reserve 256 kB for Monitor   */
 #define CFG_MONITOR_BASE	(CFG_MAX_RAM_SIZE - CFG_MONITOR_LEN)
@@ -127,10 +125,6 @@
 				/* lookup from the BOOTP/DHCP server	*/
 				/* but not try to load any image	*/
 				/* using TFTP				*/
-#define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, */
-					/* currently its disabled */
-#define CONFIG_BOOTCOMMAND	"run ramboot"
-#define CONFIG_BOOTARGS		"root=/dev/mtdblock0 rw"
 
 #if (CONFIG_DRIVER_SMC91111)
 #define CONFIG_COMMANDS1	(CONFIG_CMD_DFL	| \
@@ -139,39 +133,68 @@
 				 CFG_CMD_CACHE	| \
 				 CFG_CMD_JFFS2	| \
 				 CFG_CMD_DHCP)
-#define CONFIG_EXTRA_ENV_SETTINGS \
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" 		\
-	"nfsargs=setenv bootargs root=/dev/nfs rw nfsroot=$(serverip):"	\
-		"$(rootpath)\0"						\
-	"addip=setenv bootargs $(bootargs) ip=$(ipaddr):$(serverip):"	\
-		"$(gatewayip):$(netmask):$(hostname):eth0:off\0"	\
-	"ramboot=tftpboot $(loadaddr) linux; "		\
-		"run ramargs; run addip; bootelf\0"			\
-	"nfsboot=tftpboot $(loadaddr) linux; "		\
-		"run nfsargs; run addip; bootelf\0"			\
-	"update=tftpboot $(loadaddr) u-boot.bin; "	\
-		"protect off 0x20000000 0x2003FFFF; "			\
-		"erase 0x20000000 0x2003FFFF; "				\
-		"cp.b $(loadaddr) 0x20000000 $(filesize)\0" \
-	""
 #else
 #define CONFIG_COMMANDS1	(CONFIG_CMD_DFL	| \
 				 CFG_CMD_ELF	| \
 				 CFG_CMD_CACHE	| \
 				 CFG_CMD_JFFS2)
-#define CONFIG_EXTRA_ENV_SETTINGS \
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0"		\
-	"flashboot=bootm 0x20100000\0"					\
-	""
 #endif
 
 #define CONFIG_COMMANDS ( CONFIG_COMMANDS1 | CONFIG_COMMANDS2 )
 
+/* This must be included AFTER the definition of CONFIG_COMMANDS (if any) */
+#include <cmd_confdefs.h>
+
 #define CONFIG_BFIN_COMMANDS \
 	( CFG_BFIN_CMD_CPLBINFO )
 
-/* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
-#include <cmd_confdefs.h>
+#define CONFIG_BOOTDELAY     5
+#define CONFIG_BOOTCOMMAND   "run ramboot"
+#define CONFIG_BOOTARGS      "root=/dev/mtdblock0 rw"
+#define CONFIG_LOADADDR      0x1000000
+
+#if (CONFIG_COMMANDS & CFG_CMD_NET)
+# if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+#  define UBOOT_ENV_FILE "u-boot.bin"
+# else
+#  define UBOOT_ENV_FILE "u-boot.ldr"
+# endif
+# if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#  define UBOOT_ENV_UPDATE \
+		"eeprom write $(loadaddr) 0x0 $(filesize)"
+# else
+#  define UBOOT_ENV_UPDATE \
+		"protect off 0x20000000 0x2003FFFF;" \
+		"erase 0x20000000 0x2003FFFF;" \
+		"cp.b $(loadaddr) 0x20000000 $(filesize)"
+# endif
+# define NETWORK_ENV_SETTINGS \
+	"ubootfile=" UBOOT_ENV_FILE "\0" \
+	"update=" \
+		"tftp $(loadaddr) $(ubootfile);" \
+		UBOOT_ENV_UPDATE \
+		"\0" \
+	"addip=set bootargs $(bootargs) ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask):$(hostname):eth0:off\0" \
+	"ramargs=set bootargs root=/dev/mtdblock0 rw\0" \
+	"ramboot=" \
+		"tftp $(loadaddr) uImage;" \
+		"run ramargs;" \
+		"run addip;" \
+		"bootm" \
+		"\0" \
+	"nfsargs=set bootargs root=/dev/nfs rw nfsroot=$(serverip):$(rootpath),tcp,nfsvers=3\0" \
+	"nfsboot=" \
+		"tftp $(loadaddr) vmImage;" \
+		"run nfsargs;" \
+		"run addip;" \
+		"bootm" \
+		"\0"
+#else
+# define NETWORK_ENV_SETTINGS
+#endif
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	NETWORK_ENV_SETTINGS \
+	"flashboot=bootm 0x20100000\0"
 
 /*
  * Console settings
