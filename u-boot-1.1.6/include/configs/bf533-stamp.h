@@ -81,7 +81,7 @@
 #define CONFIG_NETMASK		255.255.255.0
 #define CONFIG_GATEWAYIP	192.168.0.1
 #define CONFIG_SERVERIP		192.168.0.2
-#define CONFIG_HOSTNAME		STAMP
+#define CONFIG_HOSTNAME		BFIN
 #define CONFIG_ROOTPATH		/checkout/uClinux-dist/romfs
 
 /* To remove hardcoding and enable MAC storage in EEPROM  */
