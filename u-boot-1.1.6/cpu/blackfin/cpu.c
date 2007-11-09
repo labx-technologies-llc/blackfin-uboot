@@ -122,6 +122,20 @@ int dcache_status(void)
 	return bfin_read_DMEM_CONTROL() & ENDCPLB;
 }
 
+#ifdef CONFIG_HW_WATCHDOG
+void hw_watchdog_reset(void)
+{
+	*pWDOG_STAT = 0;
+}
+
+void hw_watchdog_init(void)
+{
+	*pWDOG_CNT = 5 * get_sclk();	/* 5 second timeout */
+	hw_watchdog_reset();
+	*pWDOG_CTL = 0x0;
+}
+#endif
+
 __attribute__ ((__noreturn__))
 void cpu_init_f(ulong bootflag, ulong loaded_from_ldr)
 {

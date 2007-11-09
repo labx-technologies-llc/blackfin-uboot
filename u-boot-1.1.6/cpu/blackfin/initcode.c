@@ -211,9 +211,9 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 {
 	uint32_t old_baud = serial_init();
 
-#ifdef CONFIG_WATCHDOG_HW
-# ifndef CONFIG_WATCHDOG_HW_TIMEOUT_INITCODE
-#  define CONFIG_WATCHDOG_HW_TIMEOUT_INITCODE 20000
+#ifdef CONFIG_HW_WATCHDOG
+# ifndef CONFIG_HW_WATCHDOG_TIMEOUT_INITCODE
+#  define CONFIG_HW_WATCHDOG_TIMEOUT_INITCODE 20000
 # endif
 	/* Program the watchdog with an initial timeout of ~20 seconds.
 	 * Hopefully that should be long enough to load the u-boot LDR
@@ -222,7 +222,7 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 	 * timeout, so don't clobber that.
 	 */
 	if (BFIN_BOOT_MODE != BFIN_BOOT_BYPASS) {
-		bfin_write_WDOG_CNT(MSEC_TO_SCLK(CONFIG_WATCHDOG_HW_TIMEOUT_INITCODE));
+		bfin_write_WDOG_CNT(MSEC_TO_SCLK(CONFIG_HW_WATCHDOG_TIMEOUT_INITCODE));
 		bfin_write_WDOG_CTL(0);
 	}
 #endif

@@ -52,9 +52,9 @@ ENTRY(_start)
 	sp.l = LO(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);
 	sp.h = HI(L1_SRAM_SCRATCH + L1_SRAM_SCRATCH_SIZE);
 
-#ifdef CONFIG_WATCHDOG_HW
-# ifndef CONFIG_WATCHDOG_HW_TIMEOUT_START
-#  define CONFIG_WATCHDOG_HW_TIMEOUT_START 5000
+#ifdef CONFIG_HW_WATCHDOG
+# ifndef CONFIG_HW_WATCHDOG_TIMEOUT_START
+#  define CONFIG_HW_WATCHDOG_TIMEOUT_START 5000
 # endif
 	/* Program the watchdog with an initial timeout of ~5 seconds.
 	 * That should be long enough to bootstrap ourselves up and
@@ -63,7 +63,7 @@ ENTRY(_start)
 	P0.L = LO(WDOG_CNT);
 	P0.H = HI(WDOG_CNT);
 	R0.L = 0;
-	R0.H = HI(MSEC_TO_SCLK(CONFIG_WATCHDOG_HW_TIMEOUT_START));
+	R0.H = HI(MSEC_TO_SCLK(CONFIG_HW_WATCHDOG_TIMEOUT_START));
 	[P0] = R0;
 	/* fire up the watchdog - R0.L above needs to be 0x0000 */
 	W[P0 + (WDOG_CTL - WDOG_CNT)] = R0;

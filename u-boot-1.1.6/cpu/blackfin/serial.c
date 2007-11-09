@@ -41,6 +41,7 @@
  */
 
 #include <common.h>
+#include <watchdog.h>
 #include <asm/blackfin.h>
 #include <asm/mach-common/bits/uart.h>
 
@@ -85,6 +86,8 @@ void serial_putc(const char c)
 	if (c == '\n')
 		serial_putc('\r');
 
+	WATCHDOG_RESET();
+
 	/* wait for the hardware fifo to clear up */
 	while (!(*pUART_LSR & THRE))
 		continue;
@@ -93,6 +96,8 @@ void serial_putc(const char c)
 	*pUART_THR = c;
 	SSYNC();
 
+	WATCHDOG_RESET();
+
 	/* wait for the byte to be shifted over the line */
 	while (!(*pUART_LSR & TEMT))
 		continue;
@@ -100,6 +105,7 @@ void serial_putc(const char c)
 
 int serial_tstc(void)
 {
+	WATCHDOG_RESET();
 	return (*pUART_LSR & DR) ? 1 : 0;
 }
 
