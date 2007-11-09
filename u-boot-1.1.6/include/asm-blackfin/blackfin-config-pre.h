@@ -17,6 +17,7 @@
 /* Configurable Blackfin-specific monitor commands */
 #define CFG_BFIN_CMD_BOOTLDR  0x01
 #define CFG_BFIN_CMD_CPLBINFO 0x02
+#define CFG_BFIN_CMD_OTP      0x04
 
 /* Bootmode defines -- your config needs to select this via BFIN_BOOT_MODE.
  * Depending on your cpu, some of these may not be valid, check your HRM.
