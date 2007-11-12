@@ -335,6 +335,7 @@ int image_save_header (image_t *image, char *filename, char *varname)
 
 int main (int argc, char *argv[])
 {
+    int c, usergb = 0;
     char
 	inputfile[DEF_FILELEN],
 	outputfile[DEF_FILELEN],
@@ -342,14 +343,26 @@ int main (int argc, char *argv[])
 
     image_t 		rgb_logo, yuyv_logo ;
 
-    switch (argc){
+	while ((c = getopt(argc, argv, "r")) > 0) {
+		switch (c) {
+		case 'r':
+			usergb++;
+			printf("Using 24-bit RGB Output Fromat\n");
+			break;
+		default:
+			break;
+		}
+	}
+
+
+    switch (argc - usergb) {
     case 2:
     case 3:
     case 4:
-	strcpy (inputfile, 	argv[1]);
+	strcpy(inputfile, argv[1 + usergb]);
 
 	if (argc > 2)
-	    strcpy (varname, 	argv[2]);
+	    strcpy(varname, argv[2 + usergb]);
 	else
 	{
 	    int pos = strchr(inputfile, '.');
@@ -362,7 +375,7 @@ int main (int argc, char *argv[])
 	}
 
 	if (argc > 3)
-	    strcpy (outputfile, argv[3]);
+	    strcpy(outputfile, argv[3 + usergb]);
 	else
 	{
 	    int pos = strchr (varname, '.');
@@ -380,14 +393,16 @@ int main (int argc, char *argv[])
     default:
 	printf("EasyLogo 1.0 (C) 2000 by Paolo Scaffardi\n\n");
 
-	printf("Syntax:	easylogo inputfile [outputvar {outputfile}] \n");
+	printf("Syntax:	easylogo [-r] inputfile [outputvar {outputfile}] \n");
 	printf("\n");
+	printf("	-r	 	Output 24-bit RGB instead of yuyv\n");
 	printf("Where:	'inputfile' 	is the TGA image to load\n");
 	printf("      	'outputvar' 	is the variable name to create\n");
 	printf("       	'outputfile' 	is the output header file (default is 'inputfile.h')\n");
 
 	return -1 ;
     }
+
 
     printf("Doing '%s' (%s) from '%s'...",
 	outputfile, varname, inputfile);
@@ -403,18 +418,23 @@ int main (int argc, char *argv[])
 
 /* Convert it to YUYV format */
 
-    printf("C");
-    image_rgb_to_yuyv (&rgb_logo, &yuyv_logo) ;
-
+	if (!usergb) {
+	    printf("C");
+	    image_rgb_to_yuyv(&rgb_logo, &yuyv_logo) ;
+	}
 /* Save it into a header format */
 
     printf("S");
-    image_save_header (&yuyv_logo, outputfile, varname) ;
-
+	if (usergb)
+	    image_save_header(&rgb_logo, outputfile, varname);
+	else
+	    image_save_header(&yuyv_logo, outputfile, varname);
 /* Free original image and copy */
 
     image_free (&rgb_logo);
-    image_free (&yuyv_logo);
+
+	if (!usergb)
+	    image_free(&yuyv_logo);
 
     printf("\n");
 
