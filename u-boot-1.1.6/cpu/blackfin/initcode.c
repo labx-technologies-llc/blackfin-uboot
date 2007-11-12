@@ -160,7 +160,7 @@ static inline void serial_putc(char c)
 #endif
 
 #ifndef CONFIG_PLL_CTL_VAL
-# define CONFIG_PLL_CTL_VAL ((CONFIG_VCO_MULT * 2) << 8)
+# define CONFIG_PLL_CTL_VAL (CONFIG_VCO_MULT << 9)
 #endif
 
 /* Make sure our voltage value is sane so we don't blow up! */
