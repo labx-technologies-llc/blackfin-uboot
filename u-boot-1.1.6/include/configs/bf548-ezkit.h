@@ -304,6 +304,8 @@
 #define CONFIG_EBIU_AMGCTL_VAL               0xFF
 #define CONFIG_EBIU_AMBCTL0_VAL              0x7BB07BB0
 #define CONFIG_EBIU_AMBCTL1_VAL              0xFFC27BB0
+#define CONFIG_EBIU_FCTL_VAL                 0x00000006
+#define CONFIG_EBIU_MODE_VAL                 0x00000055
 
 #include <asm/blackfin-config-post.h>
 

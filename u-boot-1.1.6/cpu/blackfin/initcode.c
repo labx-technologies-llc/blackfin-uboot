@@ -163,6 +163,14 @@ static inline void serial_putc(char c)
 # define CONFIG_PLL_CTL_VAL (CONFIG_VCO_MULT << 9)
 #endif
 
+#ifndef CONFIG_EBIU_RSTCTL_VAL
+# define CONFIG_EBIU_RSTCTL_VAL 0 /* only MDDRENABLE is useful */
+#endif
+
+#ifndef CONFIG_EBIU_MBSCTL_VAL
+# define CONFIG_EBIU_MBSCTL_VAL 0
+#endif
+
 /* Make sure our voltage value is sane so we don't blow up! */
 #ifndef CONFIG_VR_CTL_VAL
 # define BFIN_CCLK ((CONFIG_CLKIN_HZ * CONFIG_VCO_MULT) / CONFIG_CCLK_DIV)
@@ -299,13 +307,17 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 	bfin_write_EBIU_AMBCTL1(CONFIG_EBIU_AMBCTL1_VAL);
 	bfin_write_EBIU_AMGCTL(CONFIG_EBIU_AMGCTL_VAL);
 
+#ifdef EBIU_MODE
+	/* Not all parts have these additional MMRs. */
+	bfin_write_EBIU_MBSCTL(CONFIG_EBIU_MBSCTL_VAL);
+	bfin_write_EBIU_MODE(CONFIG_EBIU_MODE_VAL);
+	bfin_write_EBIU_FCTL(CONFIG_EBIU_FCTL_VAL);
+#endif
+
 	serial_putc('I');
 
 	/* Program the external memory controller. */
 #ifdef EBIU_RSTCTL
-# ifndef CONFIG_EBIU_RSTCTL_VAL
-#  define CONFIG_EBIU_RSTCTL_VAL 0 /* only MDDRENABLE is useful */
-# endif
 	bfin_write_EBIU_RSTCTL(bfin_read_EBIU_RSTCTL() | 0x1 /*DDRSRESET*/ | CONFIG_EBIU_RSTCTL_VAL);
 	bfin_write_EBIU_DDRCTL0(CONFIG_EBIU_DDRCTL0_VAL);
 	bfin_write_EBIU_DDRCTL1(CONFIG_EBIU_DDRCTL1_VAL);
