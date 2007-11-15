@@ -209,6 +209,98 @@
 #define B3WAT_14	0xE0000000	/* Bank 3 Write Access Time = 14 cycles */
 #define B3WAT_15	0xF0000000	/* Bank 3 Write Access Time = 15 cycles */
 
+/* Only available on newer parts */
+#ifdef EBIU_MODE
+
+/* EBIU_MBSCTL Bit Positions */
+#define AMSB0CTL_P	0
+#define AMSB1CTL_P	2
+#define AMSB2CTL_P	4
+#define AMSB3CTL_P	6
+
+/* EBIU_MBSCTL Masks */
+#define AMSB0CTL_MASK	(0x3 << AMSB0CTL_P)	/* Async Memory Bank 0 Control Modes */
+#define AMSB0CTL_NONE	(0x0 << AMSB0CTL_P)	/* Control Mode - 00 - No logic */
+#define AMSB0CTL_ARE	(0x1 << AMSB0CTL_P)	/* Control Mode - 01 - OR-ed with /ARE */
+#define AMSB0CTL_AOE	(0x2 << AMSB0CTL_P)	/* Control Mode - 02 - OR-ed with /AOE */
+#define AMSB0CTL_AWE	(0x3 << AMSB0CTL_P)	/* Control Mode - 03 - OR-ed with /AWE */
+#define AMSB1CTL_MASK	(0x3 << AMSB1CTL_P)	/* Async Memory Bank 1 Control Modes */
+#define AMSB1CTL_NONE	(0x0 << AMSB1CTL_P)	/* Control Mode - 00 - No logic */
+#define AMSB1CTL_ARE	(0x1 << AMSB1CTL_P)	/* Control Mode - 01 - OR-ed with /ARE */
+#define AMSB1CTL_AOE	(0x2 << AMSB1CTL_P)	/* Control Mode - 02 - OR-ed with /AOE */
+#define AMSB1CTL_AWE	(0x3 << AMSB1CTL_P)	/* Control Mode - 03 - OR-ed with /AWE */
+#define AMSB2CTL_MASK	(0x3 << AMSB2CTL_P)	/* Async Memory Bank 2 Control Modes */
+#define AMSB2CTL_NONE	(0x0 << AMSB2CTL_P)	/* Control Mode - 00 - No logic */
+#define AMSB2CTL_ARE	(0x1 << AMSB2CTL_P)	/* Control Mode - 01 - OR-ed with /ARE */
+#define AMSB2CTL_AOE	(0x2 << AMSB2CTL_P)	/* Control Mode - 02 - OR-ed with /AOE */
+#define AMSB2CTL_AWE	(0x3 << AMSB2CTL_P)	/* Control Mode - 03 - OR-ed with /AWE */
+#define AMSB3CTL_MASK	(0x3 << AMSB3CTL_P)	/* Async Memory Bank 3 Control Modes */
+#define AMSB3CTL_NONE	(0x0 << AMSB3CTL_P)	/* Control Mode - 00 - No logic */
+#define AMSB3CTL_ARE	(0x1 << AMSB3CTL_P)	/* Control Mode - 01 - OR-ed with /ARE */
+#define AMSB3CTL_AOE	(0x2 << AMSB3CTL_P)	/* Control Mode - 02 - OR-ed with /AOE */
+#define AMSB3CTL_AWE	(0x3 << AMSB3CTL_P)	/* Control Mode - 03 - OR-ed with /AWE */
+
+/* EBIU_MODE Bit Positions */
+#define B0MODE_P	0
+#define B1MODE_P	2
+#define B2MODE_P	4
+#define B3MODE_P	6
+
+/* EBIU_MODE Masks */
+#define B0MODE_MASK	(0x3 << B0MODE_P)	/* Async Memory Bank 0 Access Mode */
+#define B0MODE_ASYNC	(0x0 << B0MODE_P)	/* Access Mode - 00 - Asynchronous Mode */
+#define B0MODE_FLASH	(0x1 << B0MODE_P)	/* Access Mode - 01 - Asynchronous Flash Mode */
+#define B0MODE_PAGE	(0x2 << B0MODE_P)	/* Access Mode - 10 - Asynchronous Page Mode */
+#define B0MODE_BURST	(0x3 << B0MODE_P)	/* Access Mode - 11 - Synchronous (Burst) Mode */
+#define B1MODE_MASK	(0x3 << B1MODE_P)	/* Async Memory Bank 1 Access Mode */
+#define B1MODE_ASYNC	(0x0 << B1MODE_P)	/* Access Mode - 00 - Asynchronous Mode */
+#define B1MODE_FLASH	(0x1 << B1MODE_P)	/* Access Mode - 01 - Asynchronous Flash Mode */
+#define B1MODE_PAGE	(0x2 << B1MODE_P)	/* Access Mode - 10 - Asynchronous Page Mode */
+#define B1MODE_BURST	(0x3 << B1MODE_P)	/* Access Mode - 11 - Synchronous (Burst) Mode */
+#define B2MODE_MASK	(0x3 << B2MODE_P)	/* Async Memory Bank 2 Access Mode */
+#define B2MODE_ASYNC	(0x0 << B2MODE_P)	/* Access Mode - 00 - Asynchronous Mode */
+#define B2MODE_FLASH	(0x1 << B2MODE_P)	/* Access Mode - 01 - Asynchronous Flash Mode */
+#define B2MODE_PAGE	(0x2 << B2MODE_P)	/* Access Mode - 10 - Asynchronous Page Mode */
+#define B2MODE_BURST	(0x3 << B2MODE_P)	/* Access Mode - 11 - Synchronous (Burst) Mode */
+#define B3MODE_MASK	(0x3 << B3MODE_P)	/* Async Memory Bank 3 Access Mode */
+#define B3MODE_ASYNC	(0x0 << B3MODE_P)	/* Access Mode - 00 - Asynchronous Mode */
+#define B3MODE_FLASH	(0x1 << B3MODE_P)	/* Access Mode - 01 - Asynchronous Flash Mode */
+#define B3MODE_PAGE	(0x2 << B3MODE_P)	/* Access Mode - 10 - Asynchronous Page Mode */
+#define B3MODE_BURST	(0x3 << B3MODE_P)	/* Access Mode - 11 - Synchronous (Burst) Mode */
+
+/* EBIU_FCTL Bit Positions */
+#define TESTSETLOCK_P	0
+#define BCLK_P		1
+#define PGWS_P		3
+#define PGSZ_P		6
+#define RDDL_P		7
+
+/* EBIU_FCTL Masks */
+#define TESTSETLOCK	(0x1 << TESTSETLOCK_P)	/* Test set lock */
+#define BCLK_MASK	(0x3 << BCLK_P)		/* Burst clock frequency */
+#define BCLK_2		(0x1 << BCLK_P)		/* Burst clock frequency - SCLK/2 */
+#define BCLK_3		(0x2 << BCLK_P)		/* Burst clock frequency - SCLK/3 */
+#define BCLK_4		(0x3 << BCLK_P)		/* Burst clock frequency - SCLK/4 */
+#define PGWS_MASK	(0x7 << PGWS_P)		/* Page wait states */
+#define PGWS_0		(0x0 << PGWS_P)		/* Page wait states - 0 cycles */
+#define PGWS_1		(0x1 << PGWS_P)		/* Page wait states - 1 cycles */
+#define PGWS_2		(0x2 << PGWS_P)		/* Page wait states - 2 cycles */
+#define PGWS_3		(0x3 << PGWS_P)		/* Page wait states - 3 cycles */
+#define PGWS_4		(0x4 << PGWS_P)		/* Page wait states - 4 cycles */
+#define PGSZ		(0x1 << PGSZ_P)		/* Page size */
+#define PGSZ_4		(0x0 << PGSZ_P)		/* Page size - 4 words */
+#define PGSZ_8		(0x1 << PGSZ_P)		/* Page size - 8 words */
+#define RDDL		(0x38 << RDDL_P)	/* Read data delay */
+
+/* EBIU_ARBSTAT Masks */
+#define ARBSTAT		0x00000001	/* Arbitration status */
+#define BGSTAT		0x00000002	/* External Bus grant status */
+
+#endif /* EBIU_MODE */
+
+/* Only available on SDRAM based-parts */
+#ifdef EBIU_SDGCTL
+
 /* EBIU_SDGCTL Masks */
 #define SCTLE		0x00000001	/* Enable SCLK[0], /SRAS, /SCAS, /SWE, SDQM[3:0] */
 #define SCK1E		0x00000002	/* Enable CLKOUT, /SCLK1 */
@@ -323,5 +415,7 @@
 #define SDRS		0x0008		/* SDRAM is in reset state */
 #define SDEASE		0x0010		/* SDRAM EAB sticky error status - W1C */
 #define BGSTAT		0x0020		/* Bus granted */
+
+#endif /* EBIU_SDGCTL */
 
 #endif
