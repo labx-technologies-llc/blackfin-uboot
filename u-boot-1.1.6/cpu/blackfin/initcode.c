@@ -160,7 +160,7 @@ static inline void serial_putc(char c)
 #endif
 
 #ifndef CONFIG_PLL_CTL_VAL
-# define CONFIG_PLL_CTL_VAL (CONFIG_VCO_MULT << 9)
+# define CONFIG_PLL_CTL_VAL (SPORT_HYST | (CONFIG_VCO_MULT << 9))
 #endif
 
 #ifndef CONFIG_EBIU_RSTCTL_VAL
