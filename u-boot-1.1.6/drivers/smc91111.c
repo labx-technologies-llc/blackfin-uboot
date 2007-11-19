@@ -1533,7 +1533,7 @@ int smc9111_initialize(bd_t *bd)
 	swap_to(ETHERNET);
 
 	if ((SMC_inw(BANK_SELECT) & UPPER_BYTE_MASK) != SMC_IDENT) {
-		printf("Unable to find SMC91111 at 0X%08X\n", SMC_BASE_ADDRESS);
+		printf("Unable to find SMC91111 at 0x%08X\n", SMC_BASE_ADDRESS);
 		ret = -1;
 	} else {
 		printf("SMC91111 at 0x%08X\n", SMC_BASE_ADDRESS);
