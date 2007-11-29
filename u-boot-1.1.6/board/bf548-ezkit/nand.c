@@ -1,23 +1,19 @@
 /*
- * (C) Copyright 2006 Aubrey.Li, aubrey.li@analog.com
+ * Driver for Blackfin on-chip NAND controller.
  *
- * See file CREDITS for list of people who contributed to this
- * project.
+ * Enter bugs at http://blackfin.uclinux.org/
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * Copyright (c) 2007 Analog Devices Inc.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
+ * Licensed under the GPL-2 or later.
+ */
+
+/* TODO:
+ * - move bit defines into mach-common/bits/nand.h
+ * - try and replace all IRQSTAT usage with STAT polling
+ * - move board settings (like delay timings) to board config
+ * - add support for hardware ECC
+ * - add support for BF52x NAND (just need to generalize portmux code)
  */
 
 #include <common.h>
@@ -115,15 +111,14 @@ int bf54x_nand_devready(struct mtd_info *mtd)
 	return (bfin_read_NFC_STAT() & NBUSY ? 1 : 0);
 }
 
-/*----------------------------------------------------------------------------
-   * PIO mode for buffer writing and reading
-*/
+/*
+ * PIO mode for buffer writing and reading
+ */
 static void bf54x_nand_read_buf(struct mtd_info *mtd, uint8_t *buf, int len)
 {
 	pr_stamp();
 
 	int i;
-	unsigned short val;
 
 	/*
 	 * Data reads are requested by first writing to NFC_DATA_RD
@@ -137,15 +132,13 @@ static void bf54x_nand_read_buf(struct mtd_info *mtd, uint8_t *buf, int len)
 		/* Contents do not matter */
 		bfin_write_NFC_DATA_RD(0x0000);
 
-		while ((bfin_read_NFC_IRQSTAT() & RD_RDY) != RD_RDY)
+		while (!(bfin_read_NFC_IRQSTAT() & RD_RDY))
 			if (ctrlc())
 				return;
 
 		buf[i] = bfin_read_NFC_READ();
 
-		val = bfin_read_NFC_IRQSTAT();
-		val |= RD_RDY;
-		bfin_write_NFC_IRQSTAT(val);
+		bfin_write_NFC_IRQSTAT(RD_RDY);
 	}
 }
 
@@ -158,8 +151,7 @@ static uint8_t bf54x_nand_read_byte(struct mtd_info *mtd)
 	return val;
 }
 
-static void bf54x_nand_write_buf(struct mtd_info *mtd,
-	const uint8_t *buf, int len)
+static void bf54x_nand_write_buf(struct mtd_info *mtd, const uint8_t *buf, int len)
 {
 	pr_stamp();
 
@@ -196,21 +188,15 @@ void board_nand_init(struct nand_chip *nand)
 {
 	pr_stamp();
 
-	unsigned short val;
-
-	val = bfin_read_NFC_CTL();
-	val |= 0x33; /* WR_DLY = 3, RD_DLY = 3*/
-	bfin_write_NFC_CTL(val);
+	/* WR_DLY = 3, RD_DLY = 3 */
+	bfin_write_NFC_CTL(bfin_read_NFC_CTL() | 0x33);
 
 	/* clear interrupt status */
 	bfin_write_NFC_IRQMASK(0x0);
-	val = bfin_read_NFC_IRQSTAT();
-	bfin_write_NFC_IRQSTAT(val);
+	bfin_write_NFC_IRQSTAT(0xffff);
 
 	/* enable GPIO function enable register */
-	val = bfin_read_PORTJ_FER();
-	val |= 6;
-	bfin_write_PORTJ_FER(val);
+	bfin_write_PORTJ_FER(bfin_read_PORTJ_FER() | 6);
 
 	nand->hwcontrol = bf54x_nand_hwcontrol;
 	nand->read_buf = bf54x_nand_read_buf;
@@ -222,4 +208,5 @@ void board_nand_init(struct nand_chip *nand)
 	nand->dev_ready = bf54x_nand_devready;
 	nand->chip_delay = 0;
 }
-#endif				/* (CONFIG_COMMANDS & CFG_CMD_NAND) */
+
+#endif
