@@ -112,13 +112,7 @@ static void bf54x_nand_write_byte(struct mtd_info *mtd, u_char byte)
 int bf54x_nand_devready(struct mtd_info *mtd)
 {
 	pr_stamp();
-
-	unsigned short val = bfin_read_NFC_IRQSTAT();
-
-	if ((val & NBUSYIRQ) == NBUSYIRQ)
-		return 1;
-	else
-		return 0;
+	return (bfin_read_NFC_STAT() & NBUSY ? 1 : 0);
 }
 
 /*----------------------------------------------------------------------------
