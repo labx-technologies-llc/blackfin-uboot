@@ -4587,7 +4587,7 @@ because tftp never worked"
     
     sleep 1
 
-   set timeout 1200
+   set timeout 2500
    send_user "\nAbout to copy the kernel to flash.\n"
    send -s "cp.b $CFG_LOAD_ADDR $KERNEL_FLASH_LOC 0x$uimage_size\r"
    set temp_status_flag $FAILURE
