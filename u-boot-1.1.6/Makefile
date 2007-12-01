@@ -231,7 +231,8 @@ __LIBS := $(subst $(obj),,$(LIBS))
 #########################################################################
 #########################################################################
 
-ALL = $(obj)u-boot.srec $(obj)u-boot.hex $(obj)u-boot.bin $(obj)u-boot.ldr $(obj)System.map $(U_BOOT_NAND)
+ALL = $(obj)u-boot.srec $(obj)u-boot.hex $(obj)u-boot.bin $(obj)System.map $(U_BOOT_NAND) \
+	$(obj)u-boot.ldr $(obj)u-boot.ldr.srec $(obj)u-boot.ldr.hex
 
 all:		$(ALL)
 
@@ -247,6 +248,12 @@ $(obj)u-boot.bin:	$(obj)u-boot
 $(obj)u-boot.ldr:	$(obj)u-boot
 		./tools/envcrc --binary > $(obj)env-ldr.o
 		$(LDR) -T $(CONFIG_CPU) -f -c $@ $< $(LDR_FLAGS)
+
+$(obj)u-boot.ldr.hex:	$(obj)u-boot.ldr
+		$(OBJCOPY) ${OBJCFLAGS} -O ihex $< $@ -I binary
+
+$(obj)u-boot.ldr.srec:	$(obj)u-boot.ldr
+		$(OBJCOPY) ${OBJCFLAGS} -O srec $< $@ -I binary
 
 $(obj)u-boot.img:	$(obj)u-boot.bin
 		./tools/mkimage -A $(ARCH) -T firmware -C none \
