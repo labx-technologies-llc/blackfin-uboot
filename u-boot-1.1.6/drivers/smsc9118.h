@@ -254,6 +254,7 @@ struct rxQue {
 #define 	GPIO_CFG_LED1_EN  		(0x10000000)
 #define 	GPIO_CFG_LED2_EN  		(0x20000000)
 #define 	GPIO_CFG_LED3_EN  		(0x40000000)
+#define 	GPIO_CFG_EEPR_EN_MSK	(0x00700000)
 #define 	GPIO_CFG_GPIOBUFn_MSK	(0x00070000)
 #define 	GPIO_CFG_GPIOBUF0_PUPU	(0x00010000)
 #define 	GPIO_CFG_GPIOBUF1_PUPU	(0x00020000)
@@ -301,6 +302,20 @@ struct rxQue {
 
 #define E2P_CMD 					(volatile ulong *)(SMSC9118_BASE + 0xB0)
 #define E2P_DATA		  			(volatile ulong *)(SMSC9118_BASE + 0xB4)
+
+#define E2P_CMD_EPC_BUSY           0x80000000
+#define E2P_CMD_EPC_CMD            0x70000000
+#define E2P_CMD_EPC_CMD_READ       0x00000000
+#define E2P_CMD_EPC_CMD_EWDS       0x10000000
+#define E2P_CMD_EPC_CMD_EWEN       0x20000000
+#define E2P_CMD_EPC_CMD_WRITE      0x30000000
+#define E2P_CMD_EPC_CMD_WRAL       0x40000000
+#define E2P_CMD_EPC_CMD_ERASE      0x50000000
+#define E2P_CMD_EPC_CMD_ERAL       0x60000000
+#define E2P_CMD_EPC_CMD_RELOAD     0x70000000
+#define E2P_CMD_EPC_TIMEOUT        0x00000200
+#define E2P_CMD_MAC_ADDR_LOADED    0x00000100
+#define E2P_CMD_EPC_ADDR           0x000000FF
 
 // MAC Control and Status Registers (accessed through MAC_CSR_CMD/_DATA regs)
 #define MAC_CR						(0x1)
