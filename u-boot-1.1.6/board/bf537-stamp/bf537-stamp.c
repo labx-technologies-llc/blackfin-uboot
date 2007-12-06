@@ -30,7 +30,7 @@
 #include <command.h>
 #include <asm/blackfin.h>
 #include <asm/io.h>
-#include <asm/net.h>
+#include <linux/etherdevice.h>
 
 #define POST_WORD_ADDR 0xFF903FFC
 
@@ -98,6 +98,37 @@ long int initdram(int board_type)
 	return CFG_MAX_RAM_SIZE;
 }
 
+int board_get_enetaddr(uchar *mac_addr)
+{
+#ifdef CFG_NO_FLASH
+# define USE_MAC_IN_FLASH 0
+#else
+# define USE_MAC_IN_FLASH 1
+#endif
+	if (USE_MAC_IN_FLASH) {
+		/* we cram the MAC in the last flash sector */
+		uchar *board_mac_addr = (uchar *)0x203F0000;
+
+		if (is_valid_ether_addr(board_mac_addr)) {
+			memcpy(mac_addr, board_mac_addr, 6);
+			return 0;
+		}
+	}
+
+	puts("Warning: Generating 'random' MAC address\n");
+
+	/* make something up */
+	const char s[] = __DATE__;
+	size_t i;
+	u32 cycles;
+	for (i = 0; i < 6; ++i) {
+		asm("%0 = CYCLES;" : "=r" (cycles));
+		mac_addr[i] = cycles ^ s[i];
+	}
+	mac_addr[0] |= 0x02;	/* make it local */
+	return 0;
+}
+
 #if defined(CONFIG_MISC_INIT_R)
 /* miscellaneous platform dependent initialisations */
 int misc_init_r(void)
@@ -107,25 +138,6 @@ int misc_init_r(void)
 	extern flash_info_t flash_info[];
 	flash_protect(FLAG_PROTECT_SET, 0x203F0000, 0x203FFFFF, &flash_info[0]);
 #endif
-
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) && defined(CONFIG_BFIN_MAC)
-	char nid[32];
-	unsigned char *pMACaddr = (unsigned char *)0x203F0000;
-	u8 SrcAddr[6] = { 0x02, 0x80, 0xAD, 0x20, 0x31, 0xB8 };
-
-#if (CONFIG_COMMANDS & CFG_CMD_NET)
-	/* The 0xFF check here is to make sure we don't use the address
-	 * in flash if it's simply been erased (aka all 0xFF values) */
-	if (getenv("ethaddr") == NULL && is_valid_ether_addr(pMACaddr)) {
-		sprintf(nid, "%02x:%02x:%02x:%02x:%02x:%02x",
-			pMACaddr[0], pMACaddr[1],
-			pMACaddr[2], pMACaddr[3], pMACaddr[4], pMACaddr[5]);
-		setenv("ethaddr", nid);
-	}
-	if (getenv("ethaddr"))
-		bfin_EMAC_setup_addr(SrcAddr);
-#endif				/* CONFIG_COMMANDS & CFG_CMD_NET */
-#endif				/* BFIN_BOOT_MODE == BFIN_BOOT_BYPASS */
 
 #if defined(CONFIG_BFIN_IDE)
 #if defined(CONFIG_BFIN_TRUE_IDE)

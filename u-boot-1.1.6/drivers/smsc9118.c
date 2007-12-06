@@ -329,6 +329,58 @@ DumpPhyRegs(void)
 	  return (0);
 }
 
+static u8 read_eeprom_reg(u8 reg)
+{
+	if (*E2P_CMD & E2P_CMD_EPC_BUSY) {
+		LAN9118_WARN("read_eeprom_reg: busy at start\n");
+		return -1;
+	}
+
+	*E2P_CMD = (E2P_CMD_EPC_BUSY | E2P_CMD_EPC_CMD_READ | reg);
+
+	while (*E2P_CMD & E2P_CMD_EPC_BUSY)
+		if (ctrlc()) {
+			LAN9118_WARN("read_eeprom_reg: timeout\n");
+			return -1;
+		}
+
+	return *E2P_DATA;
+}
+
+int board_get_enetaddr(uchar *mac_addr)
+{
+	/* See if there is anything there */
+	if (((*ID_REV & ID_REV_ID_MASK) != ID_REV_CHIP_118) &&
+	    ((*ID_REV & ID_REV_ID_MASK) != ID_REV_CHIP_218))
+		return 1;
+
+	/* Reset the MAC */
+	*HW_CFG = HW_CFG_SRST;
+	while (*HW_CFG & HW_CFG_SRST)
+		if (ctrlc())
+			return 1;
+
+	/* Wait for EEPROM to settle */
+	while (*E2P_CMD & E2P_CMD_EPC_BUSY)
+		if (ctrlc())
+			return 1;
+
+	/* The first byte is magic to indicate status
+	 * of the EEPROM.  0xa5 == eeprom mac is valid.
+	 */
+	if (read_eeprom_reg(0x00) != 0xa5)
+		return 1;
+
+	mac_addr[0] = read_eeprom_reg(0x01);
+	mac_addr[1] = read_eeprom_reg(0x02);
+	mac_addr[2] = read_eeprom_reg(0x03);
+	mac_addr[3] = read_eeprom_reg(0x04);
+	mac_addr[4] = read_eeprom_reg(0x05);
+	mac_addr[5] = read_eeprom_reg(0x06);
+
+	return 0;
+}
+
 static int
 lan9118_open(bd_t *bis)
 {

@@ -84,4 +84,6 @@ static void WrPHYReg(u16 PHYAddr, u16 RegAddr, u16 Data);
 static u16 RdPHYReg(u16 PHYAddr, u16 RegAddr);
 static int SetupSystemRegs(int *opmode);
 
+static void bfin_EMAC_setup_addr(bd_t *bd);
+
 #endif

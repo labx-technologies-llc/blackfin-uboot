@@ -352,9 +352,8 @@ void board_init_r(gd_t * id, ulong dest_addr)
 {
 	DECLARE_GLOBAL_DATA_PTR;
 	extern void malloc_bin_reloc(void);
-	char *s, *e;
+	char *s;
 	bd_t *bd;
-	int i;
 	gd = id;
 	gd->flags |= GD_FLG_RELOC;	/* tell others: relocation done */
 	bd = gd->bd;
@@ -395,16 +394,32 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	/* relocate environment function pointers etc. */
 	env_relocate();
 
+#if (CONFIG_COMMANDS & CFG_CMD_NET)
 	/* board MAC address */
 	s = getenv("ethaddr");
-	for (i = 0; i < 6; ++i) {
-		bd->bi_enetaddr[i] = s ? simple_strtoul(s, &e, 16) : 0;
-		if (s)
+	if (s == NULL) {
+# ifndef CONFIG_ETHADDR
+		if (!board_get_enetaddr(bd->bi_enetaddr)) {
+			char nid[20];
+			sprintf(nid, "%02X:%02X:%02X:%02X:%02X:%02X",
+				bd->bi_enetaddr[0], bd->bi_enetaddr[1],
+				bd->bi_enetaddr[2], bd->bi_enetaddr[3],
+				bd->bi_enetaddr[4], bd->bi_enetaddr[5]);
+			setenv("ethaddr", nid);
+		}
+# endif
+	} else {
+		int i;
+		char *e;
+		for (i = 0; i < 6; ++i) {
+			bd->bi_enetaddr[i] = simple_strtoul(s, &e, 16);
 			s = (*e) ? e + 1 : e;
+		}
 	}
 
 	/* IP Address */
 	bd->bi_ip_addr = getenv_IPaddr("ipaddr");
+#endif
 
 	/* Initialize devices */
 	devices_init();
@@ -436,6 +451,10 @@ void board_init_r(gd_t * id, ulong dest_addr)
 #if (CONFIG_COMMANDS & CFG_CMD_NET)
 	printf("Net:   ");
 	eth_initialize(gd->bd);
+	if (getenv("ethaddr"))
+		printf("MAC:   %02X:%02X:%02X:%02X:%02X:%02X\n",
+			bd->bi_enetaddr[0], bd->bi_enetaddr[1], bd->bi_enetaddr[2],
+			bd->bi_enetaddr[3], bd->bi_enetaddr[4], bd->bi_enetaddr[5]);
 #endif
 
 #if defined(CONFIG_SOFT_I2C) || defined(CONFIG_HARD_I2C)

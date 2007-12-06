@@ -210,13 +210,6 @@ static void smc_phy_configure(void);
 */
 static int smc_rcv(void);
 
-/* See if a MAC address is defined in the current environment. If so use it. If not
- . print a warning and set the environment and other globals with the default.
- . If an EEPROM is present it really should be consulted.
-*/
-int smc_get_ethaddr(bd_t *bd);
-int get_rom_mac(uchar *v_rom_mac);
-
 /*
  ------------------------------------------------------------
  .
@@ -301,21 +294,6 @@ static inline void SMC_outsw(dword offset, uchar* buf, dword len)
 	}
 }
 #endif  /* CONFIG_SMC_USE_IOFUNCS */
-
-static char unsigned smc_mac_addr[6] = {0x02, 0x80, 0xad, 0x20, 0x31, 0xb8};
-
-/*
- * This function must be called before smc_open() if you want to override
- * the default mac address.
- */
-
-void smc_set_mac_addr(const unsigned char *addr) {
-	int i;
-
-	for (i=0; i < sizeof(smc_mac_addr); i++){
-		smc_mac_addr[i] = addr[i];
-	}
-}
 
 /*
  * smc_get_macaddr is no longer used. If you want to override the default
@@ -819,7 +797,7 @@ void smc_destructor()
  */
 static int smc_open (bd_t * bd)
 {
-	int i, err;
+	int i;
 
 	PRINTK2 ("%s: smc_open\n", SMC_DEV_NAME);
 
@@ -837,22 +815,17 @@ static int smc_open (bd_t * bd)
 /*	SMC_outw(0, RPC_REG); */
 	SMC_SELECT_BANK (1);
 
-	err = smc_get_ethaddr (bd);	/* set smc_mac_addr, and sync it with u-boot globals */
-	if (err < 0) {
-		memset (bd->bi_enetaddr, 0, 6); /* hack to make error stick! upper code will abort if not set */
-		return (-1);	/* upper code ignores this, but NOT bi_enetaddr */
-	}
 #ifdef USE_32_BIT
 	for (i = 0; i < 6; i += 2) {
 		word address;
 
-		address = smc_mac_addr[i + 1] << 8;
-		address |= smc_mac_addr[i];
+		address = bd->bi_enetaddr[i + 1] << 8;
+		address |= bd->bi_enetaddr[i];
 		SMC_outw (address, (ADDR0_REG + i));
 	}
 #else
 	for (i = 0; i < 6; i++)
-		SMC_outb (smc_mac_addr[i], (ADDR0_REG + i));
+		SMC_outb (bd->bi_enetaddr[i], (ADDR0_REG + i));
 #endif
 
 	return 0;
@@ -1556,90 +1529,18 @@ int eth_rx() {
 int eth_send(volatile void *packet, int length) {
 	return smc_send_packet(packet, length);
 }
-
-int smc_get_ethaddr (bd_t * bd)
+int board_get_enetaddr(uchar *mac_addr)
 {
-	int env_size, rom_valid, env_present = 0, reg;
-	char *s = NULL, *e, es[] = "11:22:33:44:55:66";
-	char s_env_mac[64];
-	uchar v_env_mac[6], v_rom_mac[6], *v_mac;
-
-	env_size = getenv_r ("ethaddr", s_env_mac, sizeof (s_env_mac));
-	if ((env_size > 0) && (env_size < sizeof (es))) {	/* exit if env is bad */
-		printf ("\n*** ERROR: ethaddr is not set properly!!\n");
-		return (-1);
-	}
-
-	if (env_size > 0) {
-		env_present = 1;
-		s = s_env_mac;
-	}
-
-	for (reg = 0; reg < 6; ++reg) { /* turn string into mac value */
-		v_env_mac[reg] = s ? simple_strtoul (s, &e, 16) : 0;
-		if (s)
-			s = (*e) ? e + 1 : e;
-	}
-
-	rom_valid = get_rom_mac (v_rom_mac);	/* get ROM mac value if any */
-
-	if (!env_present) {	/* if NO env */
-		if (rom_valid) {	/* but ROM is valid */
-			v_mac = v_rom_mac;
-			sprintf (s_env_mac, "%02X:%02X:%02X:%02X:%02X:%02X",
-				 v_mac[0], v_mac[1], v_mac[2], v_mac[3],
-				 v_mac[4], v_mac[5]);
-			setenv ("ethaddr", s_env_mac);
-		} else {	/* no env, bad ROM */
-			printf ("\n*** ERROR: ethaddr is NOT set !!\n");
-			return (-1);
-		}
-	} else {		/* good env, don't care ROM */
-		v_mac = v_env_mac;	/* always use a good env over a ROM */
-	}
-
-	if (env_present && rom_valid) { /* if both env and ROM are good */
-		if (memcmp (v_env_mac, v_rom_mac, 6) != 0) {
-			printf ("\nWarning: MAC addresses don't match:\n");
-			printf ("\tHW MAC address:  "
-				"%02X:%02X:%02X:%02X:%02X:%02X\n",
-				v_rom_mac[0], v_rom_mac[1],
-				v_rom_mac[2], v_rom_mac[3],
-				v_rom_mac[4], v_rom_mac[5] );
-			printf ("\t\"ethaddr\" value: "
-				"%02X:%02X:%02X:%02X:%02X:%02X\n",
-				v_env_mac[0], v_env_mac[1],
-				v_env_mac[2], v_env_mac[3],
-				v_env_mac[4], v_env_mac[5]) ;
-			debug ("### Set MAC addr from environment\n");
-		}
-	}
-	memcpy (bd->bi_enetaddr, v_mac, 6);	/* update global address to match env (allows env changing) */
-	smc_set_mac_addr ((uchar *)v_mac);	/* use old function to update smc default */
-	PRINTK("Using MAC Address %02X:%02X:%02X:%02X:%02X:%02X\n", v_mac[0], v_mac[1],
-		v_mac[2], v_mac[3], v_mac[4], v_mac[5]);
-	return (0);
-}
-
-int get_rom_mac (uchar *v_rom_mac)
-{
-#ifdef HARDCODE_MAC	/* used for testing or to supress run time warnings */
-	char hw_mac_addr[] = { 0x02, 0x80, 0xad, 0x20, 0x31, 0xb8 };
-
-	memcpy (v_rom_mac, hw_mac_addr, 6);
-	return (1);
-#else
 	int i;
 	int valid_mac = 0;
 
-	SMC_SELECT_BANK (1);
-	for (i=0; i<6; i++)
-	{
-		v_rom_mac[i] = SMC_inb ((ADDR0_REG + i));
-		valid_mac |= v_rom_mac[i];
+	SMC_SELECT_BANK(1);
+	for (i = 0; i < 6; ++i) {
+		mac_addr[i] = SMC_inb((ADDR0_REG + i));
+		valid_mac |= mac_addr[i];
 	}
 
-	return (valid_mac ? 1 : 0);
-#endif
+	return (valid_mac == 0 ? 1 : 0);
 }
+
 #endif /* CONFIG_DRIVER_SMC91111 */

@@ -30,8 +30,8 @@
 
 #ifdef CONFIG_BFIN_MAC
 
+#include <linux/etherdevice.h>
 #include <asm/blackfin.h>
-#include <asm/net.h>
 #include <asm/mach-common/bits/dma.h>
 #include <asm/mach-common/bits/emac.h>
 #include <asm/mach-common/bits/pll.h>
@@ -63,7 +63,6 @@ ADI_ETHER_BUFFER *rxbuf[PKTBUFSRX];
 static u16 txIdx;		/* index of the current RX buffer */
 static u16 rxIdx;		/* index of the current TX buffer */
 
-u8 SrcAddr[6];
 u16 PHYregs[NO_PHY_REGS];	/* u16 PHYADDR; */
 
 /* DMAx_CONFIG values at DMA Restart */
@@ -218,7 +217,7 @@ static int bfin_EMAC_init(struct eth_device *dev, bd_t *bd)
 		return -1;
 
 /* Initialize EMAC address */
-	bfin_EMAC_setup_addr(SrcAddr);
+	bfin_EMAC_setup_addr(bd);
 
 /* Initialize TX and RX buffer */
 	for (i = 0; i < PKTBUFSRX; i++) {
@@ -280,28 +279,16 @@ static void bfin_EMAC_halt(struct eth_device *dev)
 
 }
 
-void bfin_EMAC_setup_addr(u8 *MACaddr)
+void bfin_EMAC_setup_addr(bd_t *bd)
 {
-	char *tmp, *end;
-	int i;
-	/* this depends on a little-endian machine */
-	tmp = getenv("ethaddr");
-	if (tmp) {
-		for (i = 0; i < 6; i++) {
-			MACaddr[i] = tmp ? simple_strtoul(tmp, &end, 16) : 0;
-			if (tmp)
-				tmp = (*end) ? end + 1 : end;
-		}
-
-#ifndef CONFIG_NETCONSOLE
-		printf("Using MAC Address %02X:%02X:%02X:%02X:%02X:%02X\n",
-		       MACaddr[0], MACaddr[1],
-		       MACaddr[2], MACaddr[3], MACaddr[4], MACaddr[5]);
-#endif
-		*pEMAC_ADDRLO = MACaddr[0] | MACaddr[1] << 8 |
-		    MACaddr[2] << 16 | MACaddr[3] << 24;
-		*pEMAC_ADDRHI = MACaddr[4] | MACaddr[5] << 8;
-	}
+	*pEMAC_ADDRLO =
+		bd->bi_enetaddr[0] |
+		bd->bi_enetaddr[1] << 8 |
+		bd->bi_enetaddr[2] << 16 |
+		bd->bi_enetaddr[3] << 24;
+	*pEMAC_ADDRHI =
+		bd->bi_enetaddr[4] |
+		bd->bi_enetaddr[5] << 8;
 }
 
 static void PollMdcDone(void)

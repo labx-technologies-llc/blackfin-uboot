@@ -328,6 +328,8 @@ void	board_ether_init (void);
     defined(CONFIG_METROBOX)    || defined(CONFIG_KAREF) || \
     defined(CONFIG_V38B)
 void	board_get_enetaddr (uchar *addr);
+#elif defined(CONFIG_BLACKFIN)
+int	board_get_enetaddr (uchar *addr);
 #endif
 
 #ifdef CONFIG_HERMES
