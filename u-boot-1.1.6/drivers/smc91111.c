@@ -1534,11 +1534,15 @@ int board_get_enetaddr(uchar *mac_addr)
 	int i;
 	int valid_mac = 0;
 
+	swap_to(ETHERNET);
+
 	SMC_SELECT_BANK(1);
 	for (i = 0; i < 6; ++i) {
 		mac_addr[i] = SMC_inb((ADDR0_REG + i));
 		valid_mac |= mac_addr[i];
 	}
+
+	swap_to(FLASH);
 
 	return (valid_mac == 0 ? 1 : 0);
 }
