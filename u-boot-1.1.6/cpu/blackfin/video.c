@@ -28,6 +28,7 @@
 #include <stdarg.h>
 #include <common.h>
 #include <config.h>
+#include <malloc.h>
 #include <asm/blackfin.h>
 #include <asm/mach-common/bits/dma.h>
 #include <i2c.h>
@@ -36,6 +37,8 @@
 
 
 #ifdef CONFIG_VIDEO
+
+#define DMA_SIZE16	2
 
 #if defined(__ADSPBF533__)
 
@@ -178,11 +181,12 @@ static int video_init(void)
 #include <asm/mach-common/bits/ppi.h>
 #include <asm/mach-common/bits/timer.h>
 
-#include "bfin_logo_320x240.h"
+#include "bfin_logo_230x230.h"
 
 #define LCD_X_RES		320	/* Horizontal Resolution */
 #define LCD_Y_RES		240	/* Vertical Resolution */
 #define LCD_BPP			24	/* Bit Per Pixel */
+#define LCD_PIXEL_SIZE		(LCD_BPP / 8)
 
 #define	DMA_BUS_SIZE		16
 #define	LCD_CLK         	(12*1000*1000)	/* 12MHz */
@@ -200,7 +204,6 @@ static int video_init(void)
 #define	V_LINES		(LCD_Y_RES + U_LINE)		/* total vertical lines */
 #define V_PULSE		(3 * H_PERIOD)			/* VS pulse width (1-5 H_PERIODs) */
 #define V_PERIOD	(H_PERIOD * V_LINES)		/* VS period */
-
 
 #define ACTIVE_VIDEO_MEM_OFFSET	(U_LINE * H_ACTPIX)
 
@@ -249,9 +252,9 @@ void Init_PPI(void)
 
 }
 
-void Init_DMA(void)
+void Init_DMA(void *dst)
 {
-	*pDMA0_START_ADDR = (void *)bfin_logo.data + ACTIVE_VIDEO_MEM_OFFSET;
+	*pDMA0_START_ADDR = dst;
 
 	/* X count */
 	*pDMA0_X_COUNT = H_ACTPIX / 2;
@@ -347,11 +350,11 @@ void DisableTIMER1(void)
 	SSYNC();
 }
 
-int video_init(void)
+int video_init(void *dst)
 {
 
 	Init_Ports();
-	Init_DMA();
+	Init_DMA(dst);
 	EnableDMA();
 	InitTIMER0();
 	InitTIMER1();
@@ -366,7 +369,6 @@ int video_init(void)
 	SSYNC();
 	SSYNC();
 
-
 	/* now start frame sync 1 */
 	EnableTIMER0();
 }
@@ -374,14 +376,16 @@ int video_init(void)
 
 #if defined(__ADSPBF54x__)
 
-#include "bfin_logo_480x272.h"
+#include "bfin_logo_230x230.h"
 #include <asm/mach-common/bits/eppi.h>
 
 #define LCD_X_RES		480	/*Horizontal Resolution */
 #define LCD_Y_RES		272	/* Vertical Resolution */
 
 #define LCD_BPP			24	/* Bit Per Pixel */
+#define LCD_PIXEL_SIZE		(LCD_BPP / 8)
 #define	DMA_BUS_SIZE		32
+#define ACTIVE_VIDEO_MEM_OFFSET 0
 
 /* 	-- Horizontal synchronizing --
  *
@@ -499,9 +503,9 @@ void Init_PPI(void)
 }
 
 
-void Init_DMA(void)
+void Init_DMA(void *dst)
 {
-	*pDMA12_START_ADDR = (void *)bfin_logo.data;
+	*pDMA12_START_ADDR = dst;
 
 	/* X count */
 	*pDMA12_X_COUNT = (LCD_X_RES * LCD_BPP) / DMA_BUS_SIZE;
@@ -559,16 +563,82 @@ void DisablePPI(void)
 	bfin_write_EPPI0_CONTROL(bfin_read_EPPI0_CONTROL() & ~EPPI_EN);
 }
 
-int video_init(void)
+int video_init(void *dst)
 {
 	Init_Ports();
-	Init_DMA();
+	Init_DMA(dst);
 	EnableDMA();
 	Init_PPI();
 	EnablePPI();
+
+	return 0;
 }
 
 #endif /* __ADSPBF54x__ */
+
+#ifdef bfin_write_MDMA1_D0_IRQ_STATUS /* Make BF561 Happy */
+# define bfin_write_MDMA_D0_IRQ_STATUS bfin_write_MDMA1_D0_IRQ_STATUS
+# define bfin_write_MDMA_D0_START_ADDR bfin_write_MDMA1_D0_START_ADDR
+# define bfin_write_MDMA_D0_X_COUNT    bfin_write_MDMA1_D0_X_COUNT
+# define bfin_write_MDMA_D0_X_MODIFY   bfin_write_MDMA1_D0_X_MODIFY
+# define bfin_write_MDMA_D0_Y_COUNT    bfin_write_MDMA1_D0_Y_COUNT
+# define bfin_write_MDMA_D0_Y_MODIFY   bfin_write_MDMA1_D0_Y_MODIFY
+# define bfin_write_MDMA_D0_CONFIG     bfin_write_MDMA1_D0_CONFIG
+# define bfin_write_MDMA_S0_START_ADDR bfin_write_MDMA1_S0_START_ADDR
+# define bfin_write_MDMA_S0_X_COUNT    bfin_write_MDMA1_S0_X_COUNT
+# define bfin_write_MDMA_S0_X_MODIFY   bfin_write_MDMA1_S0_X_MODIFY
+# define bfin_write_MDMA_S0_Y_COUNT    bfin_write_MDMA1_S0_Y_COUNT
+# define bfin_write_MDMA_S0_Y_MODIFY   bfin_write_MDMA1_S0_Y_MODIFY
+# define bfin_write_MDMA_S0_CONFIG     bfin_write_MDMA1_S0_CONFIG
+# define bfin_write_MDMA_D0_IRQ_STATUS bfin_write_MDMA1_D0_IRQ_STATUS
+# define bfin_read_MDMA_D0_IRQ_STATUS  bfin_read_MDMA1_D0_IRQ_STATUS
+#endif
+
+static void dma_bitblit(void *dst, fastimage_t *logo, int x, int y)
+{
+	if (dcache_status())
+		blackfin_dcache_flush_range(logo->data, logo->data + logo->size);
+
+	bfin_write_MDMA_D0_IRQ_STATUS(DMA_DONE | DMA_ERR);
+
+	/* Setup destination start address */
+	bfin_write_MDMA_D0_START_ADDR(dst + ((x & -2) * LCD_PIXEL_SIZE)
+					+ (y * LCD_X_RES * LCD_PIXEL_SIZE));
+	/* Setup destination xcount */
+	bfin_write_MDMA_D0_X_COUNT(logo->width * LCD_PIXEL_SIZE / DMA_SIZE16);
+	/* Setup destination xmodify */
+	bfin_write_MDMA_D0_X_MODIFY(DMA_SIZE16);
+
+	/* Setup destination ycount */
+	bfin_write_MDMA_D0_Y_COUNT(logo->height);
+	/* Setup destination ymodify */
+	bfin_write_MDMA_D0_Y_MODIFY((LCD_X_RES - logo->width) * LCD_PIXEL_SIZE + DMA_SIZE16);
+
+
+	/* Setup Source start address */
+	bfin_write_MDMA_S0_START_ADDR(logo->data);
+	/* Setup Source xcount */
+	bfin_write_MDMA_S0_X_COUNT(logo->width * LCD_PIXEL_SIZE / DMA_SIZE16);
+	/* Setup Source xmodify */
+	bfin_write_MDMA_S0_X_MODIFY(DMA_SIZE16);
+
+	/* Setup Source ycount */
+	bfin_write_MDMA_S0_Y_COUNT(logo->height);
+	/* Setup Source ymodify */
+	bfin_write_MDMA_S0_Y_MODIFY(DMA_SIZE16);
+
+
+	/* Enable source DMA */
+	bfin_write_MDMA_S0_CONFIG(DMAEN | WDSIZE_16 | DMA2D);
+	SSYNC();
+	bfin_write_MDMA_D0_CONFIG(WNR | DMAEN  | WDSIZE_16 | DMA2D);
+
+	while (bfin_read_MDMA_D0_IRQ_STATUS() & DMA_RUN);
+
+	bfin_write_MDMA_S0_IRQ_STATUS(bfin_read_MDMA_D0_IRQ_STATUS() | DMA_DONE | DMA_ERR);
+	bfin_write_MDMA_D0_IRQ_STATUS(bfin_read_MDMA_D0_IRQ_STATUS() | DMA_DONE | DMA_ERR);
+
+}
 
 void video_putc(const char c)
 {
@@ -581,10 +651,25 @@ void video_puts(const char *s)
 int drv_video_init(void)
 {
 	int error, devices = 1;
-
 	device_t videodev;
 
-	video_init();		/* Video initialization */
+	u8 *dst;
+	u32 fbmem_size = LCD_X_RES * LCD_Y_RES * LCD_PIXEL_SIZE + ACTIVE_VIDEO_MEM_OFFSET;
+
+	dst = malloc(fbmem_size);
+
+	if (dst == NULL) {
+		printf("Failed to alloc FB memory");
+		return -1;
+	}
+
+	memset(dst + ACTIVE_VIDEO_MEM_OFFSET, bfin_logo.data[0], fbmem_size - ACTIVE_VIDEO_MEM_OFFSET);
+
+	dma_bitblit(dst + ACTIVE_VIDEO_MEM_OFFSET, &bfin_logo,
+			(LCD_X_RES - bfin_logo.width) / 2,
+			(LCD_Y_RES - bfin_logo.height) / 2);
+
+	video_init(dst);		/* Video initialization */
 
 	memset(&videodev, 0, sizeof(videodev));
 

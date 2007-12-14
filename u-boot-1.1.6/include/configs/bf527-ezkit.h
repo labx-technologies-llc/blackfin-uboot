@@ -76,6 +76,8 @@
  */
 #define CFG_AUTOLOAD			"no"
 
+#define CONFIG_VIDEO
+
 /*
  * Network Settings
  */
@@ -187,9 +189,20 @@
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	259	/* max number of sectors on one chip */
 
+#ifdef CONFIG_VIDEO
+#define	CFG_MONITOR_LEN		(384 << 10)	/* Reserve 384 kB for Monitor	*/
+#else
 #define	CFG_MONITOR_LEN		(256 << 10)	/* Reserve 256 kB for Monitor	*/
+#endif
+
 #define CFG_MONITOR_BASE	(CFG_MAX_RAM_SIZE - CFG_MONITOR_LEN)
+
+#ifdef CONFIG_VIDEO
+#define	CFG_MALLOC_LEN		(384 << 10)	/* Reserve 384 kB for malloc()	*/
+#else
 #define	CFG_MALLOC_LEN		(128 << 10)	/* Reserve 128 kB for malloc()	*/
+#endif
+
 #define CFG_MALLOC_BASE		(CFG_MONITOR_BASE - CFG_MALLOC_LEN)
 #define CFG_GBL_DATA_SIZE	0x4000
 #define CFG_GBL_DATA_ADDR	(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
