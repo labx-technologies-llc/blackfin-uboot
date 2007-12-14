@@ -150,7 +150,7 @@
 
 #define CONFIG_BOOTDELAY     5
 #define CONFIG_BOOTCOMMAND   "run ramboot"
-#define CONFIG_BOOTARGS      "root=/dev/mtdblock0 rw"
+#define CONFIG_BOOTARGS      "root=/dev/mtdblock0 rw earlyprintk=serial,uart0,57600"
 #define CONFIG_LOADADDR      0x1000000
 
 #if (CONFIG_COMMANDS & CFG_CMD_NET)
@@ -175,7 +175,7 @@
 		UBOOT_ENV_UPDATE \
 		"\0" \
 	"addip=set bootargs $(bootargs) ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask):$(hostname):eth0:off\0" \
-	"ramargs=set bootargs root=/dev/mtdblock0 rw\0" \
+	"ramargs=set bootargs " CONFIG_BOOTARGS "\0" \
 	"ramboot=" \
 		"tftp $(loadaddr) uImage;" \
 		"run ramargs;" \
