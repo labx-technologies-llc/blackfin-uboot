@@ -7,3 +7,4 @@
 #define WDOG_CTL WDOGA_CTL
 #define bfin_write_WDOG_CNT(val) bfin_write_WDOGA_CNT(val)
 #define bfin_write_WDOG_CTL(val) bfin_write_WDOGA_CTL(val)
+#define bfin_write_WDOG_STAT(val) bfin_write_WDOGA_STAT(val)

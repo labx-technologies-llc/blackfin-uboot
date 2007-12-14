@@ -125,14 +125,14 @@ int dcache_status(void)
 #ifdef CONFIG_HW_WATCHDOG
 void hw_watchdog_reset(void)
 {
-	*pWDOG_STAT = 0;
+	bfin_write_WDOG_STAT(0);
 }
 
 void hw_watchdog_init(void)
 {
-	*pWDOG_CNT = 5 * get_sclk();	/* 5 second timeout */
+	bfin_write_WDOG_CNT(5 * get_sclk());	/* 5 second timeout */
 	hw_watchdog_reset();
-	*pWDOG_CTL = 0x0;
+	bfin_write_WDOG_CTL(0x0);
 }
 #endif
 
