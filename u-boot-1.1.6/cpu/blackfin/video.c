@@ -502,9 +502,15 @@ void Init_PPI(void)
 
 }
 
+#define               DEB2_URGENT  0x2000     /* DEB2 Urgent */
 
 void Init_DMA(void *dst)
 {
+
+#if defined(CONFIG_DEB_DMA_URGENT)
+	*pEBIU_DDRQUE |= DEB2_URGENT;
+#endif
+
 	*pDMA12_START_ADDR = dst;
 
 	/* X count */
@@ -635,7 +641,7 @@ static void dma_bitblit(void *dst, fastimage_t *logo, int x, int y)
 
 	while (bfin_read_MDMA_D0_IRQ_STATUS() & DMA_RUN);
 
-	bfin_write_MDMA_S0_IRQ_STATUS(bfin_read_MDMA_D0_IRQ_STATUS() | DMA_DONE | DMA_ERR);
+	bfin_write_MDMA_S0_IRQ_STATUS(bfin_read_MDMA_S0_IRQ_STATUS() | DMA_DONE | DMA_ERR);
 	bfin_write_MDMA_D0_IRQ_STATUS(bfin_read_MDMA_D0_IRQ_STATUS() | DMA_DONE | DMA_ERR);
 
 }
