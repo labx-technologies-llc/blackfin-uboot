@@ -63,6 +63,7 @@
 #define CONFIG_BOARD_EARLY_INIT_F 1
 
 #define CONFIG_VIDEO
+#define CONFIG_DEB_DMA_URGENT
 
 #define CONFIG_DRIVER_SMSC9118 1
 #define CONFIG_SMSC9118_BASE 0x24000000
@@ -317,8 +318,8 @@
  *	Async Bank 2 - Nothing
  *	Async Bank 3 - Nothing
  */
-#define CONFIG_EBIU_DDRCTL0_VAL              0x23FE8287
-#define CONFIG_EBIU_DDRCTL1_VAL              0x10022223
+#define CONFIG_EBIU_DDRCTL0_VAL              0x218A83FE
+#define CONFIG_EBIU_DDRCTL1_VAL              0x20022222
 #define CONFIG_EBIU_DDRCTL2_VAL              0x00000021
 #define CONFIG_EBIU_AMGCTL_VAL               0xFF
 #define CONFIG_EBIU_AMBCTL0_VAL              0x7BB07BB0
