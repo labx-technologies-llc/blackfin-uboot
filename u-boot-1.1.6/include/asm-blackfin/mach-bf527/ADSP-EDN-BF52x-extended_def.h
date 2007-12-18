@@ -430,7 +430,6 @@
 #define PORTF_FER                      0xFFC03200 /* Port F Function Enable Register (Alternate/Flag*) */
 #define PORTG_FER                      0xFFC03204 /* Port G Function Enable Register (Alternate/Flag*) */
 #define PORTH_FER                      0xFFC03208 /* Port H Function Enable Register (Alternate/Flag*) */
-#define PORT_MUX                       0xFFC0320C /* Port Multiplexer Control Register */
 #define HMDMA0_CONTROL                 0xFFC03300 /* Handshake MDMA0 Control Register */
 #define HMDMA0_ECINIT                  0xFFC03304 /* HMDMA0 Initial Edge Count Register */
 #define HMDMA0_BCINIT                  0xFFC03308 /* HMDMA0 Initial Block Count Register */
@@ -454,12 +453,12 @@
 #define PORTF_SLEW                     0xFFC03230 /* Port F slew control */
 #define PORTG_SLEW                     0xFFC03234 /* Port G slew control */
 #define PORTH_SLEW                     0xFFC03238 /* Port H slew control */
-#define PORTF_HYSTERISIS               0xFFC03240 /* Port F Schmitt trigger control */
-#define PORTG_HYSTERISIS               0xFFC03244 /* Port G Schmitt trigger control */
-#define PORTH_HYSTERISIS               0xFFC03248 /* Port H Schmitt trigger control */
-#define MISCPORT_DRIVE                 0xFFC03280 /* Misc Port drive strength control */
-#define MISCPORT_SLEW                  0xFFC03284 /* Misc Port slew control */
-#define MISCPORT_HYSTERISIS            0xFFC03288 /* Misc Port Schmitt trigger control */
+#define PORTF_HYSTERESIS               0xFFC03240 /* Port F Schmitt trigger control */
+#define PORTG_HYSTERESIS               0xFFC03244 /* Port G Schmitt trigger control */
+#define PORTH_HYSTERESIS               0xFFC03248 /* Port H Schmitt trigger control */
+#define NONGPIO_DRIVE                  0xFFC03280 /* Non-GPIO Port drive strength control */
+#define NONGPIO_SLEW                   0xFFC03284 /* Non-GPIO Port slew control */
+#define NONGPIO_HYSTERESIS             0xFFC03288 /* Non-GPIO Port Schmitt trigger control */
 #define HOST_CONTROL                   0xFFC03400 /* HOST Control Register */
 #define HOST_STATUS                    0xFFC03404 /* HOST Status Register */
 #define HOST_TIMEOUT                   0xFFC03408 /* HOST Acknowledge Mode Timeout Register */

@@ -7,6 +7,8 @@
 
 #ifndef __ASSEMBLY__
 
+#include "bootrom.h"
+
 uint32_t (* const otp_command)(uint32_t command, uint32_t value) = (void *)_BOOTROM_OTP_COMMAND;
 uint32_t (* const otp_read)(uint32_t page, uint32_t flags, uint64_t *page_content) = (void *)_BOOTROM_OTP_READ;
 uint32_t (* const otp_write)(uint32_t page, uint32_t flags, uint64_t *page_content) = (void *)_BOOTROM_OTP_WRITE;

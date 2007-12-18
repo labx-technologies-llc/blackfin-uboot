@@ -327,7 +327,7 @@
 #define USB_EP_NI7_RXTYPE              0xFFC03BDC /* Sets the transaction protocol and peripheral endpoint number for the Host Rx endpoint7 */
 #define USB_EP_NI7_RXINTERVAL          0xFFC03BF0 /* Sets the polling interval for Interrupt/Isochronous transfers or the NAK response timeout on Bulk transfers for Host Rx endpoint7 */
 #define USB_EP_NI7_TXCOUNT             0xFFC03BF8 /* Number of bytes to be written to the endpoint7 Tx FIFO */
-#define USB_DMA_INTERRUPT              0xFFC04000 /* Indicates pending interrupts for the DMA channels */
+#define USB_DMA_INTERRUPT              0xFFC03C00 /* Indicates pending interrupts for the DMA channels */
 #define USB_DMA0_CONTROL               0xFFC03C04 /* DMA master channel 0 configuration */
 #define USB_DMA0_ADDRLOW               0xFFC03C08 /* Lower 16-bits of memory source/destination address for DMA master channel 0 */
 #define USB_DMA0_ADDRHIGH              0xFFC03C0C /* Upper 16-bits of memory source/destination address for DMA master channel 0 */

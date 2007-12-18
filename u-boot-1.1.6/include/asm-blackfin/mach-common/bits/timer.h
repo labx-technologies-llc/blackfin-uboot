@@ -1,12 +1,11 @@
 /*
- *  GENERAL PURPOSE TIMER MASKS
+ * General Purpose Timer Masks
  */
 
-#ifndef __BFIN_TIMER__
-#define __BFIN_TIMER__
+#ifndef __BFIN_PERIPHERAL_TIMER__
+#define __BFIN_PERIPHERAL_TIMER__
 
-/*  ****************  GENERAL PURPOSE TIMER MASKS  **********************/
-/* TIMER_ENABLE Masks													*/
+/* TIMER_ENABLE Masks */
 #define TIMEN0			0x0001		/* Enable Timer 0					*/
 #define TIMEN1			0x0002		/* Enable Timer 1					*/
 #define TIMEN2			0x0004		/* Enable Timer 2					*/
@@ -16,7 +15,7 @@
 #define TIMEN6			0x0040		/* Enable Timer 6					*/
 #define TIMEN7			0x0080		/* Enable Timer 7					*/
 
-/* TIMER_DISABLE Masks													*/
+/* TIMER_DISABLE Masks */
 #define TIMDIS0			TIMEN0		/* Disable Timer 0					*/
 #define TIMDIS1			TIMEN1		/* Disable Timer 1					*/
 #define TIMDIS2			TIMEN2		/* Disable Timer 2					*/
@@ -26,7 +25,7 @@
 #define TIMDIS6			TIMEN6		/* Disable Timer 6					*/
 #define TIMDIS7			TIMEN7		/* Disable Timer 7					*/
 
-/* TIMER_STATUS Masks													*/
+/* TIMER_STATUS Masks */
 #define TIMIL0			0x00000001	/* Timer 0 Interrupt				*/
 #define TIMIL1			0x00000002	/* Timer 1 Interrupt				*/
 #define TIMIL2			0x00000004	/* Timer 2 Interrupt				*/
@@ -62,7 +61,7 @@
 #define TOVL_ERR6 TOVF_ERR6
 #define TOVL_ERR7 TOVF_ERR7
 
-/* TIMERx_CONFIG Masks													*/
+/* TIMERx_CONFIG Masks */
 #define PWM_OUT			0x0001	/* Pulse-Width Modulation Output Mode	*/
 #define WDTH_CAP		0x0002	/* Width Capture Input Mode				*/
 #define EXT_CLK			0x0003	/* External Clock Mode					*/
