@@ -208,5 +208,10 @@ ENDPROC(_start)
 
 LENTRY(_get_pc)
 	r0 = rets;
+#if ANOMALY_05000371
+	NOP;
+	NOP;
+	NOP;
+#endif
 	rts;
 ENDPROC(_get_pc)
