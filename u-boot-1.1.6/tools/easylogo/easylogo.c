@@ -7,7 +7,10 @@
 ** This is still under construction!
 */
 
+#include <getopt.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #pragma pack(1)
 
@@ -41,7 +44,7 @@ typedef struct {
 } yuyv_t ;
 
 typedef struct {
-	unsigned char	*data,
+	void				*data,
 					*palette ;
 	int				width,
 					height,
@@ -365,9 +368,10 @@ int main (int argc, char *argv[])
 	    strcpy(varname, argv[2 + usergb]);
 	else
 	{
-	    int pos = strchr(inputfile, '.');
+	    char *dot = strchr(inputfile, '.');
+	    int pos = dot - inputfile;
 
-	    if (pos >= 0)
+	    if (dot)
 	    {
 		strncpy (varname, inputfile, pos);
 		varname[pos] = 0 ;
@@ -378,13 +382,15 @@ int main (int argc, char *argv[])
 	    strcpy(outputfile, argv[3 + usergb]);
 	else
 	{
-	    int pos = strchr (varname, '.');
+	    char *dot = strchr (varname, '.');
+	    int pos = dot - varname;
 
-	    if (pos > 0)
+	    if (dot)
 	    {
 		char app[DEF_FILELEN] ;
 
 		strncpy(app, varname, pos);
+		app[pos] = 0;
 		sprintf(outputfile, "%s.h", app);
 	    }
 	}
