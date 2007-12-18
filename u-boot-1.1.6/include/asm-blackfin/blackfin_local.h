@@ -56,6 +56,10 @@ extern u_long get_sclk(void);
 
 # define bfin_revid() (*pCHIPID >> 28)
 
+extern void blackfin_icache_flush_range(const void *, const void *);
+extern void blackfin_dcache_flush_range(const void *, const void *);
+extern void blackfin_dcache_invalidate_range(const void *, const void *);
+
 /* Use DMA to move data from on chip to external memory.  While this is
  * required for only L1 instruction (it is not directly readable by the
  * core via data loads), it isn't a huge performance issue for other

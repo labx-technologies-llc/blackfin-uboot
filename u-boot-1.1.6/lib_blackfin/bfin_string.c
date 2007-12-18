@@ -30,7 +30,6 @@
 #include <asm/blackfin.h>
 #include <asm/io.h>
 #include <asm/mach-common/bits/dma.h>
-#include "cache.h"
 
 char *strcpy(char *dest, const char *src)
 {

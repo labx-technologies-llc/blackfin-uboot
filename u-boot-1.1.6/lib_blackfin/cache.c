@@ -27,7 +27,6 @@
 
 #include <common.h>
 #include <asm/blackfin.h>
-#include "cache.h"
 
 void flush_cache(unsigned long addr, unsigned long size)
 {
