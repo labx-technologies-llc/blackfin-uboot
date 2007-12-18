@@ -128,6 +128,16 @@ void printlogo_yuyv (unsigned short *data, int w, int h)
     }
 }
 
+static inline unsigned short le16_to_cpu (unsigned short val)
+{
+    union {
+	unsigned char pval[2];
+	unsigned short val;
+    } swapped;
+    swapped.val = val;
+    return (swapped.pval[1] << 8) + swapped.pval[0];
+}
+
 int image_load_tga (image_t *image, char *filename)
 {
     FILE *file ;
@@ -140,6 +150,14 @@ int image_load_tga (image_t *image, char *filename)
 	return -1;
 
     fread(&header, sizeof(header), 1, file);
+
+    /* byte swap: tga is little endian, host is ??? */
+    header.ColorMapOrigin = le16_to_cpu (header.ColorMapOrigin);
+    header.ColorMapLenght = le16_to_cpu (header.ColorMapLenght);
+    header.ImageXOrigin = le16_to_cpu (header.ImageXOrigin);
+    header.ImageYOrigin = le16_to_cpu (header.ImageYOrigin);
+    header.ImageWidth = le16_to_cpu (header.ImageWidth);
+    header.ImageHeight = le16_to_cpu (header.ImageHeight);
 
     image->width 	= header.ImageWidth ;
     image->height 	= header.ImageHeight ;
@@ -409,6 +427,7 @@ int main (int argc, char *argv[])
 	return -1 ;
     }
 
+    setbuf(stdout, NULL);
 
     printf("Doing '%s' (%s) from '%s'...",
 	outputfile, varname, inputfile);
