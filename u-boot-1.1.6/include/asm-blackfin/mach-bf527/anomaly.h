@@ -35,6 +35,8 @@
 #define ANOMALY_05000342 (1)
 /* Boot ROM Kernel Incorrectly Alters Reset Value of USB Register */
 #define ANOMALY_05000347 (1)
+/* Possible RETS Register Corruption when Subroutine Is under 5 Cycles in Duration */
+#define ANOMALY_05000371 (1)
 
 /* Anomalies that don't exist on this proc */
 #define ANOMALY_05000125 (0)
