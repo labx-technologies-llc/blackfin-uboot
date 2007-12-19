@@ -35,6 +35,7 @@
 #include <linux/types.h>
 #include <devices.h>
 
+int gunzip(void *, int, unsigned char *, unsigned long *);
 
 #ifdef CONFIG_VIDEO
 
@@ -665,9 +666,21 @@ int drv_video_init(void)
 	dst = malloc(fbmem_size);
 
 	if (dst == NULL) {
-		printf("Failed to alloc FB memory");
+		printf("Failed to alloc FB memory\n");
 		return -1;
 	}
+
+#ifdef EASYLOGO_ENABLE_GZIP
+	unsigned char *data = malloc(bfin_logo.size);
+	unsigned long src_len = EASYLOGO_ENABLE_GZIP;
+	if (gunzip(data, bfin_logo.size, bfin_logo.data, &src_len)) {
+		puts("Failed to decompress logo\n");
+		free(dst);
+		free(data);
+		return -1;
+	}
+	bfin_logo.data = data;
+#endif
 
 	memset(dst + ACTIVE_VIDEO_MEM_OFFSET, bfin_logo.data[0], fbmem_size - ACTIVE_VIDEO_MEM_OFFSET);
 
