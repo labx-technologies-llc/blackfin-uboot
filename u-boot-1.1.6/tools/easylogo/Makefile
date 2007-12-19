@@ -1,5 +1,9 @@
 CFLAGS += -Wall
 
+ifeq ($(GZIP),1)
+CPPFLAGS += -DENABLE_GZIP
+endif
+
 all: easylogo
 
 clean:

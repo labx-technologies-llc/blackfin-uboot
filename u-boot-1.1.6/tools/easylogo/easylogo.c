@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/stat.h>
 
 #pragma pack(1)
 
@@ -276,6 +278,10 @@ int image_rgb_to_yuyv (image_t *rgb_image, image_t *yuyv_image)
 	return 0 ;
 }
 
+#ifdef ENABLE_GZIP
+int use_gzip = 0;
+#endif
+
 int image_save_header (image_t *image, char *filename, char *varname)
 {
 	FILE    *file = fopen (filename, "w");
@@ -293,6 +299,31 @@ int image_save_header (image_t *image, char *filename, char *varname)
 	fprintf(file, " *\t\t'x'\t\tis the horizontal position\n");
 	fprintf(file, " *\t\t'y'\t\tis the vertical position\n */\n\n");
 
+/*  gzip compress */
+	if (use_gzip) {
+		unsigned char *compressed;
+		struct stat st;
+		FILE *gz;
+
+		sprintf(str, "%s.gz", filename);
+		sprintf(app, "gzip > %s", str);
+		gz = popen(app, "w");
+		fwrite(image->data, image->size, 1, gz);
+		pclose(gz);
+
+		gz = fopen(str, "r");
+		stat(str, &st);
+		compressed = malloc(st.st_size);
+		fread(compressed, st.st_size, 1, gz);
+		fclose(gz);
+
+		unlink(str);
+
+		dataptr = compressed;
+		count = st.st_size;
+		fprintf(file, "#define EASYLOGO_ENABLE_GZIP %i\n\n", count);
+	}
+
 /*	Headers */
 	fprintf(file, "#include <video_easylogo.h>\n\n");
 /*	Macros */
@@ -305,7 +336,7 @@ int image_save_header (image_t *image, char *filename, char *varname)
 	fprintf(file, "#define	DEF_%s_PIXEL_SIZE\t%d\n", def_name, image->pixel_size);
 	fprintf(file, "#define	DEF_%s_SIZE\t\t%d\n\n", def_name, image->size);
 /*  Declaration */
-	fprintf(file, "unsigned char DEF_%s_DATA[DEF_%s_SIZE] = {\n", def_name, def_name);
+	fprintf(file, "unsigned char DEF_%s_DATA[] = {\n", def_name);
 
 /*	Data */
 	while(count)
@@ -354,9 +385,30 @@ int image_save_header (image_t *image, char *filename, char *varname)
 
 #define DEF_FILELEN	256
 
+static void usage(int exit_status)
+{
+	printf(
+		"EasyLogo 1.0 (C) 2000 by Paolo Scaffardi\n"
+		"\n"
+		"Syntax:	easylogo [options] inputfile [outputvar [outputfile]]\n"
+		"\n"
+		"Options:\n"
+		"  -r     Output 24-bit RGB instead of yuyv\n"
+#ifdef ENABLE_GZIP
+		"  -g     Compress with gzip\n"
+#endif
+		"  -h     Help output\n"
+		"\n"
+		"Where: 'inputfile'   is the TGA image to load\n"
+		"       'outputvar'   is the variable name to create\n"
+		"       'outputfile'  is the output header file (default is 'inputfile.h')\n"
+	);
+	exit(exit_status);
+}
+
 int main (int argc, char *argv[])
 {
-    int c, usergb = 0;
+    int c, use_rgb = 0;
     char
 	inputfile[DEF_FILELEN],
 	outputfile[DEF_FILELEN],
@@ -364,68 +416,52 @@ int main (int argc, char *argv[])
 
     image_t 		rgb_logo, yuyv_logo ;
 
-	while ((c = getopt(argc, argv, "r")) > 0) {
+	while ((c = getopt(argc, argv, "hrg")) > 0) {
 		switch (c) {
+		case 'h':
+			usage(0);
+			break;
 		case 'r':
-			usergb++;
+			use_rgb = 1;
 			printf("Using 24-bit RGB Output Fromat\n");
 			break;
+#ifdef ENABLE_GZIP
+		case 'g':
+			use_gzip = 1;
+			puts("Compressing with gzip");
+			break;
+#endif
 		default:
+			usage(1);
 			break;
 		}
 	}
 
+	c = argc - optind;
+	if (c > 4 || c < 1)
+		usage(1);
 
-    switch (argc - usergb) {
-    case 2:
-    case 3:
-    case 4:
-	strcpy(inputfile, argv[1 + usergb]);
+	strcpy(inputfile, argv[optind]);
 
-	if (argc > 2)
-	    strcpy(varname, argv[2 + usergb]);
-	else
-	{
-	    char *dot = strchr(inputfile, '.');
-	    int pos = dot - inputfile;
-
-	    if (dot)
-	    {
-		strncpy (varname, inputfile, pos);
-		varname[pos] = 0 ;
-	    }
+	if (c > 1)
+		strcpy(varname, argv[optind + 1]);
+	else {
+		char *dot;
+		strcpy(varname, inputfile);
+		dot = strchr(varname, '.');
+		if (dot)
+			*dot = '\0';
 	}
 
-	if (argc > 3)
-	    strcpy(outputfile, argv[3 + usergb]);
-	else
-	{
-	    char *dot = strchr (varname, '.');
-	    int pos = dot - varname;
-
-	    if (dot)
-	    {
-		char app[DEF_FILELEN] ;
-
-		strncpy(app, varname, pos);
-		app[pos] = 0;
-		sprintf(outputfile, "%s.h", app);
-	    }
+	if (c > 2)
+		strcpy(outputfile, argv[optind + 2]);
+	else {
+		char *dot;
+		strcpy(outputfile, inputfile);
+		dot = strchr(outputfile, '.');
+		if (dot)
+			*dot = '\0';
 	}
-	break;
-
-    default:
-	printf("EasyLogo 1.0 (C) 2000 by Paolo Scaffardi\n\n");
-
-	printf("Syntax:	easylogo [-r] inputfile [outputvar {outputfile}] \n");
-	printf("\n");
-	printf("	-r	 	Output 24-bit RGB instead of yuyv\n");
-	printf("Where:	'inputfile' 	is the TGA image to load\n");
-	printf("      	'outputvar' 	is the variable name to create\n");
-	printf("       	'outputfile' 	is the output header file (default is 'inputfile.h')\n");
-
-	return -1 ;
-    }
 
     setbuf(stdout, NULL);
 
@@ -443,14 +479,14 @@ int main (int argc, char *argv[])
 
 /* Convert it to YUYV format */
 
-	if (!usergb) {
+	if (!use_rgb) {
 	    printf("C");
 	    image_rgb_to_yuyv(&rgb_logo, &yuyv_logo) ;
 	}
 /* Save it into a header format */
 
     printf("S");
-	if (usergb)
+	if (use_rgb)
 	    image_save_header(&rgb_logo, outputfile, varname);
 	else
 	    image_save_header(&yuyv_logo, outputfile, varname);
@@ -458,7 +494,7 @@ int main (int argc, char *argv[])
 
     image_free (&rgb_logo);
 
-	if (!usergb)
+	if (!use_rgb)
 	    image_free(&yuyv_logo);
 
     printf("\n");
