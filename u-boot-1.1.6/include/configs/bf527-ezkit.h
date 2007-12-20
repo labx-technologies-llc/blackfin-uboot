@@ -17,7 +17,8 @@
 #define CONFIG_BAUDRATE		57600
 #define CONFIG_UART_CONSOLE	1
 
-#if !defined(__ADSPBF522__) && !defined(__ADSPBF525__)
+#if !defined(__ADSPBF522__) && !defined(__ADSPBF523__) && \
+    !defined(__ADSPBF524__) && !defined(__ADSPBF525__)
 #define CONFIG_BFIN_MAC
 #define CONFIG_BFIN_MAC_RMII
 #define CONFIG_NETCONSOLE	1
