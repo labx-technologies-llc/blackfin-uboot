@@ -9,8 +9,17 @@
 #ifdef __ADSPBF522__
 # include "mach-bf527/BF522_cdef.h"
 #endif
+#ifdef __ADSPBF523__
+# include "mach-bf527/BF523_cdef.h"
+#endif
+#ifdef __ADSPBF524__
+# include "mach-bf527/BF524_cdef.h"
+#endif
 #ifdef __ADSPBF525__
 # include "mach-bf527/BF525_cdef.h"
+#endif
+#ifdef __ADSPBF526__
+# include "mach-bf527/BF526_cdef.h"
 #endif
 #ifdef __ADSPBF527__
 # include "mach-bf527/BF527_cdef.h"

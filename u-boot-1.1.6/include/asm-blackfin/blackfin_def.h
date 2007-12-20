@@ -11,8 +11,23 @@
 # include "mach-bf527/anomaly.h"
 # include "mach-bf527/def_local.h"
 #endif
+#ifdef __ADSPBF523__
+# include "mach-bf527/BF523_def.h"
+# include "mach-bf527/anomaly.h"
+# include "mach-bf527/def_local.h"
+#endif
+#ifdef __ADSPBF524__
+# include "mach-bf527/BF524_def.h"
+# include "mach-bf527/anomaly.h"
+# include "mach-bf527/def_local.h"
+#endif
 #ifdef __ADSPBF525__
 # include "mach-bf527/BF525_def.h"
+# include "mach-bf527/anomaly.h"
+# include "mach-bf527/def_local.h"
+#endif
+#ifdef __ADSPBF526__
+# include "mach-bf527/BF526_def.h"
 # include "mach-bf527/anomaly.h"
 # include "mach-bf527/def_local.h"
 #endif
