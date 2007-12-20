@@ -372,6 +372,8 @@ int video_init(void *dst)
 
 	/* now start frame sync 1 */
 	EnableTIMER0();
+
+	return 0;
 }
 #endif /* __ADSPBF52x__ */
 
