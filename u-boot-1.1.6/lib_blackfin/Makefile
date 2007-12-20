@@ -34,7 +34,7 @@ LIB	= $(obj)lib$(ARCH).a
 SOBJS	= memcpy.o memcmp.o memset.o memmove.o
 
 COBJS	= post.o tests.o board.o bfin_linux.o bfin_string.o cache.o \
-	muldi3.o bootldr.o cplbinfo.o
+	muldi3.o bootldr.o cplbinfo.o cmd_cache_dump.o
 
 SRCS 	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
 OBJS	:= $(addprefix $(obj),$(SOBJS) $(COBJS))
