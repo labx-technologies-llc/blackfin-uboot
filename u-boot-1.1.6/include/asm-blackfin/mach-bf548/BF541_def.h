@@ -111,5 +111,8 @@
 #define IPEND                          0xFFE02108 /* Interrupt Pending Register */
 #define IPRIO                          0xFFE02110 /* Interrupt Priority Register */
 #define DSPID                          0xFFE05000
+#define TBUFCTL                        0xFFE06000 /* Trace Buffer Control Register */
+#define TBUFSTAT                       0xFFE06004 /* Trace Buffer Status Register */
+#define TBUF                           0xFFE06100 /* Trace Buffer */
 
 #endif /* __BFIN_DEF_ADSP_BF541_proc__ */

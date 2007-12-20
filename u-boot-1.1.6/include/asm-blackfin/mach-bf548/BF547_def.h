@@ -111,6 +111,9 @@
 #define IPEND                          0xFFE02108 /* Interrupt Pending Register */
 #define IPRIO                          0xFFE02110 /* Interrupt Priority Register */
 #define DSPID                          0xFFE05000
+#define TBUFCTL                        0xFFE06000 /* Trace Buffer Control Register */
+#define TBUFSTAT                       0xFFE06004 /* Trace Buffer Status Register */
+#define TBUF                           0xFFE06100 /* Trace Buffer */
 #define L1_INST_SRAM 0xFFA00000 /* 0xFFA00000 -> 0xFFA07FFF Instruction Bank A SRAM */
 #define L1_INST_SRAM_SIZE (0xFFA07FFF - 0xFFA00000 + 1)
 #define L1_INST_SRAM_END (L1_INST_SRAM + L1_INST_SRAM_SIZE)

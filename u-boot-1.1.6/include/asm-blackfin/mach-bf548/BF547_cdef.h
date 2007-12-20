@@ -313,5 +313,14 @@
 #define pDSPID                         ((uint32_t volatile *)DSPID)
 #define bfin_read_DSPID()              bfin_read32(DSPID)
 #define bfin_write_DSPID(val)          bfin_write32(DSPID, val)
+#define pTBUFCTL                       ((uint32_t volatile *)TBUFCTL) /* Trace Buffer Control Register */
+#define bfin_read_TBUFCTL()            bfin_read32(TBUFCTL)
+#define bfin_write_TBUFCTL(val)        bfin_write32(TBUFCTL, val)
+#define pTBUFSTAT                      ((uint32_t volatile *)TBUFSTAT) /* Trace Buffer Status Register */
+#define bfin_read_TBUFSTAT()           bfin_read32(TBUFSTAT)
+#define bfin_write_TBUFSTAT(val)       bfin_write32(TBUFSTAT, val)
+#define pTBUF                          ((void * volatile *)TBUF) /* Trace Buffer */
+#define bfin_read_TBUF()               bfin_readPTR(TBUF)
+#define bfin_write_TBUF(val)           bfin_writePTR(TBUF, val)
 
 #endif /* __BFIN_CDEF_ADSP_BF547_proc__ */
