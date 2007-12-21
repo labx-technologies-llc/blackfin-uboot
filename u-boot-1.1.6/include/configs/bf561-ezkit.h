@@ -14,6 +14,7 @@
 #define CONFIG_CMDLINE_EDITING	1
 #define CONFIG_AUTO_COMPLETE	1
 #define CONFIG_ENV_OVERWRITE	1
+#define CONFIG_DEBUG_DUMP	1
 #define CONFIG_BAUDRATE		57600
 /* Set default serial console for bf537 */
 #define CONFIG_UART_CONSOLE	0
