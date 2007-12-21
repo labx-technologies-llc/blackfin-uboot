@@ -47,6 +47,7 @@
  * SEQSTAT register
  */
 
+#define EXCAUSE_P	0	/* Last exception cause bit positions */
 #define EXCAUSE0_P	0	/* Last exception cause bit 0 */
 #define EXCAUSE1_P	1	/* Last exception cause bit 1 */
 #define EXCAUSE2_P	2	/* Last exception cause bit 2 */
@@ -55,6 +56,7 @@
 #define EXCAUSE5_P	5	/* Last exception cause bit 5 */
 #define IDLE_REQ_P	12	/* Pending idle mode request, set by IDLE instruction */
 #define SFTRESET_P	13	/* Indicates whether the last reset was a software reset (=1) */
+#define HWERRCAUSE_P	14	/* Last hw error cause bit positions */
 #define HWERRCAUSE0_P	14	/* Last hw error cause bit 0 */
 #define HWERRCAUSE1_P	15	/* Last hw error cause bit 1 */
 #define HWERRCAUSE2_P	16	/* Last hw error cause bit 2 */
