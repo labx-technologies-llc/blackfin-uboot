@@ -32,7 +32,7 @@ EXTRA    := bootrom.h
 CEXTRA   := initcode.o
 SEXTRA   := start.o
 SOBJS    := interrupt.o cache.o flush.o
-COBJS    := cpu.o traps.o ints.o serial.o interrupts.o video.o i2c.o
+COBJS    := cpu.o traps.o ints.o interrupts.o reset.o serial.o video.o i2c.o
 
 ifeq ($(BFIN_BOOT_MODE),BFIN_BOOT_BYPASS)
 COBJS    += initcode.o
