@@ -31,6 +31,7 @@
 #include <asm/cplb.h>
 #include <asm/mach-common/bits/core.h>
 #include <asm/mach-common/bits/mpu.h>
+#include <asm/mach-common/bits/trace.h>
 
 #include "cpu.h"
 #include "serial.h"
@@ -91,6 +92,11 @@ void cpu_init_f(ulong bootflag, ulong loaded_from_ldr)
 		memcpy(&_sdata_l1, &_sdata_l1_lma, (&_edata_l1 - &_sdata_l1));
 	}
 
+#ifdef CONFIG_DEBUG_DUMP
+	/* Turn on hardware trace buffer */
+	bfin_write_TBUFCTL(TBUFPWR | TBUFEN);
+#endif
+
 #ifndef CONFIG_PANIC_HANG
 	/* Reset upon a double exception rather than just hanging.
 	 * Do not do bfin_read on SWRST as that will reset status bits.
@@ -100,4 +106,45 @@ void cpu_init_f(ulong bootflag, ulong loaded_from_ldr)
 
 	serial_early_puts("Board init flash\n");
 	board_init_f(bootflag);
+}
+
+int exception_init(void)
+{
+	bfin_write_EVT3(trap);
+	return 0;
+}
+
+int irq_init(void)
+{
+#ifdef SIC_IMASK0
+	bfin_write_SIC_IMASK0(0);
+	bfin_write_SIC_IMASK1(0);
+# ifdef SIC_IMASK2
+	bfin_write_SIC_IMASK2(0);
+# endif
+#elif defined(SICA_IMASK0)
+	bfin_write_SICA_IMASK0(0);
+	bfin_write_SICA_IMASK1(0);
+#else
+	bfin_write_SIC_IMASK(0);
+#endif
+	bfin_write_EVT2(evt_default);	/* NMI */
+	bfin_write_EVT5(evt_default);	/* hardware error */
+	bfin_write_EVT6(evt_default);	/* core timer */
+	bfin_write_EVT7(evt_default);
+	bfin_write_EVT8(evt_default);
+	bfin_write_EVT9(evt_default);
+	bfin_write_EVT10(evt_default);
+	bfin_write_EVT11(evt_default);
+	bfin_write_EVT12(evt_default);
+	bfin_write_EVT13(evt_default);
+	bfin_write_EVT14(evt_default);
+	bfin_write_EVT15(evt_default);
+	bfin_write_ILAT(0);
+	CSYNC();
+	/* enable all interrupts except for core timer */
+	irq_flags = 0xffffffbf;
+	local_irq_enable();
+	CSYNC();
+	return 0;
 }

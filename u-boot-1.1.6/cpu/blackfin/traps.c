@@ -40,13 +40,17 @@
 #include <asm/io.h>
 #include <asm/mach-common/bits/core.h>
 #include <asm/mach-common/bits/mpu.h>
+#include <asm/mach-common/bits/trace.h>
 #include "cpu.h"
 
-void process_int(unsigned long vec, struct pt_regs *fp)
-{
-	printf("interrupt\n");
-	return;
-}
+#define trace_buffer_save(x) \
+	do { \
+		(x) = bfin_read_TBUFCTL(); \
+		bfin_write_TBUFCTL((x) & ~TBUFEN); \
+	} while (0)
+
+#define trace_buffer_restore(x) \
+	bfin_write_TBUFCTL((x))
 
 /* The purpose of this map is to provide a mapping of address<->cplb settings
  * rather than an exact map of what is actually addressable on the part.  This
@@ -186,43 +190,139 @@ void trap_c(struct pt_regs *regs)
 
 	default:
 		/* All traps come here */
-		blackfin_irq_panic(trapnr, regs);
-		bfin_reset_or_hang();
+		bfin_panic(regs);
 	}
+}
 
-	return;
+#ifdef CONFIG_DEBUG_DUMP
+# define ENABLE_DUMP 1
+#else
+# define ENABLE_DUMP 0
+#endif
+
+static void decode_address(char *buf, unsigned long address)
+{
+	if (!address)
+		sprintf(buf, "<0x%p> /* Maybe null pointer? */", address);
+	else if (address >= CFG_MONITOR_BASE &&
+	         address < CFG_MONITOR_BASE + CFG_MONITOR_LEN)
+		sprintf(buf, "<0x%p> /* somewhere in u-boot */", address);
+	else
+		sprintf(buf, "<0x%p> /* unknown address */", address);
 }
 
 void dump(struct pt_regs *fp)
 {
-	debug("RETE:  %08lx  RETN: %08lx  RETX: %08lx  RETS: %08lx\n",
-		 fp->rete, fp->retn, fp->retx, fp->rets);
-	debug("IPEND: %04lx  SYSCFG: %04lx\n", fp->ipend, fp->syscfg);
-	debug("SEQSTAT: %08lx    SP: %08lx\n", (long)fp->seqstat, (long)fp);
-	debug("R0: %08lx    R1: %08lx    R2: %08lx    R3: %08lx\n",
-		 fp->r0, fp->r1, fp->r2, fp->r3);
-	debug("R4: %08lx    R5: %08lx    R6: %08lx    R7: %08lx\n",
-		 fp->r4, fp->r5, fp->r6, fp->r7);
-	debug("P0: %08lx    P1: %08lx    P2: %08lx    P3: %08lx\n",
-		 fp->p0, fp->p1, fp->p2, fp->p3);
-	debug("P4: %08lx    P5: %08lx    FP: %08lx\n",
-		 fp->p4, fp->p5, fp->fp);
-	debug("A0.w: %08lx    A0.x: %08lx    A1.w: %08lx    A1.x: %08lx\n",
-		 fp->a0w, fp->a0x, fp->a1w, fp->a1x);
+	char buf[150];
+	size_t i;
 
-	debug("LB0: %08lx  LT0: %08lx  LC0: %08lx\n",
-		 fp->lb0, fp->lt0, fp->lc0);
-	debug("LB1: %08lx  LT1: %08lx  LC1: %08lx\n",
-		 fp->lb1, fp->lt1, fp->lc1);
-	debug("B0: %08lx  L0: %08lx  M0: %08lx  I0: %08lx\n",
-		 fp->b0, fp->l0, fp->m0, fp->i0);
-	debug("B1: %08lx  L1: %08lx  M1: %08lx  I1: %08lx\n",
-		 fp->b1, fp->l1, fp->m1, fp->i1);
-	debug("B2: %08lx  L2: %08lx  M2: %08lx  I2: %08lx\n",
-		 fp->b2, fp->l2, fp->m2, fp->i2);
-	debug("B3: %08lx  L3: %08lx  M3: %08lx  I3: %08lx\n",
-		 fp->b3, fp->l3, fp->m3, fp->i3);
+	if (!ENABLE_DUMP)
+		return;
 
-	debug("DCPLB_FAULT_ADDR=%p\n", *pDCPLB_FAULT_ADDR);
-	debug("ICPLB_FAULT_ADDR=%p\n", *pICPLB_FAULT_ADDR);
+	printf("SEQUENCER STATUS:\n");
+	printf(" SEQSTAT: %08lx  IPEND: %04lx  SYSCFG: %04lx\n",
+		fp->seqstat, fp->ipend, fp->syscfg);
+	printf("  HWERRCAUSE: 0x%lx\n", (fp->seqstat & HWERRCAUSE) >> HWERRCAUSE_P);
+	printf("  EXCAUSE   : 0x%lx\n", (fp->seqstat & EXCAUSE) >> EXCAUSE_P);
+	for (i = 6; i <= 15; ++i) {
+		if (fp->ipend & (1 << i)) {
+			decode_address(buf, bfin_read32(EVT0 + 4*i));
+			printf("  physical IVG%i asserted : %s\n", i, buf);
+		}
+	}
+	decode_address(buf, fp->rete);
+	printf(" RETE: %s\n", buf);
+	decode_address(buf, fp->retn);
+	printf(" RETN: %s\n", buf);
+	decode_address(buf, fp->retx);
+	printf(" RETX: %s\n", buf);
+	decode_address(buf, fp->rets);
+	printf(" RETS: %s\n", buf);
+	decode_address(buf, fp->pc);
+	printf(" PC  : %s\n", buf);
+
+	if (fp->seqstat & EXCAUSE) {
+		decode_address(buf, bfin_read_DCPLB_FAULT_ADDR());
+		printf("DCPLB_FAULT_ADDR: %s\n", buf);
+		decode_address(buf, bfin_read_ICPLB_FAULT_ADDR());
+		printf("ICPLB_FAULT_ADDR: %s\n", buf);
+	}
+
+	printf("\nPROCESSOR STATE:\n");
+	printf(" R0 : %08lx    R1 : %08lx    R2 : %08lx    R3 : %08lx\n",
+		fp->r0, fp->r1, fp->r2, fp->r3);
+	printf(" R4 : %08lx    R5 : %08lx    R6 : %08lx    R7 : %08lx\n",
+		fp->r4, fp->r5, fp->r6, fp->r7);
+	printf(" P0 : %08lx    P1 : %08lx    P2 : %08lx    P3 : %08lx\n",
+		fp->p0, fp->p1, fp->p2, fp->p3);
+	printf(" P4 : %08lx    P5 : %08lx    FP : %08lx    SP : %08lx\n",
+		fp->p4, fp->p5, fp->fp, fp);
+	printf(" LB0: %08lx    LT0: %08lx    LC0: %08lx\n",
+		fp->lb0, fp->lt0, fp->lc0);
+	printf(" LB1: %08lx    LT1: %08lx    LC1: %08lx\n",
+		fp->lb1, fp->lt1, fp->lc1);
+	printf(" B0 : %08lx    L0 : %08lx    M0 : %08lx    I0 : %08lx\n",
+		fp->b0, fp->l0, fp->m0, fp->i0);
+	printf(" B1 : %08lx    L1 : %08lx    M1 : %08lx    I1 : %08lx\n",
+		fp->b1, fp->l1, fp->m1, fp->i1);
+	printf(" B2 : %08lx    L2 : %08lx    M2 : %08lx    I2 : %08lx\n",
+		fp->b2, fp->l2, fp->m2, fp->i2);
+	printf(" B3 : %08lx    L3 : %08lx    M3 : %08lx    I3 : %08lx\n",
+		fp->b3, fp->l3, fp->m3, fp->i3);
+	printf("A0.w: %08lx   A0.x: %08lx   A1.w: %08lx   A1.x: %08lx\n",
+		fp->a0w, fp->a0x, fp->a1w, fp->a1x);
+
+	printf("USP : %08lx  ASTAT: %08lx\n",
+		fp->usp, fp->astat);
+
+	printf("\n");
+}
+
+void dump_bfin_trace_buffer(void)
+{
+	char buf[150];
+	unsigned long tflags;
+	size_t i = 0;
+
+	if (!ENABLE_DUMP)
+		return;
+
+	trace_buffer_save(tflags);
+
+	printf("Hardware Trace:\n");
+
+	if (bfin_read_TBUFSTAT() & TBUFCNT) {
+		for (; bfin_read_TBUFSTAT() & TBUFCNT; i++) {
+			decode_address(buf, bfin_read_TBUF());
+			printf("%4i Target : %s\n", i, buf);
+			decode_address(buf, bfin_read_TBUF());
+			printf("     Source : %s\n", buf);
+		}
+	}
+
+	trace_buffer_restore(tflags);
+}
+
+void bfin_panic(struct pt_regs *regs)
+{
+	if (ENABLE_DUMP) {
+		unsigned long tflags;
+		trace_buffer_save(tflags);
+	}
+
+	puts(
+		"\n"
+		"\n"
+		"\n"
+		"Ack! Something bad happened to the Blackfin!\n"
+		"\n"
+	);
+	dump(regs);
+	dump_bfin_trace_buffer();
+	printf(
+		"\n"
+		"Please reset the board\n"
+		"\n"
+	);
+	bfin_reset_or_hang();
 }
