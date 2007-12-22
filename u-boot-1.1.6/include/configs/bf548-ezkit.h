@@ -65,8 +65,11 @@
 #define CONFIG_BOARD_EARLY_INIT_F 1
 
 #ifndef __ADSPBF542__
-#define CONFIG_VIDEO
-#define CONFIG_DEB_DMA_URGENT
+/* Don't waste time transferring a logo over the UART */
+# if (BFIN_BOOT_MODE != BFIN_BOOT_UART)
+#  define CONFIG_VIDEO
+# endif
+# define CONFIG_DEB_DMA_URGENT
 #endif
 
 #define CONFIG_DRIVER_SMSC9118 1

@@ -79,7 +79,10 @@
  */
 #define CFG_AUTOLOAD			"no"
 
-#define CONFIG_VIDEO
+/* Don't waste time transferring a logo over the UART */
+#if (BFIN_BOOT_MODE != BFIN_BOOT_UART)
+# define CONFIG_VIDEO
+#endif
 
 /*
  * Network Settings
