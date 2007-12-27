@@ -227,6 +227,17 @@ void init_cplbtables(void)
 
 	/* Add entries for the rest of external RAM up to the bootrom */
 	extern_memory = 0;
+
+#ifdef CONFIG_DEBUG_NULL_PTR
+	icplb_add(extern_memory, (SDRAM_IKERNEL & ~PAGE_SIZE_MASK) | PAGE_SIZE_1KB);
+	dcplb_add(extern_memory, (SDRAM_DKERNEL & ~PAGE_SIZE_MASK) | PAGE_SIZE_1KB);
+	++i;
+	icplb_add(extern_memory, SDRAM_IKERNEL);
+	dcplb_add(extern_memory, SDRAM_DKERNEL);
+	extern_memory += CPLB_PAGE_SIZE;
+	++i;
+#endif
+
 	while (i < 16 && extern_memory < (CFG_MONITOR_BASE & CPLB_PAGE_MASK)) {
 		icplb_add(extern_memory, SDRAM_IGENERIC);
 		dcplb_add(extern_memory, SDRAM_DGENERIC);
