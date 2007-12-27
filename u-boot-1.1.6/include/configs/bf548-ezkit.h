@@ -211,7 +211,7 @@
 #define CFG_MONITOR_BASE	(CFG_MAX_RAM_SIZE - CFG_MONITOR_LEN)
 
 #ifdef CONFIG_VIDEO
-#define	CFG_MALLOC_LEN		(512 << 10)	/* Reserve 512 kB for malloc()	*/
+#define	CFG_MALLOC_LEN		(640 << 10)	/* Reserve 512 kB for malloc()	*/
 #else
 #define	CFG_MALLOC_LEN		(128 << 10)	/* Reserve 128 kB for malloc()	*/
 #endif
