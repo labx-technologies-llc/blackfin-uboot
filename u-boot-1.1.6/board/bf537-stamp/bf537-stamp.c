@@ -125,7 +125,7 @@ int board_get_enetaddr(uchar *mac_addr)
 		asm("%0 = CYCLES;" : "=r" (cycles));
 		mac_addr[i] = cycles ^ s[i];
 	}
-	mac_addr[0] |= 0x02;	/* make it local */
+	mac_addr[0] = (mac_addr[0] | 0x02) & ~0x01; /* make it local unicast */
 	return 0;
 }
 
