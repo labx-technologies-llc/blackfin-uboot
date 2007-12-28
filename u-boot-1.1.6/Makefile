@@ -265,11 +265,18 @@ $(obj)u-boot.img:	$(obj)u-boot.bin
 $(obj)u-boot.dis:	$(obj)u-boot
 		$(OBJDUMP) -d $< > $@
 
-$(obj)u-boot:		depend version $(SUBDIRS) $(OBJS) $(LIBS) $(LDSCRIPT)
+GEN_UBOOT = \
 		UNDEF_SYM=`$(OBJDUMP) -x $(LIBS) |sed  -n -e 's/.*\(___u_boot_cmd_.*\)/-u\1/p'|sort|uniq`;\
 		cd $(LNDIR) && $(LD) $(LDFLAGS) $$UNDEF_SYM $(__OBJS) \
 			--start-group $(__LIBS) --end-group $(PLATFORM_LIBS) \
 			-Map u-boot.map -o u-boot
+$(obj)u-boot:		depend version $(SUBDIRS) $(OBJS) $(LIBS) $(LDSCRIPT)
+		$(GEN_UBOOT)
+		$(call SYSTEM_MAP,u-boot) \
+			| awk '$$2 ~ /[tTwW]/ {print $$1" "$$3}' \
+			| sed -e 's:^\(.*\):.asciz "\1":' > .syms.u-boot.S
+		$(CC) $(AFLAGS) -I. -DSYM_FILE='".syms.u-boot.S"' -c cpu/blackfin/system_map.S -o cpu/blackfin/system_map.o
+		$(GEN_UBOOT) cpu/blackfin/system_map.o
 
 $(OBJS):
 		$(MAKE) -C cpu/$(CPU) $(if $(REMOTE_BUILD),$@,$(notdir $@))
@@ -324,10 +331,12 @@ etags:
 				net disk rtc dtt drivers drivers/sk98lin common \
 			\( -name CVS -prune \) -o \( -name '*.[ch]' -print \)`
 
-$(obj)System.map:	$(obj)u-boot
-		@$(NM) $< | \
+SYSTEM_MAP = \
+		$(NM) $1 | \
 		grep -v '\(compiled\)\|\(\.o$$\)\|\( [aUw] \)\|\(\.\.ng$$\)\|\(LASH[RL]DI\)' | \
-		sort > $(obj)System.map
+		sort
+$(obj)System.map:	$(obj)u-boot
+		@$(call SYSTEM_MAP,$<) > $(obj)System.map
 
 #########################################################################
 else
@@ -2306,7 +2315,7 @@ clean:
 	rm -f $(obj)board/bf537-srv1/u-boot.lds
 	rm -f $(obj)board/bf548-ezkit/u-boot.lds
 	rm -f $(obj)board/bf561-ezkit/u-boot.lds
-	rm -f $(obj)cpu/blackfin/bootrom-asm-offsets.[chs]
+	rm -f $(obj)cpu/blackfin/bootrom-asm-offsets.[chs] $(obj).syms.u-boot.S
 	rm -f $(obj)include/bmp_logo.h
 	rm -f $(obj)nand_spl/u-boot-spl $(obj)nand_spl/u-boot-spl.map
 
