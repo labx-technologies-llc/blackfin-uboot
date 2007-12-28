@@ -1,0 +1,56 @@
+#!/bin/sh
+# Script to generate u-boot binaries for release
+
+set -e
+
+jobs=$(grep -cs processor /proc/cpuinfo)
+jobs=$((${jobs:-1} * 2))
+make="make -j${jobs} -s"
+
+buildit() {
+	local bmode bmodeU suffix
+	local board=$1
+	shift
+
+	for bmode in "$@" ; do
+		bmodeU=$(echo ${bmode} | tr '[:lower:]' '[:upper:]')
+		printf "${board}: ${bmode}: "
+
+		${make} distclean
+
+		sed -i \
+			-e '/define[[:space:]]*BFIN_BOOT_MODE/s:[[:space:]][^[:space:]]*$: BFIN_BOOT_'${bmodeU}':' \
+			include/configs/${board}.h
+		${make} ${board}
+
+		case ${bmode} in
+			bypass) suffix=".bin";;
+			*) suffix=".ldr";;
+		esac
+		mv u-boot${suffix} ../RELEASE/u-boot-${board}-${bmode}${suffix}
+
+		${make} distclean
+	done
+
+	svn revert -q include/configs/${board}.h
+}
+
+rm -rf ../RELEASE
+mkdir ../RELEASE
+
+buildit bf527-ezkit para spi_master uart
+buildit bf533-ezkit bypass
+buildit bf533-stamp bypass spi_master
+buildit bf537-stamp bypass spi_master uart
+buildit bf548-ezkit para spi_master uart
+buildit bf561-ezkit bypass
+
+cd ../RELEASE
+chmod a-x *
+
+# we only release spi-master ldrs, so remove "_master" suffix
+for f in *_master* ; do
+	mv ${f} $(echo ${f} | sed 's:_master::')
+done
+
+du -b *
