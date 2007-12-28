@@ -129,6 +129,16 @@ int board_get_enetaddr(uchar *mac_addr)
 	return 0;
 }
 
+void board_reset(void)
+{
+	/* workaround for weak pull ups on ssel */
+	if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER) {
+		bfin_write_PORTF_FER(bfin_read_PORTF_FER() & ~PF10);
+		bfin_write_PORTFIO_SET(PF10);
+		udelay(1);
+	}
+}
+
 #if defined(CONFIG_MISC_INIT_R)
 /* miscellaneous platform dependent initialisations */
 int misc_init_r(void)

@@ -43,6 +43,8 @@ void bfin_reset(void)
 __attribute__ ((__noreturn__))
 static inline void bfin_reset_trampoline(void)
 {
+	if (board_reset)
+		board_reset();
 	while (1)
 		asm("jump (%0);" : : "a" (bfin_reset));
 }
