@@ -11,11 +11,11 @@
 
 #include <config.h>
 #include <asm/blackfin.h>
+#include <asm/mach-common/bits/bootrom.h>
 #include <asm/mach-common/bits/ebiu.h>
 #include <asm/mach-common/bits/pll.h>
 #include <asm/mach-common/bits/uart.h>
 
-#include "bootrom.h"
 #include "mem_init.h"
 
 #define BFIN_IN_INITCODE

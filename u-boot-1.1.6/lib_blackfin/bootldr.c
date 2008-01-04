@@ -12,9 +12,11 @@
 #include <config.h>
 #include <common.h>
 #include <command.h>
-#include <asm/blackfin.h>
 
 #if CONFIG_BFIN_COMMANDS & CFG_BFIN_CMD_BOOTLDR
+
+#include <asm/blackfin.h>
+#include <asm/mach-common/bits/bootrom.h>
 
 /*
  * the bootldr command loads an address, checks to see if there
@@ -51,7 +53,7 @@ int do_bootldr(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		__asm__(
 			"jump (%1);"
 			:
-			: "q7" (addr), "a" (_BOOTROM_BOOT_DXE_FLASH));
+			: "q7" (addr), "a" (_BOOTROM_MEMBOOT));
 	} else
 		printf("## No ldr image at address 0x%p\n", addr);
 

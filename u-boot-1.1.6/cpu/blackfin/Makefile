@@ -28,7 +28,7 @@ include $(TOPDIR)/config.mk
 
 LIB	= $(obj)lib$(CPU).a
 
-EXTRA    := bootrom.h
+EXTRA    :=
 CEXTRA   := initcode.o
 SEXTRA   := start.o
 SOBJS    := interrupt.o cache.o flush.o
@@ -50,8 +50,8 @@ $(LIB):	$(OBJS)
 	$(AR) $(ARFLAGS) $@ $(OBJS)
 
 $(OBJS): $(obj)bootrom-asm-offsets.h
-$(obj)bootrom-asm-offsets.c: bootrom-asm-offsets.c.in bootrom-asm-offsets.awk bootrom.h
-	./bootrom-asm-offsets.awk bootrom.h > $@.tmp
+$(obj)bootrom-asm-offsets.c: bootrom-asm-offsets.c.in bootrom-asm-offsets.awk
+	echo '#include <asm/mach-common/bits/bootrom.h>' | $(CPP) $(CPPFLAGS) - | ./bootrom-asm-offsets.awk > $@.tmp
 	mv $@.tmp $@
 $(obj)bootrom-asm-offsets.s: $(obj)bootrom-asm-offsets.c
 	$(CC) $(CFLAGS) -S $^ -o $@.tmp
