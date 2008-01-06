@@ -2253,23 +2253,21 @@ suzaku_config:	unconfig
 #========================================================================
 # Blackfin
 #========================================================================
-#########################################################################
-## Analog Devices
-#########################################################################
-ADI_BOARDS = \
+# Analog Devices boards
+BFIN_BOARDS = \
 	bf527-ezkit bf533-ezkit bf533-stamp bf537-pnav \
 	bf548-ezkit bf537-stamp bf561-ezkit
 
-# Third party boards:
-ADI_BOARDS += bf537-minotaur bf537-srv1
+# Third party boards
+BFIN_BOARDS += bf537-minotaur bf537-srv1
 
-$(ADI_BOARDS:%=%_config)	: unconfig
+$(BFIN_BOARDS:%=%_config)	: unconfig
 	@$(MKCONFIG) $(@:_config=) blackfin blackfin $(@:_config=)
 	@[ "$(SRCTREE)" != "$(OBJTREE)" ] && LNPREFIX="../../include2/asm/" || LNPREFIX="" ; \
 		rm -f include/asm-blackfin/arch ; \
 		ln -s ${LNPREFIX}arch-$(firstword $(subst -, ,$(@:_config=))) include/asm-blackfin/arch
 
-$(ADI_BOARDS):
+$(BFIN_BOARDS):
 	$(MAKE) $@_config
 	$(MAKE)
 
