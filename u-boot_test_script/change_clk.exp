@@ -45,7 +45,7 @@ proc usage {} {
     send_user "\nFor BF548-EZKIT (ExtClock=30Mhz, CPU_MaxClock=600Mhz) :\n"
     send_user "\n NUM CCLK(Mhz)  SCLK (Mhz)   VCO_MULT  CCLK_DIV  SCLK_DIV  \n"
     send_user "\n 0   525        131         21          1         4        \n"
-    send_user "\n 1   525         43         21          1        12        \n"
+    send_user "\n 1   525         52         21          1        10        \n"
     send_user "\n 2    93         46         15          4         8        \n"
     send_user "\n 3   187         93         15          2         4        \n"
     send_user "\n********************************************************************\n"

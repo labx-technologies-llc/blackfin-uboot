@@ -2,11 +2,10 @@
 log_file spi_flash_test_log
 send_user "Starting spi_flash_test.exp \n"
 
-set uboot_path ~/checkouts/uboot/u-boot_1.1.3
-set dxe_filename linux
+set CHECKOUT   ~/checkouts
+set uboot_path ~/checkouts/u-boot/u-boot-1.1.6
+set UBOOT_SCRIPTS  ~/checkouts/u-boot/u-boot_test_script
 set ttydev /dev/ttyS0
-
-set BIN2LDR_PATH $uboot_path/tools/bin2ldr
 
 set board_type [lindex $argv 0]
 send_log "\n#### board_type is $board_type\n"
@@ -16,10 +15,15 @@ puts "Please input: board_type."
 exit
 }
 
+log_file
+exec $UBOOT_SCRIPTS/boot_config.exp $board_type 3 $CHECKOUT >> spi_flash_test_log
+
+log_file spi_flash_test_log
+
 if { $board_type == "BF533-STAMP" } {
-        set CONFIG_TYPE serial_stamp_config
+        set CONFIG_TYPE bf533-stamp_config
 } elseif { $board_type == "BF537-STAMP" } {
-        set CONFIG_TYPE serial_bf537_config
+        set CONFIG_TYPE bf537-stamp_config
 }
 
 proc step { message } {
@@ -35,7 +39,7 @@ proc step { message } {
 set step_sequence_number    1
 
 cd $uboot_path
-expect "u-boot_1.1.3>"
+expect "u-boot.*>"
 
 step "make clean"
 
@@ -43,7 +47,7 @@ spawn make distclean
 set timeout 500
 while 1 {
       expect {
-	     "u-boot_1.1.3>" { }
+	     "u-boot.*>" { }
 	     "/bin/sh" { }
 	     eof { break }
       }
@@ -53,7 +57,7 @@ spawn make clean
 set timeout 500
 while 1 {
       expect {
-	     "u-boot_1.1.3>" { }
+	     "u-boot.*>" { }
 	     "/bin/sh" { }
 	     eof { break }
       }
@@ -65,7 +69,7 @@ spawn make mrproper
 set timeout 500
 while 1 {
       expect {
-	     "u-boot_1.1.3>" { }
+	     "u-boot.*>" { }
 	     "/bin/sh" { }
 	     eof { break }
       }
@@ -75,9 +79,9 @@ spawn make $CONFIG_TYPE
 set timeout 500
 while 1 {
       expect {
-	     "u-boot_1.1.3>" { }
-	     "/bin/sh" { }
-	     eof { break }
+             "u-boot.*>" { }
+             "/bin/sh" { }
+             eof { break }
       }
 }
 
@@ -89,7 +93,7 @@ set timeout 1200
 set bfin_make_status failure
 while 1 {
       expect {
-	     "u-boot_1.1.3" { set bfin_make_status success }
+	     "u-boot.*" { set bfin_make_status success }
 	     "Error" {set bfin_make_status failure }
 	     "/bin/sh" { }
 	     eof { break }
@@ -101,26 +105,12 @@ if { $bfin_make_status == "failure" } {
 #      lappend result "FATAL ERROR: Error somewhere in make"
 }    
      
-cd $BIN2LDR_PATH
-exec chmod 777 runme.sh
-spawn ./runme.sh
-set timeout 500
-while 1 {
-      expect {
-	     "u-boot_1.1.3" {  }
-	     "/bin/sh" { }
-	     eof { break }
-      }
-}
-
-step " copy app.ldr"
-exec cp app.ldr  /tftpboot
-
 step " copy u-boot.bin"
   
 set timeout 8
 cd $uboot_path
 exec cp u-boot.bin  /tftpboot
+exec cp u-boot.ldr  /tftpboot
 
 puts "Uboot building finishes!"
 
@@ -313,7 +303,7 @@ step "Starting test..."
    set timeout 1200
   
     
-    send -s "tftp 0x1000000 app.ldr\r"
+    send -s "tftp 0x1000000 u-boot.ldr\r"
     while 1 {
 	expect {
 	

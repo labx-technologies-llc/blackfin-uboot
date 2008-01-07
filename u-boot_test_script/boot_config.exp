@@ -19,7 +19,7 @@ if { $board_type == "BF533-STAMP" } {
      set num   2
 } else {
     send_user "\n Unknown target board type.\n"
-    exit
+    exit 2
 }
 
 if { $argc > 1} {
@@ -68,3 +68,5 @@ sleep 3
       send "wq\r"
       expect eof
 
+   send_user "Finished editing in include/configs/$config_file."
+   exit 0
