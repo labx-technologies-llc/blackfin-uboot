@@ -34,8 +34,8 @@ team from Analog Devices Inc.
  ! TOOLCHAIN !
  =============
 
-To compile the Blackfin aspects, you'll need the GNU toolchain.  You can obtain
-it from the GNU Toolchain sub project:
+To compile the Blackfin aspects, you'll need the GNU toolchain configured for
+the Blackfin processor.  You can obtain such a cross-compiler here:
 http://blackfin.uclinux.org/gf/project/toolchain
 
  =================
@@ -43,4 +43,4 @@ http://blackfin.uclinux.org/gf/project/toolchain
  =================
 
 For Blackfin specific documentation, you can visit our dedicated doc wiki:
-http://docs.blackfin.uclinux.org/
+http://docs.blackfin.uclinux.org/doku.php?id=bootloaders:u-boot
