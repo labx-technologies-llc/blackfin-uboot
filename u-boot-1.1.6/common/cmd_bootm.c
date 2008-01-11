@@ -1440,7 +1440,8 @@ int gunzip(void *dst, int dstlen, unsigned char *src, unsigned long *lenp)
 	int r, i, flags;
 
 	/* if memory regions overlap, whine about it */
-	if (dst + *lenp >= (void *)src && (void *)src < dst + *lenp)
+	if ((dst <= (void *)src && (void *)src < dst + dstlen) ||
+	    (dst <= (void *)(src + *lenp) && (void *)(src + *lenp) < dst + dstlen))
 		puts ("\n   Warning: src and dst regions overlap ... ");
 
 	/* skip header */
