@@ -32,7 +32,9 @@ buildit() {
 		${make} distclean
 	done
 
-	svn revert -q include/configs/${board}.h
+	[ -d .git ] \
+		&& git checkout include/configs/${board}.h \
+		|| svn revert -q include/configs/${board}.h
 }
 
 rm -rf ../RELEASE
