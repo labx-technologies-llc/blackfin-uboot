@@ -673,12 +673,8 @@ int drv_video_init(void)
 	}
 
 #ifdef EASYLOGO_ENABLE_GZIP
-	unsigned char *data = malloc(bfin_logo.size);
+	unsigned char *data = EASYLOGO_DECOMP_BUFFER;
 	unsigned long src_len = EASYLOGO_ENABLE_GZIP;
-	if (data == NULL) {
-		printf("Failed to alloc logo memory\n");
-		return -1;
-	}
 	if (gunzip(data, bfin_logo.size, bfin_logo.data, &src_len)) {
 		puts("Failed to decompress logo\n");
 		free(dst);

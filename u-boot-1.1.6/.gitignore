@@ -32,3 +32,4 @@ lib*.a
 /tools/gen_eth_addr
 /tools/img2srec
 /tools/mkimage
+/tools/easylogo/easylogo

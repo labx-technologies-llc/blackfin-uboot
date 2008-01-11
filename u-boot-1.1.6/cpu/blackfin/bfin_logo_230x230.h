@@ -11,6 +11,8 @@
 
 #define EASYLOGO_ENABLE_GZIP 37470
 
+static unsigned char EASYLOGO_DECOMP_BUFFER[158700];
+
 #include <video_easylogo.h>
 
 #define	DEF_BFIN_LOGO_WIDTH		230

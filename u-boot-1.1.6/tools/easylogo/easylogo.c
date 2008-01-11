@@ -299,8 +299,9 @@ int image_save_header (image_t *image, char *filename, char *varname)
 	fprintf(file, " *\t\t'x'\t\tis the horizontal position\n");
 	fprintf(file, " *\t\t'y'\t\tis the vertical position\n */\n\n");
 
+#ifdef ENABLE_GZIP
 /*  gzip compress */
-	if (use_gzip) {
+	if (use_gzip & 0x1) {
 		unsigned char *compressed;
 		struct stat st;
 		FILE *gz;
@@ -322,7 +323,10 @@ int image_save_header (image_t *image, char *filename, char *varname)
 		dataptr = compressed;
 		count = st.st_size;
 		fprintf(file, "#define EASYLOGO_ENABLE_GZIP %i\n\n", count);
+		if (use_gzip & 0x2)
+			fprintf(file, "static unsigned char EASYLOGO_DECOMP_BUFFER[%i];\n\n", image->size);
 	}
+#endif
 
 /*	Headers */
 	fprintf(file, "#include <video_easylogo.h>\n\n");
@@ -396,6 +400,7 @@ static void usage(int exit_status)
 		"  -r     Output 24-bit RGB instead of yuyv\n"
 #ifdef ENABLE_GZIP
 		"  -g     Compress with gzip\n"
+		"  -b     Preallocate space in bss for decompressing image\n"
 #endif
 		"  -h     Help output\n"
 		"\n"
@@ -416,7 +421,7 @@ int main (int argc, char *argv[])
 
     image_t 		rgb_logo, yuyv_logo ;
 
-	while ((c = getopt(argc, argv, "hrg")) > 0) {
+	while ((c = getopt(argc, argv, "hrgb")) > 0) {
 		switch (c) {
 		case 'h':
 			usage(0);
@@ -427,8 +432,12 @@ int main (int argc, char *argv[])
 			break;
 #ifdef ENABLE_GZIP
 		case 'g':
-			use_gzip = 1;
+			use_gzip |= 0x1;
 			puts("Compressing with gzip");
+			break;
+		case 'b':
+			use_gzip |= 0x2;
+			puts("Preallocating bss space for decompressing image");
 			break;
 #endif
 		default:
