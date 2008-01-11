@@ -695,12 +695,12 @@ ssize_t spi_write(uchar *addr, int alen, uchar *buffer, int len)
 	start_sector = address_to_sector(offset);
 	if (start_sector == -1) {
 		puts("Invalid sector! ");
-		return 0;
+		goto out;
 	}
 	end_sector = address_to_sector(offset + len - 1);
 	if (end_sector == -1) {
 		puts("Invalid sector! ");
-		return 0;
+		goto out;
 	}
 
 	/* Since flashes operate in sector units but the eeprom command
@@ -710,6 +710,10 @@ ssize_t spi_write(uchar *addr, int alen, uchar *buffer, int len)
 	 * then write back out the new sector.
 	 */
 	temp = malloc(flash.sector_size);
+	if (!temp) {
+		puts("Malloc for sector failed! ");
+		goto out;
+	}
 
 	for (num = start_sector; num <= end_sector; num++) {
 		unsigned long address = num * flash.sector_size;
