@@ -26,6 +26,8 @@
 _depend:	$(obj).depend
 
 $(obj).depend:	$(src)Makefile $(TOPDIR)/config.mk $(SRCS)
-		$(CC) -MM $(HOST_CFLAGS) $(CPPFLAGS) $(SRCS) | sed '/:/s|^|$(obj)|' > $@
+		rnd="$$RANDOM.$$$$" ; \
+		$(CC) -MM $(HOST_CFLAGS) $(CPPFLAGS) $(SRCS) | sed '/:/s|^|$(obj)|' > $@.$$rnd ; \
+		mv $@.$$rnd $@
 
 #########################################################################
