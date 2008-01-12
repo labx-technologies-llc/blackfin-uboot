@@ -153,8 +153,8 @@
 #define CFG_MEMTEST_END		(CFG_MAX_RAM_SIZE - 0x80000 - 1)
 
 #define CFG_LOAD_ADDR 		CONFIG_LOADADDR
-#define	CFG_MONITOR_LEN		(256 << 10)	/* Reserve 256 kB for Monitor	*/
-#define CFG_MALLOC_LEN		(128 << 10)     /* Reserve 128 kB for malloc()	*/
+#define CFG_MONITOR_LEN		(256 << 10)	/* Reserve 256 kB for Monitor	*/
+#define CFG_MALLOC_LEN		(384 << 10)	/* Reserve 384 kB for malloc() (video/spi are big) */
 #define CFG_GBL_DATA_SIZE	0x4000		/* Reserve 16k for Global Data  */
 
 #define CFG_MONITOR_BASE		(CFG_MAX_RAM_SIZE - 0x40000)

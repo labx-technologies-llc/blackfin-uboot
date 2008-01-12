@@ -108,10 +108,9 @@
 #define CFG_MEMTEST_END		( (CONFIG_MEM_SIZE - 1) * 1024*1024)	/* 1 ... 63 MB in DRAM */
 
 #define CFG_LOAD_ADDR		CONFIG_LOADADDR
-#define	CFG_MONITOR_LEN		(256 << 10)	/* Reserve 256 kB for Monitor   */
+#define CFG_MONITOR_LEN		(256 << 10)	/* Reserve 256 kB for Monitor   */
 #define CFG_MONITOR_BASE	(CFG_MAX_RAM_SIZE - CFG_MONITOR_LEN)
-
-#define	CFG_MALLOC_LEN		(128 << 10)	/* Reserve 128 kB for malloc()  */
+#define CFG_MALLOC_LEN		(128 << 10)	/* Reserve 128 kB for malloc()  */
 #define CFG_MALLOC_BASE		(CFG_MONITOR_BASE - CFG_MALLOC_LEN)
 
 #define CFG_GBL_DATA_SIZE	0x4000

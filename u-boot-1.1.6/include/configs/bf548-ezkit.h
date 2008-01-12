@@ -203,20 +203,9 @@
 #define	CFG_SDRAM_BASE		0x00000000
 #define CFG_MAX_RAM_SIZE	0x04000000
 
-#ifdef CONFIG_VIDEO
-#define	CFG_MONITOR_LEN		(384 << 10)	/* Reserve 384 kB for Monitor	*/
-#else
-#define	CFG_MONITOR_LEN		(256 << 10)	/* Reserve 256 kB for Monitor	*/
-#endif
-
+#define CFG_MONITOR_LEN		(256 << 10)	/* Reserve 256 kB for Monitor	*/
 #define CFG_MONITOR_BASE	(CFG_MAX_RAM_SIZE - CFG_MONITOR_LEN)
-
-#ifdef CONFIG_VIDEO
-#define	CFG_MALLOC_LEN		(640 << 10)	/* Reserve 512 kB for malloc()	*/
-#else
-#define	CFG_MALLOC_LEN		(128 << 10)	/* Reserve 128 kB for malloc()	*/
-#endif
-
+#define CFG_MALLOC_LEN		(640 << 10)	/* Reserve 512 kB for malloc() (video/spi are big) */
 #define CFG_MALLOC_BASE		(CFG_MONITOR_BASE - CFG_MALLOC_LEN)
 #define CFG_GBL_DATA_SIZE	0x4000
 #define CFG_GBL_DATA_ADDR	(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
