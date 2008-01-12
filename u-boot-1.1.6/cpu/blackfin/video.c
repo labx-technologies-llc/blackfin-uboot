@@ -678,7 +678,6 @@ int drv_video_init(void)
 	if (gunzip(data, bfin_logo.size, bfin_logo.data, &src_len)) {
 		puts("Failed to decompress logo\n");
 		free(dst);
-		free(data);
 		return -1;
 	}
 	bfin_logo.data = data;
