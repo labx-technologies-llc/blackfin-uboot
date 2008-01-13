@@ -196,7 +196,7 @@
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	259	/* max number of sectors on one chip */
 
-#define CFG_MONITOR_LEN		(256 << 10)	/* Reserve 256 kB for Monitor	*/
+#define CFG_MONITOR_LEN		(384 << 10)	/* Reserve 384 kB for Monitor	*/
 #define CFG_MONITOR_BASE	(CFG_MAX_RAM_SIZE - CFG_MONITOR_LEN)
 #define CFG_MALLOC_LEN		(384 << 10)	/* Reserve 384 kB for malloc() (video/spi are big) */
 #define CFG_MALLOC_BASE		(CFG_MONITOR_BASE - CFG_MALLOC_LEN)
