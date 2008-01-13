@@ -27,7 +27,7 @@ buildit() {
 			bypass) suffix=".bin";;
 			*) suffix=".ldr";;
 		esac
-		mv u-boot${suffix} ../RELEASE/u-boot-${board}-${bmode}${suffix}
+		mv u-boot${suffix} ../RELEASE/u-boot-${board}-${bmode}-${ver}${suffix}
 
 		${make} distclean
 	done
@@ -39,6 +39,8 @@ buildit() {
 
 rm -rf ../RELEASE
 mkdir ../RELEASE
+
+ver=$(sed -e 's:[[:space:]]*(ADI-::' -e 's:)[[:space:]]*::' localversion-adi)
 
 buildit bf527-ezkit para spi_master uart
 buildit bf533-ezkit bypass
