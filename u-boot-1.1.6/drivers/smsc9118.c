@@ -394,10 +394,11 @@ lan9118_open(bd_t *bis)
 	  TotalInts = 0;
 	  TotalRXE = 0;
 	  TotalBytes = 0;
-
+# if defined(CONFIG_PPC) || defined(CONFIG_I386)
 	  if (bis->bi_bootflags & 0x40000000) {
 			use_smsc9118 = 1;
 	  }
+# endif
 #endif
 
 	  /* Does SoftReset to 118 */
@@ -750,7 +751,7 @@ static int sendToNet(uchar * txbp, int len)
 
 	  lastTxTag++;
 
-#if   DEBUG
+#ifdef DEBUG
 	  {
 			printf("sendToNet: packet contents follows.\n");
 			int i;
@@ -774,7 +775,7 @@ static int sendToNet(uchar * txbp, int len)
 	  tx_cmd_a = (((ulong)txbp & 0x3) << 16) | 0x00003000 | len;
 	  tx_cmd_b = (lastTxTag << 16) | len;
 
-#if   DEBUG
+#ifdef DEBUG
 	  printf("sendToNet: tx_cmd_a: 0x%0.8x tx_cmd_b: 0x%0.8x\n",
 			tx_cmd_a, tx_cmd_b);
 #endif
