@@ -22,11 +22,20 @@ __attribute__ ((__l1_text__, __noreturn__))
 void bfin_reset(void)
 {
 	while (1) {
-		/* Not entirely sure why this ssync is needed ... */
-		__builtin_bfin_ssync();
 		/* Initiate system software reset of peripherals */
 		bfin_write_SWRST(0x7);
-		__builtin_bfin_ssync();
+		/* Due to the way reset is handled in the hardware, we need
+		 * to delay for 5 SCLKS.  The only reliable way to do this is
+		 * to calculate the CCLK/SCLK ratio and multiply 5.  For now,
+		 * we'll assume worse case which is a 1:15 ratio.
+		 */
+		asm(
+			"LSETUP (.Lreset_nops,.Lreset_nops) LC0 = %0\n"
+			".Lreset_nops: nop;"
+			:
+			: "a" (15 * 5)
+			: "LC0", "LB0", "LT0"
+		);
 		/* Clear system software reset */
 		bfin_write_SWRST(0);
 		__builtin_bfin_ssync();

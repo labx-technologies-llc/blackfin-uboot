@@ -139,9 +139,6 @@ static inline void serial_early_init(void)
 	/* Set LCR to Word Lengh 8-bit word select */
 	*pUART_LCR = WLS_8;
 
-	/* Seems to be an anomaly with the IER register [#3608] */
-	CLEAR_IER();
-
 	SSYNC();
 }
 
