@@ -91,6 +91,13 @@ void cpu_init_f(ulong bootflag, ulong loaded_from_ldr)
 		extern char _sdata_l1, _edata_l1, _sdata_l1_lma;
 		memcpy(&_sdata_l1, &_sdata_l1_lma, (&_edata_l1 - &_sdata_l1));
 	}
+#if defined(__ADSPBF537__) || defined(__ADSPBF536__) || defined(__ADSPBF534__)
+	/* The BF537 bootrom will reset the EBIU_AMGCTL register on us
+	 * after it has finished loading the LDR.  So configure it again.
+	 */
+	else
+		bfin_write_EBIU_AMGCTL(CONFIG_EBIU_AMGCTL_VAL);
+#endif
 
 #ifdef CONFIG_DEBUG_DUMP
 	/* Turn on hardware trace buffer */
