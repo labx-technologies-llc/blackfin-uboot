@@ -1,6 +1,8 @@
 #!/bin/sh
 # Script to generate u-boot binaries for release
 
+uboot_ver="1.1.6" # be nice to get this from somewhere automatically ...
+
 set -e
 
 jobs=$(grep -cs processor /proc/cpuinfo)
@@ -48,6 +50,16 @@ buildit bf533-stamp bypass spi_master
 buildit bf537-stamp bypass spi_master uart
 buildit bf548-ezkit para spi_master uart
 buildit bf561-ezkit bypass
+
+# finally, create a tarball of the source code
+uboot="u-boot-${uboot_ver}-${ver}"
+if [ -d .git ] ; then
+	git-archive --prefix=${uboot}/ master | bzip2 > ../RELEASE/${uboot}.tar.bz2
+else
+	svn export . ../RELEASE/${uboot}
+	tar jcf ../${uboot}.tar.bz2 -C .. ${uboot}
+	rm -rf ../RELEASE/${uboot}
+fi
 
 cd ../RELEASE
 chmod a-x *
