@@ -181,11 +181,13 @@ static struct manufacturer_info flash_manufacturers[] = {
  *	BF54x, BF537, (everything new?): SSEL1
  *	BF533, BF561: SSEL2
  */
-#if defined(__ADSPBF531__) || defined(__ADSPBF532__) || \
-    defined(__ADSPBF533__) || defined(__ADSPBF561__)
-# define CONFIG_SPI_FLASH_SSEL 2
-#else
-# define CONFIG_SPI_FLASH_SSEL 1
+#ifndef CONFIG_SPI_FLASH_SSEL
+# if defined(__ADSPBF531__) || defined(__ADSPBF532__) || \
+     defined(__ADSPBF533__) || defined(__ADSPBF561__)
+#  define CONFIG_SPI_FLASH_SSEL 2
+# else
+#  define CONFIG_SPI_FLASH_SSEL 1
+# endif
 #endif
 #define SSEL_MASK (1 << CONFIG_SPI_FLASH_SSEL)
 
