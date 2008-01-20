@@ -2258,7 +2258,10 @@ BFIN_BOARDS = \
 	bf527-ezkit bf533-ezkit bf533-stamp bf537-pnav \
 	bf548-ezkit bf537-stamp bf561-ezkit
 
-# Third party boards
+# Bluetechnix tinyboards
+BFIN_BOARDS += cm-bf537e
+
+# Misc third party boards
 BFIN_BOARDS += bf537-minotaur bf537-srv1
 
 $(BFIN_BOARDS:%=%_config)	: unconfig

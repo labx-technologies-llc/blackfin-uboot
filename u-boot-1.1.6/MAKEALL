@@ -316,12 +316,13 @@ LIST_blackfin=" \
 	bf527-ezkit
 	bf533-ezkit
 	bf533-stamp
-	bf537-stamp
-	bf537-pnav
 	bf537-minotaur
+	bf537-pnav
+	bf537-stamp
 	bf537-srv1
 	bf548-ezkit
 	bf561-ezkit
+	cm-bf537e
 "
 procs() {
 	case ${target} in
