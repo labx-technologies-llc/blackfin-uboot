@@ -22,6 +22,11 @@ __attribute__ ((__l1_text__, __noreturn__))
 void bfin_reset(void)
 {
 	while (1) {
+		/* No idea why this is needed, but with out this, the ssync()
+		 * after SWRST = 0x0 will hang indefinitely ...
+		 */
+		__builtin_bfin_ssync();
+
 		/* Initiate system software reset of peripherals */
 		bfin_write_SWRST(0x7);
 		/* Due to the way reset is handled in the hardware, we need
