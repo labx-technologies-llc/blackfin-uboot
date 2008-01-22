@@ -57,7 +57,7 @@ if [ -d .git ] ; then
 	git-archive --prefix=${uboot}/ master | bzip2 > ../RELEASE/${uboot}.tar.bz2
 else
 	svn export . ../RELEASE/${uboot}
-	tar jcf ../${uboot}.tar.bz2 -C .. ${uboot}
+	tar jcf ../${uboot}.tar.bz2 -C ../RELEASE ${uboot}
 	rm -rf ../RELEASE/${uboot}
 fi
 
