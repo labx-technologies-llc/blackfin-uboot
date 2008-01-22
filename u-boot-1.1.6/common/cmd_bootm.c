@@ -1439,9 +1439,14 @@ int gunzip(void *dst, int dstlen, unsigned char *src, unsigned long *lenp)
 	z_stream s;
 	int r, i, flags;
 
-	/* if memory regions overlap, whine about it */
-	if ((dst <= (void *)src && (void *)src < dst + dstlen) ||
-	    (dst <= (void *)(src + *lenp) && (void *)(src + *lenp) < dst + dstlen))
+	/* If memory regions overlap, whine about it.  We cannot check
+	 * the dstlen value as it is usually set to the max possible value
+	 * (CFG_BOOTM_LEN) which can be huge (64M).  Instead, we'll assume
+	 * the decompression size will be at least as big as the compressed
+	 * size so that we can at least check part of the destination.
+	 */
+	if ((dst <= (void *)src && (void *)src < dst + /*dstlen*/ *lenp) ||
+	    (dst <= (void *)(src + *lenp) && (void *)(src + *lenp) < dst + /*dstlen*/ *lenp))
 		puts ("\n   Warning: src and dst regions overlap ... ");
 
 	/* skip header */
