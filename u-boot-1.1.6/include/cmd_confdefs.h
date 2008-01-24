@@ -94,6 +94,7 @@
 #define CFG_CMD_EXT2	0x1000000000000000ULL	/* EXT2 Support			*/
 #define CFG_CMD_SNTP	0x2000000000000000ULL	/* SNTP support			*/
 #define CFG_CMD_DISPLAY	0x4000000000000000ULL	/* Display support		*/
+#define CFG_CMD_STRINGS	0x8000000000000000ULL	/* Strings support		*/
 
 #define CFG_CMD_ALL	0xFFFFFFFFFFFFFFFFULL	/* ALL commands			*/
 
