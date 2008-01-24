@@ -156,16 +156,10 @@ ENTRY(_start)
 	[p2 ++ p3] = r1;
 	cc=p2==p4;
 	if !cc jump .Lloop1;
-.Lnorelocate:
 
-	/* Setup the actual stack in external memory */
-	r0.h = HI(CONFIG_STACKBASE);
-	r0.l = LO(CONFIG_STACKBASE);
-	sp = r0;
-	fp = sp;
-
-	/* Initialize BSS section ... we know that memset()
-	 * does not use the BSS, so it is safe to call here
+	/* Initialize BSS section ... we know that memset() does not
+	 * use the BSS, so it is safe to call here.  The bootrom LDR
+	 * takes care of clearing things for us.
 	 */
 	serial_early_puts("Zero BSS");
 	r0.l = __bss_start;
@@ -175,6 +169,14 @@ ENTRY(_start)
 	r2.h = __bss_end;
 	r2 = r2 - r0;
 	call _memset;
+
+.Lnorelocate:
+
+	/* Setup the actual stack in external memory */
+	r0.h = HI(CONFIG_STACKBASE);
+	r0.l = LO(CONFIG_STACKBASE);
+	sp = r0;
+	fp = sp;
 
 	/* Now lower ourselves from the highest interrupt level to
 	 * the lowest.  We do this by masking all interrupts but 15,
