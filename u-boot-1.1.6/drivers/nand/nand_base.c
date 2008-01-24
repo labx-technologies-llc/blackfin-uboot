@@ -1631,7 +1631,8 @@ static int nand_write_ecc (struct mtd_info *mtd, loff_t to, size_t len,
 
 	/* reject writes, which are not page aligned */
 	if (NOTALIGNED (to) || NOTALIGNED(len)) {
-		printk (KERN_NOTICE "nand_write_ecc: Attempt to write not page aligned data\n");
+		printf (KERN_NOTICE "nand_write_ecc: Attempt to write page unaligned data: to:%x len:%x align:%x\n",
+			(unsigned long)to, len, mtd->oobblock);
 		return -EINVAL;
 	}
 
@@ -1910,7 +1911,8 @@ static int nand_writev_ecc (struct mtd_info *mtd, const struct kvec *vecs, unsig
 
 	/* reject writes, which are not page aligned */
 	if (NOTALIGNED (to) || NOTALIGNED(total_len)) {
-		printk (KERN_NOTICE "nand_write_ecc: Attempt to write not page aligned data\n");
+		printf (KERN_NOTICE "nand_writev_ecc: Attempt to write page unaligned data: to:%x len:%x align:%x\n",
+			(unsigned long)to, len, mtd->oobblock);
 		return -EINVAL;
 	}
 
