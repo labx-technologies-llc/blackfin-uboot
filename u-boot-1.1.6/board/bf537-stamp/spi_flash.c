@@ -38,10 +38,10 @@ struct flash_info {
 
 /* SPI Speeds: 50 MHz / 33 MHz */
 static struct flash_info flash_spansion_serial_flash[] = {
-	{ "S25LF016", 0x0215, 64 * 1024, 32 },
-	{ "S25LF032", 0x0216, 64 * 1024, 64 },
+	{ "S25FL016", 0x0215, 64 * 1024, 32 },
+	{ "S25FL032", 0x0216, 64 * 1024, 64 },
 	{ "S25FL064", 0x0217, 64 * 1024, 128 },
-	{ "S25LF0128", 0x0218, 256 * 1024, 64 },
+	{ "S25FL0128", 0x0218, 256 * 1024, 64 },
 	{ NULL, 0, 0, 0 }
 };
 
