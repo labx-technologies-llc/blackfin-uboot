@@ -21,29 +21,44 @@
 __attribute__ ((__l1_text__, __noreturn__))
 void bfin_reset(void)
 {
-	while (1) {
-		/* No idea why this is needed, but with out this, the ssync()
-		 * after SWRST = 0x0 will hang indefinitely ...
-		 */
-		__builtin_bfin_ssync();
+	/* Wait for completion of "system" events such as cache line
+	 * line fills so that we avoid infinite stalls later on as
+	 * much as possible.  This code is in L1, so it won't trigger
+	 * any such event after this point in time.
+	 */
+	__builtin_bfin_ssync();
 
-		/* Initiate system software reset of peripherals */
+	while (1) {
+		/* Initiate System software reset. */
 		bfin_write_SWRST(0x7);
+
 		/* Due to the way reset is handled in the hardware, we need
-		 * to delay for 5 SCLKS.  The only reliable way to do this is
-		 * to calculate the CCLK/SCLK ratio and multiply 5.  For now,
+		 * to delay for 7 SCLKS.  The only reliable way to do this is
+		 * to calculate the CCLK/SCLK ratio and multiply 7.  For now,
 		 * we'll assume worse case which is a 1:15 ratio.
 		 */
 		asm(
-			"LSETUP (.Lreset_nops,.Lreset_nops) LC0 = %0\n"
-			".Lreset_nops: nop;"
+			"LSETUP (1f, 1f) LC0 = %0\n"
+			"1: nop;"
 			:
-			: "a" (15 * 5)
+			: "a" (15 * 7)
 			: "LC0", "LB0", "LT0"
 		);
-		/* Clear system software reset */
+
+		/* Clear System software reset */
 		bfin_write_SWRST(0);
-		__builtin_bfin_ssync();
+
+		/* Wait for the SWRST write to complete.  Cannot rely on SSYNC
+		 * though as the System state is all reset now.
+		 */
+		asm(
+			"LSETUP (1f, 1f) LC1 = %0\n"
+			"1: nop;"
+			:
+			: "a" (15 * 1)
+			: "LC1", "LB1", "LT1"
+		);
+
 		/* Issue core reset */
 		asm("raise 1");
 	}
