@@ -137,28 +137,18 @@
 # define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NET)
 #endif
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) || (BFIN_BOOT_MODE == BFIN_BOOT_UART)
-#define CONFIG_COMMANDS		(CONFIG_BFIN_CMD| \
-				 CFG_CMD_ELF	| \
-				 CFG_CMD_I2C	| \
-				 CFG_CMD_CACHE  | \
-				 CFG_CMD_JFFS2	| \
-				 CFG_CMD_EEPROM | \
-				 CFG_CMD_DHCP   | \
-				 ADD_IDE_CMD	| \
-				 ADD_NAND_CMD	| \
-				 CFG_CMD_POST_DIAG | \
-				 CFG_CMD_DATE)
-#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
-#define CONFIG_COMMANDS		(CONFIG_BFIN_CMD| \
-				 CFG_CMD_ELF	| \
-				 CFG_CMD_I2C	| \
-				 CFG_CMD_CACHE  | \
-				 CFG_CMD_JFFS2	| \
-				 CFG_CMD_EEPROM | \
-				 ADD_IDE_CMD	| \
-				 CFG_CMD_DATE)
-#endif
+#define CONFIG_COMMANDS   \
+	(CONFIG_BFIN_CMD    | \
+	 CFG_CMD_ELF        | \
+	 CFG_CMD_I2C        | \
+	 CFG_CMD_CACHE      | \
+	 CFG_CMD_JFFS2      | \
+	 CFG_CMD_EEPROM     | \
+	 CFG_CMD_DHCP       | \
+	 ADD_IDE_CMD        | \
+	 ADD_NAND_CMD       | \
+	 CFG_CMD_POST_DIAG  | \
+	 CFG_CMD_DATE)
 
 /* This must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
