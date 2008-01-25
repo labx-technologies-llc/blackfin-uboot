@@ -286,11 +286,11 @@ void board_init_f(ulong bootflag)
 	serial_early_puts("Exceptions setup\n");
 	exception_init();
 
-#ifdef CONFIG_ICACHE_ON
+#ifndef CONFIG_ICACHE_OFF
 	serial_early_puts("Turn on ICACHE\n");
 	icache_enable();
 #endif
-#ifdef CONFIG_DCACHE_ON
+#ifndef CONFIG_DCACHE_OFF
 	serial_early_puts("Turn on DCACHE\n");
 	dcache_enable();
 #endif

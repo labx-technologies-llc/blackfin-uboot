@@ -29,10 +29,6 @@
 
 #define CONFIG_PANIC_HANG 1
 
-/* This sets the default state of the cache on U-Boot's boot */
-#define CONFIG_ICACHE_ON
-#define CONFIG_DCACHE_ON
-
 #define CONFIG_RTC_BFIN		1
 
 /* CONFIG_CLKIN_HZ is any value in Hz				*/

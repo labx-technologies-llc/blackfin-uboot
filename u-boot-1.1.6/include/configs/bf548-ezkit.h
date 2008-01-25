@@ -20,10 +20,6 @@
 #define CONFIG_LDR_LOAD_BAUD	115200
 #define CONFIG_UART_CONSOLE	1
 
-/* This sets the default state of the cache on U-Boot's boot */
-#define CONFIG_ICACHE_ON
-#define CONFIG_DCACHE_ON
-
 /* Define if want to do post memory test */
 #undef CONFIG_POST_TEST
 

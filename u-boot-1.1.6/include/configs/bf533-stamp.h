@@ -15,10 +15,6 @@
 #define CONFIG_PANIC_HANG 1
 
 
-/* This sets the default state of the cache on U-Boot's boot */
-#define CONFIG_ICACHE_ON
-#define CONFIG_DCACHE_ON
-
 /*
  * Board settings
  */

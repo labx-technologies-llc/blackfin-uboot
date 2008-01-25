@@ -21,6 +21,9 @@
 #define CONFIG_NET_MULTI	1
 #endif
 
+#define CONFIG_DCACHE_OFF
+#define CONFIG_ICACHE_OFF
+
 /* Set default serial console for bf537 */
 #define CONFIG_UART_CONSOLE	0
 /* define CONFIG_BF537_STAMP_LEDCMD to enable LED command*/

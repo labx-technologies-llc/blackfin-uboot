@@ -32,10 +32,6 @@
 
 #define CONFIG_PANIC_HANG 1
 
-/* This sets the default state of the cache on U-Boot's boot */
-#define CONFIG_ICACHE_ON
-#define CONFIG_DCACHE_ON
-
 /* CONFIG_CLKIN_HZ is any value in Hz				*/
 #define CONFIG_CLKIN_HZ		27000000
 /* CONFIG_CLKIN_HALF controls what is passed to PLL 0=CLKIN	*/

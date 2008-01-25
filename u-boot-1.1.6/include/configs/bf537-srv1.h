@@ -46,10 +46,6 @@
 
 #define CONFIG_PANIC_HANG 1
 
-/* This sets the default state of the cache on U-Boot's boot */
-#define CONFIG_ICACHE_ON
-#define CONFIG_DCACHE_ON
-
 /* Define if want to do post memory test */
 #undef CONFIG_POST_TEST
 
