@@ -2,6 +2,9 @@
 log_file uboot_erase_log
 send_user "Starting uboot_erase.exp \n"
 
+source ./uboot-config.exp
+source ./reset_board.exp
+
 set send_slow {1 .1} 
 
 set ttydev /dev/ttyS0
@@ -79,7 +82,7 @@ while 1 {
 send_user "Try to figure out if we are in u-boot or the kernel"
 set where_are_we 0
 
-
+sleep 2
 send "\r"
 set timeout 50
    while 1 {
