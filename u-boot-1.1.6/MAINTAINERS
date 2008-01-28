@@ -574,14 +574,27 @@ Haavard Skinnemoen <hskinnemoen@atmel.com>
 #	Board			CPU					#
 #########################################################################
 
-Aubrey Li <aubrey.li@analog.com>
+Mike Frysinger <vapier@gentoo.org>
 Blackfin Team <u-boot-devel@blackfin.uclinux.org>
 
+	BF527-EZKIT		BF527
 	BF533-EZKIT		BF533
 	BF533-STAMP		BF533
 	BF537-PNAV		BF537
 	BF537-STAMP		BF537
+	BF548-EZKIT		BF548
 	BF561-EZKIT		BF561
+
+Martin Strubel <strubel@section5.ch>
+Blackfin Team <u-boot-devel@blackfin.uclinux.org>
+
+	BF537-minotaur		BF537
+	BF537-srv1		BF537
+
+Bluetechnix Tinyboards <bluetechnix@blackfin.uclinux.org>
+Blackfin Team <u-boot-devel@blackfin.uclinux.org>
+
+	CM-BF537E		BF537
 
 #########################################################################
 # End of MAINTAINERS list						#
