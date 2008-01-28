@@ -80,7 +80,7 @@
 /*
  * Macros to generate global absolutes.
  */
-#if defined(__bfin__)
+#if defined(CONFIG_BLACKFIN)
 # define GEN_SET_VALUE(name, value) asm (".set " GEN_SYMNAME(name) ", " GEN_VALUE(value))
 #else
 # define GEN_SET_VALUE(name, value) asm (GEN_SYMNAME(name) " = " GEN_VALUE(value))
