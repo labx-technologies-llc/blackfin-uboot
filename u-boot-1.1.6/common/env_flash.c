@@ -297,9 +297,6 @@ int saveenv(void)
 
 	flash_offset    = ((ulong)flash_addr) & (CFG_ENV_SECT_SIZE-1);
 	flash_sect_addr = ((ulong)flash_addr) & ~(CFG_ENV_SECT_SIZE-1);
-#if defined(CFG_LDRHEAD_SIZE)
-	flash_offset += CFG_LDRHEAD_SIZE;
-#endif
 
 	debug ( "copy old content: "
 		"sect_addr: %08lX  env_addr: %08lX  offset: %08lX\n",
