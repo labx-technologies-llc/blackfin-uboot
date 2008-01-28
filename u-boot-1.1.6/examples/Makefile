@@ -21,6 +21,8 @@
 # MA 02111-1307 USA
 #
 
+SYM_PREFIX =
+
 ifeq ($(ARCH),ppc)
 LOAD_ADDR = 0x40000
 endif
@@ -55,6 +57,7 @@ endif
 
 ifeq ($(ARCH),blackfin)
 LOAD_ADDR = 0x1000
+SYM_PREFIX = _
 endif
 
 ifeq ($(ARCH),avr32)
@@ -157,7 +160,7 @@ $(LIB):	$(obj).depend $(LIBOBJS)
 $(ELF):
 $(obj)%:	$(obj)%.o $(LIB)
 		$(LD) -g $(EX_LDFLAGS) -Ttext $(LOAD_ADDR) \
-			-o $@ -e $(notdir _$(<:.o=)) $< $(LIB) \
+			-o $@ -e $(notdir $(SYM_PREFIX)$(<:.o=)) $< $(LIB) \
 			-L$(gcclibdir) -lgcc
 
 $(SREC):
