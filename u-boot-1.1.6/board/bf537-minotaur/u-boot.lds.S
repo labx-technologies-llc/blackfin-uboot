@@ -1,7 +1,7 @@
 /*
  * U-boot - u-boot.lds.S
  *
- * Copyright (c) 2005-2007 Analog Device Inc.
+ * Copyright (c) 2005-2008 Analog Device Inc.
  *
  * (C) Copyright 2000-2004
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
@@ -26,6 +26,7 @@
  */
 
 #include <config.h>
+#include <asm/blackfin.h>
 #undef ALIGN
 
 /* If we don't actually load anything into L1 data, this will avoid
@@ -45,8 +46,8 @@ OUTPUT_ARCH(bfin)
 MEMORY
 {
 	ram     : ORIGIN = CFG_MONITOR_BASE, LENGTH = CFG_MONITOR_LEN
-	l1_code : ORIGIN = 0xffa00000+0xC, LENGTH = 0x10000
-	l1_data : ORIGIN = 0xff900000,   LENGTH = 0x4000
+	l1_code : ORIGIN = L1_INST_SRAM+0xC, LENGTH = L1_INST_SRAM_SIZE
+	l1_data : ORIGIN = L1_DATA_B_SRAM,   LENGTH = L1_DATA_B_SRAM_SIZE
 }
 
 SECTIONS
@@ -71,15 +72,14 @@ SECTIONS
 		common/environment.o	(.text)
 #endif
 
-		*(.text)
+		*(.text .text.*)
 	} >ram
 
 	.rodata :
 	{
 		. = ALIGN(4);
-		*(.rodata)
+		*(.rodata .rodata.*)
 		*(.rodata1)
-		*(.rodata.str1.4)
 		*(.eh_frame)
 		. = ALIGN(4);
 	} >ram
@@ -87,7 +87,7 @@ SECTIONS
 	.data :
 	{
 		. = ALIGN(256);
-		*(.data)
+		*(.data .data.*)
 		*(.data1)
 		*(.sdata)
 		*(.sdata2)
@@ -129,7 +129,7 @@ SECTIONS
 		__bss_start = .;
 		*(.sbss) *(.scommon)
 		*(.dynbss)
-		*(.bss)
+		*(.bss .bss.*)
 		*(COMMON)
 		__bss_end = .;
 	} >ram

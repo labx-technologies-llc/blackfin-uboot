@@ -1,7 +1,7 @@
 /*
  * U-boot - u-boot.lds.S
  *
- * Copyright (c) 2005-2007 Analog Device Inc.
+ * Copyright (c) 2005-2008 Analog Device Inc.
  *
  * (C) Copyright 2000-2004
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
@@ -54,15 +54,14 @@ SECTIONS
 {
 	.text :
 	{
-		*(.text)
+		*(.text .text.*)
 	} >ram
 
 	.rodata :
 	{
 		. = ALIGN(4);
-		*(.rodata)
+		*(.rodata .rodata.*)
 		*(.rodata1)
-		*(.rodata.str1.4)
 		*(.eh_frame)
 		. = ALIGN(4);
 	} >ram
@@ -70,7 +69,7 @@ SECTIONS
 	.data :
 	{
 		. = ALIGN(256);
-		*(.data)
+		*(.data .data.*)
 		*(.data1)
 		*(.sdata)
 		*(.sdata2)
@@ -112,7 +111,7 @@ SECTIONS
 		__bss_start = .;
 		*(.sbss) *(.scommon)
 		*(.dynbss)
-		*(.bss)
+		*(.bss .bss.*)
 		*(COMMON)
 		__bss_end = .;
 	} >ram
