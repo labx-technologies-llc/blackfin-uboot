@@ -85,6 +85,7 @@ int do_otp(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	if (!force && otp_func == otp_write) {
 		printf(
 			"Writing one time programmable memory\n"
+			"Make sure your operating voltages and temperature are within spec\n"
 			"   source address:  0x%p\n"
 			"   OTP destination: %s page 0x%03X - %s page 0x%03X\n"
 			"   number to write: %ld halfpages\n"
