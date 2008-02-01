@@ -31,6 +31,7 @@
 #include <asm/blackfin.h>
 #include <asm/io.h>
 #include <linux/etherdevice.h>
+#include <asm/mach-common/bits/otp.h>
 
 #define POST_WORD_ADDR 0xFF903FFC
 
@@ -100,19 +101,19 @@ long int initdram(int board_type)
 
 int board_get_enetaddr(uchar *mac_addr)
 {
-#ifdef CFG_NO_FLASH
-# define USE_MAC_IN_FLASH 0
-#else
-# define USE_MAC_IN_FLASH 1
-#endif
-	if (USE_MAC_IN_FLASH) {
-		/* we cram the MAC in the last flash sector */
-		uchar *board_mac_addr = (uchar *)0x203F0000;
+	/* the MAC is stored in OTP memory page 0xDF */
+	uint32_t ret;
+	uint64_t otp_mac;
 
-		if (is_valid_ether_addr(board_mac_addr)) {
-			memcpy(mac_addr, board_mac_addr, 6);
+	ret = otp_read(0xDF, OTP_LOWER_HALF, &otp_mac);
+	if (!(ret & OTP_MASTER_ERROR)) {
+		uchar *otp_mac_p = (uchar *)&otp_mac;
+
+		for (ret = 0; ret < 6; ++ret)
+			mac_addr[ret] = otp_mac_p[5 - ret];
+
+		if (is_valid_ether_addr(mac_addr))
 			return 0;
-		}
 	}
 
 	puts("Warning: Generating 'random' MAC address\n");
