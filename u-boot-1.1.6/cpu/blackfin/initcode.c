@@ -16,8 +16,6 @@
 #include <asm/mach-common/bits/pll.h>
 #include <asm/mach-common/bits/uart.h>
 
-#include "mem_init.h"
-
 #define BFIN_IN_INITCODE
 #include "serial.h"
 

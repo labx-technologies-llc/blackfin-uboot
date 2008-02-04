@@ -68,10 +68,6 @@
 #endif
 #endif
 
-#define CONFIG_MEM_SIZE                 64             /* 128, 64, 32, 16 */
-#define CONFIG_MEM_ADD_WDTH              10             /* 8, 9, 10, 11    */
-#define CONFIG_MEM_MT48LC32M8A2_75    1
-
 #define CONFIG_LOADS_ECHO	1
 
 #define CFG_AUTOLOAD                    "no"    /*rarpb, bootp or dhcp commands will perform only a */
@@ -213,6 +209,7 @@
 #define	CFG_HZ			1000	/* decrementer freq: 10 ms ticks */
 #define CFG_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 #define	CFG_SDRAM_BASE		0x00000000
+#define CONFIG_MEM_SIZE                 64             /* 128, 64, 32, 16 */
 #define CFG_MAX_RAM_SIZE	0x04000000
 
 #define CFG_FLASH_BASE		0x20000000
@@ -323,13 +320,9 @@
 #define CFG_I2C_SPEED			50000
 #define CFG_I2C_SLAVE			0xFE
 
-/* 0xFF, 0x7BB07BB0, 0x22547BB0 */
-/* #define CONFIG_EBIU_AMGCTL_VAL            (AMBEN_P0 | AMBEN_P1 | AMBEN_P2 | AMCKEN)
-#define CONFIG_EBIU_AMBCTL0_VAL              (B1WAT_7 | B1RAT_11 | B1HT_2 | B1ST_3 | B1TT_4 | ~B1RDYPOL |    \
-                                ~B1RDYEN | B0WAT_7 | B0RAT_11 | B0HT_2 | B0ST_3 | B0TT_4 | ~B0RDYPOL | ~B0RDYEN)
-#define CONFIG_EBIU_AMBCTL1_VAL              (B3WAT_2 | B3RAT_2 | B3HT_1 | B3ST_1 | B3TT_4 | B3RDYPOL | ~B3RDYEN |   \
-                                B2WAT_7 | B2RAT_11 | B2HT_2 | B2ST_3 | B2TT_4 | ~B2RDYPOL | ~B2RDYEN)
-*/
+#define CONFIG_EBIU_SDRRC_VAL  0x3b7
+#define CONFIG_EBIU_SDGCTL_VAL 0x9111cd
+#define CONFIG_EBIU_SDBCTL_VAL 0x25
 
 #define CONFIG_EBIU_AMGCTL_VAL               0xFF
 #define CONFIG_EBIU_AMBCTL0_VAL              0x7BB033B0

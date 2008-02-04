@@ -56,10 +56,6 @@
 
 #define CONFIG_SPI
 
-#define CONFIG_MEM_SIZE                32             /* 128, 64, 32, 16 */
-#define CONFIG_MEM_ADD_WDTH            	9             /* 8, 9, 10, 11    */
-#define CONFIG_MEM_MT48LC16M16A2TG_75   1
-
 #define CONFIG_LOADS_ECHO	1
 
 #define CFG_AUTOLOAD                    "no"
@@ -164,6 +160,7 @@
 #else
 #define	CFG_CBSIZE		256	/* Console I/O Buffer Size */
 #endif
+#define CONFIG_MEM_SIZE                32             /* 128, 64, 32, 16 */
 #define CFG_MAX_RAM_SIZE       	(CONFIG_MEM_SIZE * 1024*1024)
 #define	CFG_PBSIZE		(CFG_CBSIZE+sizeof(CFG_PROMPT)+16)	/* Print Buffer Size */
 #define	CFG_MAXARGS		16	/* max number of command args */
@@ -240,6 +237,10 @@
 
 #define CFG_I2C_SPEED			50000
 #define CFG_I2C_SLAVE			0xFE
+
+#define CONFIG_EBIU_SDRRC_VAL  0x3f8
+#define CONFIG_EBIU_SDGCTL_VAL 0x9111cd
+#define CONFIG_EBIU_SDBCTL_VAL 0x13
 
 #define CONFIG_EBIU_AMGCTL_VAL		0xFF
 #define CONFIG_EBIU_AMBCTL0_VAL		0x7BB07BB0

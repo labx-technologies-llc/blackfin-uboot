@@ -94,9 +94,6 @@
  */
 
 #define CONFIG_MEM_SIZE			64	/* 128, 64, 32, 16 */
-#define CONFIG_MEM_ADD_WDTH		9	/* 8, 9, 10, 11    */
-#define CONFIG_MEM_MT48LC16M16A2TG_75	1
-
 #define	CFG_SDRAM_BASE		0x00000000
 #define CFG_MAX_RAM_SIZE	(CONFIG_MEM_SIZE * 1024 * 1024)
 
@@ -221,6 +218,10 @@
 /*
  * FLASH organization and environment definitions
  */
+#define CONFIG_EBIU_SDRRC_VAL  0x306
+#define CONFIG_EBIU_SDGCTL_VAL 0x91114d
+#define CONFIG_EBIU_SDBCTL_VAL 0x15
+
 #define CONFIG_EBIU_AMGCTL_VAL		0x3F
 #define CONFIG_EBIU_AMBCTL0_VAL		0x7BB07BB0
 #define CONFIG_EBIU_AMBCTL1_VAL		0xFFC27BB0

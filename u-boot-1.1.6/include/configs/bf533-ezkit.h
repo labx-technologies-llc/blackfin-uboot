@@ -55,12 +55,7 @@
 #define CONFIG_SPI_BAUD		2
 #define CONFIG_SPI_BAUD_INITBLOCK	4
 
-#define CONFIG_MEM_SIZE		32	/* 128, 64, 32, 16 */
-#define CONFIG_MEM_ADD_WDTH	9	/* 8, 9, 10, 11    */
-#define CONFIG_MEM_MT48LC16M16A2TG_75	1
-
 #define CONFIG_LOADS_ECHO	1
-
 
 #define CONFIG_COMMANDS			(CONFIG_CMD_DFL	| \
 					 CFG_CMD_PING	| \
@@ -130,6 +125,7 @@
 #else
 #define	CFG_CBSIZE		256	/* Console I/O Buffer Size */
 #endif
+#define CONFIG_MEM_SIZE		32	/* 128, 64, 32, 16 */
 #define	CFG_PBSIZE		(CFG_CBSIZE+sizeof(CFG_PROMPT)+16)	/* Print Buffer Size */
 #define	CFG_MAXARGS		16	/* max number of command args */
 #define CFG_BARGSIZE		CFG_CBSIZE	/* Boot Argument Buffer Size */
@@ -211,13 +207,10 @@
 
 #define CFG_BOOTM_LEN		0x4000000	/* Large Image Length, set to 64 Meg */
 
-/* 0xFF, 0x7BB07BB0, 0x22547BB0 */
-/* #define CONFIG_EBIU_AMGCTL_VAL		(AMBEN_P0 | AMBEN_P1 | AMBEN_P2 | AMCKEN)
-#define CONFIG_EBIU_AMBCTL0_VAL		(B1WAT_7 | B1RAT_11 | B1HT_2 | B1ST_3 | B1TT_4 | ~B1RDYPOL | \
-				~B1RDYEN | B0WAT_7 | B0RAT_11 | B0HT_2 | B0ST_3 | B0TT_4 | ~B0RDYPOL | ~B0RDYEN)
-#define CONFIG_EBIU_AMBCTL1_VAL		(B3WAT_2 | B3RAT_2 | B3HT_1 | B3ST_1 | B3TT_4 | B3RDYPOL | ~B3RDYEN | \
-				B2WAT_7 | B2RAT_11 | B2HT_2 | B2ST_3 | B2TT_4 | ~B2RDYPOL | ~B2RDYEN)
-*/
+#define CONFIG_EBIU_SDRRC_VAL  0x398
+#define CONFIG_EBIU_SDGCTL_VAL 0x91118d
+#define CONFIG_EBIU_SDBCTL_VAL 0x13
+
 #define CONFIG_EBIU_AMGCTL_VAL		0xFF
 #define CONFIG_EBIU_AMBCTL0_VAL		0x7BB07BB0
 #define CONFIG_EBIU_AMBCTL1_VAL		0xFFC27BB0
