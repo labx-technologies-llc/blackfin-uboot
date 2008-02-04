@@ -8,6 +8,7 @@ lib*.a
 /*.ldr
 /*.map
 /.syms.u-boot.S
+/LOG
 /u-boot
 
 /board/*/u-boot.lds
