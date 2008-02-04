@@ -11,7 +11,7 @@ BEGIN {
 
 {
 	/* find a structure definition */
-	if ($0 == "typedef struct {") {
+	if ($0 ~ /typedef struct .* {/) {
 		delete members;
 		i = 0;
 
