@@ -28,7 +28,7 @@ static inline uint32_t serial_init(void)
 # else
 #  define BFIN_UART_USE_RTS 0
 # endif
-	if (BFIN_UART_USE_RTS && BFIN_BOOT_MODE == BFIN_BOOT_UART) {
+	if (BFIN_UART_USE_RTS && CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART) {
 		size_t i;
 
 		/* force RTS rather than relying on auto RTS */
@@ -82,7 +82,7 @@ __attribute__((always_inline))
 static inline void serial_deinit(void)
 {
 #ifdef __ADSPBF54x__
-	if (BFIN_UART_USE_RTS && BFIN_BOOT_MODE == BFIN_BOOT_UART) {
+	if (BFIN_UART_USE_RTS && CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART) {
 		/* clear forced RTS rather than relying on auto RTS */
 		bfin_write_UART1_MCR(bfin_read_UART1_MCR() & ~FCPOL);
 	}
@@ -98,16 +98,16 @@ static inline void serial_deinit(void)
 __attribute__((always_inline))
 static inline void serial_reset_baud(uint32_t baud)
 {
-	if (!BFIN_DEBUG_EARLY_SERIAL && BFIN_BOOT_MODE != BFIN_BOOT_UART)
+	if (!BFIN_DEBUG_EARLY_SERIAL && CONFIG_BFIN_BOOT_MODE != BFIN_BOOT_UART)
 		return;
 
 #ifndef CONFIG_LDR_LOAD_BAUD
 # define CONFIG_LDR_LOAD_BAUD 115200
 #endif
 
-	if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+	if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 		serial_early_set_baud(baud);
-	else if (BFIN_BOOT_MODE == BFIN_BOOT_UART)
+	else if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART)
 		serial_early_set_baud(CONFIG_LDR_LOAD_BAUD);
 	else
 		serial_early_set_baud(CONFIG_BAUDRATE);
@@ -227,7 +227,7 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 	 * In bypass mode, the start.S would have already set a much lower
 	 * timeout, so don't clobber that.
 	 */
-	if (BFIN_BOOT_MODE != BFIN_BOOT_BYPASS) {
+	if (CONFIG_BFIN_BOOT_MODE != BFIN_BOOT_BYPASS) {
 		bfin_write_WDOG_CNT(MSEC_TO_SCLK(CONFIG_HW_WATCHDOG_TIMEOUT_INITCODE));
 		bfin_write_WDOG_CTL(0);
 	}
@@ -240,7 +240,7 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 	 * boot.  Once we switch over to u-boot's SPI flash driver, we'll
 	 * increase the speed appropriately.
 	 */
-	if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+	if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #ifdef SPI0_BAUD
 		bfin_write_SPI0_BAUD(CONFIG_SPI_BAUD_INITBLOCK);
 #else

@@ -132,7 +132,7 @@ int board_get_enetaddr(uchar *mac_addr)
 void board_reset(void)
 {
 	/* workaround for weak pull ups on ssel */
-	if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER) {
+	if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER) {
 		bfin_write_PORTF_FER(bfin_read_PORTF_FER() & ~PF10);
 		bfin_write_PORTFIO_SET(PF10);
 		udelay(1);
@@ -170,7 +170,7 @@ int misc_init_r(void)
 #endif				/* CONFIG_MISC_INIT_R */
 
 #ifdef CONFIG_POST
-#if (BFIN_BOOT_MODE != BFIN_BOOT_BYPASS)
+#if (CONFIG_BFIN_BOOT_MODE != BFIN_BOOT_BYPASS)
 /* Using sw10-PF5 as the hotkey */
 int post_hotkeys_pressed(void)
 {

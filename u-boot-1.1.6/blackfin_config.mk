@@ -31,19 +31,19 @@ define extract_define
 $(strip $(shell echo '$1' | $(CPP) -P -include $(TOPDIR)/include/configs/$(BOARD).h -I $(TOPDIR)/include - 2>/dev/null | tail -n 1))
 endef
 
-CONFIG_CPU := $(call extract_define, BFIN_CPU)
+CONFIG_CPU := $(call extract_define, CONFIG_BFIN_CPU)
 PLATFORM_RELFLAGS += -mcpu=$(CONFIG_CPU)
 
 ENV_OFFSET_SIZE = $(call extract_define, $$((CFG_ENV_OFFSET)):$$((CFG_ENV_SIZE)))
 
-BFIN_BOOT_MODE := $(shell \
-	sed -n '/^\#define[[:space:]]*BFIN_BOOT_MODE[[:space:]]/s:.*[[:space:]]*BFIN_:BFIN_:p' \
+CONFIG_BFIN_BOOT_MODE := $(shell \
+	sed -n '/^\#define[[:space:]]*CONFIG_BFIN_BOOT_MODE[[:space:]]/s:.*[[:space:]]*BFIN_:BFIN_:p' \
 	$(SRCTREE)/include/configs/$(BOARD).h)
 
 LDR_FLAGS += --use-vmas
-ifneq ($(BFIN_BOOT_MODE),BFIN_BOOT_BYPASS)
+ifneq ($(CONFIG_BFIN_BOOT_MODE),BFIN_BOOT_BYPASS)
 LDR_FLAGS += --initcode $(obj)cpu/$(CPU)/initcode.o
-ifneq ($(BFIN_BOOT_MODE),BFIN_BOOT_UART)
+ifneq ($(CONFIG_BFIN_BOOT_MODE),BFIN_BOOT_UART)
 LDR_FLAGS += --punchit $(ENV_OFFSET_SIZE):$(obj)env-ldr.o
 endif
 endif

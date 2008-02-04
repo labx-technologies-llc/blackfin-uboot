@@ -7,8 +7,8 @@
 
 #include <asm/blackfin-config-pre.h>
 
-#define BFIN_CPU             bf533-0.3
-#define BFIN_BOOT_MODE       BFIN_BOOT_BYPASS
+#define CONFIG_BFIN_CPU             bf533-0.3
+#define CONFIG_BFIN_BOOT_MODE       BFIN_BOOT_BYPASS
 
 #define CONFIG_RTC_BFIN			1
 
@@ -59,7 +59,7 @@
 /* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)			*/
 #define CONFIG_SPI_BAUD		2
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CONFIG_SPI_BAUD_INITBLOCK	4
 #endif
 
@@ -96,7 +96,7 @@
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	67	/* max number of sectors on one chip */
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CFG_ENV_IS_IN_EEPROM	1
 #define CFG_ENV_OFFSET		0x4000
 #else
@@ -106,7 +106,7 @@
 #endif
 #define	CFG_ENV_SIZE		0x2000
 #define CFG_ENV_SECT_SIZE 	0x2000	/* Total Size of Environment Sector */
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #define	ENV_IS_EMBEDDED
 #else
 #define	ENV_IS_EMBEDDED_CUSTOM
@@ -133,9 +133,9 @@
  * SDRAM settings & memory map
  */
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #define CFG_MEMTEST_START	0x00000000	/* memtest works on */
-#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#elif (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CFG_MEMTEST_START	0x00100000	/* memtest works on */
 #endif
 
@@ -166,7 +166,7 @@
 #define CONFIG_DEBUG_DUMP	1
 #define CONFIG_DEBUG_DUMP_SYMS	1
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #define CFG_AUTOLOAD		"no"	/*rarpb, bootp or dhcp commands will perform only a */
 #endif
 
@@ -203,9 +203,9 @@
 #define CONFIG_COMMANDS2 0
 #endif /* CONFIG_SOFT_I2C */
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #define CONFIG_COMMANDS  ( CONFIG_COMMANDS1 | CONFIG_COMMANDS2 | CFG_CMD_DHCP)
-#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#elif (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CONFIG_COMMANDS  ( CONFIG_COMMANDS1 | CONFIG_COMMANDS2)
 #endif
 
@@ -221,12 +221,12 @@
 #define CONFIG_LOADADDR      0x1000000
 
 #if (CONFIG_COMMANDS & CFG_CMD_NET)
-# if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+# if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #  define UBOOT_ENV_FILE "u-boot.bin"
 # else
 #  define UBOOT_ENV_FILE "u-boot.ldr"
 # endif
-# if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+# if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #  define UBOOT_ENV_UPDATE \
 		"eeprom write $(loadaddr) 0x0 $(filesize)"
 # else

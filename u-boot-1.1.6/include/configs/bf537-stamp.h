@@ -7,8 +7,8 @@
 
 #include <asm/blackfin-config-pre.h>
 
-#define BFIN_CPU             bf537-0.2
-#define BFIN_BOOT_MODE       BFIN_BOOT_BYPASS
+#define CONFIG_BFIN_CPU             bf537-0.2
+#define CONFIG_BFIN_BOOT_MODE       BFIN_BOOT_BYPASS
 
 #define CFG_LONGHELP		1
 #define CONFIG_CMDLINE_EDITING	1
@@ -56,7 +56,7 @@
 /* Values can range from 2-65535				*/
 /* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)			*/
 #define CONFIG_SPI_BAUD			2
-#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CONFIG_SPI_BAUD_INITBLOCK	4
 #endif
 
@@ -86,7 +86,7 @@
 /* #define CONFIG_ETHADDR	02:80:ad:20:31:e8 */
 /* This is the routine that copies the MAC in Flash to the 'ethaddr' setting */
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) && defined(CONFIG_POST_TEST)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) && defined(CONFIG_POST_TEST)
 /* POST support */
 #define CONFIG_POST 		( CFG_POST_MEMORY | \
 				  CFG_POST_UART	  | \
@@ -153,7 +153,7 @@
 	( CFG_BFIN_CMD_BOOTLDR | \
 	  CFG_BFIN_CMD_CPLBINFO )
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_UART)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART)
 # define CONFIG_BOOTDELAY    -1
 #else
 # define CONFIG_BOOTDELAY    5
@@ -164,12 +164,12 @@
 #define CONFIG_LOADADDR      0x1000000
 
 #if (CONFIG_COMMANDS & CFG_CMD_NET)
-# if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) || (BFIN_BOOT_MODE == BFIN_BOOT_UART)
+# if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) || (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART)
 #  define UBOOT_ENV_FILE "u-boot.bin"
 # else
 #  define UBOOT_ENV_FILE "u-boot.ldr"
 # endif
-# if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+# if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #  define UBOOT_ENV_UPDATE \
 		"eeprom write $(loadaddr) 0x0 $(filesize)"
 # else
@@ -240,7 +240,7 @@
 #define CFG_GBL_DATA_ADDR	(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
 #define CONFIG_STACKBASE	(CFG_GBL_DATA_ADDR  - 4)
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CFG_ENV_IS_IN_EEPROM	1
 #define CFG_ENV_OFFSET		0x4000
 #define CFG_ENV_HEADER		(CFG_ENV_OFFSET + 0x16e) /* 0x12A is the length of LDR file header */
@@ -251,7 +251,7 @@
 #endif
 #define CFG_ENV_SIZE		0x2000
 #define	CFG_ENV_SECT_SIZE	0x2000	/* Total Size of Environment Sector */
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #define ENV_IS_EMBEDDED
 #else
 #define ENV_IS_EMBEDDED_CUSTOM

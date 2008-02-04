@@ -127,7 +127,7 @@ void *sbrk(ptrdiff_t increment)
 static int display_banner(void)
 {
 	printf("\n\n%s\n\n", version_string);
-	printf("CPU:   ADSP " MK_STR(BFIN_CPU) " (Detected Rev: 0.%d)\n", bfin_revid());
+	printf("CPU:   ADSP " MK_STR(CONFIG_BFIN_CPU) " (Detected Rev: 0.%d)\n", bfin_revid());
 	return 0;
 }
 
@@ -309,7 +309,7 @@ void board_init_f(ulong bootflag)
 	memset((void *)bd, 0, sizeof(bd_t));
 
 	bd->bi_r_version = version_string;
-	bd->bi_cpu = MK_STR(BFIN_CPU);
+	bd->bi_cpu = MK_STR(CONFIG_BFIN_CPU);
 	bd->bi_board_name = BFIN_BOARD_NAME;
 	bd->bi_vco = get_vco();
 	bd->bi_cclk = get_cclk();

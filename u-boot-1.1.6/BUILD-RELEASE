@@ -21,7 +21,7 @@ buildit() {
 		${make} distclean
 
 		sed -i \
-			-e '/define[[:space:]]*BFIN_BOOT_MODE/s:[[:space:]][^[:space:]]*$: BFIN_BOOT_'${bmodeU}':' \
+			-e '/define[[:space:]]*CONFIG_BFIN_BOOT_MODE/s:[[:space:]][^[:space:]]*$: BFIN_BOOT_'${bmodeU}':' \
 			include/configs/${board}.h
 		${make} ${board}
 

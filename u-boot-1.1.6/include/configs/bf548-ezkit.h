@@ -7,8 +7,8 @@
 
 #include <asm/blackfin-config-pre.h>
 
-#define BFIN_CPU             bf548-0.0
-#define BFIN_BOOT_MODE       BFIN_BOOT_PARA
+#define CONFIG_BFIN_CPU             bf548-0.0
+#define CONFIG_BFIN_BOOT_MODE       BFIN_BOOT_PARA
 
 #define CFG_LONGHELP		1
 #define CONFIG_CMDLINE_EDITING	1
@@ -46,7 +46,7 @@
 /* Values can range from 2-65535                                 */
 /* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)                  */
 #define CONFIG_SPI_BAUD			2
-#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CONFIG_SPI_BAUD_INITBLOCK	4
 #endif
 
@@ -62,7 +62,7 @@
 
 #ifndef __ADSPBF542__
 /* Don't waste time transferring a logo over the UART */
-# if (BFIN_BOOT_MODE != BFIN_BOOT_UART)
+# if (CONFIG_BFIN_BOOT_MODE != BFIN_BOOT_UART)
 #  define CONFIG_VIDEO
 # endif
 # define CONFIG_DEB_DMA_URGENT
@@ -132,7 +132,7 @@
 	  CFG_BFIN_CMD_CPLBINFO | \
 	  CFG_BFIN_CMD_OTP )
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_UART)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART)
 # define CONFIG_BOOTDELAY    -1
 #else
 # define CONFIG_BOOTDELAY    5
@@ -143,7 +143,7 @@
 #define CONFIG_LOADADDR      0x1000000
 
 #if (CONFIG_COMMANDS & CFG_CMD_NET)
-# if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+# if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #  define UBOOT_ENV_UPDATE \
 		"eeprom write $(loadaddr) 0x0 $(filesize)"
 # else
@@ -213,7 +213,7 @@
 #define CFG_FLASH_PROTECTION
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	259	/* max number of sectors on one chip */
-#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CFG_ENV_IS_IN_EEPROM           1
 #define CFG_ENV_OFFSET                 0x4000
 #else

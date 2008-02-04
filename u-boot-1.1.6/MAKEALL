@@ -349,7 +349,7 @@ build_target() {
 	${MAKE} distclean >/dev/null
 	${MAKE} ${target}_config >/dev/null
 
-	sed -i "/BFIN_CPU/s:\([[:space:]]\)bf[0-9]*-:\1${cpu}-:" include/configs/$target.h
+	sed -i "/CONFIG_BFIN_CPU/s:\([[:space:]]\)bf[0-9]*-:\1${cpu}-:" include/configs/$target.h
 
 	${MAKE} ${JOBS} all 2>&1 >${LOG_DIR}/$target.$cpu.MAKELOG \
 				| tee ${LOG_DIR}/$target.$cpu.ERR

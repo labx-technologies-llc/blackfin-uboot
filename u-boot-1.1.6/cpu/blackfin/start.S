@@ -95,7 +95,7 @@ ENTRY(_start)
 	/* Save RETX so we can pass it while booting Linux */
 	r7 = RETX;
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 	/* In bypass mode, we don't have an LDR with an init block
 	 * so we need to explicitly call it ourselves.  This will
 	 * reprogram our clocks and setup our async banks.

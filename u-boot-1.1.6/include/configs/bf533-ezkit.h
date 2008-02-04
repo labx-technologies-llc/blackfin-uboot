@@ -7,8 +7,8 @@
 
 #include <asm/blackfin-config-pre.h>
 
-#define BFIN_CPU             bf533-0.3
-#define BFIN_BOOT_MODE       BFIN_BOOT_BYPASS
+#define CONFIG_BFIN_CPU             bf533-0.3
+#define CONFIG_BFIN_BOOT_MODE       BFIN_BOOT_BYPASS
 
 #define CONFIG_BAUDRATE		57600
 #define CFG_AUTOLOAD		"no"	/*rarpb, bootp or dhcp commands will perform only a */
@@ -76,12 +76,12 @@
 #define CONFIG_LOADADDR      0x1000000
 
 #if (CONFIG_COMMANDS & CFG_CMD_NET)
-# if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+# if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #  define UBOOT_ENV_FILE "u-boot.bin"
 # else
 #  define UBOOT_ENV_FILE "u-boot.ldr"
 # endif
-# if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+# if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #  define UBOOT_ENV_UPDATE \
 		"eeprom write $(loadaddr) 0x0 $(filesize)"
 # else

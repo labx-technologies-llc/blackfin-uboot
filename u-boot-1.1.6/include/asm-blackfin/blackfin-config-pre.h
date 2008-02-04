@@ -20,7 +20,7 @@
 #define CFG_BFIN_CMD_OTP         0x04
 #define CFG_BFIN_CMD_CACHE_DUMP  0x08
 
-/* Bootmode defines -- your config needs to select this via BFIN_BOOT_MODE.
+/* Bootmode defines -- your config needs to select this via CONFIG_BFIN_BOOT_MODE.
  * Depending on your cpu, some of these may not be valid, check your HRM.
  * The actual values here are meaningless as long as they're unique.
  */

@@ -95,7 +95,7 @@ unsigned long flash_init(void)
 
 	/* flash_protect (int flag, ulong from, ulong to, flash_info_t *info) */
 	(void)flash_protect(FLAG_PROTECT_SET,CFG_FLASH_BASE,(flash_info[0].start[2] - 1),&flash_info[0]);
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 	(void)flash_protect(FLAG_PROTECT_SET, 0x203F0000, 0x203FFFFF, &flash_info[0]);
 #endif
 
@@ -148,7 +148,7 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 
 	cnt = s_last - s_first + 1;
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 	printf("Erasing Flash locations, Please Wait\n");
 	for (i = s_first; i <= s_last; i++) {
 		if (info->protect[i] == 0) {	/* not protected */
@@ -158,7 +158,7 @@ int flash_erase(flash_info_t * info, int s_first, int s_last)
 			}
 		}
 	}
-#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#elif (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 	if (cnt == FLASH_TOT_SECT) {
 		printf("Erasing flash, Please Wait \n");
 		if(erase_flash() < 0) {
@@ -251,7 +251,7 @@ int write_flash(long nOffset, int nValue)
 	addr = (CFG_FLASH_BASE + nOffset);
 	*(unsigned volatile short *) addr = nValue;
 	SSYNC();
-#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 	if(icache_status())
 		udelay(CONFIG_CCLK_HZ/1000000);
 #endif

@@ -122,7 +122,7 @@ int misc_init_r(void)
 #endif				/* CONFIG_MISC_INIT_R */
 
 #ifdef CONFIG_POST
-#if (BFIN_BOOT_MODE != BFIN_BOOT_BYPASS)
+#if (CONFIG_BFIN_BOOT_MODE != BFIN_BOOT_BYPASS)
 /* Using sw10-PF5 as the hotkey */
 int post_hotkeys_pressed(void)
 {

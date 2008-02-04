@@ -20,8 +20,8 @@
 
 #include <asm/blackfin-config-pre.h>
 
-#define BFIN_CPU             bf537-0.2
-#define BFIN_BOOT_MODE       BFIN_BOOT_SPI_MASTER
+#define CONFIG_BFIN_CPU             bf537-0.2
+#define CONFIG_BFIN_BOOT_MODE       BFIN_BOOT_SPI_MASTER
 
 #define CFG_LONGHELP		1
 #define CONFIG_CMDLINE_EDITING	1
@@ -73,7 +73,7 @@
 /* Values can range from 2-65535				*/
 /* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)			*/
 #define CONFIG_SPI_BAUD			2
-#if (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CONFIG_SPI_BAUD_INITBLOCK	4
 #endif
 
@@ -104,7 +104,7 @@
 #define CONFIG_ETHADDR	02:80:ad:20:31:42
 /* This is the routine that copies the MAC in Flash to the 'ethaddr' setting */
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_UART)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART)
 # define CONFIG_BOOTDELAY	-1
 #else
 # define CONFIG_BOOTDELAY	5
@@ -113,7 +113,7 @@
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
 #define CONFIG_BOOTCOMMAND 	"run ramboot"
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) && defined(CONFIG_POST_TEST)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) && defined(CONFIG_POST_TEST)
 /* POST support */
 #define CONFIG_POST 		( CFG_POST_MEMORY | \
 				  CFG_POST_UART	  | \
@@ -160,7 +160,7 @@
 # define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NET)
 #endif
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) || (BFIN_BOOT_MODE == BFIN_BOOT_UART)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) || (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART)
 #define CONFIG_COMMANDS		(CONFIG_BFIN_CMD| \
 				 CFG_CMD_ELF	| \
 				 CFG_CMD_I2C	| \
@@ -172,7 +172,7 @@
 				 ADD_NAND_CMD	| \
 				 CFG_CMD_POST_DIAG | \
 				 CFG_CMD_DATE)
-#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#elif (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CONFIG_COMMANDS		(( CONFIG_BFIN_CMD| \
 				 CFG_CMD_ELF	| \
 				 CFG_CMD_I2C	| \
@@ -193,12 +193,12 @@
 #define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"
 #define CONFIG_LOADADDR	0x1000000
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 # define BOOT_ENV_SETTINGS \
 	"update=tftpboot $(loadaddr) u-boot.bin;" \
 		"protect off 0x20000000 0x2003FFFF;" \
 		"erase 0x20000000 0x2003FFFF;cp.b 0x1000000 0x20000000 $(filesize)\0"
-#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#elif (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 # define BOOT_ENV_SETTINGS \
 	"update=tftpboot $(loadaddr) u-boot.ldr;" \
 		"eeprom write $(loadaddr) 0x0 $(filesize);\0" \
@@ -259,19 +259,19 @@
 #define CONFIG_STACKBASE	(CFG_GBL_DATA_ADDR  - 4)
 
 
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) || (BFIN_BOOT_MODE == BFIN_BOOT_UART)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) || (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART)
 /* for bf537-stamp, UART boot mode still store env in flash */
 #define	CFG_ENV_IS_IN_FLASH	1
 #define CFG_ENV_ADDR		0x20004000
 #define CFG_ENV_OFFSET		(CFG_ENV_ADDR - CFG_FLASH_BASE)
-#elif (BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#elif (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CFG_ENV_IS_IN_EEPROM	1
 #define CFG_ENV_OFFSET		0x10000
 #define CFG_ENV_HEADER		(CFG_ENV_OFFSET + 0x16e) /* 0x12A is the length of LDR file header */
 #endif
 #define CFG_ENV_SIZE		0x10000
 #define	CFG_ENV_SECT_SIZE	0x10000	/* Total Size of Environment Sector */
-#if (BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #define ENV_IS_EMBEDDED
 #else
 #define ENV_IS_EMBEDDED_CUSTOM

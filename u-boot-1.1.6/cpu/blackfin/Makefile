@@ -19,7 +19,7 @@ SEXTRA   := start.o
 SOBJS    := interrupt.o cache.o flush.o
 COBJS    := cpu.o traps.o interrupts.o reset.o serial.o i2c.o watchdog.o
 
-ifeq ($(BFIN_BOOT_MODE),BFIN_BOOT_BYPASS)
+ifeq ($(CONFIG_BFIN_BOOT_MODE),BFIN_BOOT_BYPASS)
 COBJS    += initcode.o
 endif
 
@@ -48,7 +48,7 @@ $(obj)bootrom-asm-offsets.h: $(obj)bootrom-asm-offsets.s
 # have relocs or external references
 READINIT = env LC_ALL=C $(CROSS_COMPILE)readelf -s $<
 check_initcode: $(obj)initcode.o
-ifneq ($(BFIN_BOOT_MODE),BFIN_BOOT_BYPASS)
+ifneq ($(CONFIG_BFIN_BOOT_MODE),BFIN_BOOT_BYPASS)
 	@if $(READINIT) | grep '\<GLOBAL\>.*\<UND\>' ; then \
 		echo "$< contains external references!" 1>&2 ; \
 		exit 1 ; \
