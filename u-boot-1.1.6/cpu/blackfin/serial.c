@@ -55,7 +55,6 @@
 uint16_t cached_lsr[256];
 uint16_t cached_rbr[256];
 size_t cache_count;
-#endif
 
 /* The LSR is read-to-clear on some parts, so we have to make sure status
  * bits aren't inadvertently lost when doing various tests.
@@ -73,6 +72,10 @@ static void uart_lsr_clear(void)
 	uart_lsr_save = 0;
 	*pUART_LSR |= -1;
 }
+#else
+static inline uint16_t uart_lsr_read(void) { return *pUART_LSR; }
+static inline void uart_lsr_clear(void) { *pUART_LSR = -1; }
+#endif
 
 /* Symbol for our assembly to call. */
 void serial_set_baud(uint32_t baud)
@@ -140,36 +143,36 @@ int serial_tstc(void)
 
 int serial_getc(void)
 {
-	uint16_t uart_lsr_val, uart_rbr_val;
+	uint16_t uart_rbr_val;
 
 	/* wait for data ! */
 	while (!serial_tstc())
 		continue;
 
-	/* clear the status and grab the new byte */
-	uart_lsr_val = uart_lsr_read();
+	/* grab the new byte */
 	uart_rbr_val = *pUART_RBR;
 
 #ifdef CONFIG_DEBUG_SERIAL
+	/* grab & clear the LSR */
+	uint16_t uart_lsr_val = uart_lsr_read();
+	uart_lsr_clear();
+
 	cached_lsr[cache_count] = uart_lsr_val;
 	cached_rbr[cache_count] = uart_rbr_val;
 	cache_count = (cache_count + 1) % ARRAY_SIZE(cached_lsr);
-#endif
 
 	if (uart_lsr_val & (OE|PE|FE|BI)) {
-#ifdef CONFIG_DEBUG_SERIAL
 		printf("\n[SERIAL ERROR]\n");
 		do {
 			--cache_count;
 			printf("\t%3i: RBR=0x%02x LSR=0x%02x\n", cache_count,
 				cached_rbr[cache_count], cached_lsr[cache_count]);
 		} while (cache_count > 0);
-#endif
-		uart_lsr_clear();
 		return -1;
 	}
+#endif
 
-	return uart_rbr_val & 0xFF;
+	return uart_rbr_val;
 }
 
 void serial_puts(const char *s)
