@@ -162,7 +162,13 @@ int serial_getc(void)
 	cache_count = (cache_count + 1) % ARRAY_SIZE(cached_lsr);
 
 	if (uart_lsr_val & (OE|PE|FE|BI)) {
+		uint16_t dll, dlh;
 		printf("\n[SERIAL ERROR]\n");
+		ACCESS_LATCH();
+		dll = *pUART_DLL;
+		dlh = *pUART_DLH;
+		ACCESS_PORT_IER();
+		printf("\tDLL=0x%x DLH=0x%x\n", dll, dlh);
 		do {
 			--cache_count;
 			printf("\t%3i: RBR=0x%02x LSR=0x%02x\n", cache_count,
