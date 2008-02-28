@@ -26,7 +26,7 @@ if { $argc > 1} {
 set num              [lindex $argv 1]
 }
 
-set checkout_path /home/test/checkouts
+set checkout_path /home/test/work/cruise/checkouts/
 if { $argc > 2} {
 set checkout_path       [lindex $argv 2]
 }

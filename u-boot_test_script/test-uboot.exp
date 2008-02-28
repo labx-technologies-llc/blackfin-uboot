@@ -810,7 +810,7 @@ proc all_done { } {
     
     # End of results
     log_file
-    exec /home/test/test_scripts/u-boot/summary.sh $summary_logfile
+    exec /home/test/work/cruise/test_scripts/u-boot/summary.sh $summary_logfile
 
     log_file $logfile
     
@@ -1492,7 +1492,7 @@ set RESET_RETRIES           5
 
 #set UBOOT_PROMPT [get_uboot_define CFG_PROMPT $uboot_test_loc ]
 send_user "UBOOT_PROMPT = $UBOOT_PROMPT\n"
-set KERNEL_PROMPT           "~>"
+set KERNEL_PROMPT           "root:\[^>].*>"
 set AUTOBOOT_PROMPT         "Hit any key to stop"
 
 # tftp_errors is important for counting any errors in tftp seen anywhere.
@@ -1632,7 +1632,7 @@ sleep 2
 	     break
 	    }	      
 	     
-	     "root:~>" {
+	    -re $KERNEL_PROMPT {
 	    send -s "version\r"
 	     break
 	    }	
@@ -1670,7 +1670,7 @@ if { $where_are_we == "uboot" } {
 } else {
     if { $where_are_we == "kernel" } {
 	set timeout 16
-	expect $KERNEL_PROMPT
+	expect -re $KERNEL_PROMPT
 	sleep 10
 	send_user "sending reboot\n"
 	send -s "reboot\r"
@@ -3264,7 +3264,7 @@ set timeout 60
 set bootelf_result $TEST_FAIL
 while 1 {
    expect {
-      $KERNEL_PROMPT {
+      -re $KERNEL_PROMPT {
          set bootelf_result $TEST_PASS
          break
       }
@@ -3277,7 +3277,7 @@ while 1 {
 }
 set timeout 2
 send "\r"
-expect $KERNEL_PROMPT
+expect -re $KERNEL_PROMPT
 record_test_result $bootelf_loc $bootelf_result
 
 
@@ -3342,7 +3342,7 @@ if {$big_kernel_temp_result == $TEST_PASS} {
 	send -s "  bootelf\r"
 	while 1 {
      	    expect {
-     		"root:~>" {
+     		-re $KERNEL_PROMPT {
 			set big_kernel_result $TEST_PASS
 			break
 		}
@@ -4159,7 +4159,7 @@ if {$bootm_temp_result == $TEST_PASS} {
 	send -s " bootm\r"
 	while 1 {
      	    expect {
-     		"root:~>" {
+     		-re $KERNEL_PROMPT {
 			set bootm_result $TEST_PASS
 			break
 		}
@@ -4301,7 +4301,7 @@ set timeout 60
             break
          }
 	 
-	  "root:~> " {
+	 -re $KERNEL_PROMPT {
             puts "successful boot attempt"
             break
          }
@@ -4338,7 +4338,7 @@ while 1 {
 
 while 1 {
    expect {
-      "root:~>" {
+      -re $KERNEL_PROMPT {
          send_user "Ending build_uboot_kernel.exp\n"
 	 break
       }
@@ -4652,7 +4652,7 @@ because tftp never worked"
 	    set timeout 120
 	    expect {
 		
-		$KERNEL_PROMPT {
+		-re $KERNEL_PROMPT {
 		    set temp_status_flag $TEST_PASS
 		    break
 		}
@@ -4665,7 +4665,7 @@ because tftp never worked"
 	}
 	# Wait for actual kernel prompt.
 	set timeout 20
-	expect "root:~>"
+	expect -re $KERNEL_PROMPT
 	
 	if { $temp_status_flag == $TEST_PASS } {
 	    step "Make sure kernel is functional"
@@ -4682,7 +4682,7 @@ because tftp never worked"
 			break
 		    }
 		    
-		    $KERNEL_PROMPT {
+		    -re $KERNEL_PROMPT {
 			break
 		    }
 		    

@@ -32,6 +32,7 @@ set timeout 50
 spawn kermit
 # We need to save the id because resetting the board will overwrite it.
 set kermit_spawn_id $spawn_id
+set KERNEL_PROMPT "root:\[^>].*>"
 
 while 1 {
 	expect {
@@ -92,7 +93,7 @@ set timeout 50
 	     break
 	    }	
 	    
-	    "root:~>" {
+	    -re $KERNEL_PROMPT {
 	    send -s "version\r"
 	     break
 	    }	      
@@ -131,7 +132,7 @@ if { $where_are_we == "uboot" } {
 } else {
     if { $where_are_we == "kernel" } {
 	set timeout 60
-	expect "root:~>"
+	expect -re $KERNEL_PROMPT
 	send_user "sending reboot\n"
 	send -s "reboot\r"
     } else {
@@ -216,7 +217,7 @@ if { $where_are_we == "uboot" } {
   send -s "run tftp_boot\r"
   while 1 {
   expect {
-            "root:~>" {
+            -re $KERNEL_PROMPT {
 	    send_user "\nEnding uboot_erase.exp \n"    
 	    break
 	    }	
@@ -229,4 +230,3 @@ if { $where_are_we == "uboot" } {
     } 
 
 log_file
-	
