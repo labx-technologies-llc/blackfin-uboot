@@ -4,6 +4,8 @@
 *.srec
 .depend
 lib*.a
+.gdb_history
+.gdbinit
 
 /*.ldr
 /*.map
