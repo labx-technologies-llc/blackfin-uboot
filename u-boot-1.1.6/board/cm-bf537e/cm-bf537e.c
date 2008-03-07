@@ -34,7 +34,7 @@
 
 int checkboard(void)
 {
-	printf("Board: BlueTechnix CM537e board\n");
+	printf("Board: Bluetechnix CM-BF537E board\n");
 	printf("       Support: http://blackfin.uclinux.org/\n");
 	return 0;
 }
