@@ -35,6 +35,7 @@ CONFIG_CPU := $(call extract_define, CONFIG_BFIN_CPU)
 PLATFORM_RELFLAGS += -mcpu=$(CONFIG_CPU)
 
 ENV_OFFSET_SIZE = $(call extract_define, $$((CFG_ENV_OFFSET)):$$((CFG_ENV_SIZE)))
+ENV_IS_EMBEDDED_CUSTOM = $(call extract_define, ENV_IS_EMBEDDED_CUSTOM)
 
 CONFIG_BFIN_BOOT_MODE := $(shell \
 	sed -n '/^\#define[[:space:]]*CONFIG_BFIN_BOOT_MODE[[:space:]]/s:.*[[:space:]]*BFIN_:BFIN_:p' \
@@ -44,7 +45,9 @@ LDR_FLAGS += --use-vmas
 ifneq ($(CONFIG_BFIN_BOOT_MODE),BFIN_BOOT_BYPASS)
 LDR_FLAGS += --initcode $(obj)cpu/$(CPU)/initcode.o
 ifneq ($(CONFIG_BFIN_BOOT_MODE),BFIN_BOOT_UART)
+ifneq ($(ENV_IS_EMBEDDED_CUSTOM),ENV_IS_EMBEDDED_CUSTOM)
 LDR_FLAGS += --punchit $(ENV_OFFSET_SIZE):$(obj)env-ldr.o
+endif
 endif
 endif
 
