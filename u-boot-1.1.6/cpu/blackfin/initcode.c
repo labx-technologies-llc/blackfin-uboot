@@ -212,7 +212,7 @@ static inline void serial_putc(char c)
 # define CONFIG_VR_CTL_VAL (CONFIG_VR_CTL_CLKBUF | CONFIG_VR_CTL_VLEV | CONFIG_VR_CTL_FREQ)
 #endif
 
-__attribute__((saveall))
+BOOTROM_CALLED_FUNC_ATTR
 void initcode(ADI_BOOT_DATA *bootstruct)
 {
 	uint32_t old_baud = serial_init();
