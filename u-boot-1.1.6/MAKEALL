@@ -323,6 +323,7 @@ LIST_blackfin=" \
 	bf548-ezkit
 	bf561-ezkit
 	cm-bf537e
+	cm-bf548
 "
 procs() {
 	case ${target} in
