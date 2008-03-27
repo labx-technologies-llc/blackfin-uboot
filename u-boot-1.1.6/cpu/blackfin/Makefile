@@ -36,7 +36,7 @@ $(LIB):	$(OBJS)
 
 $(OBJS): $(obj)bootrom-asm-offsets.h
 $(obj)bootrom-asm-offsets.c: bootrom-asm-offsets.c.in bootrom-asm-offsets.awk
-	echo '#include <asm/mach-common/bits/bootrom.h>' | $(CPP) $(CPPFLAGS) - | ./bootrom-asm-offsets.awk > $@.tmp
+	echo '#include <asm/mach-common/bits/bootrom.h>' | $(CPP) $(CPPFLAGS) - | gawk -f ./bootrom-asm-offsets.awk > $@.tmp
 	mv $@.tmp $@
 $(obj)bootrom-asm-offsets.s: $(obj)bootrom-asm-offsets.c
 	$(CC) $(CFLAGS) -S $^ -o $@.tmp
