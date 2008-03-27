@@ -207,9 +207,14 @@
 
 #define CFG_BOOTM_LEN		0x4000000	/* Large Image Length, set to 64 Meg */
 
-#define CONFIG_EBIU_SDRRC_VAL  0x398
+/* Early EZKITs had 32megs, but later have 64megs */
+#if (CONFIG_MEM_SIZE == 64)
+#define CONFIG_EBIU_SDBCTL_VAL (EBCAW_10 | EBSZ_64 | EBE)
+#else
+#define CONFIG_EBIU_SDBCTL_VAL (EBCAW_9 | EBSZ_32 | EBE)
+#endif
 #define CONFIG_EBIU_SDGCTL_VAL 0x91118d
-#define CONFIG_EBIU_SDBCTL_VAL 0x13
+#define CONFIG_EBIU_SDRRC_VAL  0x398
 
 #define CONFIG_EBIU_AMGCTL_VAL		0xFF
 #define CONFIG_EBIU_AMBCTL0_VAL		0x7BB07BB0
