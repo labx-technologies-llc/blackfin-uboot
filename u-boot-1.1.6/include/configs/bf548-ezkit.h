@@ -245,39 +245,9 @@
  * Board NAND Infomation
  */
 
-#define CFG_NAND_ADDR          0x20212000
-#define CFG_NAND_BASE          CFG_NAND_ADDR
+#define CFG_NAND_BASE          0 /* not actually used */
 #define CFG_MAX_NAND_DEVICE    1
-#define SECTORSIZE             512
-#define ADDR_COLUMN             1
-#define ADDR_PAGE               2
-#define ADDR_COLUMN_PAGE        3
-#define NAND_ChipID_UNKNOWN    0x00
-#define NAND_MAX_FLOORS        1
 #define NAND_MAX_CHIPS         1
-#define BFIN_NAND_READY		PF3
-
-#define NAND_WAIT_READY(nand)  			\
-	do { 					\
-		int timeout = 0; 		\
-		while(!(*pPORTFIO & PF3)) 	\
-			if (timeout++ > 100000)	\
-				break;		\
-	} while (0)
-
-#define WRITE_NAND_COMMAND(d, adr)					\
-	do {								\
-		* (volatile __u8 *)((unsigned long)adr) = (__u8)(d);	\
-	} while (0)
-#define WRITE_NAND_ADDRESS(d, adr)					\
-	do {								\
-		*(volatile __u8 * )((unsigned long)adr) = (__u8)(d);	\
-	} while (0)
-#define WRITE_NAND(d, adr)						\
-	do {								\
-		*(volatile __u8 *)((unsigned long)adr) = (__u8)d;	\
-	} while (0)
-#define READ_NAND(adr) ((volatile unsigned char)(*(volatile __u8 *)(unsigned long)adr))
 
 /*
  * Initialize PSD4256 registers for using I2C
