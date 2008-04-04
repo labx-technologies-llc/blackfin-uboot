@@ -196,7 +196,14 @@ void board_nand_init(struct nand_chip *nand)
 	bfin_write_NFC_IRQSTAT(0xffff);
 
 	/* enable GPIO function enable register */
+#ifdef __ADSPBF54x__
 	bfin_write_PORTJ_FER(bfin_read_PORTJ_FER() | 6);
+#elif defined(__ADSPBF52x__)
+	bfin_write_PORTH_FER(bfin_read_PORTH_FER() | 0xFCFF);
+	bfin_write_PORTH_MUX(0);
+#else
+# error no support for this variant
+#endif
 
 	nand->hwcontrol = bf54x_nand_hwcontrol;
 	nand->read_buf = bf54x_nand_read_buf;
