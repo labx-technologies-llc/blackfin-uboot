@@ -19,8 +19,10 @@
 #define CONFIG_BAUDRATE		57600
 #define CONFIG_UART_CONSOLE	1
 
+/* #define CONFIG_BFIN_NFC */
+
 #if !defined(__ADSPBF522__) && !defined(__ADSPBF523__) && \
-    !defined(__ADSPBF524__) && !defined(__ADSPBF525__)
+    !defined(__ADSPBF524__) && !defined(__ADSPBF525__) && !defined(CONFIG_BFIN_NFC)
 #define CONFIG_BFIN_MAC
 #define CONFIG_BFIN_MAC_RMII
 #define CONFIG_NETCONSOLE	1
@@ -98,6 +100,8 @@
 
 #ifdef CONFIG_BFIN_MAC
 # define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL | CFG_CMD_PING)
+#elif defined(CONFIG_BFIN_NFC)
+# define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NET | CFG_CMD_NAND)
 #else
 # define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NET)
 #endif
@@ -240,4 +244,12 @@
 
 #include <asm/blackfin-config-post.h>
 
+/*
+ * Board NAND Infomation
+ */
+#if defined(CONFIG_BFIN_NFC)
+#define CFG_NAND_BASE          0 /* not actually used */
+#define CFG_MAX_NAND_DEVICE    1
+#define NAND_MAX_CHIPS         1
+#endif
 #endif
