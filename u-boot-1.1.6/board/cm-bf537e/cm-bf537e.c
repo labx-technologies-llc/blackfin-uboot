@@ -46,7 +46,7 @@ long int initdram(int board_type)
 	int brate;
 	char *tmp = getenv("baudrate");
 	brate = simple_strtoul(tmp, NULL, 16);
-	printf("Serial Port initialized with Baud rate = %x\n",brate);
+	printf("Serial Port initialized with Baud rate = %x\n", brate);
 	printf("SDRAM attributes:\n");
 	printf("tRCD %d SCLK Cycles,tRP %d SCLK Cycles,tRAS %d SCLK Cycles"
 	       "tWR %d SCLK Cycles,CAS Latency %d SCLK cycles \n",
@@ -59,17 +59,17 @@ long int initdram(int board_type)
 	return CFG_MAX_RAM_SIZE;
 }
 
-int board_get_enetaddr(uchar *mac_addr)
+int board_get_enetaddr(uchar * mac_addr)
 {
 	/* make something up */
 	const char s[] = __DATE__;
 	size_t i;
 	u32 cycles;
 	for (i = 0; i < 6; ++i) {
-		asm("%0 = CYCLES;" : "=r" (cycles));
+	      asm("%0 = CYCLES;":"=r"(cycles));
 		mac_addr[i] = cycles ^ s[i];
 	}
-	mac_addr[0] = (mac_addr[0] | 0x02) & ~0x01; /* make it local unicast */
+	mac_addr[0] = (mac_addr[0] | 0x02) & ~0x01;	/* make it local unicast */
 	return 0;
 }
 

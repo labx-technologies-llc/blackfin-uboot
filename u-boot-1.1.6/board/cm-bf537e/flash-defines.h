@@ -37,16 +37,14 @@
 #define FLASH_TIMEOUT 0xffffff
 #define FLASH_TIMEOUT 0xffffff
 #define FLASH_SECTOR_SIZE 0x20000
-#define MT_MANUFACT_CM_BF533 0x00890016        /* MT      manuf. ID in D23..D16, D7..D0 */
+#define MT_MANUFACT_CM_BF533 0x00890016	/* MT      manuf. ID in D23..D16, D7..D0 */
 
 int get_codes(void);
-static int erase_block_flash(int,unsigned long);
-//static int write_data(long lStart, long lCount, long lStride, int *pnData);
+static int erase_block_flash(int, unsigned long);
+/* static int write_data(long lStart, long lCount, long lStride, int *pnData); */
 static int write_flash(long nOffset, unsigned short nValue);
 static int check_sector(unsigned short usSector);
 
 flash_info_t flash_info[CFG_MAX_FLASH_BANKS];
 
-
 #endif
-
