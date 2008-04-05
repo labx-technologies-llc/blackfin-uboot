@@ -59,7 +59,7 @@ long int initdram(int board_type)
 	return CFG_MAX_RAM_SIZE;
 }
 
-int board_get_enetaddr(uchar * mac_addr)
+int board_get_enetaddr(unsigned char *mac_addr)
 {
 	/* make something up */
 	const char s[] = __DATE__;
