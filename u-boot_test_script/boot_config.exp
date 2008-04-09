@@ -54,13 +54,13 @@ sleep 3
          }
       }
       sleep 1
-      send "/#define *BFIN_BOOT_MODE\r"
-      expect "#define *BFIN_BOOT_MODE"
+      send "/#define *CONFIG_BFIN_BOOT_MODE\r"
+      expect "#define *CONFIG_BFIN_BOOT_MODE"
       send "d\r"
       expect ":"
       send "i\r"
       sleep .5
-      send "#define BFIN_BOOT_MODE       $boot_config\r"
+      send "#define CONFIG_BFIN_BOOT_MODE       $boot_config\r"
       sleep .5
       send ".\r"
       expect ":"
