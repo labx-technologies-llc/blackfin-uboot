@@ -13,6 +13,7 @@
 #if CONFIG_BFIN_COMMANDS & CFG_BFIN_CMD_CACHE_DUMP
 
 #include <asm/blackfin.h>
+#include <asm/mach-common/bits/mpu.h>
 
 static int check_limit(const char *type, size_t start_limit, size_t end_limit, size_t start, size_t end)
 {
@@ -97,5 +98,52 @@ int do_icache_dump(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 U_BOOT_CMD(icache_dump, 4, 0, do_icache_dump,
 	"icache_dump - dump current instruction cache\n",
 	"[way] [subbank] [set]");
+
+int do_dcache_dump(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
+{
+	u32 way, bank, subbank, set;
+	u32 status, addr;
+	u32 dmem_ctl = bfin_read_DMEM_CONTROL();
+
+	for (bank = 0; bank < 2; ++bank) {
+		if (!(dmem_ctl & (1 << (DMC1_P - bank))))
+			continue;
+
+		for (way = 0; way < 2; ++way)
+			for (subbank = 0; subbank < 4; ++subbank) {
+				printf("%i:%i:%i:\t", bank, way, subbank);
+				for (set = 0; set < 64; ++set) {
+
+					if (ctrlc())
+						return 1;
+
+					/* retrieve a cache tag */
+					bfin_write_DTEST_COMMAND(
+						way << 26 |
+						bank << 23 |
+						subbank << 16 |
+						set << 5
+					);
+					CSYNC();
+					status = bfin_read_DTEST_DATA0();
+
+					/* construct the address using the tag */
+					addr = (status & 0xFFFFC800) | (subbank << 12) | (set << 5);
+
+					/* show it */
+					if (set && !(set % 4))
+						puts("\n\t");
+					printf("%c%08x%c%08x%c ", (status & 0x1 ? '[' : '{'), status, (status & 0x2 ? 'd' : ' '), addr, (status & 0x1 ? ']' : '}'));
+				}
+				puts("\n");
+			}
+	}
+
+	return 0;
+}
+
+U_BOOT_CMD(dcache_dump, 4, 0, do_dcache_dump,
+	"dcache_dump - dump current data cache\n",
+	"[bank] [way] [subbank] [set]");
 
 #endif
