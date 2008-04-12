@@ -133,17 +133,6 @@ void trap_c(struct pt_regs *regs)
 			debug("CPLB addr %p matches map 0x%p - 0x%p\n", new_cplb_addr, bfin_memory_map[i].start, bfin_memory_map[i].end);
 		new_cplb_data = (data ? bfin_memory_map[i].data_flags : bfin_memory_map[i].inst_flags);
 
-		/* Turn the cache off */
-		SSYNC();
-		if (data) {
-			asm(" .align 8; ");
-			*pDMEM_CONTROL &= ~ENDCPLB;
-		} else {
-			asm(" .align 8; ");
-			*pIMEM_CONTROL &= ~ENICPLB;
-		}
-		SSYNC();
-
 		if (data) {
 			CPLB_ADDR_BASE = (uint32_t *)DCPLB_ADDR0;
 			CPLB_DATA_BASE = (uint32_t *)DCPLB_DATA0;
@@ -165,25 +154,48 @@ void trap_c(struct pt_regs *regs)
 
 		debug("evicting entry %i: 0x%p 0x%08X\n", i, *CPLB_ADDR, *CPLB_DATA);
 		last_evicted = i + 1;
-		*CPLB_ADDR = new_cplb_addr;
-		*CPLB_DATA = new_cplb_data;
+
+		/* this step is in assembly because we have to guarantee that
+		 * gcc will not touch any data while turning on/off cache.  only
+		 * real way to guarantee this is by hand written register asm.
+		 */
+		uint32_t tmp1, tmp2;
+#if ENDCPLB != ENICPLB || ENDCPLB != 0x2
+# error cplb enable bit violates my sanity
+#endif
+		__asm__ __volatile__(
+#if ANOMALY_05000312
+			"cli %[tmp1];"
+#endif
+			/* turn off cache */
+			"%[tmp2] = [%[mem_control]];"
+			"BITCLR(%[tmp2], 0x1);"
+			"[%[mem_control]] = %[tmp2];"
+			"ssync;"
+
+			/* replace an entry */
+			"[%[addr_mmr]] = %[addr];"
+			"[%[data_mmr]] = %[data];"
+
+			/* turn on cache */
+			"BITSET(%[tmp2], 0x1);"
+			"[%[mem_control]] = %[tmp2];"
+			"ssync;"
+#if ANOMALY_05000312
+			"sti %[tmp1];"
+#endif
+			: [tmp1] "=&d"(tmp1), [tmp2] "=&d"(tmp2)
+			: [mem_control] "a"(data ? DMEM_CONTROL : IMEM_CONTROL),
+			  [addr_mmr] "a"(CPLB_ADDR), [data_mmr] "a"(CPLB_DATA),
+			  [addr] "d"(new_cplb_addr), [data] "d"(new_cplb_data)
+			: "CC"
+		);
 
 		/* dump current table for debugging purposes */
 		CPLB_ADDR = CPLB_ADDR_BASE;
 		CPLB_DATA = CPLB_DATA_BASE;
 		for (i = 0; i < 16; ++i)
 			debug("%2i 0x%p 0x%08X\n", i, *CPLB_ADDR++, *CPLB_DATA++);
-
-		/* Turn the cache back on */
-		SSYNC();
-		if (data) {
-			asm(" .align 8; ");
-			*pDMEM_CONTROL |= ENDCPLB;
-		} else {
-			asm(" .align 8; ");
-			*pIMEM_CONTROL |= ENICPLB;
-		}
-		SSYNC();
 
 		break;
 	}
