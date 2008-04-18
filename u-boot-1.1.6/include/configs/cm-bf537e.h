@@ -233,10 +233,8 @@
  * I2C settings
  */
 #define CONFIG_HARD_I2C			1
-#define CONFIG_TWICLK_KHZ		50
-
 #define CFG_I2C_SPEED			50000
-#define CFG_I2C_SLAVE			0xFE
+#define CFG_I2C_SLAVE			0
 
 #define CONFIG_EBIU_SDRRC_VAL  0x3f8
 #define CONFIG_EBIU_SDGCTL_VAL 0x9111cd

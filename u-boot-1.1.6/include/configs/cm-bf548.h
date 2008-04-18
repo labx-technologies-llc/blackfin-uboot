@@ -266,12 +266,8 @@
  * I2C settings
  */
 #define CONFIG_HARD_I2C			1	/* I2C TWI */
-#if defined CONFIG_HARD_I2C
-#define CONFIG_TWICLK_KHZ		50
-#endif
-
 #define CFG_I2C_SPEED			50000
-#define CFG_I2C_SLAVE			0xFE
+#define CFG_I2C_SLAVE			0
 
 /* Default bank mapping:
  *	Async Bank 0 - 32MB Burst Flash
