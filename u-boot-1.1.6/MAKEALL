@@ -327,11 +327,11 @@ LIST_blackfin=" \
 "
 procs() {
 	case ${target} in
-		bf52[234567]*) echo bf52{2,3,4,5,6,7};;
-		bf53[123]*)    echo bf53{1,2,3};;
-		bf53[467]*)    echo bf53{4,6,7};;
-		bf54[24789]*)  echo bf54{2,4,7,9,8};;
-		bf561*)        echo bf561;;
+		*bf52[234567]*) echo bf52{2,3,4,5,6,7};;
+		*bf53[123]*)    echo bf53{1,2,3};;
+		*bf53[467]*)    echo bf53{4,6,7};;
+		*bf54[24789]*)  echo bf54{2,4,7,9,8};;
+		*bf561*)        echo bf561;;
 	esac
 }
 
