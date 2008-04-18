@@ -34,10 +34,10 @@
 #define bfin_read_TWI_RCV_DATA8()            bfin_read_TWI0_RCV_DATA8()
 #endif
 
-#ifndef CONFIG_TWICLK_KHZ
-# define CONFIG_TWICLK_KHZ	50
+#ifdef CONFIG_TWICLK_KHZ
+# error do not define CONFIG_TWICLK_KHZ ... use CFG_I2C_SPEED
 #endif
-#if CONFIG_TWICLK_KHZ > 400
+#if CFG_I2C_SPEED > 400000
 # error The Blackfin I2C hardware can only operate at 400KHz max
 #endif
 
@@ -65,13 +65,22 @@ static void i2c_reset(void)
 
 	/* Set Twi interface clock as specified */
 	bfin_write_TWI_CLKDIV(
-		((5 * 1024 / CONFIG_TWICLK_KHZ) << 8) |
-		((5 * 1024 / CONFIG_TWICLK_KHZ) & 0xFF)
+		((5 * 1024 / (CFG_I2C_SPEED / 1000)) << 8) |
+		((5 * 1024 / (CFG_I2C_SPEED / 1000)) & 0xFF)
 	);
 
 	/* Enable TWI */
 	bfin_write_TWI_CONTROL(bfin_read_TWI_CONTROL() | TWI_ENA);
 	SSYNC();
+
+#if CFG_I2C_SLAVE
+# error I2C slave support not tested/supported
+	/* If they want us as a slave, do it */
+	if (slaveaddr) {
+		bfin_write_TWI_SLAVE_ADDR(slaveaddr);
+		bfin_write_TWI_SLAVE_CTL(SEN);
+	}
+#endif
 }
 
 int wait_for_completion(struct i2c_msg *msg, int timeout_count)
@@ -231,7 +240,7 @@ int i2c_transfer(struct i2c_msg *msg)
 	/* Master enable */
 	bfin_write_TWI_MASTER_CTL(bfin_read_TWI_MASTER_CTL() | MEN |
 			((msg->flags & I2C_M_RD) ? MDIR : 0) |
-			((CONFIG_TWICLK_KHZ > 100) ? FAST : 0)
+			((CFG_I2C_SPEED > 100000) ? FAST : 0)
 	);
 	SSYNC();
 

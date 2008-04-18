@@ -312,7 +312,7 @@
 #define I2C_DELAY		udelay(5)	/* 1/4 I2C clock duration */
 
 #define CFG_I2C_SPEED		50000
-#define CFG_I2C_SLAVE		0xFE
+#define CFG_I2C_SLAVE		0
 #endif /* CONFIG_SOFT_I2C */
 
 /*

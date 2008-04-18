@@ -203,7 +203,7 @@
 #define I2C_DELAY	udelay(5)	/* 1/4 I2C clock duration */
 
 #define CFG_I2C_SPEED		50000
-#define CFG_I2C_SLAVE		0xFE
+#define CFG_I2C_SLAVE		0
 
 #define CFG_BOOTM_LEN		0x4000000	/* Large Image Length, set to 64 Meg */
 
