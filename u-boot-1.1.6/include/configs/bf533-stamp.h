@@ -20,6 +20,7 @@
  */
 #define CONFIG_DRIVER_SMC91111	1
 #define CONFIG_SMC91111_BASE	0x20300300
+#define SMC91111_EEPROM_INIT() { *pFIO_DIR = 0x01; *pFIO_FLAG_S = 0x01; SSYNC(); }
 
 /* FLASH/ETHERNET uses the same address range */
 #define SHARED_RESOURCES 	1
