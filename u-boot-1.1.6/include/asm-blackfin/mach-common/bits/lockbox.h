@@ -11,22 +11,22 @@
 
 /* SESR argument structure. Expected to reside at 0xFF900018. */
 typedef struct SESR_args {
-  unsigned short  usFlags;            /* security firmware flags            */
-  unsigned short  usIRQMask;          /* interrupt mask                     */
-  unsigned long   ulMessageSize;      /* message length in bytes            */
-  unsigned long   ulSFEntryPoint;     /* entry point of secure function     */
-  unsigned long   ulMessagePtr;       /* pointer to the buffer containing
-                                         the digital signature and message  */
-  unsigned long   ulReserved1;        /* reserved                           */
-  unsigned long   ulReserved2;        /* reserved                           */
+	unsigned short  usFlags;            /* security firmware flags            */
+	unsigned short  usIRQMask;          /* interrupt mask                     */
+	unsigned long   ulMessageSize;      /* message length in bytes            */
+	unsigned long   ulSFEntryPoint;     /* entry point of secure function     */
+	unsigned long   ulMessagePtr;       /* pointer to the buffer containing
+	                                       the digital signature and message  */
+	unsigned long   ulReserved1;        /* reserved                           */
+	unsigned long   ulReserved2;        /* reserved                           */
 } tSESR_args;
 
 /* Secure Entry Service Routine */
-void (* const sesr)(void) = (void *)_BOOTROM_SESR;
+static void (* const sesr)(void) = (void *)_BOOTROM_SESR;
 
 #endif
 
-/* SESR flags argument bitfields                                            */
+/* SESR flags argument bitfields */
 #define SESR_FLAGS_STAY_AT_NMI              0x0000
 #define SESR_FLAGS_DROP_BELOW_NMI           0x0001
 #define SESR_FLAGS_NO_SF_DMA                0x0000

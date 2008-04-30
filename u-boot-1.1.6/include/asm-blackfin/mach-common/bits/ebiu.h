@@ -343,7 +343,7 @@
 #define TWR_3		0x00180000	/* SDRAM tWR = 3 cycles */
 #define PUPSD		0x00200000	/* Power-up start delay */
 #define PSM		0x00400000	/* SDRAM power-up sequence = Precharge, mode register set, 8 CBR refresh cycles */
-#define PSSE		0x00800000	/* enable SDRAM power-up sequence on next SDRAM access */
+#define PSS		0x00800000	/* enable SDRAM power-up sequence on next SDRAM access */
 #define SRFS		0x01000000	/* Start SDRAM self-refresh mode */
 #define EBUFE		0x02000000	/* Enable external buffering timing */
 #define FBBRW		0x04000000	/* Fast back-to-back read write enable */
