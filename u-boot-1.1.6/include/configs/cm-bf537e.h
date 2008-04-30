@@ -79,9 +79,6 @@
 
 #define CONFIG_BOOT_RETRY_TIME		-1	/* Enable this if bootretry required, currently its disabled */
 
-#define CONFIG_NETCONSOLE	1
-#define CONFIG_NET_MULTI	1
-
 #ifdef CONFIG_BFIN_MAC
 # define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL | CFG_CMD_PING)
 #else
