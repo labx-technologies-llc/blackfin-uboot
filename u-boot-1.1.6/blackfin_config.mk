@@ -41,6 +41,7 @@ CONFIG_BFIN_BOOT_MODE := $(shell \
 	sed -n '/^\#define[[:space:]]*CONFIG_BFIN_BOOT_MODE[[:space:]]/s:.*[[:space:]]*BFIN_:BFIN_:p' \
 	$(SRCTREE)/include/configs/$(BOARD).h)
 
+LDR_FLAGS += --bmode $(shell echo $(CONFIG_BFIN_BOOT_MODE) | sed 's:BFIN_BOOT_::' | tr '[:upper:]' '[:lower:]')
 LDR_FLAGS += --use-vmas
 ifneq ($(CONFIG_BFIN_BOOT_MODE),BFIN_BOOT_BYPASS)
 LDR_FLAGS += --initcode $(obj)cpu/$(CPU)/initcode.o
