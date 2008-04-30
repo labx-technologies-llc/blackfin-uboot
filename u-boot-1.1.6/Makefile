@@ -2256,7 +2256,7 @@ suzaku_config:	unconfig
 # Analog Devices boards
 BFIN_BOARDS = \
 	bf527-ezkit bf533-ezkit bf533-stamp bf537-pnav \
-	bf548-ezkit bf537-stamp bf561-ezkit
+	bf538f-ezkit bf548-ezkit bf537-stamp bf561-ezkit
 
 # Bluetechnix tinyboards
 BFIN_BOARDS += cm-bf537e cm-bf548
@@ -2314,6 +2314,7 @@ clean:
 	rm -f $(obj)board/bf537-stamp/u-boot.lds $(obj)board/bf537-pnav/u-boot.lds
 	rm -f $(obj)board/bf537-minotaur/u-boot.lds
 	rm -f $(obj)board/bf537-srv1/u-boot.lds
+	rm -f $(obj)board/bf538f-ezkit/u-boot.lds
 	rm -f $(obj)board/bf548-ezkit/u-boot.lds
 	rm -f $(obj)board/bf561-ezkit/u-boot.lds
 	rm -f $(obj)board/cm-bf537e/u-boot.lds

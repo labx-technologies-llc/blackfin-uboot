@@ -47,6 +47,7 @@ ver=$(sed -e 's:[[:space:]]*(ADI-::' -e 's:)[[:space:]]*::' localversion-adi)
 buildit bf527-ezkit para spi_master uart
 buildit bf533-ezkit bypass
 buildit bf533-stamp bypass spi_master
+buildit bf538f-ezkit bypass
 buildit bf537-stamp bypass spi_master uart
 buildit bf548-ezkit para spi_master uart
 buildit bf561-ezkit bypass
