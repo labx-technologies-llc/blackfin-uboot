@@ -127,21 +127,19 @@
 				/* but not try to load any image	*/
 				/* using TFTP				*/
 
-#if (CONFIG_DRIVER_SMC91111)
-#define CONFIG_COMMANDS1	(CONFIG_CMD_DFL	| \
-				 CFG_CMD_PING	| \
-				 CFG_CMD_ELF	| \
-				 CFG_CMD_CACHE	| \
-				 CFG_CMD_JFFS2	| \
-				 CFG_CMD_DHCP)
+#ifdef CONFIG_DRIVER_SMC91111
+# define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL | CFG_CMD_PING | CFG_CMD_DHCP)
 #else
-#define CONFIG_COMMANDS1	(CONFIG_CMD_DFL	| \
-				 CFG_CMD_ELF	| \
-				 CFG_CMD_CACHE	| \
-				 CFG_CMD_JFFS2)
+# define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NET)
 #endif
 
-#define CONFIG_COMMANDS ( CONFIG_COMMANDS1 | CONFIG_COMMANDS2 )
+#define CONFIG_COMMANDS   \
+	(CONFIG_BFIN_CMD    | \
+	 CFG_CMD_ELF        | \
+	 CFG_CMD_I2C        | \
+	 CFG_CMD_CACHE      | \
+	 CFG_CMD_JFFS2      | \
+	 CFG_CMD_DHCP)
 
 /* This must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
