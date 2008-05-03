@@ -42,27 +42,7 @@ int checkboard(void)
 long int initdram(int board_type)
 {
 	DECLARE_GLOBAL_DATA_PTR;
-#ifdef DEBUG
-	int brate;
-	char *tmp = getenv("baudrate");
-	brate = simple_strtoul(tmp, NULL, 16);
-	printf("Serial Port initialized with Baud rate = %x\n", brate);
-	printf("SDRAM attributes:\n");
-	printf("tRCD %d SCLK Cycles,tRP %d SCLK Cycles,tRAS %d SCLK Cycles"
-	       "tWR %d SCLK Cycles,CAS Latency %d SCLK cycles \n",
-	       3, 3, 6, 2, 3);
-	printf("SDRAM Begin: 0x%x\n", CFG_SDRAM_BASE);
-	printf("Bank size = %d MB\n", CFG_MAX_RAM_SIZE >> 20);
-#endif
 	gd->bd->bi_memstart = CFG_SDRAM_BASE;
 	gd->bd->bi_memsize = CFG_MAX_RAM_SIZE;
 	return CFG_MAX_RAM_SIZE;
 }
-
-#if defined(CONFIG_MISC_INIT_R)
-/* miscellaneous platform dependent initialisations */
-int misc_init_r(void)
-{
-	return 0;
-}
-#endif
