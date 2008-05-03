@@ -294,11 +294,8 @@ $(U_BOOT_NAND):	$(NAND_SPL) $(obj)u-boot.bin
 		cat $(obj)nand_spl/u-boot-spl-16k.bin $(obj)u-boot.bin > $(obj)u-boot-nand.bin
 
 version:
-		@set -e; \
-		echo -n "#define U_BOOT_VERSION \"U-Boot " > $(VERSION_FILE).tmp; \
-		echo -n "$(U_BOOT_VERSION)" >> $(VERSION_FILE).tmp; \
-		echo -n "$(shell $(CONFIG_SHELL) $(TOPDIR)/tools/setlocalversion $(TOPDIR))" >> $(VERSION_FILE).tmp; \
-		echo "\"" >> $(VERSION_FILE).tmp
+		@printf '#define U_BOOT_VERSION "U-Boot %s%s"\n' "$(U_BOOT_VERSION)" \
+			"$(shell $(CONFIG_SHELL) $(TOPDIR)/tools/setlocalversion $(TOPDIR))" > $(VERSION_FILE).tmp
 		@if ! cmp -s $(VERSION_FILE) $(VERSION_FILE).tmp ; then \
 			mv -f $(VERSION_FILE).tmp $(VERSION_FILE) ; \
 		else \
