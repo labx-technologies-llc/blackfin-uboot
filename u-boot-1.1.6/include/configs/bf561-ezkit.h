@@ -78,17 +78,25 @@
 #define CFG_FLASH_CFI		/* The flash is CFI compatible */
 #define CFG_FLASH_CFI_DRIVER	/* Use common CFI driver */
 #define CFG_FLASH_CFI_AMD_RESET
-#define	CFG_ENV_IS_IN_FLASH	1
 #define CFG_FLASH_BASE		0x20000000
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	135	/* max number of sectors on one chip */
-#define CFG_ENV_ADDR		0x20020000
-#define	CFG_ENV_SECT_SIZE	0x10000	/* Total Size of Environment Sector */
 /* JFFS Partition offset set  */
 #define CFG_JFFS2_FIRST_BANK	0
 #define CFG_JFFS2_NUM_BANKS	1
 /* 512k reserved for u-boot */
 #define CFG_JFFS2_FIRST_SECTOR	8
+/* The BF561-EZKIT uses a top boot flash */
+#define	CFG_ENV_IS_IN_FLASH	1
+#define CFG_ENV_ADDR		0x20004000
+#define CFG_ENV_OFFSET		(CFG_ENV_ADDR - CFG_FLASH_BASE)
+#define CFG_ENV_SIZE		0x2000
+#define	CFG_ENV_SECT_SIZE	0x10000	/* Total Size of Environment Sector */
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+#define ENV_IS_EMBEDDED
+#else
+#define ENV_IS_EMBEDDED_CUSTOM
+#endif
 
 /*
  * SDRAM settings & memory map
