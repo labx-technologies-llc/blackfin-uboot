@@ -222,6 +222,40 @@
 #define CFG_BOOTM_LEN		0x4000000	/* Large Image Length, set to 64 Meg */
 
 /*
+ * Soft I2C support
+ */
+#define CONFIG_SOFT_I2C		1
+#define PF_SCL			0x1/*PF0*/
+#define PF_SDA			0x2/*PF1*/
+
+#ifdef CONFIG_SOFT_I2C
+#define I2C_INIT       do { *pFIO0_DIR |= PF_SCL; SSYNC(); } while (0)
+#define I2C_ACTIVE     do { *pFIO0_DIR |= PF_SDA; *pFIO0_INEN &= ~PF_SDA; SSYNC(); } while (0)
+#define I2C_TRISTATE   do { *pFIO0_DIR &= ~PF_SDA; *pFIO0_INEN |= PF_SDA; SSYNC(); } while (0)
+#define I2C_READ       ((*pFIO0_FLAG_D & PF_SDA) != 0)
+#define I2C_SDA(bit) \
+	do { \
+		if (bit) \
+			*pFIO0_FLAG_S = PF_SDA; \
+		else \
+			*pFIO0_FLAG_C = PF_SDA; \
+		SSYNC(); \
+	} while (0)
+#define I2C_SCL(bit) \
+	do { \
+		if (bit) \
+			*pFIO0_FLAG_S = PF_SCL; \
+		else \
+			*pFIO0_FLAG_C = PF_SCL; \
+		SSYNC(); \
+	} while (0)
+#define I2C_DELAY		udelay(5)	/* 1/4 I2C clock duration */
+
+#define CFG_I2C_SPEED		50000
+#define CFG_I2C_SLAVE		0
+#endif
+
+/*
  * FLASH organization and environment definitions
  */
 #define CONFIG_EBIU_SDRRC_VAL  0x306
