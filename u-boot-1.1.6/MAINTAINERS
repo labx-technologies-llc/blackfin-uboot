@@ -595,6 +595,7 @@ Blackfin Team <u-boot-devel@blackfin.uclinux.org>
 Bluetechnix Tinyboards <bluetechnix@blackfin.uclinux.org>
 Blackfin Team <u-boot-devel@blackfin.uclinux.org>
 
+	CM-BF533		BF533
 	CM-BF537E		BF537
 	CM-BF548		BF548
 	CM-BF561		BF561
