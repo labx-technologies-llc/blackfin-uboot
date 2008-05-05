@@ -80,7 +80,7 @@
 /* This is the routine that copies the MAC in Flash to the 'ethaddr' setting */
 
 #ifdef CONFIG_DRIVER_SMC91111
-# define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL | CFG_CMD_PING)
+# define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL | CFG_CMD_PING | CFG_CMD_DHCP)
 #else
 # define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NET)
 #endif
@@ -91,8 +91,6 @@
 	 CFG_CMD_I2C        | \
 	 CFG_CMD_CACHE      | \
 	 CFG_CMD_JFFS2      | \
-	 CFG_CMD_EEPROM     | \
-	 CFG_CMD_DHCP       | \
 	 CFG_CMD_POST_DIAG  | \
 	 CFG_CMD_DATE)
 
@@ -208,13 +206,6 @@
 #define CFG_JFFS2_FIRST_SECTOR	15
 
 #define FLASH_TOT_SECT		71
-
-/*
- * Serial Flash Infomation
- */
-#define CONFIG_SPI
-
-#define CONFIG_MISC_INIT_R
 
 #define CFG_BOOTM_LEN		0x4000000	/* Large Image Length, set to 64 Meg */
 
