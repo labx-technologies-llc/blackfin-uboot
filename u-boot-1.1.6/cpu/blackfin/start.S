@@ -180,7 +180,7 @@ ENTRY(_start)
 
 	/* Now lower ourselves from the highest interrupt level to
 	 * the lowest.  We do this by masking all interrupts but 15,
-	 * setting the 15 handler to "board_init_f", raising the 15
+	 * setting the 15 handler to ".Lenable_nested", raising the 15
 	 * interrupt, and then returning from the highest interrupt
 	 * level to the dummy "jump" until the interrupt controller
 	 * services the pending 15 interrupt.
@@ -190,8 +190,8 @@ ENTRY(_start)
 	r1 = r6;
 	p0.l = LO(EVT15);
 	p0.h = HI(EVT15);
-	p1.l = _cpu_init_f;
-	p1.h = _cpu_init_f;
+	p1.l = .Lenable_nested;
+	p1.h = .Lenable_nested;
 	[p0] = p1;
 	p2.l = LO(IMASK);
 	p2.h = HI(IMASK);
@@ -203,6 +203,11 @@ ENTRY(_start)
 	p4.h = .LWAIT_HERE;
 	reti = p4;
 	rti;
+
+	/* Enable nested interrupts before continuing with cpu init */
+.Lenable_nested:
+	[--sp] = reti;
+	jump _cpu_init_f;
 
 .LWAIT_HERE:
 	jump .LWAIT_HERE;
