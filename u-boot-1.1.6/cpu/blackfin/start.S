@@ -207,7 +207,7 @@ ENTRY(_start)
 	/* Enable nested interrupts before continuing with cpu init */
 .Lenable_nested:
 	[--sp] = reti;
-	jump _cpu_init_f;
+	jump.l _cpu_init_f;
 
 .LWAIT_HERE:
 	jump .LWAIT_HERE;
