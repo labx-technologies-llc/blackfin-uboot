@@ -577,6 +577,7 @@ Haavard Skinnemoen <hskinnemoen@atmel.com>
 Mike Frysinger <vapier@gentoo.org>
 Blackfin Team <u-boot-devel@blackfin.uclinux.org>
 
+	BF526-EZKIT		BF526
 	BF527-EZKIT		BF527
 	BF533-EZKIT		BF533
 	BF533-STAMP		BF533

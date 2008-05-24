@@ -44,6 +44,7 @@ mkdir ../RELEASE
 
 ver=$(sed -e 's:[[:space:]]*(ADI-::' -e 's:)[[:space:]]*::' localversion-adi)
 
+buildit bf526-ezkit para spi_master uart
 buildit bf527-ezkit para spi_master uart
 buildit bf533-ezkit bypass para
 buildit bf533-stamp bypass para spi_master

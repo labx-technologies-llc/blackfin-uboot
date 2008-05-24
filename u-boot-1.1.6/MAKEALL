@@ -313,6 +313,7 @@ LIST_avr32="atstk1002"
 #########################################################################
 
 LIST_blackfin=" \
+	bf526-ezkit
 	bf527-ezkit
 	bf533-ezkit
 	bf533-stamp
