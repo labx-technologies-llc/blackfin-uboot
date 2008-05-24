@@ -278,6 +278,9 @@ $(obj)u-boot:		depend version $(SUBDIRS) $(OBJS) $(LIBS) $(LDSCRIPT)
 		$(CC) $(AFLAGS) -I. -DSYM_FILE='".syms.u-boot.S"' -c cpu/blackfin/system_map.S -o cpu/blackfin/system_map.o
 		$(GEN_UBOOT) cpu/blackfin/system_map.o
 
+$(LDSCRIPT):
+		$(MAKE) -C $(dir $@) $(notdir $@)
+
 $(OBJS):
 		$(MAKE) -C cpu/$(CPU) $(if $(REMOTE_BUILD),$@,$(notdir $@))
 
