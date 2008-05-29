@@ -8,6 +8,7 @@
 #include <common.h>
 #include <command.h>
 #include <asm/blackfin.h>
+#include <asm/mach-common/bits/bootrom.h>
 #include "cpu.h"
 
 /* A system soft reset makes external memory unusable so force
@@ -19,7 +20,7 @@
  * the core reset.
  */
 __attribute__ ((__l1_text__, __noreturn__))
-void bfin_reset(void)
+static void bfin_reset(void)
 {
 	/* Wait for completion of "system" events such as cache line
 	 * line fills so that we avoid infinite stalls later on as
@@ -75,7 +76,10 @@ static inline void bfin_reset_trampoline(void)
 	if (board_reset)
 		board_reset();
 	while (1)
-		asm("jump (%0);" : : "a" (bfin_reset));
+		if (0 /*BOOTROM_CAPS_SYSCONTROL -- current silicon is broken*/)
+			syscontrol(SYSCTRL_SOFTRESET, NULL, NULL);
+		else
+			asm("jump (%0);" : : "a" (bfin_reset));
 }
 
 __attribute__ ((__noreturn__))
