@@ -277,14 +277,6 @@
 #define ENV_IS_EMBEDDED_CUSTOM
 #endif
 
-/* JFFS Partition offset set  */
-// #define CFG_JFFS2_FIRST_BANK	0
-// #define CFG_JFFS2_NUM_BANKS	1
-/* 512k reserved for u-boot */
-// #define CFG_JFFS2_FIRST_SECTOR	15
-
-// #define FLASH_TOT_SECT		32
-
 /*
  * Serial Flash Infomation
  */

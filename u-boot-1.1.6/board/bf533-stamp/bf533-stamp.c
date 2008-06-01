@@ -112,9 +112,6 @@ int misc_init_r(void)
 	if (cf_stat) {
 		printf("Booting from COMPACT flash\n");
 
-		/* Set cycle time for CF */
-		*(volatile unsigned long *)ambctl1 = CF_AMBCTL1VAL;
-
 		for (i = 0; i < 0x1000; i++)
 			asm("nop;");
 		for (i = 0; i < 0x1000; i++)

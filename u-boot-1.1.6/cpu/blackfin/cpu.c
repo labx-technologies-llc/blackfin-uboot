@@ -30,6 +30,7 @@
 #include <asm/blackfin.h>
 #include <asm/cplb.h>
 #include <asm/mach-common/bits/core.h>
+#include <asm/mach-common/bits/ebiu.h>
 #include <asm/mach-common/bits/trace.h>
 
 #include "cpu.h"

@@ -7,211 +7,80 @@
 
 #include <asm/blackfin-config-pre.h>
 
+
+/*
+ * Processor Settings
+ */
 #define CONFIG_BFIN_CPU             bf537-0.2
 #define CONFIG_BFIN_BOOT_MODE       BFIN_BOOT_BYPASS
 
-#define CFG_LONGHELP		1
-#define CONFIG_CMDLINE_EDITING	1
-#define CONFIG_AUTO_COMPLETE	1
-#define CONFIG_ENV_OVERWRITE	1
-#define CONFIG_DEBUG_DUMP	1
-#define CONFIG_DEBUG_DUMP_SYMS	1
-#define CONFIG_BAUDRATE		57600
 
-#ifndef __ADSPBF534__
-#define CONFIG_BFIN_MAC
-#define CONFIG_NETCONSOLE	1
-#define CONFIG_NET_MULTI	1
-#endif
-/* Set default serial console for bf537 */
-#define CONFIG_UART_CONSOLE	0
-/* define CONFIG_BF537_STAMP_LEDCMD to enable LED command*/
-/*#define CONFIG_BF537_STAMP_LEDCMD	1*/
-
-#define CONFIG_PANIC_HANG 1
-
-/* Define if want to do post memory test */
-#undef CONFIG_POST_TEST
-
-#define CONFIG_RTC_BFIN		1
-
-/* CONFIG_CLKIN_HZ is any value in Hz				*/
-#define CONFIG_CLKIN_HZ		25000000
-/* CONFIG_CLKIN_HALF controls what is passed to PLL 0=CLKIN	*/
-/*						    1=CLKIN/2	*/
-#define CONFIG_CLKIN_HALF	0
-/* CONFIG_PLL_BYPASS controls if the PLL is used 0=don't bypass */
-/*						    1=bypass PLL*/
-#define CONFIG_PLL_BYPASS	0
-/* CONFIG_VCO_MULT controls what the multiplier of the PLL is.	*/
-/* Values can range from 1-64					*/
+/*
+ * Clock Settings
+ *	CCLK = (CLKIN * VCO_MULT) / CCLK_DIV
+ *	SCLK = (CLKIN * VCO_MULT) / SCLK_DIV
+ */
+/* CONFIG_CLKIN_HZ is any value in Hz					*/
+#define CONFIG_CLKIN_HZ			25000000
+/* CLKIN_HALF controls the DF bit in PLL_CTL      0 = CLKIN		*/
+/*                                                1 = CLKIN / 2		*/
+#define CONFIG_CLKIN_HALF		0
+/* PLL_BYPASS controls the BYPASS bit in PLL_CTL  0 = do not bypass	*/
+/*                                                1 = bypass PLL	*/
+#define CONFIG_PLL_BYPASS		0
+/* VCO_MULT controls the MSEL (multiplier) bits in PLL_CTL		*/
+/* Values can range from 0-63 (where 0 means 64)			*/
 #define CONFIG_VCO_MULT			20
-/* CONFIG_CCLK_DIV controls what the core clock divider is	*/
-/* Values can be 1, 2, 4, or 8 ONLY				*/
+/* CCLK_DIV controls the core clock divider				*/
+/* Values can be 1, 2, 4, or 8 ONLY					*/
 #define CONFIG_CCLK_DIV			1
-/* CONFIG_SCLK_DIV controls what the peripheral clock divider is*/
-/* Values can range from 1-15					*/
+/* SCLK_DIV controls the system clock divider				*/
+/* Values can range from 1-15						*/
 #define CONFIG_SCLK_DIV			5
-/* CONFIG_SPI_BAUD controls the SPI peripheral clock divider	*/
-/* Values can range from 2-65535				*/
-/* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)			*/
-#define CONFIG_SPI_BAUD			2
-#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
-#define CONFIG_SPI_BAUD_INITBLOCK	4
-#endif
 
-#define CONFIG_LOADS_ECHO		1
+
+/*
+ * Memory Settings
+ */
+#define CONFIG_MEM_ADD_WDTH	10
+#define CONFIG_MEM_SIZE		64
+
+#define CONFIG_EBIU_SDRRC_VAL	0x306
+#define CONFIG_EBIU_SDGCTL_VAL	0x91114d
+#define CONFIG_EBIU_SDBCTL_VAL	(EBSZ_64 | EBCAW_10 | EBE)
+
+#define CONFIG_EBIU_AMGCTL_VAL	0xFF
+#define CONFIG_EBIU_AMBCTL0_VAL	0x7BB07BB0
+#define CONFIG_EBIU_AMBCTL1_VAL	0xFFC27BB0
+
+#define CFG_MONITOR_LEN		(256 * 1024)	/* Reserve 256 kB for monitor */
+#define CFG_MALLOC_LEN		(384 * 1024)	/* Reserve 384 kB for malloc() (video/spi are big) */
+#define CFG_GBL_DATA_SIZE	0x4000
+
 
 /*
  * Network Settings
  */
-/* network support */
-#ifdef CONFIG_BFIN_MAC
-#define CONFIG_IPADDR		192.168.0.15
-#define CONFIG_NETMASK		255.255.255.0
-#define CONFIG_GATEWAYIP	192.168.0.1
-#define CONFIG_SERVERIP		192.168.0.2
-#define CONFIG_HOSTNAME		bf537-stamp
+#ifndef __ADSPBF534__
+#define ADI_CMDS_NETWORK	1
+#define CONFIG_BFIN_MAC
+#define CONFIG_NETCONSOLE	1
+#define CONFIG_NET_MULTI	1
 #endif
-
-#define CONFIG_ROOTPATH		/romfs
+#define CONFIG_HOSTNAME		bf537-stamp
 /* Uncomment next line to use fixed MAC address */
 /* #define CONFIG_ETHADDR	02:80:ad:20:31:e8 */
-/* This is the routine that copies the MAC in Flash to the 'ethaddr' setting */
 
-#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) && defined(CONFIG_POST_TEST)
-/* POST support */
-#define CONFIG_POST 		( CFG_POST_MEMORY | \
-				  CFG_POST_UART	  | \
-				  CFG_POST_FLASH  | \
-				  CFG_POST_ETHER  | \
-				  CFG_POST_LED	  | \
-				  CFG_POST_BUTTON)
-#else
-#undef CONFIG_POST
-#endif
 
-#ifdef CONFIG_POST
-#define CFG_CMD_POST_DIAG	CFG_CMD_DIAG
-#define FLASH_START_POST_BLOCK	11	/* Should > = 11 */
-#define FLASH_END_POST_BLOCK	71	/* Should < = 71 */
-#else
-#define CFG_CMD_POST_DIAG	0
-#endif
-
-/* CF-CARD IDE-HDD Support */
-
-/* #define CONFIG_BFIN_TRUE_IDE */	/* Add CF flash card support */
-/* #define CONFIG_BFIN_CF_IDE */	/* Add CF flash card support */
-/* #define CONFIG_BFIN_HDD_IDE */	/* Add IDE Disk Drive (HDD) support */
-
-#if defined(CONFIG_BFIN_CF_IDE) || defined(CONFIG_BFIN_HDD_IDE) || defined(CONFIG_BFIN_TRUE_IDE)
-# define CONFIG_BFIN_IDE	1
-# define ADD_IDE_CMD		CFG_CMD_IDE
-#else
-# define ADD_IDE_CMD		0
-#endif
-
-/*#define CONFIG_BF537_NAND */		/* Add nand flash support */
-
-#ifdef CONFIG_BF537_NAND
-# define ADD_NAND_CMD		CFG_CMD_NAND
-#else
-# define ADD_NAND_CMD		0
-#endif
-
-#ifdef CONFIG_BFIN_MAC
-# define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL | CFG_CMD_PING)
-#else
-# define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NET)
-#endif
-
-#define CONFIG_COMMANDS   \
-	(CONFIG_BFIN_CMD    | \
-	 CFG_CMD_ELF        | \
-	 CFG_CMD_I2C        | \
-	 CFG_CMD_CACHE      | \
-	 CFG_CMD_JFFS2      | \
-	 CFG_CMD_EEPROM     | \
-	 CFG_CMD_DHCP       | \
-	 ADD_IDE_CMD        | \
-	 ADD_NAND_CMD       | \
-	 CFG_CMD_POST_DIAG  | \
-	 CFG_CMD_DATE)
-
-/* This must be included AFTER the definition of CONFIG_COMMANDS (if any) */
-#include <cmd_confdefs.h>
-
-#define CONFIG_BFIN_COMMANDS \
-	( CFG_BFIN_CMD_BOOTLDR | \
-	  CFG_BFIN_CMD_CPLBINFO )
-
-#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART)
-# define CONFIG_BOOTDELAY    -1
-#else
-# define CONFIG_BOOTDELAY    5
-#endif
-
-#define CONFIG_BOOTCOMMAND   "run ramboot"
-#define CONFIG_BOOTARGS      "root=/dev/mtdblock0 rw earlyprintk=serial,uart0," MK_STR(CONFIG_BAUDRATE)
-
-#if (CONFIG_COMMANDS & CFG_CMD_NET)
-# if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) || (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART)
-#  define UBOOT_ENV_FILE "u-boot.bin"
-# else
-#  define UBOOT_ENV_FILE "u-boot.ldr"
-# endif
-# if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
-#  define UBOOT_ENV_UPDATE \
-		"eeprom write $(loadaddr) 0x0 $(filesize)"
-# else
-#  define UBOOT_ENV_UPDATE \
-		"protect off 0x20000000 0x2003FFFF;" \
-		"erase 0x20000000 0x2003FFFF;" \
-		"cp.b $(loadaddr) 0x20000000 $(filesize)"
-# endif
-# define NETWORK_ENV_SETTINGS \
-	"ubootfile=" UBOOT_ENV_FILE "\0" \
-	"update=" \
-		"tftp $(loadaddr) $(ubootfile);" \
-		UBOOT_ENV_UPDATE \
-		"\0" \
-	"addip=set bootargs $(bootargs) ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask):$(hostname):eth0:off\0" \
-	"ramargs=set bootargs " CONFIG_BOOTARGS "\0" \
-	"ramboot=" \
-		"tftp $(loadaddr) uImage;" \
-		"run ramargs;" \
-		"run addip;" \
-		"bootm" \
-		"\0" \
-	"nfsargs=set bootargs root=/dev/nfs rw nfsroot=$(serverip):$(rootpath),tcp,nfsvers=3\0" \
-	"nfsboot=" \
-		"tftp $(loadaddr) vmImage;" \
-		"run nfsargs;" \
-		"run addip;" \
-		"bootm" \
-		"\0"
-#else
-# define NETWORK_ENV_SETTINGS
-#endif
-#define CONFIG_EXTRA_ENV_SETTINGS \
-	NETWORK_ENV_SETTINGS \
-	"flashboot=bootm 0x20100000\0"
-
-#define CFG_PROMPT "bfin> "
-
-#define CONFIG_MEM_SIZE			64	/* 128, 64, 32, 16 */
-
+/*
+ * Flash Settings
+ */
 #define CFG_FLASH_BASE		0x20000000
 #define CFG_FLASH_CFI		/* The flash is CFI compatible */
 #define CFG_FLASH_CFI_DRIVER	/* Use common CFI driver */
 #define CFG_FLASH_PROTECTION
 #define CFG_MAX_FLASH_BANKS	1
 #define CFG_MAX_FLASH_SECT	71	/* some have 67 sectors (M29W320DB), but newer have 71 (M29W320EB) */
-
-#define CFG_MONITOR_LEN		(256 << 10)	/* Reserve 256 kB for Monitor	*/
-#define CFG_MALLOC_LEN		(384 << 10)	/* Reserve 384 kB for malloc() (video/spi are big) */
-#define CFG_GBL_DATA_SIZE	0x4000
 
 #if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CFG_ENV_IS_IN_EEPROM	1
@@ -230,16 +99,31 @@
 #define ENV_IS_EMBEDDED_CUSTOM
 #endif
 
-#define FLASH_TOT_SECT		71
-
-/*
- * Serial Flash Infomation
- */
+/* CONFIG_SPI_BAUD controls the SPI peripheral clock divider		*/
+/* Values can range from 2-65535					*/
+/* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)				*/
 #define CONFIG_SPI
+#define CONFIG_SPI_BAUD			2
+#define CONFIG_SPI_BAUD_INITBLOCK	4
+
 
 /*
- * Board NAND Infomation
+ * I2C Settings
  */
+#define CONFIG_HARD_I2C		1	/* I2C TWI */
+#define CFG_I2C_SPEED		50000
+#define CFG_I2C_SLAVE		0
+
+
+/*
+ * NAND Settings
+ */
+/* #define CONFIG_BF537_NAND */
+#ifdef CONFIG_BF537_NAND
+# define ADD_NAND_CMD		CFG_CMD_NAND
+#else
+# define ADD_NAND_CMD		0
+#endif
 
 #define CFG_NAND_ADDR		0x20212000
 #define CFG_NAND_BASE		CFG_NAND_ADDR
@@ -269,25 +153,20 @@
 #define WRITE_NAND(d, adr) do{ *(volatile __u8 *)((unsigned long)adr) = (__u8)d; } while(0)
 #define READ_NAND(adr) ((volatile unsigned char)(*(volatile __u8 *)(unsigned long)adr))
 
-/*
- * Initialize PSD4256 registers for using I2C
- */
-#define CONFIG_MISC_INIT_R
 
 /*
- * I2C settings
+ * CF-CARD IDE-HDD Support
  */
-#define CONFIG_HARD_I2C		1	/* I2C TWI */
-#define CFG_I2C_SPEED		50000
-#define CFG_I2C_SLAVE		0
+/* #define CONFIG_BFIN_TRUE_IDE */	/* Add CF flash card support */
+/* #define CONFIG_BFIN_CF_IDE */	/* Add CF flash card support */
+/* #define CONFIG_BFIN_HDD_IDE */	/* Add IDE Disk Drive (HDD) support */
 
-#define CONFIG_EBIU_SDRRC_VAL  0x306
-#define CONFIG_EBIU_SDGCTL_VAL 0x91114d
-#define CONFIG_EBIU_SDBCTL_VAL 0x25
-
-#define CONFIG_EBIU_AMGCTL_VAL		0xFF
-#define CONFIG_EBIU_AMBCTL0_VAL		0x7BB07BB0
-#define CONFIG_EBIU_AMBCTL1_VAL		0xFFC27BB0
+#if defined(CONFIG_BFIN_CF_IDE) || defined(CONFIG_BFIN_HDD_IDE) || defined(CONFIG_BFIN_TRUE_IDE)
+# define CONFIG_BFIN_IDE	1
+# define ADD_IDE_CMD		CFG_CMD_IDE
+#else
+# define ADD_IDE_CMD		0
+#endif
 
 #if defined(CONFIG_BFIN_IDE)
 
@@ -343,6 +222,33 @@
 #endif				/* CONFIG_BFIN_HDD_IDE */
 
 #endif				/*CONFIG_BFIN_IDE */
+
+
+/*
+ * Misc Settings
+ */
+#define CONFIG_MISC_INIT_R
+#define CONFIG_RTC_BFIN
+
+/* #define CONFIG_BF537_STAMP_LEDCMD	1 */
+
+#define ADI_CMDS_EXTRA (ADD_IDE_CMD | ADD_NAND_CMD)
+#define CONFIG_BFIN_COMMANDS \
+	( CFG_BFIN_CMD_BOOTLDR | \
+	  CFG_BFIN_CMD_CPLBINFO )
+
+/* Define if want to do post memory test */
+#undef CONFIG_POST
+#ifdef CONFIG_POST
+#define FLASH_START_POST_BLOCK	11	/* Should > = 11 */
+#define FLASH_END_POST_BLOCK	71	/* Should < = 71 */
+#endif
+
+
+/*
+ * Pull in common ADI header for remaining command/environment setup
+ */
+#include <configs/bfin_adi_common.h>
 
 #include <asm/blackfin-config-post.h>
 
