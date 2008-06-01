@@ -117,12 +117,6 @@
 #define CFG_FLASH_ERASEBLOCK_TOUT	5000	/* Timeout for Block Erase (in ms) */
 #define CFG_FLASH_WRITE_TOUT	1	/* Timeout for Flash Write (in ms) */
 
-/* JFFS Partition offset set  */
-#define CFG_JFFS2_FIRST_BANK 0
-#define CFG_JFFS2_NUM_BANKS  1
-/* 512k reserved for u-boot */
-#define CFG_JFFS2_FIRST_SECTOR 	11
-
 /*
  * following timeouts shall be used once the
  * Flash real protection is enabled
@@ -134,27 +128,12 @@
  * SDRAM settings & memory map
  */
 
-#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
-#define CFG_MEMTEST_START	0x00000000	/* memtest works on */
-#elif (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
-#define CFG_MEMTEST_START	0x00100000	/* memtest works on */
-#endif
-
-#define	CFG_SDRAM_BASE		0x00000000
-
 #define CONFIG_MEM_SIZE		128	/* 128, 64, 32, 16 */
-#define CFG_MAX_RAM_SIZE	(CONFIG_MEM_SIZE * 1024 *1024)
-#define CFG_MEMTEST_END		(CFG_MAX_RAM_SIZE - 0x80000 - 1)
 
-#define CFG_LOAD_ADDR 		CONFIG_LOADADDR
 #define CFG_MONITOR_LEN		(256 << 10)	/* Reserve 256 kB for Monitor	*/
 #define CFG_MALLOC_LEN		(384 << 10)	/* Reserve 384 kB for malloc() (video/spi are big) */
 #define CFG_GBL_DATA_SIZE	0x4000		/* Reserve 16k for Global Data  */
 
-#define CFG_MONITOR_BASE		(CFG_MAX_RAM_SIZE - 0x40000)
-#define CFG_MALLOC_BASE		(CFG_MONITOR_BASE - CFG_MALLOC_LEN)
-#define CFG_GBL_DATA_ADDR	(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
-#define CONFIG_STACKBASE	(CFG_GBL_DATA_ADDR  - 4)
 
 /*
  * Command settings
@@ -166,10 +145,6 @@
 #define CONFIG_ENV_OVERWRITE	1
 #define CONFIG_DEBUG_DUMP	1
 #define CONFIG_DEBUG_DUMP_SYMS	1
-
-#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
-#define CFG_AUTOLOAD		"no"	/*rarpb, bootp or dhcp commands will perform only a */
-#endif
 
 /* configuration lookup from the BOOTP/DHCP server, */
 /* but not try to load any image using TFTP	    */
@@ -219,7 +194,6 @@
 #define CONFIG_BOOTDELAY     5
 #define CONFIG_BOOTCOMMAND   "run ramboot"
 #define CONFIG_BOOTARGS      "root=/dev/mtdblock0 rw earlyprintk=serial,uart0," MK_STR(CONFIG_BAUDRATE)
-#define CONFIG_LOADADDR      0x1000000
 
 #if (CONFIG_COMMANDS & CFG_CMD_NET)
 # if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
@@ -269,18 +243,8 @@
  */
 
 #define CONFIG_BAUDRATE		57600
-#define CFG_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 
 #define CFG_PROMPT "bfin> "
-
-#if (CONFIG_COMMANDS & CFG_CMD_KGDB)
-#define CFG_CBSIZE	1024		/* Console I/O Buffer Size */
-#else
-#define CFG_CBSIZE	256		/* Console I/O Buffer Size */
-#endif
-#define CFG_PBSIZE	(CFG_CBSIZE+sizeof(CFG_PROMPT)+16)	/* Print Buffer Size */
-#define CFG_MAXARGS	16		/* max number of command args */
-#define CFG_BARGSIZE	CFG_CBSIZE	/* Boot Argument Buffer Size */
 
 #define CONFIG_LOADS_ECHO	1
 
@@ -346,16 +310,6 @@
 
 #define CFG_ATA_STRIDE		2
 #endif
-
-/*
- * Miscellaneous configurable options
- */
-
-#define	CFG_HZ			1000	/* 1ms time tick */
-
-#define CFG_BOOTM_LEN		0x4000000/* Large Image Length, set to 64 Meg */
-
-#define CONFIG_SHOW_BOOT_PROGRESS 1	/* Show boot progress on LEDs */
 
 /*
  * Serial Flash Infomation

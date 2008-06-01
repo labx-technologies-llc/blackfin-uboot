@@ -71,13 +71,6 @@
 #define CONFIG_LOADS_ECHO		1
 
 /*
- * rarpb, bootp or dhcp commands will perform only a
- * configuration lookup from the BOOTP/DHCP server
- * but not try to load any image using TFTP
- */
-#define CFG_AUTOLOAD			"no"
-
-/*
  * Network Settings
  */
 /* network support */
@@ -129,7 +122,6 @@
 
 #define CONFIG_BOOTCOMMAND   "run ramboot"
 #define CONFIG_BOOTARGS      "root=/dev/mtdblock0 rw earlyprintk=serial,uart1," MK_STR(CONFIG_BAUDRATE) " console=tty0 console=ttyBF0," MK_STR(CONFIG_BAUDRATE)
-#define CONFIG_LOADADDR      0x1000000
 
 #if (CONFIG_COMMANDS & CFG_CMD_NET)
 # if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
@@ -171,18 +163,6 @@
 
 #define CFG_PROMPT "bfin> "
 
-#define	CFG_CBSIZE		256	/* Console I/O Buffer Size */
-#define CFG_MAX_RAM_SIZE       	(CONFIG_MEM_SIZE * 1024*1024)
-#define	CFG_PBSIZE		(CFG_CBSIZE+sizeof(CFG_PROMPT)+16)	/* Print Buffer Size */
-#define	CFG_MAXARGS		16	/* max number of command args */
-#define CFG_BARGSIZE		CFG_CBSIZE	/* Boot Argument Buffer Size */
-#define CFG_MEMTEST_START	0x0	/* memtest works on */
-#define CFG_MEMTEST_END		( (CONFIG_MEM_SIZE - 1) * 1024*1024)	/* 1 ... 63 MB in DRAM */
-#define	CFG_LOAD_ADDR		CONFIG_LOADADDR	/* default load address */
-#define	CFG_HZ			1000	/* decrementer freq: 10 ms ticks */
-#define CFG_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
-#define	CFG_SDRAM_BASE		0x00000000
-
 #define CFG_FLASH_BASE		0x20000000
 #define CFG_FLASH_CFI		/* The flash is CFI compatible */
 #define CFG_FLASH_CFI_DRIVER	/* Use common CFI driver */
@@ -191,12 +171,8 @@
 #define CFG_MAX_FLASH_SECT	259	/* max number of sectors on one chip */
 
 #define CFG_MONITOR_LEN		(384 << 10)	/* Reserve 384 kB for Monitor	*/
-#define CFG_MONITOR_BASE	(CFG_MAX_RAM_SIZE - CFG_MONITOR_LEN)
 #define CFG_MALLOC_LEN		(384 << 10)	/* Reserve 384 kB for malloc() (video/spi are big) */
-#define CFG_MALLOC_BASE		(CFG_MONITOR_BASE - CFG_MALLOC_LEN)
 #define CFG_GBL_DATA_SIZE	0x4000
-#define CFG_GBL_DATA_ADDR	(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
-#define CONFIG_STACKBASE	(CFG_GBL_DATA_ADDR  - 4)
 
 #if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CFG_ENV_IS_IN_EEPROM	1
@@ -210,17 +186,9 @@
 #define	CFG_ENV_SECT_SIZE	0x2000	/* Total Size of Environment Sector */
 #define ENV_IS_EMBEDDED_CUSTOM
 
-/* JFFS Partition offset set  */
-#define CFG_JFFS2_FIRST_BANK	0
-#define CFG_JFFS2_NUM_BANKS	1
-/* 512k reserved for u-boot */
-#define CFG_JFFS2_FIRST_SECTOR	15
-
 #define CONFIG_SPI
 
 #define FLASH_TOT_SECT		71
-
-#define CFG_BOOTM_LEN		0x4000000	/* Large Image Length, set to 64 Meg */
 
 /*
  * I2C settings

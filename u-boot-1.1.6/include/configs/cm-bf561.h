@@ -132,53 +132,25 @@
 /*
  * FLASH organization and environment definitions
  */
-#define CFG_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 
 #define	CFG_PROMPT		"CM-BF561> "	/* Monitor Command Prompt */
-#if (CONFIG_COMMANDS & CFG_CMD_KGDB)
-#define	CFG_CBSIZE		1024	/* Console I/O Buffer Size */
-#else
-#define	CFG_CBSIZE		256	/* Console I/O Buffer Size */
-#endif
-#define	CFG_PBSIZE		(CFG_CBSIZE+sizeof(CFG_PROMPT)+16)	/* Print Buffer Size */
-#define	CFG_MAXARGS		16	/* max number of command args */
-#define CFG_BARGSIZE		CFG_CBSIZE	/* Boot Argument Buffer Size */
-
-#define CFG_MEMTEST_START	0x00100000	/* memtest works on */
-#define CFG_MEMTEST_END		0x03F00000	/* 1 ... 63 MB in DRAM */
-
-#define	CFG_LOAD_ADDR		0x01000000	/* default load address */
-#define	CFG_HZ			1000	/* decrementer freq: 10 ms ticks */
-
-
-#define	CFG_SDRAM_BASE		0x00000000
-#define CFG_MAX_RAM_SIZE	0x04000000 /* 64 MB */
 
 #define	CFG_MONITOR_LEN		(256 << 10)	/* Reserve 256 kB for Monitor	*/
-#define CFG_MONITOR_BASE	(CFG_MAX_RAM_SIZE - CFG_MONITOR_LEN)
 #define	CFG_MALLOC_LEN		(128 << 10)	/* Reserve 128 kB for malloc()	*/
-#define CFG_MALLOC_BASE		(CFG_MONITOR_BASE - CFG_MALLOC_LEN)
 #define CFG_GBL_DATA_SIZE	0x4000
-#define CFG_GBL_DATA_ADDR	(CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
-#define CONFIG_STACKBASE	(CFG_GBL_DATA_ADDR  - 4)
 
-#define	CFG_BOOTMAPSZ		(8 << 20)	/* Initial Memory map for Linux */
 #define CFG_FLASH_BASE		0x20000000
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	64	/* max number of sectors on one chip; CM-BF561v2 has 8MB Flash */
 
 #define	CFG_ENV_IS_IN_FLASH	1
-#define CFG_FLASH0_BASE		0x20000000
 #define CFG_ENV_OFFSET		0x20000
 #define	CFG_ENV_SECT_SIZE	0x20000	/* Total Size of Environment Sector */
 #define CFG_ENV_SIZE		0x10000
 
-#define CFG_LARGE_IMAGE_LEN     0x4000000       /* Large Image Length, set to 64 Meg */
-
 /*
  * Stack sizes
  */
-#define CONFIG_STACKSIZE        (128*1024)      /* regular stack */
 
 #define POLL_MODE		1
 #define FLASH_TOT_SECT		64
