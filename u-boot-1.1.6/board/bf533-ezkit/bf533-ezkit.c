@@ -26,9 +26,8 @@
  */
 
 #include <common.h>
-#if defined(CONFIG_MISC_INIT_R)
 #include "psd4256.h"
-#endif
+#include "flash-defines.h"
 
 int checkboard(void)
 {
