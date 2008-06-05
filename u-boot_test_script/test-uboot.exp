@@ -1450,7 +1450,7 @@ set KERNEL_GZ_ADDR          "00001000"
 set KERNEL_GZ_ENTRY         "00001000"
 
 
-set BAUD_RATE [get_uboot_define CONFIG_BAUDRATE $uboot_test_loc ]
+set BAUD_RATE 57600
 #set CFG_LOAD_ADDR [get_uboot_define CFG_LOAD_ADDR $uboot_test_loc ]
 set CFG_LOAD_ADDR 0x1000000
 set NUMBER_OF_FLASH_BANKS   [get_uboot_define CFG_MAX_FLASH_BANKS $uboot_test_loc ]
