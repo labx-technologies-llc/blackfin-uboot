@@ -155,7 +155,6 @@ int serial_getc(void)
 #ifdef CONFIG_DEBUG_SERIAL
 	/* grab & clear the LSR */
 	uint16_t uart_lsr_val = uart_lsr_read();
-	uart_lsr_clear();
 
 	cached_lsr[cache_count] = uart_lsr_val;
 	cached_rbr[cache_count] = uart_rbr_val;
@@ -177,6 +176,7 @@ int serial_getc(void)
 		return -1;
 	}
 #endif
+	uart_lsr_clear();
 
 	return uart_rbr_val;
 }
