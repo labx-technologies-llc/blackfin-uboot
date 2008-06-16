@@ -49,6 +49,15 @@ proc usage {} {
     send_user "\n 2    93         46         15          4         8        \n"
     send_user "\n 3   187         93         15          2         4        \n"
     send_user "\n********************************************************************\n"
+
+    send_user "\n********************************************************************\n"
+    send_user "\nFor BF527-EZKIT (ExtClock=25Mhz, CPU_MaxClock=600Mhz) :\n"
+    send_user "\n NUM CCLK(Mhz)  SCLK (Mhz)   VCO_MULT  CCLK_DIV  SCLK_DIV  \n"
+    send_user "\n 0   525        131         21          1         4        \n"
+    send_user "\n 1   200        100         16          2         4        \n"
+    send_user "\n 2   100         50         16          4         8        \n"
+    send_user "\n 3   600         50         24          1        12        \n"
+    send_user "\n********************************************************************\n"
     exit
 }
 
@@ -151,7 +160,7 @@ if { $board_type == "BF533-STAMP" } {
 	if { $num == "0" } {
 	   set vco_mult  20
 	   set cclk_div  1 
-	   set sclk_div  5
+	   set sclk_div  6
 	} elseif { $num == "1" } {
 	   set vco_mult  20
 	   set cclk_div  1 
@@ -183,6 +192,25 @@ if { $board_type == "BF533-STAMP" } {
            set vco_mult  15
            set cclk_div  2
            set sclk_div  4
+        }
+} elseif { $board_type == "BF527-EZKIT" } {
+    set config_file bf527-ezkit.h
+        if { $num == "0" } {
+           set vco_mult  21
+           set cclk_div  1
+           set sclk_div  4
+        } elseif { $num == "1" } {
+           set vco_mult  16
+           set cclk_div  2
+           set sclk_div  4
+        } elseif { $num == "2" } {
+           set vco_mult  16
+           set cclk_div  4
+           set sclk_div  8
+        } elseif { $num == "3" } {
+           set vco_mult  24
+           set cclk_div  1
+           set sclk_div  12
         }
 } else { 
     send_user "\n Unknown target board type.\n"
