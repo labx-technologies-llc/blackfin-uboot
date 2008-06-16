@@ -1480,8 +1480,10 @@ set LINUX_DXE_FILE          "linux.dxe"
 # HOWEVER, the binary should not contain any FF bytes.
 set TEST_BIN_FILE           "testfile.bin"
 
-set BASE_RESULT             [get_uboot_define CFG_SDRAM_BASE $uboot_test_loc ]
-set BDINFO_MEMSTART         [get_uboot_define CFG_SDRAM_BASE $uboot_test_loc ]
+#set BASE_RESULT             [get_uboot_define CFG_SDRAM_BASE $uboot_test_loc ]
+set BASE_RESULT             0x00000000
+#set BDINFO_MEMSTART         [get_uboot_define CFG_SDRAM_BASE $uboot_test_loc ]
+set BDINFO_MEMSTART         0x00000000
 #set BDINFO_MEMSIZE          [get_uboot_define CFG_MAX_RAM_SIZE $uboot_test_loc ]
 set BDINFO_FLASHSTART       [get_uboot_define CFG_FLASH_BASE $uboot_test_loc ]
 #set BDINFO_FLASHSIZE        [get_uboot_define CFG_FLASH_SIZE $uboot_test_loc ]
