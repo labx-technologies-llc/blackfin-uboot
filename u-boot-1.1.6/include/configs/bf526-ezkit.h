@@ -65,6 +65,7 @@
  */
 /* #define CONFIG_BFIN_NFC */
 #ifdef CONFIG_BFIN_NFC
+#define CFG_BFIN_NFC_CTL_VAL	0x0033
 #define CFG_NAND_BASE		0 /* not actually used */
 #define CFG_MAX_NAND_DEVICE	1
 #define NAND_MAX_CHIPS		1

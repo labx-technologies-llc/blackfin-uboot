@@ -11,9 +11,7 @@
 /* TODO:
  * - move bit defines into mach-common/bits/nand.h
  * - try and replace all IRQSTAT usage with STAT polling
- * - move board settings (like delay timings) to board config
  * - add support for hardware ECC
- * - add support for BF52x NAND (just need to generalize portmux code)
  */
 
 #include <common.h>
@@ -188,8 +186,8 @@ void board_nand_init(struct nand_chip *nand)
 {
 	pr_stamp();
 
-	/* WR_DLY = 3, RD_DLY = 3 */
-	bfin_write_NFC_CTL(bfin_read_NFC_CTL() | 0x33);
+	/* set width/ecc/timings/etc... */
+	bfin_write_NFC_CTL(CFG_BFIN_NFC_CTL_VAL);
 
 	/* clear interrupt status */
 	bfin_write_NFC_IRQMASK(0x0);
