@@ -71,12 +71,6 @@
 #ifndef CFG_MAX_RAM_SIZE
 # define CFG_MAX_RAM_SIZE (CONFIG_MEM_SIZE * 1024 * 1024)
 #endif
-#ifndef CFG_MEMTEST_START
-# define CFG_MEMTEST_START 0
-#endif
-#ifndef CFG_MEMTEST_END
-# define CFG_MEMTEST_END ((CONFIG_MEM_SIZE - 1) * 1024 * 1024)
-#endif
 #ifndef CFG_MONITOR_BASE
 # define CFG_MONITOR_BASE (CFG_MAX_RAM_SIZE - CFG_MONITOR_LEN)
 #endif
@@ -86,8 +80,14 @@
 #ifndef CFG_GBL_DATA_ADDR
 # define CFG_GBL_DATA_ADDR (CFG_MALLOC_BASE - CFG_GBL_DATA_SIZE)
 #endif
-#ifndef CONFIG_STACKBASE
-# define CONFIG_STACKBASE (CFG_GBL_DATA_ADDR  - 4)
+#ifndef CFG_STACKBASE
+# define CFG_STACKBASE (CFG_GBL_DATA_ADDR - 4)
+#endif
+#ifndef CFG_MEMTEST_START
+# define CFG_MEMTEST_START 0
+#endif
+#ifndef CFG_MEMTEST_END
+# define CFG_MEMTEST_END (CFG_STACKBASE - 8096)
 #endif
 
 /* Check to make sure everything fits in external RAM */
