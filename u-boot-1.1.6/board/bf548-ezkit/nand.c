@@ -52,31 +52,31 @@
 #define                    RD_RDY  0x8        /* Read Data Ready */
 #define                   WR_DONE  0x10       /* Page Write Done */
 
-static int bf54x_nand_CLE_ALE_flag;
+static int CLE_ALE_flag;
 #define CLE_ALE_NONE	0x0
-#define BF54X_CLE	0x01
-#define BF54X_ALE	0x02
+#define CLE	0x01
+#define ALE	0x02
 
 /*
  * hardware specific access to control-lines
  */
-static void bf54x_nand_hwcontrol(struct mtd_info *mtd, int cmd)
+static void bfin_nfc_hwcontrol(struct mtd_info *mtd, int cmd)
 {
 	pr_stamp();
 
 	switch (cmd) {
 	case NAND_CTL_SETCLE:
-		bf54x_nand_CLE_ALE_flag = BF54X_CLE;
+		CLE_ALE_flag = CLE;
 		break;
 	case NAND_CTL_CLRCLE:
-		bf54x_nand_CLE_ALE_flag = CLE_ALE_NONE;
+		CLE_ALE_flag = CLE_ALE_NONE;
 		break;
 
 	case NAND_CTL_SETALE:
-		bf54x_nand_CLE_ALE_flag = BF54X_ALE;
+		CLE_ALE_flag = ALE;
 		break;
 	case NAND_CTL_CLRALE:
-		bf54x_nand_CLE_ALE_flag = CLE_ALE_NONE;
+		CLE_ALE_flag = CLE_ALE_NONE;
 		break;
 	case NAND_CTL_SETNCE:
 	case NAND_CTL_CLRNCE:
@@ -85,11 +85,11 @@ static void bf54x_nand_hwcontrol(struct mtd_info *mtd, int cmd)
 }
 
 /*
- * bf54x_nand_write_byte
+ * bfin_nfc_write_byte
  *
  * Issue command and address cycles to the chip
  */
-static void bf54x_nand_write_byte(struct mtd_info *mtd, u_char byte)
+static void bfin_nfc_write_byte(struct mtd_info *mtd, u_char byte)
 {
 	pr_stamp();
 
@@ -97,13 +97,13 @@ static void bf54x_nand_write_byte(struct mtd_info *mtd, u_char byte)
 		if (ctrlc())
 			return;
 
-	if (bf54x_nand_CLE_ALE_flag == BF54X_CLE)
+	if (CLE_ALE_flag == CLE)
 		bfin_write_NFC_CMD(byte);
-	else if (bf54x_nand_CLE_ALE_flag == BF54X_ALE)
+	else if (CLE_ALE_flag == ALE)
 		bfin_write_NFC_ADDR(byte);
 }
 
-int bf54x_nand_devready(struct mtd_info *mtd)
+int bfin_nfc_devready(struct mtd_info *mtd)
 {
 	pr_stamp();
 	return (bfin_read_NFC_STAT() & NBUSY ? 1 : 0);
@@ -112,7 +112,7 @@ int bf54x_nand_devready(struct mtd_info *mtd)
 /*
  * PIO mode for buffer writing and reading
  */
-static void bf54x_nand_read_buf(struct mtd_info *mtd, uint8_t *buf, int len)
+static void bfin_nfc_read_buf(struct mtd_info *mtd, uint8_t *buf, int len)
 {
 	pr_stamp();
 
@@ -140,16 +140,16 @@ static void bf54x_nand_read_buf(struct mtd_info *mtd, uint8_t *buf, int len)
 	}
 }
 
-static uint8_t bf54x_nand_read_byte(struct mtd_info *mtd)
+static uint8_t bfin_nfc_read_byte(struct mtd_info *mtd)
 {
 	pr_stamp();
 
 	uint8_t val;
-	bf54x_nand_read_buf(mtd, &val, 1);
+	bfin_nfc_read_buf(mtd, &val, 1);
 	return val;
 }
 
-static void bf54x_nand_write_buf(struct mtd_info *mtd, const uint8_t *buf, int len)
+static void bfin_nfc_write_buf(struct mtd_info *mtd, const uint8_t *buf, int len)
 {
 	pr_stamp();
 
@@ -203,14 +203,14 @@ void board_nand_init(struct nand_chip *nand)
 # error no support for this variant
 #endif
 
-	nand->hwcontrol = bf54x_nand_hwcontrol;
-	nand->read_buf = bf54x_nand_read_buf;
-	nand->write_buf = bf54x_nand_write_buf;
-	nand->read_byte = bf54x_nand_read_byte;
-	nand->write_byte = bf54x_nand_write_byte;
+	nand->hwcontrol = bfin_nfc_hwcontrol;
+	nand->read_buf = bfin_nfc_read_buf;
+	nand->write_buf = bfin_nfc_write_buf;
+	nand->read_byte = bfin_nfc_read_byte;
+	nand->write_byte = bfin_nfc_write_byte;
 
 	nand->eccmode = NAND_ECC_SOFT;
-	nand->dev_ready = bf54x_nand_devready;
+	nand->dev_ready = bfin_nfc_devready;
 	nand->chip_delay = 0;
 }
 
