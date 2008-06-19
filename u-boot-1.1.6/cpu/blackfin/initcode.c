@@ -376,6 +376,9 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 	/* default is disable, so don't need to force this */
 	bfin_write_EBIU_DDRCTL3(CONFIG_EBIU_DDRCTL3_VAL);
 # endif
+# ifdef CONFIG_EBIU_DDRQUE_VAL
+	bfin_write_EBIU_DDRQUE(CONFIG_EBIU_DDRQUE_VAL);
+# endif
 #else
 	bfin_write_EBIU_SDRRC(CONFIG_EBIU_SDRRC_VAL);
 	bfin_write_EBIU_SDBCTL(CONFIG_EBIU_SDBCTL_VAL);
