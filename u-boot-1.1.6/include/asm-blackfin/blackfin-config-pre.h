@@ -36,5 +36,6 @@
 #define BFIN_BOOT_MEM         10      /* boot ldr out of memory (warmboot) */
 #define BFIN_BOOT_16HOST_DMA  11      /* boot ldr from 16-bit host dma */
 #define BFIN_BOOT_8HOST_DMA   12      /* boot ldr from 8-bit host dma */
+#define BFIN_BOOT_NAND        13      /* boot ldr from nand flash */
 
 #endif

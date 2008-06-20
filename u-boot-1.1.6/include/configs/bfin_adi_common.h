@@ -109,6 +109,11 @@
 # if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #  define UBOOT_ENV_UPDATE \
 		"eeprom write $(loadaddr) 0x0 $(filesize)"
+# elif (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_NAND)
+#  define UBOOT_ENV_UPDATE \
+		"nand unlock 0 0x40000;" \
+		"nand erase 0 0x40000;" \
+		"nand write $(loadaddr) 0 0x40000"
 # else
 #  define UBOOT_ENV_UPDATE \
 		"protect off 0x20000000 0x2003FFFF;" \
