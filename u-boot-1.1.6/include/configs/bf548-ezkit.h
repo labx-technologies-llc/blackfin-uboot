@@ -90,18 +90,19 @@
 #define CFG_ENV_IS_IN_EEPROM           1
 #define CFG_ENV_OFFSET                 0x4000
 #define CFG_ENV_SIZE                   0x2000
+#define ENV_IS_EMBEDDED_CUSTOM
 #elif (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_NAND)
 #define CFG_ENV_IS_IN_NAND             1
-#define CFG_ENV_OFFSET                 0x1000
-#define CFG_ENV_SIZE                   0x1000
+#define CFG_ENV_OFFSET                 0x40000
+#define CFG_ENV_SIZE                   0x20000
 #else
 #define	CFG_ENV_IS_IN_FLASH	1
 #define CFG_ENV_ADDR		0x20002000
 #define CFG_ENV_OFFSET		(CFG_ENV_ADDR - CFG_FLASH_BASE)
 #define CFG_ENV_SIZE		0x2000
 #define	CFG_ENV_SECT_SIZE	(128 * 1024)	/* Total Size of Environment Sector */
-#endif
 #define ENV_IS_EMBEDDED_CUSTOM
+#endif
 
 /* CONFIG_SPI_BAUD controls the SPI peripheral clock divider		*/
 /* Values can range from 2-65535					*/
@@ -115,6 +116,8 @@
  * NAND Settings
  */
 #define CFG_BFIN_NFC_CTL_VAL	0x0033
+#define CFG_BFIN_NFC_BOOTROM_ECC
+#define CFG_NAND_SELECT_DEVICE	1
 #define CFG_NAND_BASE		0 /* not actually used */
 #define CFG_MAX_NAND_DEVICE	1
 #define NAND_MAX_CHIPS		1

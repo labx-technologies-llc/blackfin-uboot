@@ -305,6 +305,37 @@ static int bfin_nfc_calculate_ecc(struct mtd_info *mtd,
 	return 0;
 }
 
+#ifdef CFG_BFIN_NFC_BOOTROM_ECC
+static struct nand_oobinfo bfin_nfc_autooob = {
+	.useecc = MTD_NANDECC_AUTOPLACE,
+	.eccbytes = 24,
+	.eccpos = {
+		0x8 * 0, 0x8 * 0 + 1, 0x8 * 0 + 2,
+		0x8 * 1, 0x8 * 1 + 1, 0x8 * 1 + 2,
+		0x8 * 2, 0x8 * 2 + 1, 0x8 * 2 + 2,
+		0x8 * 3, 0x8 * 3 + 1, 0x8 * 3 + 2,
+		0x8 * 4, 0x8 * 4 + 1, 0x8 * 4 + 2,
+		0x8 * 5, 0x8 * 5 + 1, 0x8 * 5 + 2,
+		0x8 * 6, 0x8 * 6 + 1, 0x8 * 6 + 2,
+		0x8 * 7, 0x8 * 7 + 1, 0x8 * 7 + 2},
+	.oobfree = {
+		{ 0x8 * 0 + 3, 5 },
+		{ 0x8 * 1 + 3, 5 },
+		{ 0x8 * 2 + 3, 5 },
+		{ 0x8 * 3 + 3, 5 },
+		{ 0x8 * 4 + 3, 5 },
+		{ 0x8 * 5 + 3, 5 },
+		{ 0x8 * 6 + 3, 5 },
+		{ 0x8 * 7 + 3, 5 },
+	}
+};
+
+void board_nand_select_device(struct nand_chip *nand, int chip)
+{
+	nand->badblockpos = 63;
+}
+#endif
+
 /*
  * Board-specific NAND initialization. The following members of the
  * argument are board-specific (per include/linux/mtd/nand.h):
@@ -356,6 +387,9 @@ void board_nand_init(struct nand_chip *nand)
 # define ECC_HW 1
 #endif
 	if (ECC_HW) {
+#ifdef CFG_BFIN_NFC_BOOTROM_ECC
+		nand->autooob = &bfin_nfc_autooob;
+#endif
 		nand->eccmode = (NAND_IS_512() ? NAND_ECC_HW6_512 : NAND_ECC_HW3_256);
 		nand->calculate_ecc = bfin_nfc_calculate_ecc;
 		nand->correct_data = bfin_nfc_correct_data;
