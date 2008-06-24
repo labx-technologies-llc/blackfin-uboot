@@ -116,8 +116,10 @@
  * NAND Settings
  */
 #define CFG_BFIN_NFC_CTL_VAL	0x0033
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_NAND)
 #define CFG_BFIN_NFC_BOOTROM_ECC
 #define CFG_NAND_SELECT_DEVICE	1
+#endif
 #define CFG_NAND_BASE		0 /* not actually used */
 #define CFG_MAX_NAND_DEVICE	1
 #define NAND_MAX_CHIPS		1
