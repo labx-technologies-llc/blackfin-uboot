@@ -86,6 +86,7 @@ set TEST_TFTP_WITH_ETHTOOL               1
 set UBOOT_PROMPT             "bfin>"
 
 set NUMBER_OF_FLASH_SECTORS [get_uboot_define CFG_MAX_FLASH_SECT $uboot_test_loc ]
+set KERNEL_GZ_ENTRY         "00001000"
 
 if { $board_type == "BF533-STAMP" } {
 
@@ -134,7 +135,7 @@ set KERNEL_FLASH_LOC           "0x20040000"
 set KERNEL_FLASH_END           "0x2021ffff"
 set L1_INSTRUCT_SRAM_ADDRESS   "0xffa03000"
 
-set BIG_ELF_LOAD_ADDRESS        "0x1000000"
+set BIG_ELF_LOAD_ADDRESS       "0x1000000"
 
 set TEST_JFFS2				 0
 set BDINFO_MEMSIZE           32*1024*1024
@@ -148,23 +149,24 @@ set KERNEL_FLASH_LOC           "0x20100000"
 set KERNEL_FLASH_END           "0x205fffff"
 set L1_INSTRUCT_SRAM_ADDRESS   "0xffa03000"
 
-set BIG_ELF_LOAD_ADDRESS        "0x1000000"
+set BIG_ELF_LOAD_ADDRESS       "0x1000000"
 
 set BDINFO_MEMSIZE           64*1024*1024
 
 } elseif { $board_type == "BF527-EZKIT" } {
 
 #set TEST_SPI_FLASH                       0
-
+set NUMBER_OF_FLASH_SECTORS    71
 set BDINFO_FLASHSIZE           "0x00400000"
 set KERNEL_FLASH_LOC           "0x20100000"
 set KERNEL_FLASH_END           "0x203fffff"
 set L1_INSTRUCT_SRAM_ADDRESS   "0xffa03000"
 
-set BIG_ELF_LOAD_ADDRESS        "0x1000000"
+set BIG_ELF_LOAD_ADDRESS       "0x1000000"
 
 set BDINFO_MEMSIZE           64*1024*1024
 
+set KERNEL_GZ_ENTRY            "0017a000"
 } elseif { $board_type == "BF537-EZKIT" } {
 
 set TEST_SPI_FLASH			 0
@@ -1459,7 +1461,7 @@ set KERNEL_GZ_DATE          "2005\-04\-20  13:27:17 UTC"
 set KERNEL_GZ_TYPE          "Blackfin Linux Kernel Image"
 set KERNEL_GZ_SIZE          "1357674 Bytes"
 set KERNEL_GZ_ADDR          "00001000"
-set KERNEL_GZ_ENTRY         "00001000"
+#set KERNEL_GZ_ENTRY         "00001000"
 
 
 set BAUD_RATE 57600
