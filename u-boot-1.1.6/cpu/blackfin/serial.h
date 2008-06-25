@@ -179,7 +179,7 @@ static inline void serial_early_set_baud(uint32_t baud)
 	 * The +1 is to make sure we over sample just a little
 	 * rather than under sample the incoming signals.
 	 */
-	uint16_t divisor = (get_sclk() + (baud * 8)) / (baud * 16);
+	uint16_t divisor = (get_sclk() + (baud * 8)) / (baud * 16) - ANOMALY_05000230;
 
 	/* Set DLAB in LCR to Access DLL and DLH */
 	ACCESS_LATCH();
