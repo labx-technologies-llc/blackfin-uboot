@@ -51,7 +51,8 @@
 	 ADI_CMDS_I2C      | \
 	 ADI_CMDS_JFFS2    | \
 	 CFG_CMD_ELF       | \
-	 CFG_CMD_CACHE)
+	 CFG_CMD_CACHE     | \
+	 CFG_CMD_REGINFO)
 # include <cmd_confdefs.h>
 #endif
 
