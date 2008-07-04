@@ -166,7 +166,7 @@ set BIG_ELF_LOAD_ADDRESS       "0x1000000"
 
 set BDINFO_MEMSIZE           64*1024*1024
 
-set KERNEL_GZ_ENTRY            "0017a000"
+set KERNEL_GZ_ENTRY            "00140000"
 } elseif { $board_type == "BF537-EZKIT" } {
 
 set TEST_SPI_FLASH			 0
@@ -1699,6 +1699,7 @@ if { $where_are_we == "uboot" } {
 	send "\3"
 	sleep 1
 	send "\r"
+        recover
     }
 }
 
@@ -3298,7 +3299,11 @@ record_test_result $bootelf_loc $bootelf_result
 
 
 # Reboot out of the kernel and back to u-boot.
-send -s "reboot\r"
+if { $bootelf_result == $TEST_PASS } {
+    send -s "reboot\r"
+} else {
+    recover
+}
 set timeout 20
     while 1 {
 	expect {
@@ -4300,13 +4305,15 @@ while 1 {
    }
 }
 
+set run_kernel_fail 0
 send -s "bootelf\r"
 set timeout 60
    while 1 {
       expect {
 
          -re "Kernel panic" {
-            report "kernel panic detected... trying to recover from it"
+            send_log "kernel panic detected... trying to recover from it"
+            set run_kernel_fail 1
          #   recover
             break
          }
@@ -4328,6 +4335,7 @@ set timeout 60
 
          timeout {
             puts "failed boot attempt"	 
+            set run_kernel_fail 1
             break
          }
       }
@@ -4368,8 +4376,11 @@ while 1 {
 
 record_test_result $pass_param_loc $temp_status_flag 
 
-send -s "reboot\r"
-
+if { $run_kernel_fail == "1" } {
+    recover
+} else {
+    send -s "reboot\r"
+}
 set timeout 20  
      while 1 {
       expect {
