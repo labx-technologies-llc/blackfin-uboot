@@ -921,6 +921,10 @@ DhcpHandler(uchar * pkt, unsigned dest, unsigned src, unsigned len)
 
 			NetSetTimeout(TIMEOUT * CFG_HZ, BootpTimeout);
 			DhcpSendRequestPkt(bp);
+			/* We can't use the offered IP number until we get a
+			 * DHCP ACK, so clear it
+			 */
+			NetOurIP = 0;
 #ifdef CFG_BOOTFILE_PREFIX
 		}
 #endif	/* CFG_BOOTFILE_PREFIX */
