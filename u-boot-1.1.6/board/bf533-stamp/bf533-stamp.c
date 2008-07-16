@@ -29,15 +29,6 @@
 #include <asm/io.h>
 #include "bf533-stamp.h"
 
-#define STATUS_LED_OFF 0
-#define STATUS_LED_ON  1
-
-#ifdef CONFIG_SHOW_BOOT_PROGRESS
-# define SHOW_BOOT_PROGRESS(arg)	show_boot_progress(arg)
-#else
-# define SHOW_BOOT_PROGRESS(arg)
-#endif
-
 int checkboard(void)
 {
 	printf("Board: ADI BF533 Stamp board\n");
@@ -206,7 +197,12 @@ void cf_outsw(unsigned short *addr, unsigned short *sect_buf, int words)
 }
 #endif
 
-void stamp_led_set(int LED1, int LED2, int LED3)
+#ifdef CONFIG_SHOW_BOOT_PROGRESS
+
+#define STATUS_LED_OFF 0
+#define STATUS_LED_ON  1
+
+static void stamp_led_set(int LED1, int LED2, int LED3)
 {
 	*pFIO_INEN &= ~(PF2 | PF3 | PF4);
 	*pFIO_DIR |= (PF2 | PF3 | PF4);
@@ -263,3 +259,5 @@ void show_boot_progress(int status)
 		break;
 	}
 }
+
+#endif
