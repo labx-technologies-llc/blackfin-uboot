@@ -127,7 +127,9 @@ ENTRY(_start)
 
 	/* Relocate from wherever are (FLASH/RAM/etc...) to the hardcoded
 	 * monitor location in the end of RAM.  We know that memcpy() only
-	 * uses registers, so it is safe to call here.
+	 * uses registers, so it is safe to call here.  Note that this only
+	 * copies to external memory ... we do not start executing out of
+	 * it yet (see "lower to 15" below).
 	 */
 	serial_early_puts("Relocate");
 	call _get_pc;
@@ -172,7 +174,9 @@ ENTRY(_start)
 	 * setting the 15 handler to ".Lenable_nested", raising the 15
 	 * interrupt, and then returning from the highest interrupt
 	 * level to the dummy "jump" until the interrupt controller
-	 * services the pending 15 interrupt.
+	 * services the pending 15 interrupt.  If executing out of
+	 * flash, these steps also changes the code flow from flash
+	 * to external memory.
 	 */
 	serial_early_puts("Lower to 15");
 	r0 = r7;
