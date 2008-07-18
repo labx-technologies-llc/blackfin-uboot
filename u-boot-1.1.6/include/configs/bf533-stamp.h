@@ -181,6 +181,10 @@
 /* FLASH/ETHERNET uses the same async bank */
 #define SHARED_RESOURCES 	1
 
+/* define to enable splash screen support */
+/* #define CONFIG_VIDEO */
+
+
 
 /*
  * Pull in common ADI header for remaining command/environment setup

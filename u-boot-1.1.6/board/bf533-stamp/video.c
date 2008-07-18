@@ -152,125 +152,36 @@ void fill_frame(char *Frame, int Value)
 	}
 }
 
-static int video_init(void)
+static void video_init(char *NTSCFrame)
 {
-	char *NTSCFrame;
 	NTSCFrame = (char *)NTSC_FRAME_ADDR;
 	NTSC_framebuffer_init(NTSCFrame);
 	fill_frame(NTSCFrame, BLUE);
 
-	*pPPI_CONTROL = 0x0082;
-	*pPPI_FRAME = 0x020D;
+	bfin_write_PPI_CONTROL(0x0082);
+	bfin_write_PPI_FRAME(0x020D);
 
-	*pDMA0_START_ADDR = NTSCFrame;
-	*pDMA0_X_COUNT = 0x035A;
-	*pDMA0_X_MODIFY = 0x0002;
-	*pDMA0_Y_COUNT = 0x020D;
-	*pDMA0_Y_MODIFY = 0x0002;
-	*pDMA0_CONFIG = 0x1015;
-	*pPPI_CONTROL = 0x0083;
-	return 0;
-}
-
-static void dma_bitblit(void *dst, fastimage_t *logo, int x, int y)
-{
-	if (dcache_status())
-		blackfin_dcache_flush_range(logo->data, logo->data + logo->size);
-
-	bfin_write_MDMA_D0_IRQ_STATUS(DMA_DONE | DMA_ERR);
-
-	/* Setup destination start address */
-	bfin_write_MDMA_D0_START_ADDR(dst + ((x & -2) * LCD_PIXEL_SIZE)
-					+ (y * LCD_X_RES * LCD_PIXEL_SIZE));
-	/* Setup destination xcount */
-	bfin_write_MDMA_D0_X_COUNT(logo->width * LCD_PIXEL_SIZE / DMA_SIZE16);
-	/* Setup destination xmodify */
-	bfin_write_MDMA_D0_X_MODIFY(DMA_SIZE16);
-
-	/* Setup destination ycount */
-	bfin_write_MDMA_D0_Y_COUNT(logo->height);
-	/* Setup destination ymodify */
-	bfin_write_MDMA_D0_Y_MODIFY((LCD_X_RES - logo->width) * LCD_PIXEL_SIZE + DMA_SIZE16);
-
-
-	/* Setup Source start address */
-	bfin_write_MDMA_S0_START_ADDR(logo->data);
-	/* Setup Source xcount */
-	bfin_write_MDMA_S0_X_COUNT(logo->width * LCD_PIXEL_SIZE / DMA_SIZE16);
-	/* Setup Source xmodify */
-	bfin_write_MDMA_S0_X_MODIFY(DMA_SIZE16);
-
-	/* Setup Source ycount */
-	bfin_write_MDMA_S0_Y_COUNT(logo->height);
-	/* Setup Source ymodify */
-	bfin_write_MDMA_S0_Y_MODIFY(DMA_SIZE16);
-
-
-	/* Enable source DMA */
-	bfin_write_MDMA_S0_CONFIG(DMAEN | WDSIZE_16 | DMA2D);
-	SSYNC();
-	bfin_write_MDMA_D0_CONFIG(WNR | DMAEN  | WDSIZE_16 | DMA2D);
-
-	while (bfin_read_MDMA_D0_IRQ_STATUS() & DMA_RUN);
-
-	bfin_write_MDMA_S0_IRQ_STATUS(bfin_read_MDMA_S0_IRQ_STATUS() | DMA_DONE | DMA_ERR);
-	bfin_write_MDMA_D0_IRQ_STATUS(bfin_read_MDMA_D0_IRQ_STATUS() | DMA_DONE | DMA_ERR);
-
-}
-
-void video_putc(const char c)
-{
-}
-
-void video_puts(const char *s)
-{
+	bfin_write_DMA0_START_ADDR(NTSCFrame);
+	bfin_write_DMA0_X_COUNT(0x035A);
+	bfin_write_DMA0_X_MODIFY(0x0002);
+	bfin_write_DMA0_Y_COUNT(0x020D);
+	bfin_write_DMA0_Y_MODIFY(0x0002);
+	bfin_write_DMA0_CONFIG(0x1015);
+	bfin_write_PPI_CONTROL(0x0083);
 }
 
 int drv_video_init(void)
 {
-	int error, devices = 1;
 	device_t videodev;
 
-	u8 *dst;
-	u32 fbmem_size = LCD_X_RES * LCD_Y_RES * LCD_PIXEL_SIZE + ACTIVE_VIDEO_MEM_OFFSET;
-
-	dst = malloc(fbmem_size);
-
-	if (dst == NULL) {
-		printf("Failed to alloc FB memory\n");
-		return -1;
-	}
-
-#ifdef EASYLOGO_ENABLE_GZIP
-	unsigned char *data = EASYLOGO_DECOMP_BUFFER;
-	unsigned long src_len = EASYLOGO_ENABLE_GZIP;
-	if (gunzip(data, bfin_logo.size, bfin_logo.data, &src_len)) {
-		puts("Failed to decompress logo\n");
-		free(dst);
-		return -1;
-	}
-	bfin_logo.data = data;
-#endif
-
-	memset(dst + ACTIVE_VIDEO_MEM_OFFSET, bfin_logo.data[0], fbmem_size - ACTIVE_VIDEO_MEM_OFFSET);
-
-	dma_bitblit(dst + ACTIVE_VIDEO_MEM_OFFSET, &bfin_logo,
-			(LCD_X_RES - bfin_logo.width) / 2,
-			(LCD_Y_RES - bfin_logo.height) / 2);
-
-	video_init(dst);		/* Video initialization */
+	video_init((void *)NTSC_FRAME_ADDR);
 
 	memset(&videodev, 0, sizeof(videodev));
-
 	strcpy(videodev.name, "video");
-	videodev.ext = DEV_EXT_VIDEO;	/* Video extensions */
-	videodev.flags = DEV_FLAGS_SYSTEM;	/* No Output */
-	videodev.putc = video_putc;	/* 'putc' function */
-	videodev.puts = video_puts;	/* 'puts' function */
+	videodev.ext = DEV_EXT_VIDEO;
+	videodev.flags = DEV_FLAGS_SYSTEM;
 
-	error = device_register(&videodev);
-
-	return (error == 0) ? devices : error;
+	return device_register(&videodev);
 }
 
 #endif
