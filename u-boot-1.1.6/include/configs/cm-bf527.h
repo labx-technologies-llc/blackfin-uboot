@@ -14,6 +14,7 @@
 #define CONFIG_BFIN_CPU             bf527-0.0
 #define CONFIG_BFIN_BOOT_MODE       BFIN_BOOT_PARA
 
+
 /*
  * Clock Settings
  *	CCLK = (CLKIN * VCO_MULT) / CCLK_DIV
@@ -69,6 +70,7 @@
 #define NAND_MAX_CHIPS		1
 #define ADI_CMDS_EXTRA		CFG_CMD_NAND
 #endif
+
 
 /*
  * Network Settings
@@ -128,8 +130,8 @@
  * Misc Settings
  */
 #define CONFIG_BAUDRATE		115200
-#define CONFIG_RTC_BFIN
 #define CONFIG_MISC_INIT_R
+#define CONFIG_RTC_BFIN
 #define CONFIG_UART_CONSOLE	0
 
 #define CONFIG_BFIN_COMMANDS \

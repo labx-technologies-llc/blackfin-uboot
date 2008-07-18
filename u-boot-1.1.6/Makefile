@@ -2317,11 +2317,11 @@ clean:
 	rm -f $(obj)board/bf538f-ezkit/u-boot.lds
 	rm -f $(obj)board/bf548-ezkit/u-boot.lds
 	rm -f $(obj)board/bf561-ezkit/u-boot.lds
+	rm -f $(obj)board/cm-bf527/u-boot.lds
 	rm -f $(obj)board/cm-bf533/u-boot.lds
 	rm -f $(obj)board/cm-bf537e/u-boot.lds
 	rm -f $(obj)board/cm-bf548/u-boot.lds	
 	rm -f $(obj)board/cm-bf561/u-boot.lds
-	rm -f $(obj)board/cm-bf527/u-boot.lds
 	rm -f $(obj)cpu/blackfin/bootrom-asm-offsets.[chs] $(obj).syms.u-boot.S
 	rm -f $(obj)include/bmp_logo.h
 	rm -f $(obj)nand_spl/u-boot-spl $(obj)nand_spl/u-boot-spl.map
