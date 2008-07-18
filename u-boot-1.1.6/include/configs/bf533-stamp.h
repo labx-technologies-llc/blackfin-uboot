@@ -181,6 +181,9 @@
 /* FLASH/ETHERNET uses the same async bank */
 #define SHARED_RESOURCES 	1
 
+/* define to enable boot progress via leds */
+/* #define CONFIG_SHOW_BOOT_PROGRESS */
+
 /* define to enable splash screen support */
 /* #define CONFIG_VIDEO */
 
