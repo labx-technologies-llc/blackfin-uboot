@@ -53,6 +53,7 @@ buildit bf537-stamp bypass para spi_master uart
 buildit bf548-ezkit nand para spi_master uart
 buildit bf561-ezkit bypass para
 
+buildit cm-bf527 para uart
 buildit cm-bf533 bypass para
 buildit cm-bf537e bypass para uart
 buildit cm-bf548 para uart
