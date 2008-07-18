@@ -311,6 +311,7 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 	 * the memory controller.  Older bootroms lacks such helpers
 	 * so we do it ourselves.
 	 */
+	uint16_t vr_ctl = bfin_read_VR_CTL();
 	if (BOOTROM_CAPS_SYSCONTROL) {
 		serial_putc('S');
 
@@ -331,7 +332,7 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 		/* Only reprogram when needed to avoid triggering unnecessary
 		 * PLL relock sequences.
 		 */
-		if (bfin_read_VR_CTL() != CONFIG_VR_CTL_VAL) {
+		if (vr_ctl != CONFIG_VR_CTL_VAL) {
 			serial_putc('!');
 			bfin_write_VR_CTL(CONFIG_VR_CTL_VAL);
 			asm("idle;");
@@ -389,7 +390,7 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 	 *
 	 * SCKELOW is unreliable on older parts (anomaly 307)
 	 */
-	if (ANOMALY_05000307 || bfin_read_VR_CTL() & 0x8000) {
+	if (ANOMALY_05000307 || vr_ctl & 0x8000) {
 		uint32_t *hibernate_magic = 0;
 		__builtin_bfin_ssync(); /* make sure memory controller is done */
 		if (hibernate_magic[0] == 0xDEADBEEF) {
