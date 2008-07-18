@@ -164,6 +164,8 @@
 #define ANOMALY_05000305 (__SILICON_REVISION__ < 5)
 /* New Feature: Additional PPI Frame Sync Sampling Options (Not Available On Older Silicon) */
 #define ANOMALY_05000306 (__SILICON_REVISION__ < 5)
+/* SCKELOW Bit Does Not Maintain State Through Hibernate */
+#define ANOMALY_05000307 (1)
 /* False Hardware Errors Caused by Fetches at the Boundary of Reserved Memory */
 #define ANOMALY_05000310 (1)
 /* Erroneous Flag (GPIO) Pin Operations under Specific Sequences */
