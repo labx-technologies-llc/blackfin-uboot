@@ -12,6 +12,7 @@
 #include <config.h>
 #include <asm/blackfin.h>
 #include <asm/mach-common/bits/bootrom.h>
+#include <asm/mach-common/bits/core.h>
 #include <asm/mach-common/bits/ebiu.h>
 #include <asm/mach-common/bits/pll.h>
 #include <asm/mach-common/bits/uart.h>
@@ -357,20 +358,6 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 	 */
 	serial_reset_baud(old_baud);
 
-	serial_putc('F');
-
-	/* Program the async banks controller. */
-	bfin_write_EBIU_AMBCTL0(CONFIG_EBIU_AMBCTL0_VAL);
-	bfin_write_EBIU_AMBCTL1(CONFIG_EBIU_AMBCTL1_VAL);
-	bfin_write_EBIU_AMGCTL(CONFIG_EBIU_AMGCTL_VAL);
-
-#ifdef EBIU_MODE
-	/* Not all parts have these additional MMRs. */
-	bfin_write_EBIU_MBSCTL(CONFIG_EBIU_MBSCTL_VAL);
-	bfin_write_EBIU_MODE(CONFIG_EBIU_MODE_VAL);
-	bfin_write_EBIU_FCTL(CONFIG_EBIU_FCTL_VAL);
-#endif
-
 	serial_putc('I');
 
 	/* Program the external memory controller. */
@@ -390,6 +377,53 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 	bfin_write_EBIU_SDRRC(CONFIG_EBIU_SDRRC_VAL);
 	bfin_write_EBIU_SDBCTL(CONFIG_EBIU_SDBCTL_VAL);
 	bfin_write_EBIU_SDGCTL(CONFIG_EBIU_SDGCTL_VAL);
+#endif
+
+	serial_putc('H');
+
+	/* Are we coming out of hibernate (suspend to memory) ?
+	 * The memory layout is:
+	 * 0x0: hibernate magic for anomaly 307 (0xDEADBEEF)
+	 * 0x4: return address
+	 * 0x8: stack pointer
+	 *
+	 * SCKELOW is unreliable on older parts (anomaly 307)
+	 */
+	if (ANOMALY_05000307 || bfin_read_VR_CTL() & 0x8000) {
+		uint32_t *hibernate_magic = 0;
+		__builtin_bfin_ssync(); /* make sure memory controller is done */
+		if (hibernate_magic[0] == 0xDEADBEEF) {
+			serial_putc('R');
+			bfin_write_EVT15(hibernate_magic[1]);
+			bfin_write_IMASK(EVT_IVG15);
+			__asm__ __volatile__ (
+				/* load reti early to avoid anomaly 281 */
+				"reti = %0;"
+				/* clear hibernate magic */
+				"[%0] = %1;"
+				/* load stack pointer */
+				"SP = [%0 + 8];"
+				/* lower ourselves from reset ivg to ivg15 */
+				"raise 15;"
+				"rti;"
+				:
+				: "p"(hibernate_magic), "d"(0x2000 /* jump.s 0 */)
+			);
+		}
+	}
+
+	serial_putc('F');
+
+	/* Program the async banks controller. */
+	bfin_write_EBIU_AMBCTL0(CONFIG_EBIU_AMBCTL0_VAL);
+	bfin_write_EBIU_AMBCTL1(CONFIG_EBIU_AMBCTL1_VAL);
+	bfin_write_EBIU_AMGCTL(CONFIG_EBIU_AMGCTL_VAL);
+
+#ifdef EBIU_MODE
+	/* Not all parts have these additional MMRs. */
+	bfin_write_EBIU_MBSCTL(CONFIG_EBIU_MBSCTL_VAL);
+	bfin_write_EBIU_MODE(CONFIG_EBIU_MODE_VAL);
+	bfin_write_EBIU_FCTL(CONFIG_EBIU_FCTL_VAL);
 #endif
 
 	serial_putc('N');
