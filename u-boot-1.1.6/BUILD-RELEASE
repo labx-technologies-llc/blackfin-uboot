@@ -57,7 +57,7 @@ buildit cm-bf527 para uart
 buildit cm-bf533 bypass para
 buildit cm-bf537e bypass para uart
 buildit cm-bf548 para uart
-buildit cm-bf561 para
+buildit cm-bf561 bypass para
 
 # finally, create a tarball of the source code
 uboot="u-boot-${uboot_ver}-${ver}"
