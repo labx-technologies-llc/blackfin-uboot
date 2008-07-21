@@ -53,28 +53,23 @@ long int initdram(int board_type)
 	return (gd->bd->bi_memsize);
 }
 
-/* PF0 and PF1 are used to switch between the ethernet and flash */
+/* PF0 and PF1 are used to switch between the ethernet and flash:
+ *         PF0  PF1
+ *  flash:  0    0
+ *  ether:  1    0
+ */
 void swap_to(int device_id)
 {
-	if (device_id == ETHERNET) {
-		/* PF0: high output, PF1: input */
-		bfin_write_FIO_DIR((bfin_read_FIO_DIR() | PF0) & ~(PF1));
-		SSYNC();
-		*pFIO_FLAG_S = PF0;
-		SSYNC();
-	} else if (device_id == FLASH) {
-		/* PF0, PF1: outputs */
-		bfin_write_FIO_DIR(bfin_read_FIO_DIR() | PF1 | PF0);
-		*pFIO_MASKA_D = (PF8 | PF6 | PF5);
-		*pFIO_MASKB_D = (PF7);
-		*pFIO_POLAR = (PF8 | PF6 | PF5);
-		*pFIO_EDGE = (PF8 | PF7 | PF6 | PF5);
-		bfin_write_FIO_INEN(bfin_read_FIO_INEN() | PF8 | PF7 | PF6 | PF5);
-		SSYNC();
-	} else
-		printf("Unknown bank to switch\n");
-
-	return;
+	bfin_write_FIO_DIR(bfin_read_FIO_DIR() | PF1 | PF0);
+	SSYNC();
+	bfin_write_FIO_FLAG_C(PF1);
+	if (device_id == ETHERNET)
+		bfin_write_FIO_FLAG_S(PF0);
+	else if (device_id == FLASH)
+		bfin_write_FIO_FLAG_C(PF0);
+	else
+		printf("Unknown device to switch\n");
+	SSYNC();
 }
 
 #if defined(CONFIG_MISC_INIT_R)
