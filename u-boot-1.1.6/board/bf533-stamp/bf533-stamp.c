@@ -53,27 +53,26 @@ long int initdram(int board_type)
 	return (gd->bd->bi_memsize);
 }
 
+/* PF0 and PF1 are used to switch between the ethernet and flash */
 void swap_to(int device_id)
 {
-
 	if (device_id == ETHERNET) {
-		*pFIO_DIR = PF0;
+		/* PF0: high output, PF1: input */
+		bfin_write_FIO_DIR((bfin_read_FIO_DIR() | PF0) & ~(PF1));
 		SSYNC();
 		*pFIO_FLAG_S = PF0;
 		SSYNC();
 	} else if (device_id == FLASH) {
-		*pFIO_DIR = (PF4 | PF3 | PF2 | PF1 | PF0);
-		*pFIO_FLAG_S = (PF4 | PF3 | PF2);
+		/* PF0, PF1: outputs */
+		bfin_write_FIO_DIR(bfin_read_FIO_DIR() | PF1 | PF0);
 		*pFIO_MASKA_D = (PF8 | PF6 | PF5);
 		*pFIO_MASKB_D = (PF7);
 		*pFIO_POLAR = (PF8 | PF6 | PF5);
 		*pFIO_EDGE = (PF8 | PF7 | PF6 | PF5);
-		*pFIO_INEN = (PF8 | PF7 | PF6 | PF5);
-		*pFIO_FLAG_D = (PF4 | PF3 | PF2);
+		bfin_write_FIO_INEN(bfin_read_FIO_INEN() | PF8 | PF7 | PF6 | PF5);
 		SSYNC();
-	} else {
+	} else
 		printf("Unknown bank to switch\n");
-	}
 
 	return;
 }
@@ -204,8 +203,8 @@ void cf_outsw(unsigned short *addr, unsigned short *sect_buf, int words)
 
 static void stamp_led_set(int LED1, int LED2, int LED3)
 {
-	*pFIO_INEN &= ~(PF2 | PF3 | PF4);
-	*pFIO_DIR |= (PF2 | PF3 | PF4);
+	bfin_write_FIO_INEN(bfin_read_FIO_INEN() & ~(PF2 | PF3 | PF4));
+	bfin_write_FIO_DIR(bfin_read_FIO_DIR() | (PF2 | PF3 | PF4));
 
 	if (LED1 == STATUS_LED_OFF)
 		*pFIO_FLAG_S = PF2;
@@ -258,6 +257,42 @@ void show_boot_progress(int status)
 		stamp_led_set(STATUS_LED_ON, STATUS_LED_ON, STATUS_LED_ON);
 		break;
 	}
+}
+#endif
+
+#ifdef CONFIG_STATUS_LED
+#include <status_led.h>
+
+static void set_led(int pf, int state)
+{
+	switch (state) {
+		case STATUS_LED_OFF:      bfin_write_FIO_FLAG_S(pf); break;
+		case STATUS_LED_BLINKING: bfin_write_FIO_FLAG_T(pf); break;
+		case STATUS_LED_ON:       bfin_write_FIO_FLAG_C(pf); break;
+	}
+}
+
+static void set_leds(led_id_t mask, int state)
+{
+	if (mask & 0x1) set_led(PF2, state);
+	if (mask & 0x2) set_led(PF3, state);
+	if (mask & 0x4) set_led(PF4, state);
+}
+
+void __led_init(led_id_t mask, int state)
+{
+	bfin_write_FIO_INEN(bfin_read_FIO_INEN() & ~(PF2 | PF3 | PF4));
+	bfin_write_FIO_DIR(bfin_read_FIO_DIR() | (PF2 | PF3 | PF4));
+}
+
+void __led_set(led_id_t mask, int state)
+{
+	set_leds(mask, state);
+}
+
+void __led_toggle(led_id_t mask)
+{
+	set_leds(mask, STATUS_LED_BLINKING);
 }
 
 #endif
