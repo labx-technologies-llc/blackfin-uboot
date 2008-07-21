@@ -76,7 +76,7 @@ static inline void bfin_reset_trampoline(void)
 	if (board_reset)
 		board_reset();
 	while (1)
-		if (0 /*BOOTROM_CAPS_SYSCONTROL -- current silicon is broken*/)
+		if (!ANOMALY_05000353)
 			syscontrol(SYSCTRL_SOFTRESET, NULL, NULL);
 		else
 			asm("jump (%0);" : : "a" (bfin_reset));
