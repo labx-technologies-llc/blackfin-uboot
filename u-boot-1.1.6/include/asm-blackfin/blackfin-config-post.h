@@ -87,7 +87,7 @@
 # define CFG_MEMTEST_START 0
 #endif
 #ifndef CFG_MEMTEST_END
-# define CFG_MEMTEST_END (CFG_STACKBASE - 8096)
+# define CFG_MEMTEST_END (CFG_STACKBASE - 8192 + 4)
 #endif
 
 /* Check to make sure everything fits in external RAM */
