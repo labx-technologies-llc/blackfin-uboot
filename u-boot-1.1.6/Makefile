@@ -2259,7 +2259,7 @@ BFIN_BOARDS = \
 	bf538f-ezkit bf548-ezkit bf537-stamp bf561-ezkit
 
 # Bluetechnix tinyboards
-BFIN_BOARDS += cm-bf527 cm-bf533 cm-bf537e cm-bf548 cm-bf561
+BFIN_BOARDS += cm-bf527 cm-bf533 cm-bf537e cm-bf548 cm-bf561 tcm-bf537
 
 # Misc third party boards
 BFIN_BOARDS += bf537-minotaur bf537-srv1
@@ -2322,6 +2322,7 @@ clean:
 	rm -f $(obj)board/cm-bf537e/u-boot.lds
 	rm -f $(obj)board/cm-bf548/u-boot.lds	
 	rm -f $(obj)board/cm-bf561/u-boot.lds
+	rm -f $(obj)board/tcm-bf537/u-boot.lds
 	rm -f $(obj)cpu/blackfin/bootrom-asm-offsets.[chs] $(obj).syms.u-boot.S
 	rm -f $(obj)include/bmp_logo.h
 	rm -f $(obj)nand_spl/u-boot-spl $(obj)nand_spl/u-boot-spl.map
