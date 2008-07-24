@@ -54,6 +54,10 @@ SECTIONS
 {
 	.text :
 	{
+		cpu/blackfin/start.o (.text)
+		__initcode_start = .;
+		cpu/blackfin/initcode.o (.text)
+		__initcode_end = .;
 		*(.text .text.*)
 	} >ram
 

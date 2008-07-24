@@ -130,11 +130,12 @@ int strncmp(const char *cs, const char *ct, size_t count)
 # define bfin_write_MDMA_D0_IRQ_STATUS bfin_write_MDMA1_D0_IRQ_STATUS
 # define bfin_read_MDMA_D0_IRQ_STATUS  bfin_read_MDMA1_D0_IRQ_STATUS
 #endif
-static void *dma_memcpy(void *dst, const void *src, size_t count)
+/* This version misbehaves for count values of 0 and 2^16+.
+ * Perhaps we should detect that ?  Nowhere do we actually
+ * use dma memcpy for those types of lengths though ...
+ */
+void dma_memcpy_nocache(void *dst, const void *src, size_t count)
 {
-	if (dcache_status())
-		blackfin_dcache_flush_range(src, src + count);
-
 	bfin_write_MDMA_D0_IRQ_STATUS(DMA_DONE | DMA_ERR);
 
 	/* Copy sram functions from sdram to sram */
@@ -161,6 +162,13 @@ static void *dma_memcpy(void *dst, const void *src, size_t count)
 	while (bfin_read_MDMA_D0_IRQ_STATUS() & DMA_RUN)
 		bfin_write_MDMA_D0_IRQ_STATUS(bfin_read_MDMA_D0_IRQ_STATUS() | DMA_DONE | DMA_ERR);
 	bfin_write_MDMA_D0_IRQ_STATUS(bfin_read_MDMA_D0_IRQ_STATUS() | DMA_DONE | DMA_ERR);
+}
+void *dma_memcpy(void *dst, const void *src, size_t count)
+{
+	if (dcache_status())
+		blackfin_dcache_flush_range(src, src + count);
+
+	dma_memcpy_nocache(dst, src, count);
 
 	if (icache_status())
 		blackfin_icache_flush_range(dst, dst + count);
