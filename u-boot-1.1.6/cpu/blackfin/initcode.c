@@ -279,6 +279,20 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 
 	serial_putc('S');
 
+	/* If external memory is enabled, put it into self refresh first. */
+	bool put_into_srfs = false;
+#ifdef EBIU_RSTCTL
+	if (bfin_read_EBIU_RSTCTL() | DDR_SRESET) {
+		bfin_write_EBIU_RSTCTL(bfin_read_EBIU_RSTCTL() | SRREQ);
+		put_into_srfs = true;
+	}
+#else
+	if (bfin_read_EBIU_SDBCTL() | EBE) {
+		bfin_write_EBIU_SDGCTL(bfin_read_EBIU_SDGCTL() | SRFS);
+		put_into_srfs = true;
+	}
+#endif
+
 	/* Blackfin bootroms use the SPI slow read opcode instead of the SPI
 	 * fast read, so we need to slow down the SPI clock a lot more during
 	 * boot.  Once we switch over to u-boot's SPI flash driver, we'll
@@ -306,6 +320,15 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 #else
 	bfin_write_SIC_IWR(1);
 #endif
+
+	/* If we're entering self refresh, make sure it has happened. */
+	if (put_into_srfs)
+#ifdef EBIU_RSTCTL
+		while (!(bfin_read_EBIU_RSTCTL() | SRACK))
+#else
+		while (!(bfin_read_EBIU_SDSTAT() | SDSRA))
+#endif
+			continue;
 
 	/* With newer bootroms, we use the helper function to set up
 	 * the memory controller.  Older bootroms lacks such helpers
@@ -378,6 +401,14 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 	bfin_write_EBIU_SDRRC(CONFIG_EBIU_SDRRC_VAL);
 	bfin_write_EBIU_SDBCTL(CONFIG_EBIU_SDBCTL_VAL);
 	bfin_write_EBIU_SDGCTL(CONFIG_EBIU_SDGCTL_VAL);
+#endif
+
+	/* Now that we've reprogrammed, take things out of self refresh. */
+	if (put_into_srfs)
+#ifdef EBIU_RSTCTL
+		bfin_write_EBIU_RSTCTL(bfin_read_EBIU_RSTCTL() & ~(SRREQ));
+#else
+		bfin_write_EBIU_SDGCTL(bfin_read_EBIU_SDGCTL() & ~(SRFS));
 #endif
 
 	serial_putc('H');
