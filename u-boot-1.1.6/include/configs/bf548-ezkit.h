@@ -63,7 +63,6 @@
 
 #define CFG_MONITOR_LEN		(384 * 1024)	/* Reserve 384 kB for monitor */
 #define CFG_MALLOC_LEN		(640 * 1024)	/* Reserve 640 kB for malloc() (video/spi are big) */
-#define CFG_GBL_DATA_SIZE	0x4000
 
 
 /*

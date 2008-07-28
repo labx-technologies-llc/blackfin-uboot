@@ -296,9 +296,13 @@ void board_init_f(ulong bootflag)
 	dcache_enable();
 #endif
 
+#ifdef DEBUG
+	if (CFG_GBL_DATA_SIZE < sizeof(*gd))
+		hang();
+#endif
 	serial_early_puts("Init global data\n");
 	gd = (gd_t *) (CFG_GBL_DATA_ADDR);
-	memset((void *)gd, 0, sizeof(gd_t));
+	memset((void *)gd, 0, CFG_GBL_DATA_SIZE);
 
 	/* Board data initialization */
 	addr = (CFG_GBL_DATA_ADDR + sizeof(gd_t));

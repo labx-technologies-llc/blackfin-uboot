@@ -54,7 +54,6 @@
 
 #define CFG_MONITOR_LEN		(256 * 1024)	/* Reserve 256 kB for monitor */
 #define CFG_MALLOC_LEN		(128 * 1024)	/* Reserve 128 kB for malloc() */
-#define CFG_GBL_DATA_SIZE	0x4000
 
 
 /*
