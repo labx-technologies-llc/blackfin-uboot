@@ -60,8 +60,11 @@
 #endif
 
 /* Using L1 scratch pad makes sense for everyone by default. */
-#ifndef CMD_LINE_ADDR
-# define CMD_LINE_ADDR L1_SRAM_SCRATCH
+#ifndef CFG_LINUX_CMDLINE_ADDR
+# define CFG_LINUX_CMDLINE_ADDR L1_SRAM_SCRATCH
+#endif
+#ifndef CFG_LINUX_CMDLINE_SIZE
+# define CFG_LINUX_CMDLINE_SIZE L1_SRAM_SCRATCH_SIZE
 #endif
 
 /* Default/common Blackfin memory layout */

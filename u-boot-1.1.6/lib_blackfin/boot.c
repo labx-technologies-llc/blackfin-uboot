@@ -18,16 +18,16 @@
 extern void swap_to(int device_id);
 #endif
 
-static char *make_command_line(void)
+char *bfin_make_command_line(void)
 {
-	char *dest = (char *)CMD_LINE_ADDR;
+	char *dest = (char *)CFG_LINUX_CMDLINE_ADDR;
 	char *bootargs = getenv("bootargs");
 
 	if (bootargs == NULL)
 		return NULL;
 
-	strncpy(dest, bootargs, 0x1000);
-	dest[0xfff] = 0;
+	strncpy(dest, bootargs, CFG_LINUX_CMDLINE_SIZE);
+	dest[CFG_LINUX_CMDLINE_SIZE - 1] = 0;
 	return dest;
 }
 
@@ -45,10 +45,8 @@ void do_bootm_linux(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[],
 
 	appl = (int (*)(char *))ntohl(header.ih_ep);
 	printf("Starting Kernel at = %x\n", appl);
-	cmdline = make_command_line();
-	if (icache_status())
-		icache_disable();
-	if (dcache_status())
-		dcache_disable();
+	cmdline = bfin_make_command_line();
+	icache_disable();
+	dcache_disable();
 	(*appl) (cmdline);
 }

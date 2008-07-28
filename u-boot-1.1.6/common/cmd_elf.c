@@ -21,7 +21,7 @@
 
 #if (CONFIG_COMMANDS & CFG_CMD_ELF)
 
-static char *make_command_line(void);
+extern char *bfin_make_command_line(void);
 
 #if defined(CONFIG_WALNUT) || defined(CFG_VXWORKS_MAC_PTR)
 DECLARE_GLOBAL_DATA_PTR;
@@ -68,26 +68,13 @@ int do_bootelf (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		icache_disable();
 
 	/* pass cmdline to the kernel. */
-	cmdline = make_command_line();
+	cmdline = bfin_make_command_line();
 	rc = ((ulong (*)(char *)) addr) (cmdline);
 	if (rc != 0)
 		rcode = 1;
 
 	printf ("## Application terminated, rc = 0x%lx\n", rc);
 	return rcode;
-}
-
-static char *make_command_line(void)
-{
-    char *dest = (char *) CMD_LINE_ADDR;
-    char *bootargs;
-
-    if ( (bootargs = getenv("bootargs")) == NULL )
-	return NULL;
-
-    strncpy(dest, bootargs, 0x1000);
-    dest[0xfff] = 0;
-    return dest;
 }
 
 /* ======================================================================
