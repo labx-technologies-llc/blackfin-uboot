@@ -282,12 +282,12 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 	/* If external memory is enabled, put it into self refresh first. */
 	bool put_into_srfs = false;
 #ifdef EBIU_RSTCTL
-	if (bfin_read_EBIU_RSTCTL() | DDR_SRESET) {
+	if (bfin_read_EBIU_RSTCTL() & DDR_SRESET) {
 		bfin_write_EBIU_RSTCTL(bfin_read_EBIU_RSTCTL() | SRREQ);
 		put_into_srfs = true;
 	}
 #else
-	if (bfin_read_EBIU_SDBCTL() | EBE) {
+	if (bfin_read_EBIU_SDBCTL() & EBE) {
 		bfin_write_EBIU_SDGCTL(bfin_read_EBIU_SDGCTL() | SRFS);
 		put_into_srfs = true;
 	}
@@ -324,9 +324,9 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 	/* If we're entering self refresh, make sure it has happened. */
 	if (put_into_srfs)
 #ifdef EBIU_RSTCTL
-		while (!(bfin_read_EBIU_RSTCTL() | SRACK))
+		while (!(bfin_read_EBIU_RSTCTL() & SRACK))
 #else
-		while (!(bfin_read_EBIU_SDSTAT() | SDSRA))
+		while (!(bfin_read_EBIU_SDSTAT() & SDSRA))
 #endif
 			continue;
 
