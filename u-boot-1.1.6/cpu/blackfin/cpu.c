@@ -115,5 +115,8 @@ int irq_init(void)
 	bfin_write_EVT15(evt_default);
 	bfin_write_ILAT(0);
 	CSYNC();
+	/* enable hardware error irq */
+	irq_flags = 0x3f;
+	local_irq_enable();
 	return 0;
 }
