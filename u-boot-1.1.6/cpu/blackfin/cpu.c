@@ -36,6 +36,8 @@
 #include "cpu.h"
 #include "serial.h"
 
+ulong bfin_poweron_retx;
+
 __attribute__ ((__noreturn__))
 void cpu_init_f(ulong bootflag, ulong loaded_from_ldr)
 {
@@ -64,6 +66,9 @@ void cpu_init_f(ulong bootflag, ulong loaded_from_ldr)
 	else
 		bfin_write_EBIU_AMGCTL(CONFIG_EBIU_AMGCTL_VAL);
 #endif
+
+	/* Save RETX so we can pass it while booting Linux */
+	bfin_poweron_retx = bootflag;
 
 #ifdef CONFIG_DEBUG_DUMP
 	/* Turn on hardware trace buffer */
