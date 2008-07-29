@@ -83,9 +83,6 @@
 #else
 # define CONFIG_BOOTDELAY	5
 #endif
-#ifndef CONFIG_UART_CONSOLE
-# define CONFIG_UART_CONSOLE	0
-#endif
 #define CONFIG_BOOTCOMMAND	"run ramboot"
 #ifdef CONFIG_VIDEO
 # define CONFIG_BOOTARGS_VIDEO "console=tty0 "

@@ -134,6 +134,8 @@
 /*
  * Misc Settings
  */
+#define CONFIG_UART_CONSOLE	0
+
 #define CONFIG_BFIN_COMMANDS \
 	( CFG_BFIN_CMD_CPLBINFO )
 
