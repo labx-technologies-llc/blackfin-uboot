@@ -155,6 +155,12 @@
 # define CONFIG_GATEWAYIP	192.168.0.1
 # define CONFIG_SERVERIP	192.168.0.2
 # define CONFIG_ROOTPATH	/romfs
+
+# if (CONFIG_COMMANDS & CFG_CMD_DHCP)
+#   ifndef CFG_AUTOLOAD
+#     define CFG_AUTOLOAD            "no" /* No autoload by default */
+#   endif
+# endif
 #endif
 
 #endif
