@@ -2266,9 +2266,6 @@ BFIN_BOARDS += bf537-minotaur bf537-srv1
 
 $(BFIN_BOARDS:%=%_config)	: unconfig
 	@$(MKCONFIG) $(@:_config=) blackfin blackfin $(@:_config=)
-	@[ "$(SRCTREE)" != "$(OBJTREE)" ] && LNPREFIX="../../include2/asm/" || LNPREFIX="" ; \
-		rm -f include/asm-blackfin/arch ; \
-		ln -s ${LNPREFIX}arch-$(firstword $(subst -, ,$(@:_config=))) include/asm-blackfin/arch
 
 $(BFIN_BOARDS):
 	$(MAKE) $@_config
