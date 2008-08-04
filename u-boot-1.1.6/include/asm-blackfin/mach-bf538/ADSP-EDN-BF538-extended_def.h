@@ -1110,7 +1110,6 @@
 #define TPERIOD                        0xFFE03004 /* Core Timer Period Register */
 #define TSCALE                         0xFFE03008 /* Core Timer Scale Register */
 #define TCOUNT                         0xFFE0300C /* Core Timer Count Register */
-#define DSPID                          0xFFE05000
 #define TBUFCTL                        0xFFE06000 /* Trace Buffer Control Register */
 #define TBUFSTAT                       0xFFE06004 /* Trace Buffer Status Register */
 #define TBUF                           0xFFE06100 /* Trace Buffer */
