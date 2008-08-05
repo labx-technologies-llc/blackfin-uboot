@@ -7,22 +7,15 @@
  */
 
 #include <common.h>
+#include <devices.h>
 #include <asm/blackfin.h>
 
 #ifdef CONFIG_JTAG_CONSOLE
 
-/* JTAG has no "baud" concept */
-void serial_set_baud(uint32_t baud) {}
-void serial_setbrg(void) {}
-int serial_init(void)
-{
-	return 0;
-}
-
 /* Transmit a buffer.  The format is:
  * [32bit length][actual data]
  */
-static void bfin_jtag_send(const char *c, uint32_t len)
+static void jtag_send(const char *c, uint32_t len)
 {
 	uint32_t i;
 
@@ -45,18 +38,16 @@ static void bfin_jtag_send(const char *c, uint32_t len)
 		__asm__ __volatile__("emudat = %0;" : : "d"(emudat));
 	}
 }
-
-void serial_putc(const char c)
+static void jtag_putc(const char c)
 {
-	bfin_jtag_send(&c, 1);
+	jtag_send(&c, 1);
+}
+static void jtag_puts(const char *s)
+{
+	jtag_send(s, strlen(s));
 }
 
-void serial_puts(const char *s)
-{
-	bfin_jtag_send(s, strlen(s));
-}
-
-int serial_tstc(void)
+static int jtag_tstc(void)
 {
 	return (bfin_read_DBGSTAT() & 0x2);
 }
@@ -67,7 +58,7 @@ int serial_tstc(void)
 static size_t inbound_len;
 static int leftovers_len;
 static uint32_t leftovers;
-int serial_getc(void)
+static int jtag_getc(void)
 {
 	int ret;
 	uint32_t emudat;
@@ -81,7 +72,7 @@ int serial_getc(void)
 	}
 
 	/* wait for new data ! */
-	while (!serial_tstc())
+	while (!jtag_tstc())
 		continue;
 	__asm__("%0 = emudat;" : "=d"(emudat));
 
@@ -95,7 +86,35 @@ int serial_getc(void)
 		leftovers = emudat;
 	}
 
-	return serial_getc();
+	return jtag_getc();
 }
+
+int drv_jtag_console_init(void)
+{
+	device_t dev;
+	int ret;
+
+	memset(&dev, 0x00, sizeof(dev));
+	strcpy(dev.name, "jtag");
+	dev.flags = DEV_FLAGS_OUTPUT | DEV_FLAGS_INPUT | DEV_FLAGS_SYSTEM;
+	dev.putc = jtag_putc;
+	dev.puts = jtag_puts;
+	dev.tstc = jtag_tstc;
+	dev.getc = jtag_getc;
+
+	ret = device_register(&dev);
+	return (ret == 0 ? 1 : ret);
+}
+
+#ifdef CONFIG_UART_CONSOLE_IS_JTAG
+/* Since the JTAG is always available (at power on), allow it to fake a UART */
+void serial_set_baud(uint32_t baud) {}
+void serial_setbrg(void)            {}
+int serial_init(void)               { return 0; }
+void serial_putc(const char c)      __attribute__((alias("jtag_putc")));
+void serial_puts(const char *s)     __attribute__((alias("jtag_puts")));
+int serial_tstc(void)               __attribute__((alias("jtag_tstc")));
+int serial_getc(void)               __attribute__((alias("jtag_getc")));
+#endif
 
 #endif

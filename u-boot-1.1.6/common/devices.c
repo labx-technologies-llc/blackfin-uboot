@@ -204,6 +204,9 @@ int devices_init (void)
 #ifdef CONFIG_NETCONSOLE
 	drv_nc_init ();
 #endif
+#ifdef CONFIG_JTAG_CONSOLE
+	drv_jtag_console_init ();
+#endif
 
 	return (0);
 }
