@@ -12,6 +12,19 @@
 
 #ifdef CONFIG_JTAG_CONSOLE
 
+# ifndef CONFIG_JTAG_CONSOLE_TIMEOUT
+#  define CONFIG_JTAG_CONSOLE_TIMEOUT 100
+# endif
+
+/* The Blackfin tends to be much much faster than the JTAG hardware. */
+static void jtag_write_emudat(uint32_t emudat)
+{
+	ulong timeout = get_timer(0) + CONFIG_JTAG_CONSOLE_TIMEOUT;
+	while (bfin_read_DBGSTAT() & 0x1)
+		if (timeout < get_timer(0))
+			break;
+	__asm__ __volatile__("emudat = %0;" : : "d"(emudat));
+}
 /* Transmit a buffer.  The format is:
  * [32bit length][actual data]
  */
@@ -23,20 +36,11 @@ static void jtag_send(const char *c, uint32_t len)
 		return;
 
 	/* First send the length */
-	while (bfin_read_DBGSTAT() & 0x1)
-		continue;
-	__asm__ __volatile__("emudat = %0;" : : "d"(len));
+	jtag_write_emudat(len);
 
 	/* Then send the data */
-	for (i = 0; i < len; i += 4) {
-		uint32_t emudat;
-
-		while (bfin_read_DBGSTAT() & 0x1)
-			continue;
-
-		emudat = (c[i] << 0) | (c[i+1] << 8) | (c[i+2] << 16) | (c[i+3] << 24);
-		__asm__ __volatile__("emudat = %0;" : : "d"(emudat));
-	}
+	for (i = 0; i < len; i += 4)
+		jtag_write_emudat((c[i] << 0) | (c[i+1] << 8) | (c[i+2] << 16) | (c[i+3] << 24));
 }
 static void jtag_putc(const char c)
 {
