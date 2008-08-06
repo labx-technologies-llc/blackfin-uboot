@@ -40,39 +40,44 @@
 static int write_flash(long nOffset, unsigned short nValue);
 static int erase_block_flash(int nBlock, unsigned long address);
 
-#define SWITCH_BANK do { if (memIndex >= 0x20200000) {\
-			  *pPORTFIO_SET = PF4; \
-			  *pPORTFIO_CLEAR = PF5; \
-			  memIndex -= 0x200000; \
-			  crossed4 = 1;\
-			} else if (memIndex >= 0x20400000) { \
-			  *pPORTFIO_CLEAR = PF4; \
-			  *pPORTFIO_SET = PF5; \
-			  memIndex -= 0x400000; \
-			  crossed5 = 1;\
-			} else if (memIndex >= 0x20600000) { \
-			  *pPORTFIO_SET = (PF4|PF5); \
-			  memIndex -= 0x600000; \
-			  crossed4 = 1;\
-			  crossed5 = 1;\
-			} else { \
-			  *pPORTFIO_CLEAR = (PF4|PF5); \
-			} \
-			SSYNC(); } while (0)
+#define SWITCH_BANK \
+	do { \
+		if (memIndex >= 0x20600000) { \
+			*pPORTFIO_SET = (PF4|PF5); \
+			memIndex -= 0x600000; \
+			crossed4 = 1; \
+			crossed5 = 1; \
+		} else if (memIndex >= 0x20400000) { \
+			*pPORTFIO_CLEAR = PF4; \
+			*pPORTFIO_SET = PF5; \
+			memIndex -= 0x400000; \
+			crossed5 = 1; \
+		} else if (memIndex >= 0x20200000) { \
+			*pPORTFIO_SET = PF4; \
+			*pPORTFIO_CLEAR = PF5; \
+			memIndex -= 0x200000; \
+			crossed4 = 1; \
+		} else { \
+			*pPORTFIO_CLEAR = (PF4|PF5); \
+		} \
+		SSYNC(); \
+	} while (0)
 
-#define SWITCH_BACK do {if (crossed4) {\
-			  *pPORTFIO_CLEAR = PF4; \
-			  memIndex += 0x200000; \
-			  crossed4 = 0;\
-			  SSYNC();\
-			} \
-			if (crossed5) {\
-			  *pPORTFIO_CLEAR = PF5; \
-			  memIndex += 0x400000; \
-			  crossed5 = 0;\
-			  SSYNC();\
-			} \
-			} while (0)
+#define SWITCH_BACK \
+	do { \
+		if (crossed4) { \
+			*pPORTFIO_CLEAR = PF4; \
+			memIndex += 0x200000; \
+			crossed4 = 0; \
+			SSYNC(); \
+		} \
+		if (crossed5) { \
+			*pPORTFIO_CLEAR = PF5; \
+			memIndex += 0x400000; \
+			crossed5 = 0; \
+			SSYNC(); \
+		} \
+	} while (0)
 
 unsigned long flash_init(void)
 {
