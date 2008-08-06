@@ -19,10 +19,19 @@
 /* The Blackfin tends to be much much faster than the JTAG hardware. */
 static void jtag_write_emudat(uint32_t emudat)
 {
-	ulong timeout = get_timer(0) + CONFIG_JTAG_CONSOLE_TIMEOUT;
-	while (bfin_read_DBGSTAT() & 0x1)
-		if (timeout < get_timer(0))
-			break;
+	static bool overflowed = false;
+	if (bfin_read_DBGSTAT() & 0x1) {
+		ulong timeout;
+		if (overflowed)
+			return;
+		timeout = get_timer(0) + CONFIG_JTAG_CONSOLE_TIMEOUT;
+		while (bfin_read_DBGSTAT() & 0x1)
+			if (timeout < get_timer(0)) {
+				overflowed = true;
+				return;
+			}
+	}
+	overflowed = false;
 	__asm__ __volatile__("emudat = %0;" : : "d"(emudat));
 }
 /* Transmit a buffer.  The format is:
