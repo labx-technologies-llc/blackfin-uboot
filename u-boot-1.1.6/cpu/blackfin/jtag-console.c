@@ -20,16 +20,12 @@
 static void jtag_write_emudat(uint32_t emudat)
 {
 	static bool overflowed = false;
-	if (bfin_read_DBGSTAT() & 0x1) {
-		ulong timeout;
+	ulong timeout = get_timer(0) + CONFIG_JTAG_CONSOLE_TIMEOUT;
+	while (bfin_read_DBGSTAT() & 0x1) {
 		if (overflowed)
 			return;
-		timeout = get_timer(0) + CONFIG_JTAG_CONSOLE_TIMEOUT;
-		while (bfin_read_DBGSTAT() & 0x1)
-			if (timeout < get_timer(0)) {
-				overflowed = true;
-				return;
-			}
+		if (timeout < get_timer(0))
+			overflowed = true;
 	}
 	overflowed = false;
 	__asm__ __volatile__("emudat = %0;" : : "d"(emudat));
