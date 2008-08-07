@@ -86,7 +86,6 @@ set TEST_TFTP_WITH_ETHTOOL               1
 set UBOOT_PROMPT             "bfin>"
 
 set NUMBER_OF_FLASH_SECTORS [get_uboot_define CFG_MAX_FLASH_SECT $uboot_test_loc ]
-set KERNEL_GZ_ENTRY         "00001000"
 
 if { $board_type == "BF533-STAMP" } {
 
@@ -166,7 +165,6 @@ set BIG_ELF_LOAD_ADDRESS       "0x1000000"
 
 set BDINFO_MEMSIZE           64*1024*1024
 
-set KERNEL_GZ_ENTRY            "00140000"
 } elseif { $board_type == "BF537-EZKIT" } {
 
 set TEST_SPI_FLASH			 0
@@ -1461,8 +1459,9 @@ set KERNEL_GZ_DATE          "2005\-04\-20  13:27:17 UTC"
 set KERNEL_GZ_TYPE          "Blackfin Linux Kernel Image"
 set KERNEL_GZ_SIZE          "1357674 Bytes"
 set KERNEL_GZ_ADDR          "00001000"
-#set KERNEL_GZ_ENTRY         "00001000"
+set KERNEL_GZ_ENTRY         "00001000"
 
+set readimage_cmd "/opt/uClinux/bfin-uclinux/bin/bfin-uclinux-mkimage"
 
 set BAUD_RATE 57600
 #set CFG_LOAD_ADDR [get_uboot_define CFG_LOAD_ADDR $uboot_test_loc ]
@@ -3108,17 +3107,53 @@ record_test_result $bdinfo_loc $bdinfo_result
 if {  $TEST_IMINFO } {
 
 
+set timeout 20
+send_user "\nGet uImage header info\n"
+spawn $readimage_cmd -l /tftpboot/$KERNEL_GZ_FILENAME
+while 1 {
+    expect {
+        -re "(Image Name:   )(.*)\r\n" {
+            set KERNEL_GZ_NAME "$expect_out(2,string)"
+        }
+        -re "(Created:      )(.*)\r\n" {
+            set KERNEL_GZ_DATE "$expect_out(2,string)"
+        }
+        -re "(Image Type:   )(.*)\r\n" {
+            set KERNEL_GZ_TYPE "$expect_out(2,string)"
+        }
+        -re "(Data Size:    )(.*)Bytes.*kB.*MB\r\n" {
+            set KERNEL_GZ_SIZE "$expect_out(2,string)"
+        }
+        -re "(Load Address: 0x)(.*)\r\n" {
+            set KERNEL_GZ_ADDR "$expect_out(2,string)"
+        }
+        -re "(Entry Point:  0x)(.*)\r\n" {
+            set KERNEL_GZ_ENTRY "$expect_out(2,string)"
+        }
+        eof {
+            break
+        }
+        timeout {
+            break
+        }
+    }
+}
+
+
+set spawn_id $kermit_spawn_id  
+sleep 1
 send "\r"
 wait_for_uboot
+
 
 step "iminfo"
 set iminfo_result $TEST_FAIL
 set timeout 30
 send -s "tftp $CFG_LOAD_ADDR $KERNEL_GZ_FILENAME\r"
+sleep 1
 set temp_status_flag $TEST_FAIL
 while 1 {
    expect {
-
       "invalid RARP" {
          send_log "TFTP-ERROR\n"
          incr tftp_errors
@@ -3156,12 +3191,9 @@ while 1 {
 if {$temp_status_flag==$TEST_PASS} {
    puts "testing out iminfo"
    set iminfo_name_result $TEST_FAIL
-   set iminfo_name_result $TEST_PASS
-#  set iminfo_date_result $TEST_FAIL
    set iminfo_date_result $TEST_PASS
    set iminfo_type_result $TEST_FAIL
-#  set iminfo_size_result $TEST_FAIL
-   set iminfo_size_result $TEST_PASS
+   set iminfo_size_result $TEST_FAIL
    set iminfo_addr_result $TEST_FAIL
    set iminfo_entry_result $TEST_FAIL
    set iminfo_checksum_result $TEST_FAIL
@@ -3169,7 +3201,6 @@ if {$temp_status_flag==$TEST_PASS} {
    send -s  "iminfo\r"
    while 1 {
       expect {
-
          "Image Name:*$KERNEL_GZ_NAME" {
             set iminfo_name_result $TEST_PASS
          }
@@ -3182,15 +3213,15 @@ if {$temp_status_flag==$TEST_PASS} {
             set iminfo_type_result $TEST_PASS
          }
 
-#         "Data Size:*$KERNEL_GZ_SIZE" {
-#            set iminfo_size_result $TEST_PASS
-#         }
+         "Data Size:*$KERNEL_GZ_SIZE" {
+            set iminfo_size_result $TEST_PASS
+         }
 
-         "Load Address:*$KERNEL_GZ_ADDR" {
+         -nocase "Load Address:*$KERNEL_GZ_ADDR" {
             set iminfo_addr_result $TEST_PASS
          }
 
-         "Entry Point:*$KERNEL_GZ_ENTRY" {
+         -nocase "Entry Point:*$KERNEL_GZ_ENTRY" {
             set iminfo_entry_result $TEST_PASS
          }
 
