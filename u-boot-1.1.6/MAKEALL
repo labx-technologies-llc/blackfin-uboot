@@ -332,14 +332,14 @@ LIST_blackfin=" \
 	tcm-bf537
 "
 procs() {
-	case ${target} in
+	case ${@:-${target}} in
 		*bf52[234567]*) echo bf52{2,3,4,5,6,7};;
 		*bf53[123]*)    echo bf53{1,2,3};;
 		*bf53[467]*)    echo bf53{4,6,7};;
 		*bf53[89]*)     echo bf53{8,9};;
 		*bf54[24789]*)  echo bf54{2,4,7,9,8};;
 		*bf561*)        echo bf561;;
-		*)              echo FIXME;;
+		*)              echo $(procs $(echo CONFIG_BFIN_CPU | ${CPP:-cpp} -P -include include/configs/${target}.h -I include -)) ;;
 	esac
 }
 
