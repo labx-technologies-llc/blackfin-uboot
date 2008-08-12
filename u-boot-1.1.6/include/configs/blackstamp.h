@@ -1,0 +1,269 @@
+/*
+ * U-boot - Configuration file for BlackStamp board
+ * Configuration by Ben Matthews for UR LLE using bf533-stamp.h
+ * as a template
+ * See http://blackfin.uclinux.org/gf/project/blackstamp/
+ */
+
+#ifndef __CONFIG_BLACKSTAMP_H__
+#define __CONFIG_BLACKSTAMP_H__
+
+#include <asm/blackfin-config-pre.h>
+
+/*
+ * Debugging: Set these options if you're having problems
+ */
+/*
+ * #define CONFIG_DEBUG_EARLY_SERIAL
+ * #define DEBUG
+ * #define CONFIG_DEBUG_DUMP
+ * #define CONFIG_DEBUG_DUMP_SYMS
+*/
+#define CONFIG_PANIC_HANG 0
+
+/* CPU Options
+ * Be sure to set the Silicon Revision Correctly
+ */
+#define CONFIG_BFIN_CPU		bf532-0.5
+#define CONFIG_BFIN_BOOT_MODE	BFIN_BOOT_SPI_MASTER
+
+/*
+ * Board settings
+ */
+#define CONFIG_DRIVER_SMC91111	1
+#define CONFIG_SMC91111_BASE	0x20300300
+
+/* FLASH/ETHERNET uses the same address range
+ * Depending on what you have the CPLD doing
+ * this probably isn't needed
+ */
+#define SHARED_RESOURCES	1
+
+/* Is I2C bit-banged? */
+#undef CONFIG_SOFT_I2
+
+/*
+ * Clock Settings
+ *	CCLK = (CLKIN * VCO_MULT) / CCLK_DIV
+ *	SCLK = (CLKIN * VCO_MULT) / SCLK_DIV
+ */
+/* CONFIG_CLKIN_HZ is any value in Hz					*/
+#define CONFIG_CLKIN_HZ			25000000
+/* CLKIN_HALF controls the DF bit in PLL_CTL      0 = CLKIN		*/
+/*                                                1 = CLKIN / 2		*/
+#define CONFIG_CLKIN_HALF		0
+/* PLL_BYPASS controls the BYPASS bit in PLL_CTL  0 = do not bypass	*/
+/*                                                1 = bypass PLL	*/
+#define CONFIG_PLL_BYPASS		0
+/* VCO_MULT controls the MSEL (multiplier) bits in PLL_CTL		*/
+/* Values can range from 0-63 (where 0 means 64)			*/
+#define CONFIG_VCO_MULT			16
+/* CCLK_DIV controls the core clock divider				*/
+/* Values can be 1, 2, 4, or 8 ONLY					*/
+#define CONFIG_CCLK_DIV			1
+/* SCLK_DIV controls the system clock divider				*/
+/* Values can range from 1-15						*/
+#define CONFIG_SCLK_DIV			3
+
+/*
+ * Network settings
+ */
+
+#ifdef CONFIG_DRIVER_SMC91111
+#define CONFIG_IPADDR		192.168.0.15
+#define CONFIG_NETMASK		255.255.255.0
+#define CONFIG_GATEWAYIP	192.168.0.1
+#define CONFIG_SERVERIP		192.168.0.2
+#define CONFIG_HOSTNAME		blackstamp
+#define CONFIG_ROOTPATH		/checkout/uClinux-dist/romfs
+#define CFG_AUTOLOAD		"no"
+
+/* To remove hardcoding and enable MAC storage in EEPROM  */
+/* #define CONFIG_ETHADDR		02:80:ad:20:31:b8 */
+#endif
+
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#define CFG_ENV_IS_IN_EEPROM	1
+#define CFG_ENV_OFFSET		0x4000
+#endif
+#define	CFG_ENV_SIZE		0x2000
+#define CFG_ENV_SECT_SIZE	0x2000	/* Total Size of Environment Sector */
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+#define	ENV_IS_EMBEDDED
+#else
+#define	ENV_IS_EMBEDDED_CUSTOM
+#endif
+
+/*
+ * SDRAM settings & memory map
+ */
+
+#define CONFIG_MEM_SIZE		64	/* 128, 64, 32, 16 */
+#define CONFIG_MEM_ADD_WDTH	10	/* 8, 9, 10, 11    */
+
+#define CFG_MONITOR_LEN		(256 << 10)	/* Reserve 256 kB for Monitor	*/
+#define CFG_MALLOC_LEN		(384 << 10)	/* Reserve 384 kB for malloc() (video/spi are big) */
+
+/*
+ * Command settings
+ */
+
+#define CFG_LONGHELP		1
+#define CONFIG_CMDLINE_EDITING	1
+#define CONFIG_AUTO_COMPLETE	1
+#define CONFIG_ENV_OVERWRITE	1
+
+#ifdef CONFIG_DRIVER_SMC91111
+#define COMMANDS_BASE (CONFIG_CMD_DFL | CFG_CMD_PING | CFG_CMD_DHCP)
+#else
+#define COMMANDS_BASE (CONFIG_CMD_DFL & ~CFG_CMD_NET)
+#endif
+
+#ifdef CONFIG_SOFT_I2C
+#define COMMANDS_I2C CFG_CMD_I2C
+#else
+#define COMMANDS_I2C 0
+#endif
+
+#define CONFIG_COMMANDS	\
+	(COMMANDS_BASE  | COMMANDS_I2C | \
+	 CFG_CMD_ELF    | CFG_CMD_CACHE | \
+	 CFG_CMD_EEPROM | CFG_CMD_DATE)
+
+/* This must be included AFTER the definition of CONFIG_COMMANDS (if any) */
+#include <cmd_confdefs.h>
+
+#define CONFIG_BFIN_COMMANDS \
+	( CFG_BFIN_CMD_CPLBINFO )
+
+#define CONFIG_BOOTDELAY     5
+#define CONFIG_BOOTCOMMAND   "run ramboot"
+#define CONFIG_BOOTARGS \
+	"root=/dev/mtdblock0 rw " \
+	"earlyprintk=serial,uart" \
+	MK_STR(CONFIG_UART_CONSOLE) "," MK_STR(CONFIG_BAUDRATE) " " \
+	"console=ttyBF0," MK_STR(CONFIG_BAUDRATE)
+
+#if (CONFIG_COMMANDS & CFG_CMD_NET)
+# if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
+#  define UBOOT_ENV_FILE "u-boot.bin"
+# else
+#  define UBOOT_ENV_FILE "u-boot.ldr"
+# endif
+# if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#  define UBOOT_ENV_UPDATE \
+		"eeprom write $(loadaddr) 0x0 $(filesize)"
+# else
+#  define UBOOT_ENV_UPDATE \
+		"protect off 0x20000000 0x2003FFFF;" \
+		"erase 0x20000000 0x2003FFFF;" \
+		"cp.b $(loadaddr) 0x20000000 $(filesize)"
+# endif
+# define NETWORK_ENV_SETTINGS \
+	"ubootfile=" UBOOT_ENV_FILE "\0" \
+	"update=" \
+		"tftp $(loadaddr) $(ubootfile);" \
+		UBOOT_ENV_UPDATE \
+		"\0" \
+	"addip=set bootargs $(bootargs) ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask):$(hostname):eth0:off\0" \
+	"ramargs=set bootargs " CONFIG_BOOTARGS "\0" \
+	"ramboot=" \
+		"tftp $(loadaddr) uImage;" \
+		"run ramargs;" \
+		"run addip;" \
+		"bootm" \
+		"\0" \
+	"nfsargs=set bootargs root=/dev/nfs rw nfsroot=$(serverip):$(rootpath),tcp,nfsvers=3\0" \
+	"nfsboot=" \
+		"tftp $(loadaddr) vmImage;" \
+		"run nfsargs;" \
+		"run addip;" \
+		"bootm" \
+		"\0"
+#else
+# define NETWORK_ENV_SETTINGS
+#endif
+
+/*
+ * Console settings
+ */
+#define CONFIG_BAUDRATE		57600
+#define CONFIG_LOADS_ECHO	1
+#define CONFIG_UART_CONSOLE	0
+
+/*
+ * I2C settings
+ * By default PF2 is used as SDA and PF3 as SCL on the Stamp board
+ * Located on the expansion connector on pins 86/85
+ * Note these pins are arbitrarily chosen because we aren't using
+ * them yet. You can (and probably should) change these values!
+ */
+#ifdef CONFIG_SOFT_I2C
+
+#define PF_SCL			PF9
+#define PF_SDA			PF8
+
+#define I2C_INIT       do { *pFIO_DIR |= PF_SCL; SSYNC(); } while (0)
+#define I2C_ACTIVE     do { *pFIO_DIR |= PF_SDA; *pFIO_INEN &= ~PF_SDA; SSYNC(); } while (0)
+#define I2C_TRISTATE   do { *pFIO_DIR &= ~PF_SDA; *pFIO_INEN |= PF_SDA; SSYNC(); } while (0)
+#define I2C_READ       ((*pFIO_FLAG_D & PF_SDA) != 0)
+#define I2C_SDA(bit) \
+	do { \
+		if (bit) \
+			*pFIO_FLAG_S = PF_SDA; \
+		else \
+			*pFIO_FLAG_C = PF_SDA; \
+		SSYNC(); \
+	} while (0)
+#define I2C_SCL(bit) \
+	do { \
+		if (bit) \
+			*pFIO_FLAG_S = PF_SCL; \
+		else \
+			*pFIO_FLAG_C = PF_SCL; \
+		SSYNC(); \
+	} while (0)
+#define I2C_DELAY		udelay(5)	/* 1/4 I2C clock duration */
+
+#define CFG_I2C_SPEED		50000
+#define CFG_I2C_SLAVE		0xFE
+#endif
+
+/*
+ * Miscellaneous configurable options
+ */
+#define CONFIG_RTC_BFIN		1
+
+/*
+ * Serial Flash Infomation
+ */
+#define CONFIG_SPI
+/* CONFIG_SPI_BAUD controls the SPI peripheral clock divider	*/
+/* Values can range from 2-65535				*/
+/* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)			*/
+#define CONFIG_SPI_BAUD		5
+/* For the M25P64 SCK Should be Kept < 20Mhz */
+
+/*
+ * FLASH organization and environment definitions
+ */
+
+#define CONFIG_EBIU_AMGCTL_VAL		0xFF
+#define CONFIG_EBIU_AMBCTL0_VAL		0xBBC3BBC3
+#define CONFIG_EBIU_AMBCTL1_VAL		0x99B39983
+#define CONFIG_EBIU_SDRRC_VAL		0x268
+#define CONFIG_EBIU_SDGCTL_VAL		0x911109
+
+/* Even though Rev C boards have Parallel Flash
+ * We aren't supporting it. Newer versions of the
+ * hardware don't support Parallel Flash at all.
+ */
+#define CFG_NO_FLASH
+#undef CFG_CMD_IMLS
+#undef CFG_CMD_JFFS2
+#undef CONFIG_JFFS2_CMDLINE
+#undef CFG_CMD_FLASH
+
+#include <asm/blackfin-config-post.h>
+
+#endif

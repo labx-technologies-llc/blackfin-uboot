@@ -2261,8 +2261,8 @@ BFIN_BOARDS = \
 # Bluetechnix tinyboards
 BFIN_BOARDS += cm-bf527 cm-bf533 cm-bf537e cm-bf548 cm-bf561 tcm-bf537
 
-# Misc third party boards
-BFIN_BOARDS += bf537-minotaur bf537-srv1
+# Misc Third party boards
+BFIN_BOARDS += bf537-minotaur bf537-srv1 blackstamp
 
 $(BFIN_BOARDS:%=%_config)	: unconfig
 	@$(MKCONFIG) $(@:_config=) blackfin blackfin $(@:_config=)
@@ -2314,6 +2314,7 @@ clean:
 	rm -f $(obj)board/bf538f-ezkit/u-boot.lds
 	rm -f $(obj)board/bf548-ezkit/u-boot.lds
 	rm -f $(obj)board/bf561-ezkit/u-boot.lds
+	rm -f $(obj)board/blackstamp/u-boot.lds
 	rm -f $(obj)board/cm-bf527/u-boot.lds
 	rm -f $(obj)board/cm-bf533/u-boot.lds
 	rm -f $(obj)board/cm-bf537e/u-boot.lds
