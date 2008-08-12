@@ -21,12 +21,12 @@
 /* Simple sanity check on the specified address to make sure it contains
  * an LDR image of some sort.
  */
-static bool ldr_valid_signature(uint32_t *data)
+static bool ldr_valid_signature(uint8_t *data)
 {
 #if defined(__ADSPBF561__)
 
 	/* BF56x has a 4 byte global header */
-	if ((*data & 0xFF000000) == 0xA0000000)
+	if (data[3] == 0xA0)
 		return true;
 
 #elif defined(__ADSPBF531__) || defined(__ADSPBF532__) || defined(__ADSPBF533__) || \
@@ -34,12 +34,16 @@ static bool ldr_valid_signature(uint32_t *data)
       defined(__ADSPBF538__) || defined(__ADSPBF539__)
 
 	/* all the BF53x should start at this address mask */
-	if ((*data & 0xFF0FFF0F) == 0xFF000000)
+	uint32_t addr;
+	memmove(&addr, data, sizeof(addr));
+	if ((addr & 0xFF0FFF0F) == 0xFF000000)
 		return true;
 #else
 
 	/* everything newer has a magic byte */
-	if ((*data & 0xFF000000) == 0xAD000000 && data[2] == 0x00000000)
+	uint32_t count;
+	memmove(&count, data + 8, sizeof(count));
+	if (data[3] == 0xAD && count == 0)
 		return true;
 
 #endif
