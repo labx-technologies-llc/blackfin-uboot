@@ -60,7 +60,7 @@ static bool ldr_valid_signature(uint8_t *data)
 #define INIT      0x0008
 #define IGNORE    0x0010
 #define FINAL     0x8000
-static void *ldr_load(uint8_t *base_addr)
+static void ldr_load(uint8_t *base_addr)
 {
 #if defined(__ADSPBF531__) || defined(__ADSPBF532__) || defined(__ADSPBF533__) || \
   /*defined(__ADSPBF534__) || defined(__ADSPBF536__) || defined(__ADSPBF537__) ||*/\
@@ -80,7 +80,7 @@ static void *ldr_load(uint8_t *base_addr)
 # endif
 
 	memmove(&flags, base_addr + 8, sizeof(flags));
-	ret = (void *)(flags & RESVECT ? 0xFFA00000 : 0xFFA08000);
+	bfin_write_EVT1(flags & RESVECT ? 0xFFA00000 : 0xFFA08000);
 
 	do {
 		/* block header may not be aligned */
@@ -108,10 +108,6 @@ static void *ldr_load(uint8_t *base_addr)
 			base_addr += count;
 	} while (!(flags & FINAL));
 
-	return ret;
-
-#else
-	return base_addr;
 #endif
 }
 
@@ -123,13 +119,16 @@ static void ldr_exec(void *addr)
 {
 #if defined(__ADSPBF534__) || defined(__ADSPBF536__) || defined(__ADSPBF537__)
 
+	/* restore EVT1 to reset value as this is what the bootrom uses as
+	 * the default entry point when booting the final block of LDRs
+	 */
+	bfin_write_EVT1(L1_INST_SRAM);
 	__asm__("call (%0);" : : "a"(_BOOTROM_MEMBOOT), "q7"(addr) : "RETS", "memory");
 
 #elif defined(__ADSPBF531__) || defined(__ADSPBF532__) || defined(__ADSPBF533__) || \
       defined(__ADSPBF538__) || defined(__ADSPBF539__) || defined(__ADSPBF561__)
 
-	void (*ldr_entry)(void) = addr;
-	printf("Calling entry point at 0x%p ...\n", addr);
+	void (*ldr_entry)(void) = bfin_read_EVT1();
 	ldr_entry();
 
 #else
@@ -160,7 +159,7 @@ int do_bootldr(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	/* Check if it is a LDR file */
 	if (ldr_valid_signature(addr)) {
 		printf("## Booting ldr image at 0x%p ...\n", addr);
-		addr = ldr_load(addr);
+		ldr_load(addr);
 
 		icache_disable();
 		dcache_disable();
