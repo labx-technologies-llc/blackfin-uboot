@@ -355,6 +355,8 @@ static int SetupSystemRegs(int *opmode)
 	*pPORTH_FER = 0xFFFF;
 #ifdef __ADSPBF52x__
 	*pPORTH_MUX = PORT_x_MUX_0_FUNC_2 | PORT_x_MUX_1_FUNC_2 | PORT_x_MUX_2_FUNC_2;
+	*pPORTG_MUX = (*pPORTG_MUX & ~PORT_x_MUX_6_MASK) | PORT_x_MUX_6_FUNC_2;
+	*pPORTG_FER |= PG14 | PG15;
 #endif
 #else
 #if defined(__ADSPBF536__) || defined(__ADSPBF537__)
@@ -363,6 +365,8 @@ static int SetupSystemRegs(int *opmode)
 #ifdef __ADSPBF52x__
 	*pPORTH_FER = 0x01FF;
 	*pPORTH_MUX = PORT_x_MUX_0_FUNC_2 | PORT_x_MUX_1_FUNC_2;
+	*pPORTG_MUX = (*pPORTG_MUX & ~PORT_x_MUX_6_MASK) | PORT_x_MUX_6_FUNC_2;
+	*pPORTG_FER |= PG14 | PG15;
 #endif
 #endif
 	/* MDC  = 2.5 MHz */
