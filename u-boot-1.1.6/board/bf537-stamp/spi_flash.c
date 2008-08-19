@@ -628,7 +628,7 @@ static void transmit_address(uint32_t addr)
  */
 static int read_flash(unsigned long address, long count, uchar *buffer)
 {
-	size_t i;
+	size_t i, j;
 
 	/* Send the read command to SPI device */
 	SPI_ON();
@@ -642,10 +642,13 @@ static int read_flash(unsigned long address, long count, uchar *buffer)
 
 	/* After the SPI device address has been placed on the MOSI pin the data can be */
 	/* received on the MISO pin. */
+	j = flash.sector_size << 1;
 	for (i = 1; i <= count; ++i) {
 		*buffer++ = spi_write_read_byte(0);
-		if (i % flash.sector_size == 0)
+		if (!j--) {
 			puts(".");
+			j = flash.sector_size;
+		}
 	}
 
 	SPI_OFF();
