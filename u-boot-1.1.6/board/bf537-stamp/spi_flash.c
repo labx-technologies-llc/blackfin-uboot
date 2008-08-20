@@ -18,6 +18,7 @@
 #include <malloc.h>
 #include <asm/io.h>
 #include <asm/mach-common/bits/spi.h>
+#include <asm/mach-common/bits/dma.h>
 
 /* Forcibly phase out these */
 #ifdef CONFIG_SPI_FLASH_NUM_SECTORS
@@ -233,14 +234,13 @@ static void SPI_INIT(void)
 #endif
 
 	/* initate communication upon write of TDBR */
-	*pSPI_CTL = (SPE|MSTR|CPHA|CPOL|0x01);
+	*pSPI_CTL = (SPE | MSTR | CPHA | CPOL | TDBR_CORE);
 	*pSPI_BAUD = CONFIG_SPI_BAUD;
 }
 
 static void SPI_DEINIT(void)
 {
-	/* put SPI settings back to reset state */
-	*pSPI_CTL = 0x0400;
+	*pSPI_CTL = 0;
 	*pSPI_BAUD = 0;
 	SSYNC();
 }
@@ -626,6 +626,7 @@ static void transmit_address(uint32_t addr)
  *			int pnData - pointer to store value read from flash
  *			long lCount - number of elements to read
  */
+#ifdef CONFIG_SPI_READFLASH_NODMA
 static int read_flash(unsigned long address, long count, uchar *buffer)
 {
 	size_t i, j;
@@ -655,6 +656,103 @@ static int read_flash(unsigned long address, long count, uchar *buffer)
 
 	return 0;
 }
+#else
+
+#ifdef __ADSPBF54x__
+#define	bfin_write_DMA_SPI_IRQ_STATUS		bfin_write_DMA4_IRQ_STATUS
+#define	bfin_read_DMA_SPI_IRQ_STATUS            bfin_read_DMA4_IRQ_STATUS
+#define	bfin_write_DMA_SPI_CURR_DESC_PTR        bfin_write_DMA4_CURR_DESC_PTR
+#define	bfin_write_DMA_SPI_CONFIG               bfin_write_DMA4_CONFIG
+#else
+#define	bfin_write_DMA_SPI_IRQ_STATUS		bfin_write_DMA7_IRQ_STATUS
+#define	bfin_read_DMA_SPI_IRQ_STATUS            bfin_read_DMA7_IRQ_STATUS
+#define	bfin_write_DMA_SPI_CURR_DESC_PTR        bfin_write_DMA7_CURR_DESC_PTR
+#define	bfin_write_DMA_SPI_CONFIG               bfin_write_DMA7_CONFIG
+#endif
+
+struct dmadesc_array {
+	unsigned long start_addr;
+	unsigned short cfg;
+	unsigned short x_count;
+	short x_modify;
+	unsigned short y_count;
+	short y_modify;
+} __attribute__((packed));
+
+/*
+ * Read a value from flash for verify purpose
+ * Inputs:	unsigned long ulStart - holds the SPI start address
+ *			int pnData - pointer to store value read from flash
+ *			long lCount - number of elements to read
+ */
+
+static int read_flash(unsigned long address, long count, uchar *buffer)
+{
+	size_t i, j;
+	i = 0;
+	struct dmadesc_array dma[2];
+	/* Send the read command to SPI device */
+
+	if (!count)
+		return 0;
+
+	blackfin_dcache_flush_invalidate_range(buffer, buffer + count);
+
+	if (count <= 65536) {
+		dma[0].start_addr = (unsigned long) buffer;
+		dma[0].cfg = NDSIZE_0 | WNR | DI_EN | WDSIZE_8 | FLOW_STOP | DMAEN;
+		dma[0].x_count = count;
+		dma[0].x_modify = 1;
+	} else {
+		dma[0].start_addr = (unsigned long) buffer;
+		dma[0].cfg = NDSIZE_5 | WNR | WDSIZE_8 | FLOW_ARRAY | DMA2D | DMAEN;
+		dma[0].x_count = 0;	/* 2^16 */
+		dma[0].x_modify = 1;
+		dma[0].y_count = count >> 16;	/* count / 2^16 */
+		dma[0].y_modify = 1;
+		dma[1].start_addr = (unsigned long) (buffer + (count & ~0xFFFF));
+		dma[1].cfg = NDSIZE_0 | WNR | WDSIZE_8 | FLOW_STOP | DI_EN | DMAEN;
+		dma[1].x_count = count & 0xFFFF; /* count % 2^16 */
+		dma[1].x_modify = 1;
+	}
+
+	bfin_write_DMA_SPI_IRQ_STATUS(DMA_DONE | DMA_ERR);
+	bfin_write_DMA_SPI_CURR_DESC_PTR(&dma[0].start_addr);
+
+	SPI_ON();
+
+	spi_write_read_byte(flash.ops->read);
+	transmit_address(address);
+
+#ifndef CONFIG_SPI_FLASH_SLOW_READ
+	/* Send dummy byte when doing SPI fast reads */
+	spi_write_read_byte(0);
+#endif
+
+	bfin_write_DMA_SPI_CONFIG(NDSIZE_7 | FLOW_ARRAY | DMAEN);
+	*pSPI_CTL = (MSTR | CPHA | CPOL | RDBR_DMA | SPE);
+	SSYNC();
+
+	puts(".");
+
+	while (!(bfin_read_DMA_SPI_IRQ_STATUS() & DMA_DONE))
+		if (ctrlc())
+			break;
+
+	puts(".");
+
+	SPI_OFF();
+
+	*pSPI_CTL = 0;
+
+	bfin_write_DMA_SPI_CONFIG(0);
+	bfin_write_DMA_SPI_IRQ_STATUS(DMA_DONE | DMA_ERR);
+
+	*pSPI_CTL = (SPE | MSTR | CPHA | CPOL | TDBR_CORE);
+
+	return 0;
+}
+#endif
 
 static long address_to_sector(unsigned long address)
 {
