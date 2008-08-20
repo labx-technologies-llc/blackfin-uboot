@@ -221,6 +221,7 @@ static void SPI_INIT(void)
 	/* [#3541] This delay appears to be necessary, but not sure
 	 * exactly why as the history behind it is non-existant.
 	 */
+	*pSPI_CTL = 0;
 	udelay(CONFIG_CCLK_HZ / 25000000);
 
 	/* enable SPI pins: SSEL, MOSI, MISO, SCK */
@@ -688,22 +689,23 @@ struct dmadesc_array {
 
 static int read_flash(unsigned long address, long count, uchar *buffer)
 {
-	size_t i, j;
-	i = 0;
+	unsigned int ndsize;
 	struct dmadesc_array dma[2];
 	/* Send the read command to SPI device */
 
 	if (!count)
 		return 0;
 
-	blackfin_dcache_flush_invalidate_range(buffer, buffer + count);
-
 	if (count <= 65536) {
+		blackfin_dcache_flush_invalidate_range(buffer, buffer + count);
+		ndsize = NDSIZE_5;
 		dma[0].start_addr = (unsigned long) buffer;
 		dma[0].cfg = NDSIZE_0 | WNR | DI_EN | WDSIZE_8 | FLOW_STOP | DMAEN;
 		dma[0].x_count = count;
 		dma[0].x_modify = 1;
 	} else {
+		blackfin_dcache_flush_invalidate_range(buffer, buffer + 65536 - 1);
+		ndsize = NDSIZE_7;
 		dma[0].start_addr = (unsigned long) buffer;
 		dma[0].cfg = NDSIZE_5 | WNR | WDSIZE_8 | FLOW_ARRAY | DMA2D | DMAEN;
 		dma[0].x_count = 0;	/* 2^16 */
@@ -729,17 +731,23 @@ static int read_flash(unsigned long address, long count, uchar *buffer)
 	spi_write_read_byte(0);
 #endif
 
-	bfin_write_DMA_SPI_CONFIG(NDSIZE_7 | FLOW_ARRAY | DMAEN);
+	bfin_write_DMA_SPI_CONFIG(ndsize | FLOW_ARRAY | DMAEN);
 	*pSPI_CTL = (MSTR | CPHA | CPOL | RDBR_DMA | SPE);
 	SSYNC();
 
-	puts(".");
+	/*
+	 * We already invalidated the first 64k,
+	 * now while we just wait invalidate the remaining part.
+	 * Its not likely that the DMA is going to overtake
+	 **/
+
+	if (ndsize == NDSIZE_7)
+		blackfin_dcache_flush_invalidate_range(buffer + 65536,
+							 buffer + count);
 
 	while (!(bfin_read_DMA_SPI_IRQ_STATUS() & DMA_DONE))
 		if (ctrlc())
 			break;
-
-	puts(".");
 
 	SPI_OFF();
 
