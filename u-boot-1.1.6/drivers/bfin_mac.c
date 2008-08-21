@@ -352,22 +352,21 @@ static int SetupSystemRegs(int *opmode)
 	/* Set all the pins to peripheral mode */
 
 #ifndef CONFIG_BFIN_MAC_RMII
+# ifdef __ADSPBF52x__
+	*pPORTH_FER |= PH9 | PH10 | PH11 | PH12 | PH13 | PH14 | PH15;
+	*pPORTH_MUX = (*pPORTH_MUX & ~PORT_x_MUX_2_MASK) | PORT_x_MUX_2_FUNC_2;
+# else
 	*pPORTH_FER = 0xFFFF;
-#ifdef __ADSPBF52x__
-	*pPORTH_MUX = PORT_x_MUX_0_FUNC_2 | PORT_x_MUX_1_FUNC_2 | PORT_x_MUX_2_FUNC_2;
-	*pPORTG_MUX = (*pPORTG_MUX & ~PORT_x_MUX_6_MASK) | PORT_x_MUX_6_FUNC_2;
-	*pPORTG_FER |= PG14 | PG15;
-#endif
+# endif
 #else
-#if defined(__ADSPBF536__) || defined(__ADSPBF537__)
-	*pPORTH_FER = 0xC373;
-#endif
-#ifdef __ADSPBF52x__
-	*pPORTH_FER = 0x01FF;
+# ifdef __ADSPBF52x__
+	*pPORTH_FER |= PH0 | PH1 | PH2 | PH3 | PH4 | PH5 | PH6 | PH7 | PH8;
 	*pPORTH_MUX = PORT_x_MUX_0_FUNC_2 | PORT_x_MUX_1_FUNC_2;
 	*pPORTG_MUX = (*pPORTG_MUX & ~PORT_x_MUX_6_MASK) | PORT_x_MUX_6_FUNC_2;
 	*pPORTG_FER |= PG14 | PG15;
-#endif
+# else
+	*pPORTH_FER |= PH0 | PH1 | PH4 | PH5 | PH6 | PH8 | PH9 | PH14 | PH15;
+# endif
 #endif
 	/* MDC  = 2.5 MHz */
 	sysctl = SET_MDCDIV(24);
