@@ -155,36 +155,27 @@
 #endif
 
 #ifdef CONFIG_BFIN_MAC
-# define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL | CFG_CMD_PING)
+# define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL | CFG_CMD_PING | CFG_CMD_DHCP)
 #else
 # define CONFIG_BFIN_CMD		(CONFIG_CMD_DFL & ~CFG_CMD_NET)
 #endif
 
-#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) || (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART)
-#define CONFIG_COMMANDS		(CONFIG_BFIN_CMD| \
-				 CFG_CMD_ELF	| \
-				 CFG_CMD_I2C	| \
-				 CFG_CMD_CACHE  | \
-				 CFG_CMD_JFFS2	| \
-				 CFG_CMD_EEPROM | \
-				 CFG_CMD_DHCP   | \
-				 ADD_IDE_CMD	| \
-				 ADD_NAND_CMD	| \
-				 CFG_CMD_POST_DIAG | \
-				 CFG_CMD_DATE)
-#elif (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
-#define CONFIG_COMMANDS		(( CONFIG_BFIN_CMD| \
-				 CFG_CMD_ELF	| \
-				 CFG_CMD_I2C	| \
-				 CFG_CMD_CACHE  | \
-				 /* CFG_CMD_JFFS2 | */ \
-				 CFG_CMD_EEPROM | \
-				 /* ADD_IDE_CMD	| */ \
-				 CFG_CMD_DATE ) \
-				 & \
-				 /* no image ls */ ~(CFG_CMD_IMLS | CFG_CMD_FLASH) \
-				 )
+#ifdef CFG_NO_FLASH
+# define CONFIG_BFIN_CMD2		(CONFIG_BFIN_CMD & ~(CFG_CMD_IMLS | CFG_CMD_FLASH))
+#else
+# define CONFIG_BFIN_CMD2		(CONFIG_BFIN_CMD | CFG_CMD_JFFS2)
 #endif
+
+#define CONFIG_COMMANDS \
+	(CONFIG_BFIN_CMD2  | \
+	 CFG_CMD_ELF       | \
+	 CFG_CMD_I2C       | \
+	 CFG_CMD_CACHE     | \
+	 CFG_CMD_EEPROM    | \
+	 ADD_IDE_CMD       | \
+	 ADD_NAND_CMD      | \
+	 CFG_CMD_POST_DIAG | \
+	 CFG_CMD_DATE)
 
 #define CONFIG_BFIN_COMMANDS \
 	( CFG_BFIN_CMD_BOOTLDR | \
@@ -198,7 +189,7 @@
 	"update=tftpboot $(loadaddr) u-boot.bin;" \
 		"protect off 0x20000000 0x2003FFFF;" \
 		"erase 0x20000000 0x2003FFFF;cp.b 0x1000000 0x20000000 $(filesize)\0"
-#elif (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#elif (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER) || (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART)
 # define BOOT_ENV_SETTINGS \
 	"update=tftpboot $(loadaddr) u-boot.ldr;" \
 		"eeprom write $(loadaddr) 0x0 $(filesize);\0" \
@@ -258,12 +249,11 @@
 #define CONFIG_STACKBASE	(CFG_GBL_DATA_ADDR  - 4)
 
 
-#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) || (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART)
-/* for bf537-stamp, UART boot mode still store env in flash */
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #define	CFG_ENV_IS_IN_FLASH	1
 #define CFG_ENV_ADDR		0x20004000
 #define CFG_ENV_OFFSET		(CFG_ENV_ADDR - CFG_FLASH_BASE)
-#elif (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#elif (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER) || (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART)
 #define CFG_ENV_IS_IN_EEPROM	1
 #define CFG_ENV_OFFSET		0x10000
 #define CFG_ENV_HEADER		(CFG_ENV_OFFSET + 0x16e) /* 0x12A is the length of LDR file header */
