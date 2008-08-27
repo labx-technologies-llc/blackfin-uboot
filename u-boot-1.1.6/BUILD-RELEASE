@@ -60,6 +60,8 @@ buildit cm-bf548 para uart
 buildit cm-bf561 bypass para
 buildit tcm-bf537 bypass para uart
 
+buildit bf537-srv1 spi uart
+
 # finally, create a tarball of the source code
 uboot="u-boot-${uboot_ver}-${ver}"
 if [ -d .git ] ; then
