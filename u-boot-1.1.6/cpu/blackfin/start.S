@@ -216,7 +216,7 @@ ENTRY(_start)
 
 	/* Enable nested interrupts before continuing with cpu init */
 .Lenable_nested:
-	cli r0;
+	cli r7;
 	[--sp] = reti;
 	jump.l _cpu_init_f;
 
