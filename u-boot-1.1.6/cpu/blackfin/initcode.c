@@ -380,7 +380,6 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 	/* Since we've changed the SCLK above, we may need to update
 	 * the UART divisors (UART baud rates are based on SCLK).
 	 */
-	serial_putc('i');
 	serial_reset_baud(old_baud);
 
 	serial_putc('I');
