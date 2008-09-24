@@ -100,13 +100,14 @@
 #if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CFG_ENV_IS_IN_EEPROM	1
 #define CFG_ENV_OFFSET		0x4000
-#else
-#define	CFG_ENV_IS_IN_FLASH	1
-#define CFG_ENV_ADDR		0x20002000
-#define CFG_ENV_OFFSET		(CFG_ENV_ADDR - CFG_FLASH_BASE)
-#endif
 #define CFG_ENV_SIZE		0x2000
-#define	CFG_ENV_SECT_SIZE	0x20000	/* Total Size of Environment Sector */
+#define CFG_ENV_SECT_SIZE	0x20000	/* Total Size of Environment Sector */
+#else
+#define CFG_ENV_IS_IN_FLASH	1
+#define CFG_ENV_ADDR		0x20008000
+#define CFG_ENV_OFFSET		(CFG_ENV_ADDR - CFG_FLASH_BASE)
+#define CFG_ENV_SIZE		0x8000
+#endif
 #define ENV_IS_EMBEDDED_CUSTOM
 
 /* CONFIG_SPI_BAUD controls the SPI peripheral clock divider		*/
