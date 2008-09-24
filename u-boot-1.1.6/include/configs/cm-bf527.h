@@ -82,7 +82,7 @@
 #define CONFIG_NETCONSOLE	1
 #define CONFIG_NET_MULTI	1
 #endif
-#define CONFIG_HOSTNAME		CM-BF527
+#define CONFIG_HOSTNAME		cm-bf527
 /* Uncomment next line to use fixed MAC address */
 /* #define CONFIG_ETHADDR	02:80:ad:20:31:e8 */
 
