@@ -1,5 +1,5 @@
 /*
- * Control output GPIO pins on the fly
+ * Control GPIO pins on the fly
  *
  * Copyright (c) 2008 Analog Devices Inc.
  *
@@ -20,8 +20,9 @@ int do_gpio(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	}
 
 	/* parse the behavior */
-	ulong port_cmd;
+	ulong port_cmd = 0;
 	switch (argv[1][0]) {
+		case 'i': break;
 		case 's': port_cmd = (PORTFIO_SET - PORTFIO); break;
 		case 'c': port_cmd = (PORTFIO_CLEAR - PORTFIO); break;
 		case 't': port_cmd = (PORTFIO_TOGGLE - PORTFIO); break;
@@ -47,15 +48,20 @@ int do_gpio(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	if (pin > 15)
 		goto show_usage;
 
-	/* finally, let's do it: set to gpio output and execute command */
+	/* finally, let's do it: set direction and exec command */
 	switch (*str_pin) {
 		case 'f': bfin_write_PORTF_FER(bfin_read_PORTF_FER() & ~pin_mask); break;
 		case 'g': bfin_write_PORTG_FER(bfin_read_PORTG_FER() & ~pin_mask); break;
 		case 'h': bfin_write_PORTH_FER(bfin_read_PORTH_FER() & ~pin_mask); break;
 	}
+
 	ulong port_dir = port_base + (PORTFIO_DIR - PORTFIO);
-	bfin_write16(port_dir, bfin_read16(port_dir) | pin_mask);
-	bfin_write16(port_base + port_cmd, pin_mask);
+	if (argv[1][0] == 'i')
+		bfin_write16(port_dir, bfin_read16(port_dir) & ~pin_mask);
+	else {
+		bfin_write16(port_dir, bfin_read16(port_dir) | pin_mask);
+		bfin_write16(port_base + port_cmd, pin_mask);
+	}
 
 	printf("gpio: pin %li on port %c has been %c\n", pin, *str_pin, argv[1][0]);
 
