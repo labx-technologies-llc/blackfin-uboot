@@ -398,7 +398,26 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 
 	serial_putc('I');
 
-	/* Program the external memory controller. */
+	/* Program the external memory controller before we come out of
+	 * self-refresh.  This only works with our SDRAM controller.
+	 */
+#ifndef EBIU_RSTCTL
+	bfin_write_EBIU_SDRRC(CONFIG_EBIU_SDRRC_VAL);
+	bfin_write_EBIU_SDBCTL(CONFIG_EBIU_SDBCTL_VAL);
+	bfin_write_EBIU_SDGCTL(CONFIG_EBIU_SDGCTL_VAL);
+#endif
+
+	/* Now that we've reprogrammed, take things out of self refresh. */
+	if (put_into_srfs)
+#ifdef EBIU_RSTCTL
+		bfin_write_EBIU_RSTCTL(bfin_read_EBIU_RSTCTL() & ~(SRREQ));
+#else
+		bfin_write_EBIU_SDGCTL(bfin_read_EBIU_SDGCTL() & ~(SRFS));
+#endif
+
+	/* Our DDR controller sucks and cannot be programmed while in
+	 * self-refresh.  So we have to pull it out before programming.
+	 */
 #ifdef EBIU_RSTCTL
 	bfin_write_EBIU_RSTCTL(bfin_read_EBIU_RSTCTL() | 0x1 /*DDRSRESET*/ | CONFIG_EBIU_RSTCTL_VAL);
 	bfin_write_EBIU_DDRCTL0(CONFIG_EBIU_DDRCTL0_VAL);
@@ -411,18 +430,6 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 # ifdef CONFIG_EBIU_DDRQUE_VAL
 	bfin_write_EBIU_DDRQUE(bfin_read_EBIU_DDRQUE() | CONFIG_EBIU_DDRQUE_VAL);
 # endif
-#else
-	bfin_write_EBIU_SDRRC(CONFIG_EBIU_SDRRC_VAL);
-	bfin_write_EBIU_SDBCTL(CONFIG_EBIU_SDBCTL_VAL);
-	bfin_write_EBIU_SDGCTL(CONFIG_EBIU_SDGCTL_VAL);
-#endif
-
-	/* Now that we've reprogrammed, take things out of self refresh. */
-	if (put_into_srfs)
-#ifdef EBIU_RSTCTL
-		bfin_write_EBIU_RSTCTL(bfin_read_EBIU_RSTCTL() & ~(SRREQ));
-#else
-		bfin_write_EBIU_SDGCTL(bfin_read_EBIU_SDGCTL() & ~(SRFS));
 #endif
 
 	serial_putc('H');
