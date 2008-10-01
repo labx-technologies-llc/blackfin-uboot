@@ -307,20 +307,6 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 
 	serial_putc('B');
 
-	/* Disable all peripheral wakeups except for the PLL event. */
-#ifdef SIC_IWR0
-	bfin_write_SIC_IWR0(1);
-	bfin_write_SIC_IWR1(0);
-# ifdef SIC_IWR2
-	bfin_write_SIC_IWR2(0);
-# endif
-#elif defined(SICA_IWR0)
-	bfin_write_SICA_IWR0(1);
-	bfin_write_SICA_IWR1(0);
-#else
-	bfin_write_SIC_IWR(1);
-#endif
-
 	/* If we're entering self refresh, make sure it has happened. */
 	if (put_into_srfs)
 #ifdef EBIU_RSTCTL
@@ -346,6 +332,20 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 		syscontrol(SYSCTRL_WRITE | SYSCTRL_VRCTL | SYSCTRL_PLLCTL | SYSCTRL_PLLDIV | SYSCTRL_LOCKCNT |
 			(CONFIG_VR_CTL_VAL & FREQ_MASK ? SYSCTRL_INTVOLTAGE : SYSCTRL_EXTVOLTAGE), &memory_settings, NULL);
 	} else {
+	/* Disable all peripheral wakeups except for the PLL event. */
+#ifdef SIC_IWR0
+		bfin_write_SIC_IWR0(1);
+		bfin_write_SIC_IWR1(0);
+# ifdef SIC_IWR2
+		bfin_write_SIC_IWR2(0);
+# endif
+#elif defined(SICA_IWR0)
+		bfin_write_SICA_IWR0(1);
+		bfin_write_SICA_IWR1(0);
+#else
+		bfin_write_SIC_IWR(1);
+#endif
+
 		serial_putc('L');
 
 		bfin_write_PLL_LOCKCNT(CONFIG_PLL_LOCKCNT_VAL);
@@ -375,6 +375,20 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 			bfin_write_PLL_CTL(CONFIG_PLL_CTL_VAL);
 			asm("idle;");
 		}
+
+	/* Restore all peripheral wakeups. */
+#ifdef SIC_IWR0
+		bfin_write_SIC_IWR0(-1);
+		bfin_write_SIC_IWR1(-1);
+# ifdef SIC_IWR2
+		bfin_write_SIC_IWR2(-1);
+# endif
+#elif defined(SICA_IWR0)
+		bfin_write_SICA_IWR0(-1);
+		bfin_write_SICA_IWR1(-1);
+#else
+		bfin_write_SIC_IWR(-1);
+#endif
 	}
 
 	/* Since we've changed the SCLK above, we may need to update
@@ -459,20 +473,6 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 #endif
 
 	serial_putc('N');
-
-	/* Restore all peripheral wakeups. */
-#ifdef SIC_IWR0
-	bfin_write_SIC_IWR0(-1);
-	bfin_write_SIC_IWR1(-1);
-# ifdef SIC_IWR2
-	bfin_write_SIC_IWR2(-1);
-# endif
-#elif defined(SICA_IWR0)
-	bfin_write_SICA_IWR0(-1);
-	bfin_write_SICA_IWR1(-1);
-#else
-	bfin_write_SIC_IWR(-1);
-#endif
 
 	serial_putc('>');
 	serial_putc('\n');
