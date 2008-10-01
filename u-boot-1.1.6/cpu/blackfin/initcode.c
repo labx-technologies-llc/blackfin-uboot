@@ -261,6 +261,8 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 {
 	uint32_t old_baud = serial_init();
 
+	serial_putc('A');
+
 #ifdef CONFIG_HW_WATCHDOG
 # ifndef CONFIG_HW_WATCHDOG_TIMEOUT_INITCODE
 #  define CONFIG_HW_WATCHDOG_TIMEOUT_INITCODE 20000
@@ -277,7 +279,7 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 	}
 #endif
 
-	serial_putc('S');
+	serial_putc('B');
 
 	/* If external memory is enabled, put it into self refresh first. */
 	bool put_into_srfs = false;
@@ -293,6 +295,8 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 	}
 #endif
 
+	serial_putc('C');
+
 	/* Blackfin bootroms use the SPI slow read opcode instead of the SPI
 	 * fast read, so we need to slow down the SPI clock a lot more during
 	 * boot.  Once we switch over to u-boot's SPI flash driver, we'll
@@ -305,7 +309,7 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 		bfin_write_SPI_BAUD(CONFIG_SPI_BAUD_INITBLOCK);
 #endif
 
-	serial_putc('B');
+	serial_putc('D');
 
 	/* If we're entering self refresh, make sure it has happened. */
 	if (put_into_srfs)
@@ -316,13 +320,15 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 #endif
 			continue;
 
+	serial_putc('E');
+
 	/* With newer bootroms, we use the helper function to set up
 	 * the memory controller.  Older bootroms lacks such helpers
 	 * so we do it ourselves.
 	 */
 	uint16_t vr_ctl = bfin_read_VR_CTL();
 	if (BOOTROM_CAPS_SYSCONTROL) {
-		serial_putc('S');
+		serial_putc('F');
 
 		ADI_SYSCTRL_VALUES memory_settings;
 		memory_settings.uwVrCtl = CONFIG_VR_CTL_VAL;
@@ -332,7 +338,9 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 		syscontrol(SYSCTRL_WRITE | SYSCTRL_VRCTL | SYSCTRL_PLLCTL | SYSCTRL_PLLDIV | SYSCTRL_LOCKCNT |
 			(CONFIG_VR_CTL_VAL & FREQ_MASK ? SYSCTRL_INTVOLTAGE : SYSCTRL_EXTVOLTAGE), &memory_settings, NULL);
 	} else {
-	/* Disable all peripheral wakeups except for the PLL event. */
+		serial_putc('G');
+
+		/* Disable all peripheral wakeups except for the PLL event. */
 #ifdef SIC_IWR0
 		bfin_write_SIC_IWR0(1);
 		bfin_write_SIC_IWR1(0);
@@ -346,11 +354,11 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 		bfin_write_SIC_IWR(1);
 #endif
 
-		serial_putc('L');
+		serial_putc('H');
 
 		bfin_write_PLL_LOCKCNT(CONFIG_PLL_LOCKCNT_VAL);
 
-		serial_putc('A');
+		serial_putc('I');
 
 		/* Only reprogram when needed to avoid triggering unnecessary
 		 * PLL relock sequences.
@@ -361,7 +369,7 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 			asm("idle;");
 		}
 
-		serial_putc('C');
+		serial_putc('J');
 
 		bfin_write_PLL_DIV(CONFIG_PLL_DIV_VAL);
 
@@ -376,7 +384,9 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 			asm("idle;");
 		}
 
-	/* Restore all peripheral wakeups. */
+		serial_putc('L');
+
+		/* Restore all peripheral wakeups. */
 #ifdef SIC_IWR0
 		bfin_write_SIC_IWR0(-1);
 		bfin_write_SIC_IWR1(-1);
@@ -391,12 +401,14 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 #endif
 	}
 
+	serial_putc('M');
+
 	/* Since we've changed the SCLK above, we may need to update
 	 * the UART divisors (UART baud rates are based on SCLK).
 	 */
 	serial_reset_baud(old_baud);
 
-	serial_putc('I');
+	serial_putc('N');
 
 	/* Program the external memory controller before we come out of
 	 * self-refresh.  This only works with our SDRAM controller.
@@ -407,6 +419,8 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 	bfin_write_EBIU_SDGCTL(CONFIG_EBIU_SDGCTL_VAL);
 #endif
 
+	serial_putc('O');
+
 	/* Now that we've reprogrammed, take things out of self refresh. */
 	if (put_into_srfs)
 #ifdef EBIU_RSTCTL
@@ -414,6 +428,8 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 #else
 		bfin_write_EBIU_SDGCTL(bfin_read_EBIU_SDGCTL() & ~(SRFS));
 #endif
+
+	serial_putc('P');
 
 	/* Our DDR controller sucks and cannot be programmed while in
 	 * self-refresh.  So we have to pull it out before programming.
@@ -432,7 +448,7 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 # endif
 #endif
 
-	serial_putc('H');
+	serial_putc('Q');
 
 	/* Are we coming out of hibernate (suspend to memory) ?
 	 * The memory layout is:
@@ -465,7 +481,7 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 		}
 	}
 
-	serial_putc('F');
+	serial_putc('S');
 
 	/* Program the async banks controller. */
 	bfin_write_EBIU_AMBCTL0(CONFIG_EBIU_AMBCTL0_VAL);
@@ -479,7 +495,7 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 	bfin_write_EBIU_FCTL(CONFIG_EBIU_FCTL_VAL);
 #endif
 
-	serial_putc('N');
+	serial_putc('T');
 
 	serial_putc('>');
 	serial_putc('\n');
