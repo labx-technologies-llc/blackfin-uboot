@@ -9,10 +9,11 @@
  * Command Settings
  */
 #ifndef CONFIG_COMMANDS
+# define ADI_CMDS_BASE    (CONFIG_CMD_DFL & ~(CFG_CMD_IMLS | CFG_CMD_FLASH | CFG_CMD_NET))
 # if ADI_CMDS_NETWORK
-#  define ADI_CMDS_BASE (CONFIG_CMD_DFL | CFG_CMD_PING | CFG_CMD_DHCP)
+#  define ADI_CMDS_NET    (CFG_CMD_NET | CFG_CMD_PING | CFG_CMD_DHCP)
 # else
-#  define ADI_CMDS_BASE (CONFIG_CMD_DFL & ~CFG_CMD_NET)
+#  define ADI_CMDS_NET    (0)
 # endif
 # ifdef CONFIG_RTC_BFIN
 #  define ADI_CMDS_DATE   (CFG_CMD_DATE)
@@ -35,21 +36,22 @@
 #  define ADI_CMDS_I2C    (0)
 # endif
 # ifndef CFG_NO_FLASH
-#  define ADI_CMDS_JFFS2  (CFG_CMD_JFFS2)
+#  define ADI_CMDS_FLASH  (CFG_CMD_JFFS2 | CFG_CMD_IMLS | CFG_CMD_FLASH)
 # else
-#  define ADI_CMDS_JFFS2  (0)
+#  define ADI_CMDS_FLASH  (0)
 # endif
 # ifndef ADI_CMDS_EXTRA
 #  define ADI_CMDS_EXTRA  (0)
 # endif
 # define CONFIG_COMMANDS \
 	(ADI_CMDS_BASE     | \
+	 ADI_CMDS_NET      | \
 	 ADI_CMDS_DATE     | \
 	 ADI_CMDS_DIAG     | \
 	 ADI_CMDS_EEPROM   | \
 	 ADI_CMDS_EXTRA    | \
 	 ADI_CMDS_I2C      | \
-	 ADI_CMDS_JFFS2    | \
+	 ADI_CMDS_FLASH    | \
 	 CFG_CMD_ELF       | \
 	 CFG_CMD_CACHE     | \
 	 CFG_CMD_REGINFO)
