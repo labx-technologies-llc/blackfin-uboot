@@ -92,14 +92,6 @@
 
 #define BOOTROM_CAPS_ADI_BOOT_STRUCTS 1
 
-/* Not available on initial BF54x or BF52x */
-#if (defined(__ADSPBF54x__) && __SILICON_REVISION__ < 1) || \
-    (defined(__ADSPBF52x__) && __SILICON_REVISION__ < 2)
-#define BOOTROM_CAPS_SYSCONTROL 0
-#else
-#define BOOTROM_CAPS_SYSCONTROL 1
-#endif
-
 #endif
 
 #ifndef BOOTROM_FOLLOWS_C_ABI
@@ -107,9 +99,6 @@
 #endif
 #ifndef BOOTROM_CAPS_ADI_BOOT_STRUCTS
 #define BOOTROM_CAPS_ADI_BOOT_STRUCTS 0
-#endif
-#ifndef BOOTROM_CAPS_SYSCONTROL
-#define BOOTROM_CAPS_SYSCONTROL 0
 #endif
 
 #ifndef __ASSEMBLY__
@@ -132,7 +121,7 @@ typedef struct ADI_SYSCTRL_VALUES {
 #ifndef _BOOTROM_SYSCONTROL
 #define _BOOTROM_SYSCONTROL 0
 #endif
-static uint32_t (* const syscontrol)(uint32_t action_flags, ADI_SYSCTRL_VALUES *power_settings, void *reserved) = (void *)_BOOTROM_SYSCONTROL;
+static uint32_t (* const bfrom_SysControl)(uint32_t action_flags, ADI_SYSCTRL_VALUES *power_settings, void *reserved) = (void *)_BOOTROM_SYSCONTROL;
 
 #endif /* __ASSEMBLY__ */
 

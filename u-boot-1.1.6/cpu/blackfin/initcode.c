@@ -327,7 +327,7 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 	 * so we do it ourselves.
 	 */
 	uint16_t vr_ctl = bfin_read_VR_CTL();
-	if (BOOTROM_CAPS_SYSCONTROL) {
+	if (!ANOMALY_05000386) {
 		serial_putc('F');
 
 		ADI_SYSCTRL_VALUES memory_settings;
@@ -335,7 +335,7 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 		memory_settings.uwPllCtl = CONFIG_PLL_CTL_VAL;
 		memory_settings.uwPllDiv = CONFIG_PLL_DIV_VAL;
 		memory_settings.uwPllLockCnt = CONFIG_PLL_LOCKCNT_VAL;
-		syscontrol(SYSCTRL_WRITE | SYSCTRL_VRCTL | SYSCTRL_PLLCTL | SYSCTRL_PLLDIV | SYSCTRL_LOCKCNT |
+		bfrom_SysControl(SYSCTRL_WRITE | SYSCTRL_VRCTL | SYSCTRL_PLLCTL | SYSCTRL_PLLDIV | SYSCTRL_LOCKCNT |
 			(CONFIG_VR_CTL_VAL & FREQ_MASK ? SYSCTRL_INTVOLTAGE : SYSCTRL_EXTVOLTAGE), &memory_settings, NULL);
 	} else {
 		serial_putc('G');

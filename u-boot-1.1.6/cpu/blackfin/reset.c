@@ -76,10 +76,10 @@ static inline void bfin_reset_trampoline(void)
 	if (board_reset)
 		board_reset();
 	while (1)
-		if (!ANOMALY_05000353)
-			syscontrol(SYSCTRL_SOFTRESET, NULL, NULL);
-		else
+		if (ANOMALY_05000353 || ANOMALY_05000386)
 			asm("jump (%0);" : : "a" (bfin_reset));
+		else
+			bfrom_SysControl(SYSCTRL_SOFTRESET, NULL, NULL);
 }
 
 __attribute__ ((__noreturn__))
