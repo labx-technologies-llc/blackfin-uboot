@@ -61,6 +61,11 @@ int do_otp(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		return 1;
 	}
 
+	if (otp_func == otp_write) {
+		puts("OTP writing not supported yet\n");
+		return 1;
+	}
+
 	uint64_t *addr = (uint64_t *)simple_strtoul(argv[2], NULL, 16);
 	uint32_t page = simple_strtoul(argv[3], NULL, 16);
 	uint32_t flags, ret;
@@ -113,11 +118,7 @@ int do_otp(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		}
 
 		/* Only supported in newer silicon ... enable writing */
-#if (0)
-		otp_command(OTP_INIT, ...);
-#else
-		*pOTP_TIMING = 0x32149485;
-#endif
+		/* otp_command(OTP_INIT, ...); */
 	}
 
 	printf("OTP memory %s: addr 0x%08lx  page 0x%03X  count %ld ... ",
@@ -143,13 +144,10 @@ int do_otp(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	else
 		puts(" done\n");
 
+	/* Only supported in newer silicon ... disable writing
 	if (otp_func == otp_write)
-		/* Only supported in newer silicon ... disable writing */
-#if (0)
 		otp_command(OTP_INIT, ...);
-#else
-		*pOTP_TIMING = 0x1485;
-#endif
+	*/
 
 	return ret;
 }
