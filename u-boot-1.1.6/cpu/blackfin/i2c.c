@@ -15,6 +15,11 @@
 #include <asm/blackfin.h>
 #include <asm/mach-common/bits/twi.h>
 
+#ifdef DEBUG
+# define dmemset(s, c, n) memset(s, c, n)
+#else
+# define dmemset(s, c, n)
+#endif
 #define debugi(fmt, args...) \
 	debug( \
 		"MSTAT:0x%03x FSTAT:0x%x ISTAT:0x%02x\t" \
@@ -142,7 +147,7 @@ static int i2c_transfer(uchar chip, uint addr, int alen, uchar *buffer, int len,
 	};
 	int ret;
 
-	memset(buffer, 0xff, len);
+	dmemset(buffer, 0xff, len);
 	debugi("chip=0x%x addr=0x%02x alen=%i buf[0]=0x%02x len=%i flags=0x%02x[%s] ",
 		chip, addr, alen, buffer[0], len, flags, (flags & I2C_M_READ ? "rd" : "wr"));
 
