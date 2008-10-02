@@ -7,8 +7,8 @@
  */
 
 /* This file shoule be up to date with:
- *  - Revision E, 02/08/2008; ADSP-BF538/BF538F Blackfin Processor Anomaly List
- *  - Revision J, 02/08/2008; ADSP-BF539/BF539F Blackfin Processor Anomaly List
+ *  - Revision F, 06/18/2008; ADSP-BF538/BF538F Blackfin Processor Anomaly List
+ *  - Revision K, 06/18/2008; ADSP-BF539/BF539F Blackfin Processor Anomaly List
  */
 
 #ifndef _MACH_ANOMALY_H_
@@ -51,7 +51,7 @@
 /* High I/O Activity Causes Output Voltage of Internal Voltage Regulator (Vddint) to Decrease */
 #define ANOMALY_05000270 (__SILICON_REVISION__ < 4)
 /* Certain Data Cache Writethrough Modes Fail for Vddint <= 0.9V */
-#define ANOMALY_05000272 (__SILICON_REVISION__ < 4)
+#define ANOMALY_05000272 (1)
 /* Writes to Synchronous SDRAM Memory May Be Lost */
 #define ANOMALY_05000273 (__SILICON_REVISION__ < 4)
 /* Writes to an I/O Data Register One SCLK Cycle after an Edge Is Detected May Clear Interrupt */
@@ -81,7 +81,7 @@
 /* False Hardware Errors Caused by Fetches at the Boundary of Reserved Memory */
 #define ANOMALY_05000310 (1)
 /* Errors when SSYNC, CSYNC, or Loads to LT, LB and LC Registers Are Interrupted */
-#define ANOMALY_05000312 (1)
+#define ANOMALY_05000312 (__SILICON_REVISION__ < 5)
 /* PPI Is Level-Sensitive on First Transfer */
 #define ANOMALY_05000313 (__SILICON_REVISION__ < 4)
 /* Killed System MMR Write Completes Erroneously on Next System MMR Access */
@@ -89,21 +89,23 @@
 /* PFx Glitch on Write to FIO_FLAG_D or FIO_FLAG_T */
 #define ANOMALY_05000318 (__SILICON_REVISION__ < 4)
 /* Regulator Programming Blocked when Hibernate Wakeup Source Remains Active */
-#define ANOMALY_05000355 (1)
+#define ANOMALY_05000355 (__SILICON_REVISION__ < 5)
 /* Serial Port (SPORT) Multichannel Transmit Failure when Channel 0 Is Disabled */
-#define ANOMALY_05000357 (1)
+#define ANOMALY_05000357 (__SILICON_REVISION__ < 5)
 /* PPI Underflow Error Goes Undetected in ITU-R 656 Mode */
 #define ANOMALY_05000366 (1)
 /* Possible RETS Register Corruption when Subroutine Is under 5 Cycles in Duration */
-#define ANOMALY_05000371 (1)
+#define ANOMALY_05000371 (__SILICON_REVISION__ < 5)
 /* Entering Hibernate State with Peripheral Wakeups Enabled Draws Excess Current */
-#define ANOMALY_05000374 (__SILICON_REVISION__ >= 4)
+#define ANOMALY_05000374 (__SILICON_REVISION__ == 4)
 /* New Feature: Open-Drain GPIO Outputs on PC1 and PC4 (Not Available on Older Silicon) */
 #define ANOMALY_05000375 (__SILICON_REVISION__ < 4)
 /* SSYNC Stalls Processor when Executed from Non-Cacheable Memory */
 #define ANOMALY_05000402 (__SILICON_REVISION__ < 4)
 /* Level-Sensitive External GPIO Wakeups May Cause Indefinite Stall */
 #define ANOMALY_05000403 (1)
+/* Speculative Fetches Can Cause Undesired External FIFO Operations */
+#define ANOMALY_05000416 (1)
 
 /* Anomalies that don't exist on this proc */
 #define ANOMALY_05000230 (0)
