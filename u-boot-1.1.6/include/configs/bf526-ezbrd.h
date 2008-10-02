@@ -1,9 +1,9 @@
 /*
- * U-boot - Configuration file for BF526 EZKit board
+ * U-boot - Configuration file for BF526 EZBrd board
  */
 
-#ifndef __CONFIG_BF526_EZKIT_H__
-#define __CONFIG_BF526_EZKIT_H__
+#ifndef __CONFIG_BF526_EZBRD_H__
+#define __CONFIG_BF526_EZBRD_H__
 
 #include <asm/blackfin-config-pre.h>
 
@@ -83,7 +83,7 @@
 #define CONFIG_NETCONSOLE	1
 #define CONFIG_NET_MULTI	1
 #endif
-#define CONFIG_HOSTNAME		bf526-ezkit
+#define CONFIG_HOSTNAME		bf526-ezbrd
 /* Uncomment next line to use fixed MAC address */
 /* #define CONFIG_ETHADDR	02:80:ad:20:31:e8 */
 

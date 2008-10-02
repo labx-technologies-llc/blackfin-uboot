@@ -35,7 +35,7 @@
 
 int checkboard(void)
 {
-	printf("Board: ADI BF526 EZ-Kit board\n");
+	printf("Board: ADI BF526 EZ-Board board\n");
 	printf("       Support: http://blackfin.uclinux.org/\n");
 	return 0;
 }
