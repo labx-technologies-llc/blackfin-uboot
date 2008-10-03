@@ -30,7 +30,7 @@
 #include <command.h>
 #include <asm/blackfin.h>
 
-#define POST_WORD_ADDR 0xFF903FFC
+DECLARE_GLOBAL_DATA_PTR;
 
 int checkboard(void)
 {
@@ -41,88 +41,10 @@ int checkboard(void)
 
 long int initdram(int board_type)
 {
-	DECLARE_GLOBAL_DATA_PTR;
-#ifdef DEBUG
-	int brate;
-	char *tmp = getenv("baudrate");
-	brate = simple_strtoul(tmp, NULL, 16);
-	printf("Serial Port initialized with Baud rate = %x\n", brate);
-	printf("SDRAM attributes:\n");
-	printf("tRCD %d SCLK Cycles,tRP %d SCLK Cycles,tRAS %d SCLK Cycles"
-	       "tWR %d SCLK Cycles,CAS Latency %d SCLK cycles \n",
-	       3, 3, 6, 2, 3);
-	printf("SDRAM Begin: 0x%x\n", CFG_SDRAM_BASE);
-	printf("Bank size = %d MB\n", CFG_MAX_RAM_SIZE >> 20);
-#endif
 	gd->bd->bi_memstart = CFG_SDRAM_BASE;
 	gd->bd->bi_memsize = CFG_MAX_RAM_SIZE;
 	return CFG_MAX_RAM_SIZE;
 }
-
-#if defined(CONFIG_MISC_INIT_R)
-/* miscellaneous platform dependent initialisations */
-#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
-int misc_init_r(void)
-{
-#if defined(CONFIG_BFIN_IDE)
-#if defined(CONFIG_BFIN_CF_IDE)
-	/*Disable ATASEL when we're in Common Memory Mode */
-	cf_outb(0, CONFIG_CF_ATASEL_DIS);
-	udelay(1000);
-#endif
-	ide_init();
-#endif
-	return 0;
-}
-#else
-int misc_init_r(void)
-{
-	return 0;
-}
-#endif
-#endif
-
-#ifdef CONFIG_POST
-#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
-/* Using sw10-PF5 as the hotkey */
-int post_hotkeys_pressed(void)
-{
-	return 0;
-}
-#else
-/* Using sw10-PF5 as the hotkey */
-int post_hotkeys_pressed(void)
-{
-	int delay = 3;
-	int i;
-	unsigned short value;
-
-	*pPORTF_FER &= ~PF5;
-	*pPORTFIO_DIR &= ~PF5;
-	*pPORTFIO_INEN |= PF5;
-
-	printf("########Press SW10 to enter Memory POST########: %2d ", delay);
-	while (delay--) {
-		for (i = 0; i < 100; i++) {
-			value = *pPORTFIO & PF5;
-			if (value != 0)
-				break;
-
-			udelay(10000);
-		}
-		printf("\b\b\b%2d ", delay);
-	}
-	printf("\b\b\b 0");
-	printf("\n");
-	if (value == 0)
-		return 0;
-	else {
-		printf("Hotkey has been pressed, Enter POST . . . . . .\n");
-		return 1;
-	}
-}
-#endif
-#endif
 
 int board_early_init_f(void)
 {
