@@ -79,7 +79,7 @@ static inline void bfin_reset_trampoline(void)
 		if (ANOMALY_05000353 || ANOMALY_05000386)
 			asm("jump (%0);" : : "a" (bfin_reset));
 		else
-			bfrom_SysControl(SYSCTRL_SOFTRESET, NULL, NULL);
+			bfrom_SoftReset((void *)(L1_SRAM_SCRATCH_END - 20));
 }
 
 __attribute__ ((__noreturn__))
