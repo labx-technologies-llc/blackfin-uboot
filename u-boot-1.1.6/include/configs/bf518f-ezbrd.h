@@ -38,11 +38,6 @@
 /* Values can range from 1-15						*/
 #define CONFIG_SCLK_DIV			5
 
-/* Set to default value so it doesnt get reprogrammed.  Do this
- * until the internal voltage stuff gets sorted out ...
- */
-#define CONFIG_VR_CTL_VAL 0x70b0
-
 
 /*
  * Memory Settings
