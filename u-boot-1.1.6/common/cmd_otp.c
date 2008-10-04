@@ -6,7 +6,7 @@
  * Licensed under the GPL-2 or later.
  */
 
-/* There are 512 128-bit "pages" (0x000 to 0x1FF).
+/* There are 512 128-bit "pages" (0x000 through 0x1FF).
  * The pages are accessable as 64-bit "halfpages" (an upper and lower half).
  * The pages are not part of the memory map.  There is an OTP controller which
  * handles scanning in/out of bits.  While access is done through OTP MMRs,
@@ -40,35 +40,69 @@ static const char *otp_strerror(uint32_t err)
 
 #define lowup(x) ((x) % 2 ? "upper" : "lower")
 
+static uint32_t otp_default_timing;
+
 int do_otp(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 {
-	bool force = false;
-	if (!strcmp(argv[1], "--force")) {
-		force = true;
-		argv[1] = argv[0];
-		argv++;
-		--argc;
-	}
+	uint32_t ret, base_flags = 0;
+	bool prompt_user = true;
 
+	if (argc < 4)
+		goto usage;
+
+	if (otp_default_timing == 0)
+		otp_default_timing = bfin_read_OTP_TIMING();
+
+	uint32_t otp_timing;
 	uint32_t (*otp_func)(uint32_t page, uint32_t flags, uint64_t *page_content);
-	if (!strcmp(argv[1], "read"))
-		otp_func = otp_read;
-	else if (!strcmp(argv[1], "write"))
-		otp_func = otp_write;
-	else {
+	if (!strcmp(argv[1], "read")) {
+		otp_func = bfrom_OtpRead;
+		base_flags = 0;
+		otp_timing = otp_default_timing;
+		prompt_user = false;
+	} else if (!strcmp(argv[1], "write")) {
+		otp_func = bfrom_OtpWrite;
+		base_flags = OTP_CHECK_FOR_PREV_WRITE;
+
+		uint32_t otp_tp1, otp_tp2, otp_tp3;
+		/* OTP_TP1 = 1000 / sclk_period (in nanoseconds)
+		 * OTP_TP1 = 1000 / (1 / get_sclk() * 10^9)
+		 * OTP_TP1 = (1000 * get_sclk()) / 10^9
+		 * OTP_TP1 = get_sclk() / 10^6
+		 */
+		otp_tp1 = get_sclk() / 1000000;
+		/* OTP_TP2 = 400 / (2 * sclk_period)
+		 * OTP_TP2 = 400 / (2 * 1 / get_sclk() * 10^9)
+		 * OTP_TP2 = (400 * get_sclk()) / (2 * 10^9)
+		 * OTP_TP2 = (2 * get_sclk()) / 10^7
+		 */
+		otp_tp2 = (2 * get_sclk() / 10000000) << 8;
+		/* OTP_TP2 = magic constant */
+		otp_tp3 = (0x1401) << 15;
+		otp_timing = otp_tp1 | otp_tp2 | otp_tp3;
+
+		if (!strcmp(argv[2], "--force")) {
+			prompt_user = false;
+			argv[2] = argv[1];
+			argv++;
+			--argc;
+		}
+
+		if (!strcmp(argv[2], "--nolock")) {
+			argv[2] = argv[1];
+			argv++;
+			--argc;
+		} else
+			base_flags |= OTP_LOCK;
+	} else {
  usage:
 		printf("Usage:\n%s\n", cmdtp->usage);
 		return 1;
 	}
 
-	if (otp_func == otp_write) {
-		puts("OTP writing not supported yet\n");
-		return 1;
-	}
-
 	uint64_t *addr = (uint64_t *)simple_strtoul(argv[2], NULL, 16);
 	uint32_t page = simple_strtoul(argv[3], NULL, 16);
-	uint32_t flags, ret;
+	uint32_t flags;
 	size_t i, count;
 	ulong half;
 
@@ -87,7 +121,7 @@ int do_otp(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		half = 0;
 
 	/* do to the nature of OTP, make sure users are sure */
-	if (!force && otp_func == otp_write) {
+	if (prompt_user) {
 		printf(
 			"Writing one time programmable memory\n"
 			"Make sure your operating voltages and temperature are within spec\n"
@@ -116,9 +150,15 @@ int do_otp(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 				}
 			}
 		}
+	}
 
-		/* Only supported in newer silicon ... enable writing */
-		/* otp_command(OTP_INIT, ...); */
+	/* Enable writing as need be */
+	if (otp_func == bfrom_OtpWrite) {
+		ret = bfrom_OtpCommand(OTP_INIT, otp_timing);
+		if (ret) {
+			printf("Error: otp init returned %u for timing 0x%08x\n", ret, otp_timing);
+			return 1;
+		}
 	}
 
 	printf("OTP memory %s: addr 0x%08lx  page 0x%03X  count %ld ... ",
@@ -126,7 +166,7 @@ int do_otp(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 
 	ret = 0;
 	for (i = half; i < count + half; ++i) {
-		flags = (i % 2) ? OTP_UPPER_HALF : OTP_LOWER_HALF;
+		flags = base_flags | (i % 2 ? OTP_UPPER_HALF : OTP_LOWER_HALF);
 		ret = otp_func(page, flags, addr);
 		if (ret & 0x1)
 			break;
@@ -144,18 +184,20 @@ int do_otp(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	else
 		puts(" done\n");
 
-	/* Only supported in newer silicon ... disable writing
-	if (otp_func == otp_write)
-		otp_command(OTP_INIT, ...);
-	*/
+	/* Disable writing to prevent random behavior */
+	if (otp_func == bfrom_OtpWrite) {
+		bfrom_OtpCommand(OTP_CLOSE, 0);
+		bfrom_OtpCommand(OTP_INIT, otp_default_timing);
+		bfrom_OtpCommand(OTP_CLOSE, 0);
+	}
 
 	return ret;
 }
 
-U_BOOT_CMD(otp, 6, 0, do_otp,
+U_BOOT_CMD(otp, 8, 0, do_otp,
 	"otp     - One-Time-Programmable sub-system\n",
 	"read <addr> <page> [count] [half]\n"
-	"otp write [--force] <addr> <page> [count] [half]\n"
+	"otp write [--force] [--nolock] <addr> <page> [count] [half]\n"
 	"    - read/write 'count' half-pages starting at page 'page' (offset 'half')\n");
 
 #endif
