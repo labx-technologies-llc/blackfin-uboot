@@ -66,7 +66,7 @@ int board_get_enetaddr(uchar *mac_addr)
 	uint32_t ret;
 	uint64_t otp_mac;
 
-	ret = otp_read(0xDF, OTP_LOWER_HALF, &otp_mac);
+	ret = bfrom_OtpRead(0xDF, OTP_LOWER_HALF, &otp_mac);
 	if (!(ret & OTP_MASTER_ERROR)) {
 		uchar *otp_mac_p = (uchar *)&otp_mac;
 
