@@ -316,8 +316,6 @@
 /*
  * Initialize PSD4256 registers for using I2C
  */
-#define CONFIG_MISC_INIT_R
-
 #define CFG_BOOTM_LEN		0x4000000	/* Large Image Length, set to 64 Meg */
 
 /*

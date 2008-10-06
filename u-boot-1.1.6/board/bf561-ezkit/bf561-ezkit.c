@@ -2,7 +2,7 @@
  * U-boot - ezkit561.c
  *
  * Copyright (c) 2005 Bas Vermeulen <bas@buyways.nl>
- * Copyright (c) 2005-2007 Analog Devices Inc.
+ * Copyright (c) 2005-2008 Analog Devices Inc.
  *
  * (C) Copyright 2000-2004
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
@@ -32,6 +32,8 @@
 #include <asm/blackfin.h>
 #include <asm/io.h>
 
+DECLARE_GLOBAL_DATA_PTR;
+
 int checkboard(void)
 {
 	printf("Board: ADI BF561 EZ-Kit Lite board\n");
@@ -41,7 +43,6 @@ int checkboard(void)
 
 long int initdram(int board_type)
 {
-	DECLARE_GLOBAL_DATA_PTR;
 	gd->bd->bi_memstart = CFG_SDRAM_BASE;
 	gd->bd->bi_memsize = CFG_MAX_RAM_SIZE;
 	return CFG_MAX_RAM_SIZE;

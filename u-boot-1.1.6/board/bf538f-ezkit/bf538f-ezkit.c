@@ -1,5 +1,5 @@
 /*
- * U-boot - bf538f-ezkit.c
+ * U-boot - main board file
  *
  * Copyright (c) 2008 Analog Devices Inc.
  *

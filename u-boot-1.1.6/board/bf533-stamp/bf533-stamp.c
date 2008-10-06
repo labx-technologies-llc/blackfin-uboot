@@ -1,7 +1,7 @@
 /*
- * U-boot - stamp.c STAMP board specific routines
+ * U-boot - main board file
  *
- * Copyright (c) 2005-2007 Analog Devices Inc.
+ * Copyright (c) 2005-2008 Analog Devices Inc.
  *
  * (C) Copyright 2000-2004
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
@@ -29,6 +29,8 @@
 #include <asm/io.h>
 #include "bf533-stamp.h"
 
+DECLARE_GLOBAL_DATA_PTR;
+
 int checkboard(void)
 {
 	printf("Board: ADI BF533 Stamp board\n");
@@ -38,16 +40,6 @@ int checkboard(void)
 
 long int initdram(int board_type)
 {
-	DECLARE_GLOBAL_DATA_PTR;
-#ifdef DEBUG
-	printf("SDRAM attributes:\n");
-	printf
-	    ("  tRCD:%d Cycles; tRP:%d Cycles; tRAS:%d Cycles; tWR:%d Cycles; "
-	     "CAS Latency:%d cycles\n", (SDRAM_tRCD >> 15), (SDRAM_tRP >> 11),
-	     (SDRAM_tRAS >> 6), (SDRAM_tWR >> 19), (SDRAM_CL >> 2));
-	printf("SDRAM Begin: 0x%x\n", CFG_SDRAM_BASE);
-	printf("Bank size = %d MB\n", 128);
-#endif
 	gd->bd->bi_memstart = CFG_SDRAM_BASE;
 	gd->bd->bi_memsize = CFG_MAX_RAM_SIZE;
 	return (gd->bd->bi_memsize);

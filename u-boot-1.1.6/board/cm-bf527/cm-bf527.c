@@ -1,5 +1,5 @@
 /*
- * U-boot - CM-BF527.c
+ * U-boot - main board file
  *
  * Copyright (c) 2005-2008 Analog Devices Inc.
  *
@@ -58,11 +58,3 @@ int board_get_enetaddr(uchar *mac_addr)
 	mac_addr[0] = (mac_addr[0] | 0x02) & ~0x01; /* make it local unicast */
 	return 0;
 }
-
-#if defined(CONFIG_MISC_INIT_R)
-/* miscellaneous platform dependent initialisations */
-int misc_init_r(void)
-{
-	return 0;
-}
-#endif
