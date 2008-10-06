@@ -13,7 +13,6 @@
 #include <command.h>
 #include <devices.h>
 #include <environment.h>
-#include <i2c.h>
 #include <malloc.h>
 #include <net.h>
 #include <status_led.h>
@@ -422,13 +421,11 @@ void board_init_r(gd_t * id, ulong dest_addr)
 #endif
 
 	/* Initialize from environment */
-	if ((s = getenv("loadaddr")) != NULL) {
+	if ((s = getenv("loadaddr")) != NULL)
 		load_addr = simple_strtoul(s, NULL, 16);
-	}
 #if (CONFIG_COMMANDS & CFG_CMD_NET)
-	if ((s = getenv("bootfile")) != NULL) {
+	if ((s = getenv("bootfile")) != NULL)
 		copy_filename(BootFile, s, sizeof(BootFile));
-	}
 #endif
 
 #if defined(CONFIG_MISC_INIT_R)

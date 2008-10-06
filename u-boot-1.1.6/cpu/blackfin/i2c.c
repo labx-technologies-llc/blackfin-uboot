@@ -64,7 +64,8 @@ struct i2c_msg {
 };
 
 /**
- *	wait_for_completion: manage the transfer
+ * wait_for_completion - manage the actual i2c transfer
+ *	@msg: the i2c msg
  */
 static int wait_for_completion(struct i2c_msg *msg)
 {
@@ -125,11 +126,10 @@ static int wait_for_completion(struct i2c_msg *msg)
 
 /**
  * i2c_transfer - setup an i2c transfer
+ *	@return: 0 if things worked, non-0 if things failed
  *
  *	Here we just get the i2c stuff all prepped and ready, and then tail off
  *	into wait_for_completion() for all the bits to go.
- *
- *	@return:	0 if things worked, non-0 if things failed
  */
 static int i2c_transfer(uchar chip, uint addr, int alen, uchar *buffer, int len, u8 flags)
 {
@@ -208,16 +208,16 @@ static int i2c_transfer(uchar chip, uint addr, int alen, uchar *buffer, int len,
 }
 
 /*
- * Initialization, must be called once on start up, may be called
- * repeatedly to change the speed and slave addresses.
+ * i2c_init - initialize the i2c bus
+ *	@speed: bus speed (in HZ)
+ *	@slaveaddr: address of device in slave mode (0 - not slave)
+ *
+ *	Slave mode isn't actually implemented.  It'll stay that way until
+ *	we get a real request for it.
  */
 void i2c_init(int speed, int slaveaddr)
 {
 	uint8_t prescale = ((get_sclk() / 1024 / 1024 + 5) / 10) & 0x7F;
-
-	debugi("CONTROL:0x%04x CLKDIV:0x%04x", prescale,
-        ((5 * 1024 / (speed / 1000)) << 8) |
-        ((5 * 1024 / (speed / 1000)) & 0xFF));
 
 	/* Set TWI internal clock as 10MHz */
 	bfin_write_TWI_CONTROL(prescale);
@@ -235,6 +235,9 @@ void i2c_init(int speed, int slaveaddr)
 	bfin_write_TWI_CONTROL(TWI_ENA | prescale);
 	SSYNC();
 
+	debugi("CONTROL:0x%04x CLKDIV:0x%04x",
+		bfin_read_TWI_CONTROL(), bfin_read_TWI_CLKDIV());
+
 #if CFG_I2C_SLAVE
 # error I2C slave support not tested/supported
 	/* If they want us as a slave, do it */
@@ -246,10 +249,9 @@ void i2c_init(int speed, int slaveaddr)
 }
 
 /**
- * i2c_probe: - Test if a chip answers for a given i2c address
- *
- * @chip:	address of the chip which is searched for
- * @return: 	0 if a chip was found, -1 otherwhise
+ * i2c_probe - test if a chip exists at a given i2c address
+ *	@chip: i2c chip addr to search for
+ *	@return: 0 if found, non-0 if not found
  */
 int i2c_probe(uchar chip)
 {
@@ -258,17 +260,13 @@ int i2c_probe(uchar chip)
 }
 
 /**
- *   i2c_read: - Read multiple bytes from an i2c device
- *
- *   chip:    I2C chip address, range 0..127
- *   addr:    Memory (register) address within the chip
- *   alen:    Number of bytes to use for addr (typically 1, 2 for larger
- *              memories, 0 for register type devices with only one
- *              register)
- *   buffer:  Where to read/write the data
- *   len:     How many bytes to read/write
- *
- *   Returns: 0 on success, not 0 on failure
+ * i2c_read - read data from an i2c device
+ *	@chip: i2c chip addr
+ *	@addr: memory (register) address in the chip
+ *	@alen: byte size of address
+ *	@buffer: buffer to store data read from chip
+ *	@len: how many bytes to read
+ *	@return: 0 on success, non-0 on failure
  */
 int i2c_read(uchar chip, uint addr, int alen, uchar *buffer, int len)
 {
@@ -276,25 +274,21 @@ int i2c_read(uchar chip, uint addr, int alen, uchar *buffer, int len)
 }
 
 /**
- *   i2c_write: -  Write multiple bytes to an i2c device
- *
- *   chip:    I2C chip address, range 0..127
- *   addr:    Memory (register) address within the chip
- *   alen:    Number of bytes to use for addr (typically 1, 2 for larger
- *              memories, 0 for register type devices with only one
- *              register)
- *   buffer:  Where to read/write the data
- *   len:     How many bytes to read/write
- *
- *   Returns: 0 on success, not 0 on failure
+ * i2c_write - write data to an i2c device
+ *	@chip: i2c chip addr
+ *	@addr: memory (register) address in the chip
+ *	@alen: byte size of address
+ *	@buffer: buffer to store data read from chip
+ *	@len: how many bytes to write
+ *	@return: 0 on success, non-0 on failure
  */
 int i2c_write(uchar chip, uint addr, int alen, uchar *buffer, int len)
 {
 	return i2c_transfer(chip, addr, alen, buffer, len, 0);
 }
 
-/*
- * Utility routines to read/write registers.
+/**
+ * i2c_reg_read - quick read a register in an i2c device
  */
 uchar i2c_reg_read(uchar chip, uchar reg)
 {
@@ -302,6 +296,10 @@ uchar i2c_reg_read(uchar chip, uchar reg)
 	i2c_read(chip, reg, 1, &buf, 1);
 	return buf;
 }
+
+/**
+ * i2c_reg_write - quick write a register in an i2c device
+ */
 void i2c_reg_write(uchar chip, uchar reg, uchar val)
 {
 	i2c_write(chip, reg, 1, &val, 1);

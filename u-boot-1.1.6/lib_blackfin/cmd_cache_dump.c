@@ -1,7 +1,7 @@
 /*
  * U-boot - cmd_cache_dump.c
  *
- * Copyright (c) 2007 Analog Devices Inc.
+ * Copyright (c) 2007-2008 Analog Devices Inc.
  *
  * Licensed under the GPL-2 or later.
  */

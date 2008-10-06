@@ -4,7 +4,7 @@
  * cannot make any function calls as it may be executed all by itself by
  * the Blackfin's bootrom in LDR format.
  *
- * Copyright (c) 2004-2007 Analog Devices Inc.
+ * Copyright (c) 2004-2008 Analog Devices Inc.
  *
  * Licensed under the GPL-2 or later.
  */
