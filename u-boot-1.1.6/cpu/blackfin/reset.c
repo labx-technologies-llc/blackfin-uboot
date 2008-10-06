@@ -1,7 +1,8 @@
 /*
  * reset.c - logic for resetting the cpu
  *
- * Copyright (c) 2005-2007 Analog Devices Inc.
+ * Copyright (c) 2005-2008 Analog Devices Inc.
+ *
  * Licensed under the GPL-2 or later.
  */
 

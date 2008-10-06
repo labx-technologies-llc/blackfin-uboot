@@ -29,11 +29,40 @@
 
 #include <asm/blackfin.h>
 
+static inline void sync(void)
+{
+	SSYNC();
+}
+
 /* function prototypes for CF support */
 extern void cf_outsw(unsigned short *addr, unsigned short *sect_buf, int words);
 extern void cf_insw(unsigned short *sect_buf, unsigned short *addr, int words);
 extern unsigned char cf_inb(volatile unsigned char *addr);
 extern void cf_outb(unsigned char val, volatile unsigned char *addr);
+
+/*
+ * Given a physical address and a length, return a virtual address
+ * that can be used to access the memory range with the caching
+ * properties specified by "flags".
+ */
+#define MAP_NOCACHE	(0)
+#define MAP_WRCOMBINE	(0)
+#define MAP_WRBACK	(0)
+#define MAP_WRTHROUGH	(0)
+
+static inline void *
+map_physmem(phys_addr_t paddr, unsigned long len, unsigned long flags)
+{
+	return (void *)paddr;
+}
+
+/*
+ * Take down a mapping set up by map_physmem().
+ */
+static inline void unmap_physmem(void *vaddr, unsigned long flags)
+{
+
+}
 
 /*
  * These are for ISA/PCI shared memory _only_ and should never be used
@@ -89,11 +118,18 @@ static inline unsigned int readl(const volatile void *addr)
 	return val;
 }
 
+#define __raw_readb readb
+#define __raw_readw readw
+#define __raw_readl readl
+
 #endif /*  __ASSEMBLY__ */
 
 #define writeb(b, addr) (void)((*(volatile unsigned char *) (addr)) = (b))
 #define writew(b, addr) (void)((*(volatile unsigned short *) (addr)) = (b))
 #define writel(b, addr) (void)((*(volatile unsigned int *) (addr)) = (b))
+#define __raw_writeb writeb
+#define __raw_writew writew
+#define __raw_writel writel
 
 #define memset_io(a, b, c)	memset((void *)(a), (b), (c))
 #define memcpy_fromio(a, b, c)	memcpy((a), (void *)(b), (c))

@@ -1,28 +1,12 @@
 /*
  * U-boot - board.c First C file to be called contains init routines
  *
- * Copyright (c) 2005-2007 Analog Devices Inc.
+ * Copyright (c) 2005-2008 Analog Devices Inc.
  *
  * (C) Copyright 2000-2004
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
- * See file CREDITS for list of people who contributed to this
- * project.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
- * MA 02110-1301 USA
+ * Licensed under the GPL-2 or later.
  */
 
 #include <common.h>
@@ -46,6 +30,8 @@
 #include <post.h>
 int post_flag;
 #endif
+
+DECLARE_GLOBAL_DATA_PTR;
 
 const char version_string[] = U_BOOT_VERSION " (" __DATE__ " - " __TIME__ ")";
 
@@ -134,7 +120,6 @@ static int display_banner(void)
 
 static int init_baudrate(void)
 {
-	DECLARE_GLOBAL_DATA_PTR;
 	char baudrate[15];
 	int i = getenv_r("baudrate", baudrate, sizeof(baudrate));
 	gd->bd->bi_baudrate = gd->baudrate = (i > 0)
@@ -146,7 +131,6 @@ static int init_baudrate(void)
 static void display_global_data(void)
 {
 #ifdef CONFIG_DEBUG_EARLY_SERIAL
-	DECLARE_GLOBAL_DATA_PTR;
 	bd_t *bd;
 	bd = gd->bd;
 	printf(" gd: %x\n", gd);
@@ -271,7 +255,6 @@ extern int timer_init(void);
 
 void board_init_f(ulong bootflag)
 {
-	DECLARE_GLOBAL_DATA_PTR;
 	ulong addr;
 	bd_t *bd;
 
@@ -352,7 +335,6 @@ void board_init_f(ulong bootflag)
 
 void board_init_r(gd_t * id, ulong dest_addr)
 {
-	DECLARE_GLOBAL_DATA_PTR;
 	extern void malloc_bin_reloc(void);
 	char *s;
 	bd_t *bd;
@@ -471,9 +453,8 @@ void board_init_r(gd_t * id, ulong dest_addr)
 #endif
 
 	/* main_loop() can return to retry autoboot, if so just run it again. */
-	for (;;) {
+	for (;;)
 		main_loop();
-	}
 }
 
 void hang(void)
