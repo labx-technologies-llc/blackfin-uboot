@@ -155,41 +155,16 @@ void trap_c(struct pt_regs *regs)
 		debug("evicting entry %i: 0x%p 0x%08X\n", i, *CPLB_ADDR, *CPLB_DATA);
 		last_evicted = i + 1;
 
-		/* this step is in assembly because we have to guarantee that
-		 * gcc will not touch any data while turning on/off cache.  only
-		 * real way to guarantee this is by hand written register asm.
-		 */
-		uint32_t tmp1, tmp2;
-#if ENDCPLB != ENICPLB || ENDCPLB != 0x2
+		/* need to turn off cplbs whenever we muck with the cplb table */
+#if ENDCPLB != ENICPLB
 # error cplb enable bit violates my sanity
 #endif
-		__asm__ __volatile__(
-#if ANOMALY_05000312
-			"cli %[tmp1];"
-#endif
-			/* turn off cache */
-			"%[tmp2] = [%[mem_control]];"
-			"BITCLR(%[tmp2], 0x1);"
-			"[%[mem_control]] = %[tmp2];"
-			"ssync;"
-
-			/* replace an entry */
-			"[%[addr_mmr]] = %[addr];"
-			"[%[data_mmr]] = %[data];"
-
-			/* turn on cache */
-			"BITSET(%[tmp2], 0x1);"
-			"[%[mem_control]] = %[tmp2];"
-			"ssync;"
-#if ANOMALY_05000312
-			"sti %[tmp1];"
-#endif
-			: [tmp1] "=&d"(tmp1), [tmp2] "=&d"(tmp2)
-			: [mem_control] "a"(data ? DMEM_CONTROL : IMEM_CONTROL),
-			  [addr_mmr] "a"(CPLB_ADDR), [data_mmr] "a"(CPLB_DATA),
-			  [addr] "d"(new_cplb_addr), [data] "d"(new_cplb_data)
-			: "CC"
-		);
+		uint32_t mem_control = (data ? DMEM_CONTROL : IMEM_CONTROL);
+		bfin_write32(mem_control, bfin_read32(mem_control) & ~ENDCPLB);
+		*CPLB_ADDR = new_cplb_addr;
+		*CPLB_DATA = new_cplb_data;
+		bfin_write32(mem_control, bfin_read32(mem_control) | ENDCPLB);
+		SSYNC();
 
 		/* dump current table for debugging purposes */
 		CPLB_ADDR = CPLB_ADDR_BASE;
