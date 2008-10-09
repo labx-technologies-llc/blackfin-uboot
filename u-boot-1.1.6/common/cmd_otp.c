@@ -49,6 +49,9 @@ static int check_voltage(void)
 	/* 0.9V <= VDDINT <= 1.1V */
 	if ((vr_ctl & 0xc) && (vr_ctl & 0xc0) == 0xc0)
 		return 1;
+#else
+	/* for the parts w/out qualification yet */
+	(void)vr_ctl;
 #endif
 
 	return 0;
