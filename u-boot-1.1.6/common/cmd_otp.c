@@ -40,6 +40,20 @@ static const char *otp_strerror(uint32_t err)
 
 #define lowup(x) ((x) % 2 ? "upper" : "lower")
 
+static int check_voltage(void)
+{
+	/* Make sure voltage limits are within datasheet spec */
+	uint16_t vr_ctl = bfin_read_VR_CTL();
+
+#ifdef __ADSPBF54x__
+	/* 0.9V <= VDDINT <= 1.1V */
+	if ((vr_ctl & 0xc) && (vr_ctl & 0xc0) == 0xc0)
+		return 1;
+#endif
+
+	return 0;
+}
+
 static void set_otp_timing(bool write)
 {
 	static uint32_t timing;
@@ -164,6 +178,10 @@ int do_otp(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		argv[1], addr, page, count);
 
 	set_otp_timing(otp_func == bfrom_OtpWrite);
+	if (otp_func == bfrom_OtpWrite && check_voltage()) {
+		puts("ERROR: VDDINT voltage is out of spec for writing\n");
+		return -1;
+	}
 
 	/* Do the actual reading/writing stuff */
 	ret = 0;
