@@ -30,7 +30,12 @@ static void bfin_reset(void)
 	 */
 	__builtin_bfin_ssync();
 
-	while (1) {
+
+	/* The bootrom checks to see how it was reset and will
+	 * automatically perform a software reset for us when
+	 * it starts executing after the core reset.
+	 */
+	if (ANOMALY_05000353 || ANOMALY_05000386) {
 		/* Initiate System software reset. */
 		bfin_write_SWRST(0x7);
 
@@ -60,10 +65,11 @@ static void bfin_reset(void)
 			: "a" (15 * 1)
 			: "LC1", "LB1", "LT1"
 		);
+	}
 
+	while (1)
 		/* Issue core reset */
 		asm("raise 1");
-	}
 }
 
 /* We need to trampoline ourselves up into L1 since our linker
@@ -77,14 +83,7 @@ static inline void bfin_reset_trampoline(void)
 	if (board_reset)
 		board_reset();
 	while (1)
-		if (ANOMALY_05000353 || ANOMALY_05000386)
-			asm("jump (%0);" : : "a" (bfin_reset));
-		else
-			/* the bootrom checks to see how it was reset and will
-			 * automatically perform a software reset for us when
-			 * it starts executing boot
-			 */
-			asm("raise 1;");
+		asm("jump (%0);" : : "a" (bfin_reset));
 }
 
 __attribute__ ((__noreturn__))
