@@ -80,7 +80,11 @@ static inline void bfin_reset_trampoline(void)
 		if (ANOMALY_05000353 || ANOMALY_05000386)
 			asm("jump (%0);" : : "a" (bfin_reset));
 		else
-			bfrom_SoftReset((void *)(L1_SRAM_SCRATCH_END - 20));
+			/* the bootrom checks to see how it was reset and will
+			 * automatically perform a software reset for us when
+			 * it starts executing boot
+			 */
+			asm("raise 1;");
 }
 
 __attribute__ ((__noreturn__))
