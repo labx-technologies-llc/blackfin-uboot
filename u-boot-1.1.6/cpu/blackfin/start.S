@@ -75,7 +75,7 @@ ENTRY(_start)
 
 	serial_early_puts("Init Registers");
 
-	/* Disable nested interrupts and enable CYCLES for udelay() */
+	/* Disable self-nested interrupts and enable CYCLES for udelay() */
 	R0 = CCEN | 0x30;
 	SYSCFG = R0;
 
@@ -203,11 +203,8 @@ ENTRY(_start)
 	p1.l = .Lenable_nested;
 	p1.h = .Lenable_nested;
 	[p0] = p1;
-	p2.l = LO(IMASK);
-	p2.h = HI(IMASK);
-	p3.l = LO(EVT_IVG15);
-	p3.h = HI(EVT_IVG15);
-	[p2] = p3;
+	r7 = EVT_IVG15 (z);
+	sti r7;
 	raise 15;
 	p4.l = .LWAIT_HERE;
 	p4.h = .LWAIT_HERE;
