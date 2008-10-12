@@ -26,11 +26,6 @@
 
 /* Set default serial console for bf537 */
 #define CONFIG_UART_CONSOLE	0
-/* define CONFIG_BF537_STAMP_LEDCMD to enable LED command*/
-/*#define CONFIG_BF537_STAMP_LEDCMD	1*/
-
-/* Define if want to do post memory test */
-#undef CONFIG_POST_TEST
 
 #define CONFIG_RTC_BFIN		1
 #define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
@@ -101,26 +96,6 @@
 #define CONFIG_BOOT_RETRY_TIME		-1	/* Enable this if bootretry required, currently its disabled */
 #define CONFIG_BOOTCOMMAND 		"run ramboot"
 
-#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS) && defined(CONFIG_POST_TEST)
-/* POST support */
-#define CONFIG_POST 		( CFG_POST_MEMORY | \
-				  CFG_POST_UART	  | \
-				  CFG_POST_FLASH  | \
-				  CFG_POST_ETHER  | \
-				  CFG_POST_LED	  | \
-				  CFG_POST_BUTTON)
-#else
-#undef CONFIG_POST
-#endif
-
-#ifdef CONFIG_POST
-#define CFG_CMD_POST_DIAG	CFG_CMD_DIAG
-#define FLASH_START_POST_BLOCK 11       /* Should > = 11 */
-#define FLASH_END_POST_BLOCK   71       /* Should < = 71 */
-#else
-#define CFG_CMD_POST_DIAG	0
-#endif
-
 #define CONFIG_BF537_NAND 		/* Add nand flash support */
 
 #ifdef CONFIG_BF537_NAND
@@ -144,7 +119,6 @@
 					 CFG_CMD_EEPROM | \
 					 CFG_CMD_DHCP   | \
 					 ADD_NAND_CMD	| \
-					 CFG_CMD_POST_DIAG | \
 					 CFG_CMD_DATE)
 #elif (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CONFIG_COMMANDS			(CONFIG_BFIN_CMD| \
@@ -263,9 +237,6 @@
 	 */
 
 #define CONFIG_SPI
-
-#define CONFIG_SPI_FLASH_NUM_SECTORS	(4)
-#define CONFIG_SPI_FLASH_SECTOR_SIZE	(32 * 1024)
 
 /*
  * Board NAND Infomation
