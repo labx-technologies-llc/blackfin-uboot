@@ -1,5 +1,5 @@
 /*
- * U-boot - BF537.c
+ * U-boot - main board file
  *
  * Copyright (c) 2005-2008 Analog Devices Inc.
  *
@@ -80,7 +80,7 @@ void cf_outsw(unsigned short *addr, unsigned short *sect_buf, int words)
 }
 #endif				/* CONFIG_BFIN_IDE */
 
-long int initdram(int board_type)
+phys_size_t initdram(int board_type)
 {
 	gd->bd->bi_memstart = CFG_SDRAM_BASE;
 	gd->bd->bi_memsize = CFG_MAX_RAM_SIZE;
@@ -159,13 +159,6 @@ int misc_init_r(void)
 #endif				/* CONFIG_MISC_INIT_R */
 
 #ifdef CONFIG_POST
-#if (CONFIG_BFIN_BOOT_MODE != BFIN_BOOT_BYPASS)
-/* Using sw10-PF5 as the hotkey */
-int post_hotkeys_pressed(void)
-{
-	return 0;
-}
-#else
 /* Using sw10-PF5 as the hotkey */
 int post_hotkeys_pressed(void)
 {
@@ -197,7 +190,6 @@ int post_hotkeys_pressed(void)
 		return 1;
 	}
 }
-#endif
 #endif
 
 #if defined(CONFIG_POST) || defined(CONFIG_LOGBUFFER)

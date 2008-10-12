@@ -120,7 +120,7 @@ void post_out_buff(char *buff)
 
 	int i = 0;
 	for (i = 0; i < 0x80000; i++)
-		continue;
+		;
 	i = 0;
 	while ((buff[i] != '\0') && (i != 100)) {
 		while (!(*pUART_LSR & 0x20)) ;
@@ -129,7 +129,7 @@ void post_out_buff(char *buff)
 		i++;
 	}
 	for (i = 0; i < 0x80000; i++)
-		continue;
+		;
 }
 
 /* Using sw10-PF5 as the hotkey */

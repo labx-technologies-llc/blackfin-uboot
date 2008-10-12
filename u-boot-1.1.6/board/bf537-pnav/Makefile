@@ -1,7 +1,7 @@
 #
 # U-boot - Makefile
 #
-# Copyright (c) 2005-2007 Analog Device Inc.
+# Copyright (c) 2005-2008 Analog Device Inc.
 #
 # (C) Copyright 2000-2006
 # Wolfgang Denk, DENX Software Engineering, wd@denx.de.
@@ -46,7 +46,7 @@ clean:
 	rm -f $(SOBJS) $(OBJS)
 
 distclean:	clean
-	rm -f $(LIB) core *.bak .depend
+	rm -f $(LIB) core *.bak $(obj).depend
 
 #########################################################################
 

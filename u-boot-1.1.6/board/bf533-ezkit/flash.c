@@ -183,22 +183,21 @@ int write_buff(flash_info_t * info, uchar * src, ulong addr, ulong cnt)
 {
 	int ret;
 	int d;
-	if(addr%2){
-		read_flash(addr-1-CFG_FLASH_BASE,&d);
-		d = (int)((d&0x00FF)|(*src++<<8));
-		ret = write_data(addr-1, 2, (uchar *)&d);
-		if(ret == FLASH_FAIL)
+	if (addr % 2) {
+		read_flash(addr - 1 - CFG_FLASH_BASE, &d);
+		d = (int)((d & 0x00FF) | (*src++ << 8));
+		ret = write_data(addr - 1, 2, (uchar *) & d);
+		if (ret == FLASH_FAIL)
 			return ERR_NOT_ERASED;
-		ret = write_data(addr+1, cnt-1, src);
-	}
-	else
+		ret = write_data(addr + 1, cnt - 1, src);
+	} else
 		ret = write_data(addr, cnt, src);
 	if (ret == FLASH_FAIL)
 		return ERR_NOT_ERASED;
 	return FLASH_SUCCESS;
 }
 
-int write_data(long lStart, long lCount, uchar *pnData)
+int write_data(long lStart, long lCount, uchar * pnData)
 {
 	long i = 0;
 	unsigned long ulOffset = lStart - CFG_FLASH_BASE;
@@ -206,43 +205,47 @@ int write_data(long lStart, long lCount, uchar *pnData)
 	int nSector = 0;
 	int flag = 0;
 
-	if (lCount%2){
-		flag = 1;	
-		lCount = lCount -1;
-		}
-	
-	for (i = 0; i< lCount-1;i+=2,ulOffset+=2){
+	if (lCount % 2) {
+		flag = 1;
+		lCount = lCount - 1;
+	}
+
+	for (i = 0; i < lCount - 1; i += 2, ulOffset += 2) {
 		get_sector_number(ulOffset, &nSector);
 		read_flash(ulOffset, &d);
-		if(d != 0xffff) {
-                                printf("Flash not erased at offset 0x%x Please erase to reprogram \n",ulOffset);
-                	        return FLASH_FAIL;
-                        	}
-		unlock_flash(ulOffset);
-		d = (int)(pnData[i]|pnData[i+1]<<8);
-		write_flash(ulOffset,d); 
-		if(poll_toggle_bit(ulOffset) < 0){
-                                printf("Error programming the flash \n");
-                                return FLASH_FAIL;
-                        	}
-	if((i>0)&&(!(i%AFP_SectorSize2)))
-		printf(".");
-	}
-	if(flag){
-		get_sector_number(ulOffset, &nSector);
-                read_flash(ulOffset, &d);
-                if(d != 0xffff) {
-                                printf("Flash not erased at offset 0x%x Please erase to reprogram \n",ulOffset);
-                                return FLASH_FAIL;
-                                }
-                unlock_flash(ulOffset);
-                d = (int)(pnData[i]|(d&0xFF00));
-                write_flash(ulOffset,d);
-                if(poll_toggle_bit(ulOffset) < 0){
-                                printf("Error programming the flash \n");
-                                return FLASH_FAIL;
-                                }
+		if (d != 0xffff) {
+			printf
+			    ("Flash not erased at offset 0x%x Please erase to reprogram \n",
+			     ulOffset);
+			return FLASH_FAIL;
 		}
+		unlock_flash(ulOffset);
+		d = (int)(pnData[i] | pnData[i + 1] << 8);
+		write_flash(ulOffset, d);
+		if (poll_toggle_bit(ulOffset) < 0) {
+			printf("Error programming the flash \n");
+			return FLASH_FAIL;
+		}
+		if ((i > 0) && (!(i % AFP_SectorSize2)))
+			printf(".");
+	}
+	if (flag) {
+		get_sector_number(ulOffset, &nSector);
+		read_flash(ulOffset, &d);
+		if (d != 0xffff) {
+			printf
+			    ("Flash not erased at offset 0x%x Please erase to reprogram \n",
+			     ulOffset);
+			return FLASH_FAIL;
+		}
+		unlock_flash(ulOffset);
+		d = (int)(pnData[i] | (d & 0xFF00));
+		write_flash(ulOffset, d);
+		if (poll_toggle_bit(ulOffset) < 0) {
+			printf("Error programming the flash \n");
+			return FLASH_FAIL;
+		}
+	}
 	return FLASH_SUCCESS;
 }
 

@@ -1,7 +1,6 @@
 /*
- * U-boot - ezkit561.c
+ * U-boot - main board file
  *
- * Copyright (c) 2005 Bas Vermeulen <bas@buyways.nl>
  * Copyright (c) 2005-2008 Analog Devices Inc.
  *
  * (C) Copyright 2000-2004
@@ -27,9 +26,6 @@
  */
 
 #include <common.h>
-#include <config.h>
-#include <command.h>
-#include <asm/blackfin.h>
 #include <asm/io.h>
 
 DECLARE_GLOBAL_DATA_PTR;
@@ -41,7 +37,7 @@ int checkboard(void)
 	return 0;
 }
 
-long int initdram(int board_type)
+phys_size_t initdram(int board_type)
 {
 	gd->bd->bi_memstart = CFG_SDRAM_BASE;
 	gd->bd->bi_memsize = CFG_MAX_RAM_SIZE;

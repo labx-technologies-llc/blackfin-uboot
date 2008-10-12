@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006 Aubrey.Li, aubrey.li@analog.com
+ * Copyright (c) 2006-2007 Analog Devices Inc.
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -103,4 +103,4 @@ void board_nand_init(struct nand_chip *nand)
 	nand->dev_ready = bfin_device_ready;
 	nand->chip_delay = 30;
 }
-#endif				/* (CONFIG_COMMANDS & CFG_CMD_NAND) */
+#endif
