@@ -1,10 +1,7 @@
 /*
- * U-boot - cplb_status.c
+ * cmd_cplbinfo.c - dump the instruction/data cplb tables
  *
- * Copyright (c) 2007 Analog Devices Inc.
- *
- * See file CREDITS for list of people who contributed to this
- * project.
+ * Copyright (c) 2007-2008 Analog Devices Inc.
  *
  * Licensed under the GPL-2 or later.
  */

@@ -9,17 +9,17 @@
 #define YELLOW  (0xD292D210)	/* yellow pixel pattern  */
 #define WHITE   (0xFE80FE80)	/* white pixel pattern   */
 
-#define true 	1
+#define true	1
 #define false	0
 
 typedef struct {
-	unsigned int SAV;
-	unsigned int EAV;
-} SystemCodeType;
+	unsigned int sav;
+	unsigned int eav;
+} system_code_type;
 
-const SystemCodeType SystemCodeMap[4] = {
-	{0xFF000080, 0xFF00009D},
-	{0xFF0000AB, 0xFF0000B6},
-	{0xFF0000C7, 0xFF0000DA},
-	{0xFF0000EC, 0xFF0000F1}
+const system_code_type system_code_map[] = {
+	{ 0xFF000080, 0xFF00009D },
+	{ 0xFF0000AB, 0xFF0000B6 },
+	{ 0xFF0000C7, 0xFF0000DA },
+	{ 0xFF0000EC, 0xFF0000F1 },
 };

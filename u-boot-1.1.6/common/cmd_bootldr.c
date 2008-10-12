@@ -1,7 +1,7 @@
 /*
  * U-boot - bootldr.c
  *
- * Copyright (c) 2005-2007 Analog Devices Inc.
+ * Copyright (c) 2005-2008 Analog Devices Inc.
  *
  * See file CREDITS for list of people who contributed to this
  * project.

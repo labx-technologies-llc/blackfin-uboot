@@ -133,7 +133,7 @@ void board_reset(void)
 int misc_init_r(void)
 {
 #ifndef CFG_NO_FLASH
-	/* we use the last sector for the MAC address / POST DXE */
+	/* we use the last sector for the MAC address / POST LDR */
 	extern flash_info_t flash_info[];
 	flash_protect(FLAG_PROTECT_SET, 0x203F0000, 0x203FFFFF, &flash_info[0]);
 #endif

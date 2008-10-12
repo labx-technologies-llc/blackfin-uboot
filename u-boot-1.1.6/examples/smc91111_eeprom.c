@@ -40,7 +40,7 @@
 #define SMC_BASE_ADDRESS CONFIG_SMC91111_BASE
 #define EEPROM		0x1
 #define MAC		0x2
-#define	UNKNOWN 	0x4
+#define UNKNOWN		0x4
 
 void dump_reg (void);
 void dump_eeprom (void);
@@ -385,9 +385,11 @@ void dump_reg (void)
 }
 
 #else
+
 int smc91111_eeprom (int argc, char *argv[])
 {
 	printf("Not supported for this board\n");
 	return 1;
 }
+
 #endif
