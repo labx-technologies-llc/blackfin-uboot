@@ -82,6 +82,18 @@ int main (int argc, char **argv)
 		*dataptr = envptr + ENV_HEADER_SIZE;
 	unsigned int datasize = ENV_SIZE;
 
+#if defined(ENV_IS_EMBEDDED_CUSTOM)
+	/* find the end of env */
+	unsigned int eoe;
+	for (eoe = 0; eoe < datasize - 1; ++eoe)
+		if (!dataptr[eoe] && !dataptr[eoe+1]) {
+			eoe += 2;
+			break;
+		}
+	if (eoe < datasize - 1)
+		memset(dataptr + eoe, 0xff, datasize - eoe);
+#endif
+
 	crc = crc32 (0, dataptr, datasize);
 
 	/* Check if verbose mode is activated passing a parameter to the program */
