@@ -69,8 +69,9 @@ const ADI_DMA_CONFIG_REG txdmacfg = {
 	.b_FLOW    = 7	/* large desc flow */
 };
 
-int bfin_EMAC_initialize(bd_t *bis)
+int bfin_EMAC_initialize(bd_t *bd)
 {
+	const char *ethaddr;
 	struct eth_device *dev;
 	dev = (struct eth_device *)malloc(sizeof(*dev));
 	if (dev == NULL)
@@ -87,6 +88,27 @@ int bfin_EMAC_initialize(bd_t *bis)
 	dev->recv = bfin_EMAC_recv;
 
 	eth_register(dev);
+
+	ethaddr = getenv("ethaddr");
+#ifndef CONFIG_ETHADDR
+	if (ethaddr == NULL) {
+		char nid[20];
+		board_get_enetaddr(bd->bi_enetaddr);
+		sprintf(nid, "%02X:%02X:%02X:%02X:%02X:%02X",
+			bd->bi_enetaddr[0], bd->bi_enetaddr[1],
+			bd->bi_enetaddr[2], bd->bi_enetaddr[3],
+			bd->bi_enetaddr[4], bd->bi_enetaddr[5]);
+		setenv("ethaddr", nid);
+	} else
+#endif
+	{
+		int i;
+		char *e;
+		for (i = 0; i < 6; ++i) {
+			bd->bi_enetaddr[i] = simple_strtoul(ethaddr, &e, 16);
+			ethaddr = (*e) ? e + 1 : e;
+		}
+	}
 
 	return 1;
 }

@@ -381,35 +381,6 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	/* relocate environment function pointers etc. */
 	env_relocate();
 
-#ifdef CONFIG_CMD_NET
-	/* board MAC address */
-	s = getenv("ethaddr");
-	if (s == NULL) {
-# ifndef CONFIG_ETHADDR
-#  if 0
-		if (!board_get_enetaddr(bd->bi_enetaddr)) {
-			char nid[20];
-			sprintf(nid, "%02X:%02X:%02X:%02X:%02X:%02X",
-				bd->bi_enetaddr[0], bd->bi_enetaddr[1],
-				bd->bi_enetaddr[2], bd->bi_enetaddr[3],
-				bd->bi_enetaddr[4], bd->bi_enetaddr[5]);
-			setenv("ethaddr", nid);
-		}
-#  endif
-# endif
-	} else {
-		int i;
-		char *e;
-		for (i = 0; i < 6; ++i) {
-			bd->bi_enetaddr[i] = simple_strtoul(s, &e, 16);
-			s = (*e) ? e + 1 : e;
-		}
-	}
-
-	/* IP Address */
-	bd->bi_ip_addr = getenv_IPaddr("ipaddr");
-#endif
-
 	/* Initialize devices */
 	devices_init();
 	jumptable_init();
@@ -436,6 +407,8 @@ void board_init_r(gd_t * id, ulong dest_addr)
 #endif
 
 #ifdef CONFIG_CMD_NET
+	/* IP Address */
+	bd->bi_ip_addr = getenv_IPaddr("ipaddr");
 	printf("Net:   ");
 	eth_initialize(gd->bd);
 	if (getenv("ethaddr"))

@@ -88,7 +88,7 @@ phys_size_t initdram(int board_type)
 	return CFG_MAX_RAM_SIZE;
 }
 
-int board_get_enetaddr(uchar *mac_addr)
+void board_get_enetaddr(uchar *mac_addr)
 {
 #ifdef CFG_NO_FLASH
 # define USE_MAC_IN_FLASH 0
@@ -101,7 +101,7 @@ int board_get_enetaddr(uchar *mac_addr)
 
 		if (is_valid_ether_addr(board_mac_addr)) {
 			memcpy(mac_addr, board_mac_addr, 6);
-			return 0;
+			return;
 		}
 	}
 
@@ -116,7 +116,6 @@ int board_get_enetaddr(uchar *mac_addr)
 		mac_addr[i] = cycles ^ s[i];
 	}
 	mac_addr[0] = (mac_addr[0] | 0x02) & ~0x01; /* make it local unicast */
-	return 0;
 }
 
 void board_reset(void)

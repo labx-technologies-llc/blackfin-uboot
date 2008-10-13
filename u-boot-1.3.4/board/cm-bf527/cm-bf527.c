@@ -28,7 +28,7 @@ phys_size_t initdram(int board_type)
 	return CFG_MAX_RAM_SIZE;
 }
 
-int board_get_enetaddr(uchar *mac_addr)
+void board_get_enetaddr(uchar *mac_addr)
 {
 	/* the MAC is stored in OTP memory page 0xDF */
 	uint32_t ret;
@@ -42,7 +42,7 @@ int board_get_enetaddr(uchar *mac_addr)
 			mac_addr[ret] = otp_mac_p[5 - ret];
 
 		if (is_valid_ether_addr(mac_addr))
-			return 0;
+			return;
 	}
 
 	puts("Warning: Generating 'random' MAC address\n");
@@ -56,5 +56,4 @@ int board_get_enetaddr(uchar *mac_addr)
 		mac_addr[i] = cycles ^ s[i];
 	}
 	mac_addr[0] = (mac_addr[0] | 0x02) & ~0x01; /* make it local unicast */
-	return 0;
 }
