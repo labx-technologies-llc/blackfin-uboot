@@ -66,7 +66,7 @@ unsigned long flash_init(void)
 	flash_info[0].flash_id = FLASH_UNKNOWN;
 	if (get_codes() == MT_MANUFACT_CM_BF533)
 		flash_info[0].flash_id = MT_MANUFACT_CM_BF533;
-	printf("Device ID of the Flash is %x\n", flash_info[0].flash_id);
+	printf("Device ID of the Flash is %lx\n", flash_info[0].flash_id);
 	for (i = 0; i < CFG_MAX_FLASH_SECT; i++)
 		flash_info[0].start[i] =
 		    (CFG_FLASH_BASE + (i * FLASH_SECTOR_SIZE));
@@ -168,8 +168,8 @@ int write_buff(flash_info_t *info, unsigned char *src, ulong addr, ulong cnt)
 
 	for (i = iFirst_sector; i < (iFirst_sector + iSectors); i++) {
 		if (check_sector(i) == ERR_NOT_ERASED)
-			printf("Sector %d not erased \n", i);
-		/* return ERR_NOT_ERASED; */
+			printf("Sector %ld not erased\n", i);
+		return ERR_NOT_ERASED;
 	}
 
 	printf("[                     ]\n[");
@@ -245,10 +245,10 @@ static int check_sector(unsigned short usSector)
 	printf("Checking sector %d", usSector);
 	memIndex = (unsigned long)(CFG_FLASH_BASE +
 				   (usSector * FLASH_SECTOR_SIZE));
-	printf("\nmemIndex 1  %x crossed %d\n", memIndex, crossed);
+	printf("\nmemIndex 1  %lx crossed %d\n", memIndex, crossed);
 
 	SWITCH_BANK;
-	printf("\nmemIndex 2  %x crossed %d\n", memIndex, crossed);
+	printf("\nmemIndex 2  %lx crossed %d\n", memIndex, crossed);
 
 	ret = ERR_OK;
 

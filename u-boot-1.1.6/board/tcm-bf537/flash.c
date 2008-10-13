@@ -93,7 +93,7 @@ unsigned long flash_init(void)
 		flash_info[0].flash_id = MT_MANUFACT_P33;
 	else if (get_codes() == MT_MANUFACT_P30)
 		flash_info[0].flash_id = MT_MANUFACT_P30;
-	printf("Device ID of the Flash is %x\n", flash_info[0].flash_id);
+	printf("Device ID of the Flash is %lx\n", flash_info[0].flash_id);
 	for (i = 0; i < CFG_MAX_FLASH_SECT; i++)
 		flash_info[0].start[i] =
 		    (CFG_FLASH_BASE + (i * FLASH_SECTOR_SIZE));
@@ -108,7 +108,7 @@ unsigned long flash_init(void)
 		printf("0x20000000 - 0x207FFFFF Single Flash Chip (8MB)\n");
 		printf("Using PF4 and PF5 as a 2M bank switch\n");
 		printf
-		    ("Please type command flinfo for information on Sectors \n");
+		    ("Please type command flinfo for information on Sectors\n");
 		*pPORTF_FER &= ~(PF4|PF5);
 		*pPORTFIO_DIR |= (PF4|PF5);
 		*pPORTFIO_CLEAR = (PF4|PF5);
@@ -196,7 +196,7 @@ int flash_erase(flash_info_t *info, int s_first, int s_last)
 	for (i = s_first; i <= s_last; i++) {
 		if (info->protect[i] == 0) {	/* not protected */
 			if (erase_block_flash(i, info->start[i]) < 0) {
-				printf("Error Sector erasing \n");
+				printf("Error Sector erasing\n");
 				return ERR_INVAL;
 			} else {
 				printf("Sector %i erased.\n", i);
@@ -229,8 +229,8 @@ int write_buff(flash_info_t *info, unsigned char *src, ulong addr, ulong cnt)
 
 	for (i = iFirst_sector; i < (iFirst_sector + iSectors); i++) {
 		if (check_sector(i) == ERR_NOT_ERASED)
-			printf("Sector %d not erased \n", i);
-		/* return ERR_NOT_ERASED; */
+			printf("Sector %ld not erased\n", i);
+		return ERR_NOT_ERASED;
 	}
 
 	printf("[                     ]\n[");
@@ -240,19 +240,19 @@ int write_buff(flash_info_t *info, unsigned char *src, ulong addr, ulong cnt)
 			printf(".");
 
 		if (write_flash(ulOffset, (((int *)src)[i])) < 0) {
-			printf("Error programming the flash \n");
+			printf("Error programming the flash\n");
 			return ERR_TIMOUT;
 		}
 		ulOffset += 2;
 		if (write_flash(ulOffset, (((int *)src)[i] >> 16)) < 0) {
-			printf("Error programming the flash \n");
+			printf("Error programming the flash\n");
 			return ERR_TIMOUT;
 		}
 		ulOffset += 2;
 	}
 	if (nLeftover > 0) {
 		if (write_flash(ulOffset, ((int *)src)[i]) < 0) {
-			printf("Error programming flash \n");
+			printf("Error programming flash\n");
 			return ERR_TIMOUT;
 		}
 	}
@@ -326,12 +326,12 @@ static int check_sector(unsigned short usSector)
 	printf("Checking sector %d", usSector);
 	memIndex = (unsigned long)(CFG_FLASH_BASE +
 				   (usSector * FLASH_SECTOR_SIZE));
-	printf("\nmemIndex 1  %x crossed4 %d\n", memIndex, crossed4);
-	printf("\nmemIndex 1  %x crossed5 %d\n", memIndex, crossed5);
+	printf("\nmemIndex 1  %lx crossed4 %d\n", memIndex, crossed4);
+	printf("\nmemIndex 1  %lx crossed5 %d\n", memIndex, crossed5);
 
 	SWITCH_BANK;
-	printf("\nmemIndex 2  %x crossed4 %d\n", memIndex, crossed4);
-	printf("\nmemIndex 2  %x crossed5 %d\n", memIndex, crossed5);
+	printf("\nmemIndex 2  %lx crossed4 %d\n", memIndex, crossed4);
+	printf("\nmemIndex 2  %lx crossed5 %d\n", memIndex, crossed5);
 
 	ret = ERR_OK;
 

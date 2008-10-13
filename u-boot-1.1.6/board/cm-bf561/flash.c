@@ -41,7 +41,7 @@ unsigned long flash_init(void)
 	flash_info[0].flash_id = FLASH_UNKNOWN;
 	if (get_codes() == MT_MANUFACT_CM_BF533)
 		flash_info[0].flash_id = MT_MANUFACT_CM_BF533 ;
-	printf("Device ID of the Flash is %x\n", flash_info[0].flash_id);
+	printf("Device ID of the Flash is %lx\n", flash_info[0].flash_id);
 	for (i = 0; i < CFG_MAX_FLASH_SECT; i++)
 		flash_info[0].start[i] = (CFG_FLASH_BASE + (i * FLASH_SECTOR_SIZE));
 	flash_info[0].size = CFG_FLASH_SIZE;
