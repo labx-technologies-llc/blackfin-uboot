@@ -18,7 +18,7 @@ DECLARE_GLOBAL_DATA_PTR;
 int checkboard(void)
 {
 	printf("Board: Bluetechnix CM-BF537E board\n");
-	printf("       Support: http://blackfin.uclinux.org/\n");
+	printf("       Support: http://www.bluetechnix.at/\n");
 	return 0;
 }
 
