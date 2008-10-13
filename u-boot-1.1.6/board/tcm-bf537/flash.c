@@ -230,7 +230,7 @@ int write_buff(flash_info_t *info, unsigned char *src, ulong addr, ulong cnt)
 	for (i = iFirst_sector; i < (iFirst_sector + iSectors); i++) {
 		if (check_sector(i) == ERR_NOT_ERASED)
 			printf("Sector %ld not erased\n", i);
-		return ERR_NOT_ERASED;
+		/* return ERR_NOT_ERASED; */
 	}
 
 	printf("[                     ]\n[");
