@@ -71,17 +71,16 @@
 /*
  * Flash Settings
  */
+#define CFG_FLASH_CFI		/* The flash is CFI compatible */
+#define CFG_FLASH_CFI_DRIVER	/* Use common CFI driver */
 #define CFG_FLASH_BASE		0x20000000
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
-#define CFG_MAX_FLASH_SECT	64	/* max number of sectors on one chip; CM-BF561v2 has 8MB Flash */
+#define CFG_MAX_FLASH_SECT	67	/* max number of sectors on one chip; CM-BF561v2 has 8MB Flash */
 
 #define	CFG_ENV_IS_IN_FLASH	1
 #define CFG_ENV_OFFSET		0x20000
 #define	CFG_ENV_SECT_SIZE	0x20000	/* Total Size of Environment Sector */
 #define CFG_ENV_SIZE		0x10000
-
-#define FLASH_TOT_SECT		64
-#define CFG_FLASH_SIZE		0x800000
 
 
 /*
