@@ -2903,7 +2903,7 @@ BFIN_BOARDS += cm-bf527 cm-bf533 cm-bf537e cm-bf548 cm-bf561 tcm-bf537
 BFIN_BOARDS += bf537-minotaur bf537-srv1 blackstamp
 
 $(BFIN_BOARDS:%=%_config)	: unconfig
-	@$(MAKE) distclean
+	@$(MAKE) -s distclean
 	@$(MKCONFIG) $(@:_config=) blackfin blackfin $(@:_config=)
 	@$(MAKE) -s $(obj)include/autoconf.mk
 
