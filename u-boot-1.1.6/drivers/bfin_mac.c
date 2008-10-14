@@ -332,7 +332,7 @@ static void SoftResetPHY(void)
 
 static int SetupSystemRegs(int *opmode)
 {
-	u16 sysctl, phydat;
+	u16 phydat;
 	int count = 0;
 	/* Enable PHY output */
 	*pVR_CTL |= CLKBUFOE;
