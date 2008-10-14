@@ -1,5 +1,5 @@
 /*
- * Driver for Blackfin On-Chip MAC device
+ * Driver for Blackfin On-Chip SPI device
  *
  * Copyright (c) 2005-2008 Analog Devices Inc.
  *
