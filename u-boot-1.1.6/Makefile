@@ -247,7 +247,7 @@ $(obj)u-boot.bin:	$(obj)u-boot
 
 $(obj)u-boot.ldr:	$(obj)u-boot
 		./tools/envcrc --binary > $(obj)env-ldr.o
-		$(LDR) -T $(CONFIG_CPU) -f -c $@ $< $(LDR_FLAGS)
+		$(LDR) -T $(CONFIG_BFIN_CPU) -f -c $@ $< $(LDR_FLAGS)
 
 $(obj)u-boot.ldr.hex:	$(obj)u-boot.ldr
 		$(OBJCOPY) ${OBJCFLAGS} -O ihex $< $@ -I binary
