@@ -11,6 +11,7 @@
 #include <net.h>
 #include <command.h>
 #include <malloc.h>
+#include <miiphy.h>
 
 #ifdef CONFIG_BFIN_MAC
 
@@ -74,6 +75,20 @@ const ADI_DMA_CONFIG_REG txdmacfg = {
 	.b_FLOW    = 7	/* large desc flow */
 };
 
+#if (CONFIG_COMMANDS & CFG_CMD_MII)
+static int bfin_miiphy_read(char *devname, uchar addr, uchar reg, ushort *val)
+{
+	*val = RdPHYReg(addr, reg);
+	return 0;
+}
+
+static int bfin_miiphy_write(char *devname, uchar addr, uchar reg, ushort val)
+{
+	WrPHYReg(addr, reg, val);
+	return 0;
+}
+#endif
+
 int bfin_EMAC_initialize(bd_t *bis)
 {
 	struct eth_device *dev;
@@ -92,6 +107,10 @@ int bfin_EMAC_initialize(bd_t *bis)
 	dev->recv = bfin_EMAC_recv;
 
 	eth_register(dev);
+
+#if (CONFIG_COMMANDS & CFG_CMD_MII)
+	miiphy_register(dev->name, bfin_miiphy_read, bfin_miiphy_write);
+#endif
 
 	return 1;
 }
