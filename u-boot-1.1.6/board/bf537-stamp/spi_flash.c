@@ -693,7 +693,7 @@ static int read_flash(unsigned long address, long count, uchar *buffer)
 #define	bfin_write_DMA_SPI_CURR_DESC_PTR        bfin_write_DMA7_CURR_DESC_PTR
 #define	bfin_write_DMA_SPI_CONFIG               bfin_write_DMA7_CONFIG
 #else
-#error "Pease Provide SPI DMA Channel defines"
+#error "Please provide SPI DMA channel defines"
 #endif
 
 
