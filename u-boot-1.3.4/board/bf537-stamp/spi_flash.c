@@ -675,12 +675,27 @@ static int read_flash(unsigned long address, long count, uchar *buffer)
 #define	bfin_read_DMA_SPI_IRQ_STATUS            bfin_read_DMA4_IRQ_STATUS
 #define	bfin_write_DMA_SPI_CURR_DESC_PTR        bfin_write_DMA4_CURR_DESC_PTR
 #define	bfin_write_DMA_SPI_CONFIG               bfin_write_DMA4_CONFIG
-#else
+#elif defined(__ADSPBF533__) || defined(__ADSPBF532__) || defined(__ADSPBF531__) || \
+		defined(__ADSPBF538__) || defined(__ADSPBF539__)
+#define	bfin_write_DMA_SPI_IRQ_STATUS		bfin_write_DMA5_IRQ_STATUS
+#define	bfin_read_DMA_SPI_IRQ_STATUS            bfin_read_DMA5_IRQ_STATUS
+#define	bfin_write_DMA_SPI_CURR_DESC_PTR        bfin_write_DMA5_CURR_DESC_PTR
+#define	bfin_write_DMA_SPI_CONFIG               bfin_write_DMA5_CONFIG
+#elif defined(__ADSPBF561__)
+#define	bfin_write_DMA_SPI_IRQ_STATUS		bfin_write_DMA16_IRQ_STATUS
+#define	bfin_read_DMA_SPI_IRQ_STATUS            bfin_read_DMA16_IRQ_STATUS
+#define	bfin_write_DMA_SPI_CURR_DESC_PTR        bfin_write_DMA16_CURR_DESC_PTR
+#define	bfin_write_DMA_SPI_CONFIG               bfin_write_DMA16_CONFIG
+#elif defined(__ADSPBF537__) || defined(__ADSPBF536__) || defined(__ADSPBF534__) || \
+		defined(__ADSPBF52x__)
 #define	bfin_write_DMA_SPI_IRQ_STATUS		bfin_write_DMA7_IRQ_STATUS
 #define	bfin_read_DMA_SPI_IRQ_STATUS            bfin_read_DMA7_IRQ_STATUS
 #define	bfin_write_DMA_SPI_CURR_DESC_PTR        bfin_write_DMA7_CURR_DESC_PTR
 #define	bfin_write_DMA_SPI_CONFIG               bfin_write_DMA7_CONFIG
+#else
+#error "Please provide SPI DMA channel defines"
 #endif
+
 
 struct dmadesc_array {
 	unsigned long start_addr;
