@@ -27,4 +27,6 @@
 #TEXT_BASE = do-not-use-me
 
 # Set some default LDR flags based on boot mode.
+# workaround bootrom bug with large blocks and spi booting
+LDR_FLAGS-BFIN_BOOT_SPI_MASTER := --dma 1 --blocksize 0x10000
 LDR_FLAGS += $(LDR_FLAGS-$(CONFIG_BFIN_BOOT_MODE))
