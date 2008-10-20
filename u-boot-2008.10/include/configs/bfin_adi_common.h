@@ -12,6 +12,7 @@
 # include <config_cmd_default.h>
 # if ADI_CMDS_NETWORK
 #  define CONFIG_CMD_DHCP
+#  define CONFIG_CMD_MII
 #  define CONFIG_CMD_PING
 # else
 #  undef CONFIG_CMD_BOOTD
@@ -26,6 +27,9 @@
 # endif
 # ifdef CONFIG_SPI
 #  define CONFIG_CMD_EEPROM
+# endif
+# ifdef CONFIG_BFIN_SPI
+#  define CONFIG_CMD_SPI
 # endif
 # if defined(CONFIG_HARD_I2C) || defined(CONFIG_SOFT_I2C)
 #  define CONFIG_CMD_I2C
