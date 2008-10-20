@@ -121,91 +121,91 @@ void spi_free_slave(struct spi_slave *slave)
 static void spi_portmux(struct spi_slave *slave)
 {
 #if defined(__ADSPBF51x__)
-#define SET_MUX(port, mux, func) port##mux = ((port##mux & ~PORT_x_MUX_##mux##_MASK) | PORT_x_MUX_##mux##_FUNC_##func)
-	u16 fmux = bfin_read_PORTF_MUX();
-	u16 ffer = bfin_read_PORTF_FER();
-	u16 gmux = bfin_read_PORTG_MUX();
-	u16 gfer = bfin_read_PORTG_FER();
-	u16 hmux = bfin_read_PORTH_MUX();
-	u16 hfer = bfin_read_PORTH_FER();
+#define SET_MUX(port, mux, func) port##_mux = ((port##_mux & ~PORT_x_MUX_##mux##_MASK) | PORT_x_MUX_##mux##_FUNC_##func)
+	u16 f_mux = bfin_read_PORTF_MUX();
+	u16 f_fer = bfin_read_PORTF_FER();
+	u16 g_mux = bfin_read_PORTG_MUX();
+	u16 g_fer = bfin_read_PORTG_FER();
+	u16 h_mux = bfin_read_PORTH_MUX();
+	u16 h_fer = bfin_read_PORTH_FER();
 	switch (slave->bus) {
 	case 0:
 		/* set SCK/MISO/MOSI */
 		SET_MUX(g, 7, 1);
-		gfer |= PG12 | PG13 | PG14;
+		g_fer |= PG12 | PG13 | PG14;
 		switch (slave->cs) {
-			case 1: SET_MUX(f, 2, 1); ffer |= PF7;  break;
-			case 2: /* see G above */ gfer |= PG15; break;
-			case 3: SET_MUX(h, 1, 3); ffer |= PH4;  break;
-			case 4: /* no muxing */                 break;
-			case 5: SET_MUX(g, 1, 3); hfer |= PG3;  break;
-			case 6: /* no muxing */                 break;
-			case 7: /* no muxing */                 break;
+			case 1: SET_MUX(f, 2, 1); f_fer |= PF7;  break;
+			case 2: /* see G above */ g_fer |= PG15; break;
+			case 3: SET_MUX(h, 1, 3); f_fer |= PH4;  break;
+			case 4: /* no muxing */                  break;
+			case 5: SET_MUX(g, 1, 3); h_fer |= PG3;  break;
+			case 6: /* no muxing */                  break;
+			case 7: /* no muxing */                  break;
 		}
 	case 1:
 		/* set SCK/MISO/MOSI */
 		SET_MUX(h, 0, 2);
-		hfer |= PH1 | PH2 | PH3;
+		h_fer |= PH1 | PH2 | PH3;
 		switch (slave->cs) {
-			case 1: SET_MUX(h, 2, 3); hfer |= PH6;  break;
-			case 2: SET_MUX(f, 0, 3); ffer |= PF0;  break;
-			case 3: SET_MUX(g, 0, 3); gfer |= PG0;  break;
-			case 4: SET_MUX(f, 3, 3); ffer |= PF8;  break;
-			case 5: SET_MUX(g, 6, 3); hfer |= PG11; break;
-			case 6: /* no muxing */                 break;
-			case 7: /* no muxing */                 break;
+			case 1: SET_MUX(h, 2, 3); h_fer |= PH6;  break;
+			case 2: SET_MUX(f, 0, 3); f_fer |= PF0;  break;
+			case 3: SET_MUX(g, 0, 3); g_fer |= PG0;  break;
+			case 4: SET_MUX(f, 3, 3); f_fer |= PF8;  break;
+			case 5: SET_MUX(g, 6, 3); h_fer |= PG11; break;
+			case 6: /* no muxing */                  break;
+			case 7: /* no muxing */                  break;
 		}
 	}
-	bfin_write_PORTF_MUX(fmux);
-	bfin_write_PORTF_FER(ffer);
-	bfin_write_PORTG_MUX(gmux);
-	bfin_write_PORTG_FER(gfer);
-	bfin_write_PORTH_MUX(hmux);
-	bfin_write_PORTH_FER(hfer);
+	bfin_write_PORTF_MUX(f_mux);
+	bfin_write_PORTF_FER(f_fer);
+	bfin_write_PORTG_MUX(g_mux);
+	bfin_write_PORTG_FER(g_fer);
+	bfin_write_PORTH_MUX(h_mux);
+	bfin_write_PORTH_FER(h_fer);
 #elif defined(__ADSPBF52x__)
-#define SET_MUX(port, mux, func) port##mux = ((port##mux & ~PORT_x_MUX_##mux##_MASK) | PORT_x_MUX_##mux##_FUNC_##func)
-	u16 fmux = bfin_read_PORTF_MUX();
-	u16 ffer = bfin_read_PORTF_FER();
-	u16 gmux = bfin_read_PORTG_MUX();
-	u16 gfer = bfin_read_PORTG_FER();
-	u16 hmux = bfin_read_PORTH_MUX();
-	u16 hfer = bfin_read_PORTH_FER();
+#define SET_MUX(port, mux, func) port##_mux = ((port##_mux & ~PORT_x_MUX_##mux##_MASK) | PORT_x_MUX_##mux##_FUNC_##func)
+	u16 f_mux = bfin_read_PORTF_MUX();
+	u16 f_fer = bfin_read_PORTF_FER();
+	u16 g_mux = bfin_read_PORTG_MUX();
+	u16 g_fer = bfin_read_PORTG_FER();
+	u16 h_mux = bfin_read_PORTH_MUX();
+	u16 h_fer = bfin_read_PORTH_FER();
 	/* set SCK/MISO/MOSI */
 	SET_MUX(g, 0, 3);
-	gfer |= PG2 | PG3 | PG4;
+	g_fer |= PG2 | PG3 | PG4;
 	switch (slave->cs) {
-		case 1: /* see G above */ gfer |= PG1; break;
-		case 2: SET_MUX(f, 4, 3); ffer |= PF12; break;
-		case 3: SET_MUX(f, 4, 3); ffer |= PF13; break;
-		case 4: SET_MUX(h, 1, 1); hfer |= PH8;  break;
-		case 5: SET_MUX(h, 2, 1); hfer |= PH9;  break;
-		case 6: SET_MUX(f, 1, 3); ffer |= PF9;  break;
-		case 7: SET_MUX(f, 2, 3); ffer |= PF10; break;
+		case 1: /* see G above */ g_fer |= PG1;  break;
+		case 2: SET_MUX(f, 4, 3); f_fer |= PF12; break;
+		case 3: SET_MUX(f, 4, 3); f_fer |= PF13; break;
+		case 4: SET_MUX(h, 1, 1); h_fer |= PH8;  break;
+		case 5: SET_MUX(h, 2, 1); h_fer |= PH9;  break;
+		case 6: SET_MUX(f, 1, 3); f_fer |= PF9;  break;
+		case 7: SET_MUX(f, 2, 3); f_fer |= PF10; break;
 	}
-	bfin_write_PORTF_MUX(fmux);
-	bfin_write_PORTF_FER(ffer);
-	bfin_write_PORTG_MUX(gmux);
-	bfin_write_PORTG_FER(gfer);
-	bfin_write_PORTH_MUX(hmux);
-	bfin_write_PORTH_FER(hfer);
+	bfin_write_PORTF_MUX(f_mux);
+	bfin_write_PORTF_FER(f_fer);
+	bfin_write_PORTG_MUX(g_mux);
+	bfin_write_PORTG_FER(g_fer);
+	bfin_write_PORTH_MUX(h_mux);
+	bfin_write_PORTH_FER(h_fer);
 #elif defined(__ADSPBF534__) || defined(__ADSPBF536__) || defined(__ADSPBF537__)
 	u16 mux = bfin_read_PORT_MUX();
-	u16 ffer = bfin_read_PORTF_FER();
-	u16 jfer = bfin_read_PORTJ_FER();
+	u16 f_fer = bfin_read_PORTF_FER();
+	u16 j_fer = bfin_read_PORTJ_FER();
 	/* set SCK/MISO/MOSI */
-	ffer |= PF11 | PF12 | PF13;
+	f_fer |= PF11 | PF12 | PF13;
 	switch (slave->cs) {
-		case 1: ffer |= PF10; break;
-		case 2: mux |= PJSE; jfer |= PJ11; break;
-		case 3: mux |= PJSE; jfer |= PJ10; break;
-		case 4: mux |= PFS4E; ffer |= PF6; break;
-		case 5: mux |= PFS5E; ffer |= PF5; break;
-		case 6: mux |= PFS6E; ffer |= PF4; break;
-		case 7: mux |= PJCE_SPI; jfer |= PJ5; break;
+		case 1: f_fer |= PF10; break;
+		case 2: mux |= PJSE; j_fer |= PJ11; break;
+		case 3: mux |= PJSE; j_fer |= PJ10; break;
+		case 4: mux |= PFS4E; f_fer |= PF6; break;
+		case 5: mux |= PFS5E; f_fer |= PF5; break;
+		case 6: mux |= PFS6E; f_fer |= PF4; break;
+		case 7: mux |= PJCE_SPI; j_fer |= PJ5; break;
 	}
 	bfin_write_PORT_MUX(mux);
-	bfin_write_PORTF_FER(ffer);
-	bfin_write_PORTJ_FER(jfer);
+	bfin_write_PORTF_FER(f_fer);
+	bfin_write_PORTJ_FER(j_fer);
 #elif defined(__ADSPBF54x__)
 #define DO_MUX(port, pin) \
 	mux = ((mux & ~PORT_x_MUX_##pin##_MASK) | PORT_x_MUX_##pin##_FUNC_1); \
@@ -251,7 +251,7 @@ static void spi_portmux(struct spi_slave *slave)
 		DO_MUX(B, 13);
 		DO_MUX(B, 14);
 		switch (slave->cs) {
-			case 1: DO_MUX(B, 9); break;
+			case 1: DO_MUX(B, 9);  break;
 			case 2: DO_MUX(B, 10); break;
 			case 3: DO_MUX(B, 11); break;
 		}
