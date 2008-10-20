@@ -10,6 +10,8 @@
 #include <config.h>
 #include <command.h>
 #include <net.h>
+#include <netdev.h>
+#include <spi.h>
 #include <asm/blackfin.h>
 #include <asm/io.h>
 #include <asm/mach-common/bits/otp.h>
@@ -30,6 +32,7 @@ phys_size_t initdram(int board_type)
 	return CFG_MAX_RAM_SIZE;
 }
 
+#if defined(CONFIG_BFIN_MAC)
 void board_get_enetaddr(uchar *mac_addr)
 {
 #if 0
@@ -61,3 +64,22 @@ void board_get_enetaddr(uchar *mac_addr)
 	}
 	mac_addr[0] = (mac_addr[0] | 0x02) & ~0x01; /* make it local unicast */
 }
+
+int board_eth_init(bd_t *bis)
+{
+	int ret = -1;
+	struct spi_slave *slave = spi_setup_slave(0, 1, 5000000, SPI_MODE_3);
+	if (slave) {
+		if (!spi_claim_bus(slave)) {
+			unsigned char dout[3] = { 2, 1, 1, };
+			unsigned char din[6];
+			ret = spi_xfer(slave, sizeof(dout) * 8, dout, din, SPI_XFER_BEGIN | SPI_XFER_END);
+			if (!ret)
+				bfin_EMAC_initialize(bis);
+			spi_release_bus(slave);
+		}
+		spi_free_slave(slave);
+	}
+	return ret;
+}
+#endif

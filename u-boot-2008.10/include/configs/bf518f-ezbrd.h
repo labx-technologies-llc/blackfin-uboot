@@ -118,6 +118,8 @@
 /*
  * Misc Settings
  */
+#define CONFIG_BFIN_SPI
+#define CONFIG_DEFAULT_SPI_MODE SPI_MODE_3
 #define CONFIG_RTC_BFIN
 #define CONFIG_UART_CONSOLE	0
 
