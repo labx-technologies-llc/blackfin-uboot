@@ -72,7 +72,7 @@ int board_eth_init(bd_t *bis)
 	if (slave) {
 		if (!spi_claim_bus(slave)) {
 			unsigned char dout[3] = { 2, 1, 1, };
-			unsigned char din[6];
+			unsigned char din[3];
 			ret = spi_xfer(slave, sizeof(dout) * 8, dout, din, SPI_XFER_BEGIN | SPI_XFER_END);
 			if (!ret)
 				bfin_EMAC_initialize(bis);
