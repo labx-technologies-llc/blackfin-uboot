@@ -306,7 +306,7 @@ $(obj)u-boot.bin:	$(obj)u-boot
 		$(OBJCOPY) ${OBJCFLAGS} -O binary $< $@
 
 $(obj)u-boot.ldr:	$(obj)u-boot
-		./tools/envcrc --binary > $(obj)env-ldr.o
+		$(obj)tools/envcrc --binary > $(obj)env-ldr.o
 		$(LDR) -T $(CONFIG_BFIN_CPU) -c $@ $< $(LDR_FLAGS)
 
 $(obj)u-boot.ldr.hex:	$(obj)u-boot.ldr
@@ -338,9 +338,9 @@ $(obj)u-boot:		depend $(SUBDIRS) $(OBJS) $(LIBBOARD) $(LIBS) $(LDSCRIPT)
 		$(GEN_UBOOT)
 		$(call SYSTEM_MAP,u-boot) \
 			| awk '$$2 ~ /[tTwW]/ {print $$1" "$$3}' \
-			| sed -e 's:^\(.*\):.asciz "\1":' > .syms.u-boot.S
-		$(CC) $(AFLAGS) -I. -DSYM_FILE='".syms.u-boot.S"' -c cpu/blackfin/system_map.S -o cpu/blackfin/system_map.o
-		$(GEN_UBOOT) cpu/blackfin/system_map.o
+			| sed -e 's:^\(.*\):.asciz "\1":' > $(obj).syms.u-boot.S
+		$(CC) $(AFLAGS) -I. -DSYM_FILE='"$(obj).syms.u-boot.S"' -c cpu/blackfin/system_map.S -o $(obj)cpu/blackfin/system_map.o
+		$(GEN_UBOOT) $(obj)cpu/blackfin/system_map.o
 
 $(OBJS):	depend $(obj)include/autoconf.mk
 		$(MAKE) -C cpu/$(CPU) $(if $(REMOTE_BUILD),$@,$(notdir $@))
