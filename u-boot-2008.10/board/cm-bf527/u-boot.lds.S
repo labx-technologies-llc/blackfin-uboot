@@ -28,6 +28,8 @@
 #include <config.h>
 #include <asm/blackfin.h>
 #undef ALIGN
+#undef ENTRY
+#undef bfin
 
 /* If we don't actually load anything into L1 data, this will avoid
  * a syntax error.  If we do actually load something into L1 data,
@@ -49,13 +51,14 @@ MEMORY
 	l1_data : ORIGIN = L1_DATA_B_SRAM,   LENGTH = L1_DATA_B_SRAM_SIZE
 }
 
+ENTRY(_start)
 SECTIONS
 {
 	.text :
 	{
-		cpu/blackfin/start.o (.text)
+		cpu/blackfin/start.o (.text .text.*)
 		__initcode_start = .;
-		cpu/blackfin/initcode.o (.text)
+		cpu/blackfin/initcode.o (.text .text.*)
 		__initcode_end = .;
 		*(.text .text.*)
 	} >ram
