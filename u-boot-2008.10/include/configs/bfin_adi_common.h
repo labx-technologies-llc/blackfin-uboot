@@ -28,7 +28,7 @@
 # ifdef CONFIG_SPI
 #  define CONFIG_CMD_EEPROM
 # endif
-# ifdef CONFIG_BFIN_SPI
+# if defined(CONFIG_BFIN_SPI) || defined(CONFIG_SOFT_SPI)
 #  define CONFIG_CMD_SPI
 # endif
 # if defined(CONFIG_HARD_I2C) || defined(CONFIG_SOFT_I2C)
