@@ -225,7 +225,7 @@ set sclk_div         [lindex $argv 5]
 }
 puts "VCO_MULT: $vco_mult ,CCLK_DIV: $cclk_div , SCLK_DIV $sclk_div ."
 
-cd $checkout_path/u-boot/u-boot-1.1.6/
+cd $checkout_path/u-boot/u-boot-2008.10
 sleep 3
  set timeout 2
       spawn ex include/configs/$config_file
