@@ -721,30 +721,29 @@ static int read_flash(unsigned long address, long count, uchar *buffer)
 	if (!count)
 		return 0;
 
+	dma[0].start_addr = (unsigned long)buffer;
+	dma[0].x_modify = 1;
 	if (count <= 65536) {
 		blackfin_dcache_flush_invalidate_range(buffer, buffer + count);
 		ndsize = NDSIZE_5;
-		dma[0].start_addr = (unsigned long) buffer;
-		dma[0].cfg = NDSIZE_0 | WNR | DI_EN | WDSIZE_8 | FLOW_STOP | DMAEN;
+		dma[0].cfg = NDSIZE_0 | WNR | WDSIZE_8 | FLOW_STOP | DMAEN | DI_EN;
 		dma[0].x_count = count;
-		dma[0].x_modify = 1;
 	} else {
 		blackfin_dcache_flush_invalidate_range(buffer, buffer + 65536 - 1);
 		ndsize = NDSIZE_7;
-		dma[0].start_addr = (unsigned long) buffer;
-		dma[0].cfg = NDSIZE_5 | WNR | WDSIZE_8 | FLOW_ARRAY | DMA2D | DMAEN;
+		dma[0].cfg = NDSIZE_5 | WNR | WDSIZE_8 | FLOW_ARRAY | DMAEN | DMA2D;
 		dma[0].x_count = 0;	/* 2^16 */
-		dma[0].x_modify = 1;
 		dma[0].y_count = count >> 16;	/* count / 2^16 */
 		dma[0].y_modify = 1;
-		dma[1].start_addr = (unsigned long) (buffer + (count & ~0xFFFF));
-		dma[1].cfg = NDSIZE_0 | WNR | WDSIZE_8 | FLOW_STOP | DI_EN | DMAEN;
+		dma[1].start_addr = (unsigned long)(buffer + (count & ~0xFFFF));
+		dma[1].cfg = NDSIZE_0 | WNR | WDSIZE_8 | FLOW_STOP | DMAEN | DI_EN;
 		dma[1].x_count = count & 0xFFFF; /* count % 2^16 */
 		dma[1].x_modify = 1;
 	}
 
+	bfin_write_DMA_SPI_CONFIG(0);
 	bfin_write_DMA_SPI_IRQ_STATUS(DMA_DONE | DMA_ERR);
-	bfin_write_DMA_SPI_CURR_DESC_PTR(&dma[0].start_addr);
+	bfin_write_DMA_SPI_CURR_DESC_PTR(dma);
 
 	SPI_ON();
 
@@ -757,16 +756,15 @@ static int read_flash(unsigned long address, long count, uchar *buffer)
 #endif
 
 	bfin_write_DMA_SPI_CONFIG(ndsize | FLOW_ARRAY | DMAEN);
-	*pSPI_CTL = (MSTR | CPHA | CPOL | RDBR_DMA | SPE);
+	*pSPI_CTL = (MSTR | CPHA | CPOL | RDBR_DMA | SPE | SZ);
 	SSYNC();
 
 	/*
 	 * We already invalidated the first 64k,
 	 * now while we just wait invalidate the remaining part.
 	 * Its not likely that the DMA is going to overtake
-	 **/
-
-	if (ndsize == NDSIZE_7)
+	 */
+	if (count > 65536)
 		blackfin_dcache_flush_invalidate_range(buffer + 65536,
 							 buffer + count);
 
@@ -776,11 +774,7 @@ static int read_flash(unsigned long address, long count, uchar *buffer)
 
 	SPI_OFF();
 
-	*pSPI_CTL = 0;
-
 	bfin_write_DMA_SPI_CONFIG(0);
-	bfin_write_DMA_SPI_IRQ_STATUS(DMA_DONE | DMA_ERR);
-
 	*pSPI_CTL = (SPE | MSTR | CPHA | CPOL | TDBR_CORE);
 
 	return 0;
