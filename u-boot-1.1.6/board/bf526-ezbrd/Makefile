@@ -39,8 +39,7 @@ $(LIB):	$(obj).depend $(OBJS) $(SOBJS) u-boot.lds
 	$(AR) $(ARFLAGS) $@ $(OBJS) $(SOBJS)
 
 u-boot.lds: u-boot.lds.S
-	$(CPP) $(CPPFLAGS) -D__ASSEMBLY__ -P -Ubfin $^ > $@.tmp
-	mv -f $@.tmp $@
+	$(CPP) $(CPPFLAGS) -D__ASSEMBLY__ -P -Ubfin $^ > $@
 
 clean:
 	rm -f $(SOBJS) $(OBJS)
