@@ -55,6 +55,7 @@
 #define CFG_MONITOR_LEN		(384 * 1024)	/* Reserve 384 kB for monitor */
 #define CFG_MALLOC_LEN		(384 * 1024)	/* Reserve 384 kB for malloc() (video/spi are big) */
 
+
 /*
  * NAND Settings
  * (can't be used sametime as ethernet)
@@ -67,6 +68,7 @@
 #define NAND_MAX_CHIPS		1
 #define CONFIG_CMD_NAND
 #endif
+
 
 /*
  * Network Settings
