@@ -756,6 +756,19 @@ LIST_blackfin="		\
 	tcm-bf537	\
 "
 
+procs() {
+	case ${@:-${target}} in
+		*bf51[2468]*)   echo bf51{2,4,6,8};;
+		*bf52[234567]*) echo bf52{2,3,4,5,6,7};;
+		*bf53[123]*)    echo bf53{1,2,3};;
+		*bf53[467]*)    echo bf53{4,6,7};;
+		*bf53[89]*)     echo bf53{8,9};;
+		*bf54[24789]*)  echo bf54{2,4,7,9,8};;
+		*bf561*)        echo bf561;;
+		*)              echo $(procs $(echo CONFIG_BFIN_CPU | ${CPP:-cpp} -P -include include/configs/${target}.h -I include -)) ;;
+	esac
+}
+
 #########################################################################
 ## SH Systems
 #########################################################################
@@ -801,14 +814,17 @@ LIST_sparc="gr_xc3s_1500	gr_cpci_ax2000	gr_ep2s60	grsim	grsim_leon2"
 build_target() {
 	target=$1
 
-	${MAKE} distclean >/dev/null
-	${MAKE} ${target}_config
+	echo "Testing build for $target (CPU: $cpu) ..."
 
-	${MAKE} ${JOBS} all 2>&1 >${LOG_DIR}/$target.MAKELOG \
-				| tee ${LOG_DIR}/$target.ERR
+	${MAKE} distclean >/dev/null
+	sed -i "/CONFIG_BFIN_CPU/s:\([[:space:]]\)bf[0-9]*-:\1${cpu}-:" include/configs/$target.h
+	${MAKE} ${target}_config >/dev/null
+
+	${MAKE} ${JOBS} all 2>&1 >${LOG_DIR}/$target.$cpu.MAKELOG \
+				| tee ${LOG_DIR}/$target.$cpu.ERR
 
 	${CROSS_COMPILE}size ${BUILD_DIR}/u-boot \
-				| tee -a ${LOG_DIR}/$target.MAKELOG
+				| tee -a ${LOG_DIR}/$target.$cpu.MAKELOG
 }
 
 #-----------------------------------------------------------------------
@@ -831,7 +847,9 @@ do
 	)
 			for target in `eval echo '$LIST_'${arg}`
 			do
-				build_target ${target}
+				for cpu in $(procs) ; do
+					build_target ${target}
+				done
 			done
 			;;
 	*)		build_target ${arg}
