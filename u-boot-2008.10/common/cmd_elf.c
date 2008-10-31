@@ -276,6 +276,32 @@ int valid_elf_image (unsigned long addr)
  * A very simple elf loader, assumes the image is valid, returns the
  * entry point address.
  * ====================================================================== */
+#ifdef CONFIG_ELF_SIMPLE_LOAD
+unsigned long load_elf_image (unsigned long addr)
+{
+	Elf32_Ehdr *ehdr;
+	Elf32_Phdr *phdr;
+	unsigned long entry;
+	size_t i;
+
+	ehdr = (Elf32_Ehdr *) addr;
+	phdr = (Elf32_Phdr *) (addr + ehdr->e_phoff);
+
+	entry = ehdr->e_entry;
+
+	/* Load each program header */
+	for (i = 0; i < ehdr->e_phnum; ++i) {
+		void *dst = (void *) phdr->p_paddr;
+		void *src = (void *) addr + phdr->p_offset;
+		printf ("Loading phdr %i to 0x%p (%i bytes)\n",
+		        i, dst, phdr->p_filesz);
+		memcpy (dst, src, phdr->p_filesz);
+		++phdr;
+	}
+
+	return entry;
+}
+#else
 unsigned long load_elf_image (unsigned long addr)
 {
 	Elf32_Ehdr *ehdr;		/* Elf header structure pointer     */
@@ -327,6 +353,7 @@ unsigned long load_elf_image (unsigned long addr)
 
 	return ehdr->e_entry;
 }
+#endif
 
 /* ====================================================================== */
 U_BOOT_CMD(
