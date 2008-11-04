@@ -296,7 +296,7 @@ unsigned long load_elf_image (unsigned long addr)
 		printf ("Loading phdr %i to 0x%p (%i bytes)\n",
 		        i, dst, phdr->p_filesz);
 		memcpy (dst, src, phdr->p_filesz);
-		flush_cache (dst, phdr->p_filesz);
+		flush_cache ((unsigned long)dst, phdr->p_filesz);
 		++phdr;
 	}
 
