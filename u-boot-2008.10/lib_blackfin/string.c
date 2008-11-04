@@ -181,10 +181,8 @@ void dma_memcpy_nocache(void *dst, const void *src, size_t count)
  */
 void *dma_memcpy(void *dst, const void *src, size_t count)
 {
-	if (dcache_status()) {
-		blackfin_dcache_flush_range(src, src + count);
+	if (dcache_status())
 		blackfin_dcache_flush_invalidate_range(dst, dst + count);
-	}
 
 	dma_memcpy_nocache(dst, src, count);
 
