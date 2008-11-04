@@ -774,7 +774,10 @@ static int read_flash(unsigned long address, long count, uchar *buffer)
 
 	SPI_OFF();
 
+	*pSPI_CTL = 0;
+
 	bfin_write_DMA_SPI_CONFIG(0);
+
 	*pSPI_CTL = (SPE | MSTR | CPHA | CPOL | TDBR_CORE);
 
 	return 0;
