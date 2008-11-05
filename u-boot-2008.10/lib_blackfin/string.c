@@ -136,16 +136,22 @@ int strncmp(const char *cs, const char *ct, size_t count)
  */
 void dma_memcpy_nocache(void *dst, const void *src, size_t count)
 {
+	/* Disable DMA in case it's still running (older u-boot's did not
+	 * always turn them off).  Do it before the if statement below so
+	 * we can be cheap and not do a SSYNC().  Need to make sure the
+	 * channel is actually disabled before programming things since
+	 * registers are read-only when enabled.
+	 */
+	bfin_write_MDMA_D0_CONFIG(0);
+	bfin_write_MDMA_S0_CONFIG(0);
+	bfin_write_MDMA_D0_IRQ_STATUS(DMA_RUN | DMA_DONE | DMA_ERR);
+
 	/* Scratchpad cannot be a DMA source or destination */
 	if (((unsigned long)src >= L1_SRAM_SCRATCH &&
 	     (unsigned long)src < L1_SRAM_SCRATCH_END) ||
 	    ((unsigned long)dst >= L1_SRAM_SCRATCH &&
 	     (unsigned long)dst < L1_SRAM_SCRATCH_END))
 		hang();
-
-	bfin_write_MDMA_S0_CONFIG(0);
-	bfin_write_MDMA_D0_CONFIG(0);
-	bfin_write_MDMA_D0_IRQ_STATUS(DMA_RUN | DMA_DONE | DMA_ERR);
 
 	/* Copy sram functions from sdram to sram */
 	/* Setup destination start address */
@@ -164,14 +170,13 @@ void dma_memcpy_nocache(void *dst, const void *src, size_t count)
 
 	/* Enable source DMA */
 	bfin_write_MDMA_S0_CONFIG(DMAEN);
-
 	bfin_write_MDMA_D0_CONFIG(WNR | DMAEN);
 	SSYNC();
 
 	while (bfin_read_MDMA_D0_IRQ_STATUS() & DMA_RUN)
 		continue;
 
-	bfin_write_MDMA_D0_IRQ_STATUS(bfin_read_MDMA_D0_IRQ_STATUS() | DMA_RUN | DMA_DONE | DMA_ERR);
+	bfin_write_MDMA_D0_IRQ_STATUS(DMA_RUN | DMA_DONE | DMA_ERR);
 	bfin_write_MDMA_D0_CONFIG(0);
 	bfin_write_MDMA_S0_CONFIG(0);
 }
