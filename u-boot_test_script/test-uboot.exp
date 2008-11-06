@@ -4278,7 +4278,7 @@ while 1 {
 sleep 3
 
 set timeout 20
-send -s "tftp 0x1000000 linux\r"
+send -s "tftp 0x1000000 $KERNEL_GZ_FILENAME\r"
 while 1 {
    expect {
 
@@ -4317,7 +4317,7 @@ while 1 {
 }
 
 set run_kernel_fail 0
-send -s "bootelf\r"
+send -s "bootm\r"
 set timeout 60
    while 1 {
       expect {
