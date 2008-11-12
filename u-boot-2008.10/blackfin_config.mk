@@ -31,7 +31,7 @@ CONFIG_ENV_OFFSET := $(strip $(subst ",,$(CONFIG_ENV_OFFSET)))
 CONFIG_ENV_SIZE := $(strip $(subst ",,$(CONFIG_ENV_SIZE)))
 ENV_IS_EMBEDDED_CUSTOM = $(call extract_define, ENV_IS_EMBEDDED_CUSTOM)
 
-PLATFORM_RELFLAGS += -ffixed-P5 -fomit-frame-pointer
+PLATFORM_RELFLAGS += -ffixed-P5 -fomit-frame-pointer -mno-fdpic
 PLATFORM_CPPFLAGS += -DCONFIG_BLACKFIN
 
 LDFLAGS += --gc-sections
