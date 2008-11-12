@@ -72,7 +72,7 @@ static void set_otp_timing(bool write)
 		 * OTP_TP2 = (2 * get_sclk()) / 10^7
 		 */
 		tp2 = (2 * get_sclk() / 10000000) << 8;
-		/* OTP_TP2 = magic constant */
+		/* OTP_TP3 = magic constant */
 		tp3 = (0x1401) << 15;
 		timing = tp1 | tp2 | tp3;
 	}
