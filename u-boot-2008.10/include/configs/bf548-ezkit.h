@@ -61,7 +61,7 @@
 #define CONFIG_EBIU_FCTL_VAL	(BCLK_4)
 #define CONFIG_EBIU_MODE_VAL	(B0MODE_FLASH)
 
-#define CFG_MONITOR_LEN		(384 * 1024)	/* Reserve 384 kB for monitor */
+#define CFG_MONITOR_LEN		(512 * 1024)	/* Reserve 512 kB for monitor */
 #define CFG_MALLOC_LEN		(640 * 1024)	/* Reserve 640 kB for malloc() (video/spi are big) */
 
 
