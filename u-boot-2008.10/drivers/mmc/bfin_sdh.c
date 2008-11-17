@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004-2006 Atmel Corporation
+ * Copyright (C) 2008 Analog Device Inc.
  *
  * See file CREDITS for list of people who contributed to this
  * project.
