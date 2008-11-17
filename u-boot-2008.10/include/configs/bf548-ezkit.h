@@ -135,6 +135,13 @@
 #define CFG_I2C_SPEED		50000
 #define CFG_I2C_SLAVE		0
 
+/*
+ * SDH Settings
+ */
+#define CONFIG_BFIN_SDH 1
+#define CONFIG_CMD_MMC
+#define CONFIG_MMC      1
+#define CONFIG_DOS_PARTITION 1
 
 /*
  * Misc Settings
