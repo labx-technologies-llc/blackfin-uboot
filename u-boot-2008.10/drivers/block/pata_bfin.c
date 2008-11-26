@@ -1025,11 +1025,10 @@ static void bfin_ata_identify(struct ata_port *ap, int dev)
 	ata_id_c_string(iobuf, (unsigned char *)sata_dev_desc[ap->port_no].product,
 			 ATA_ID_SERNO, sizeof(sata_dev_desc[ap->port_no].product));
 
-	if ((iop->config & 0x0080) == 0x0080) {
+	if ((iop->config & 0x0080) == 0x0080)
 		sata_dev_desc[ap->port_no].removable = 1;
-	} else {
+	else
 		sata_dev_desc[ap->port_no].removable = 0;
-	}
 
 	sata_dev_desc[ap->port_no].lba = (u32) n_sectors;
 	debug("lba=0x%x\n", sata_dev_desc[ap->port_no].lba);
