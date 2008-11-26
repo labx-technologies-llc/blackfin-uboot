@@ -33,7 +33,7 @@
 #include <asm/io.h>
 #include <asm/errno.h>
 #include <asm/mach-common/bits/pata.h>
-#include <ide.h>
+#include <ata.h>
 #include <libata.h>
 #include "pata_bfin.h"
 
@@ -975,6 +975,7 @@ static void bfin_ata_identify(struct ata_port *ap, int dev)
 	u8 status = 0;
 	static u16 iobuf[ATA_SECTOR_WORDS];
 	u64 n_sectors = 0;
+	hd_driveid_t *iop = (hd_driveid_t *)iobuf;
 
 	memset(iobuf, 0, sizeof(iobuf));
 
@@ -1024,14 +1025,17 @@ static void bfin_ata_identify(struct ata_port *ap, int dev)
 	ata_id_c_string(iobuf, (unsigned char *)sata_dev_desc[ap->port_no].product,
 			 ATA_ID_SERNO, sizeof(sata_dev_desc[ap->port_no].product));
 
-	/* we asume harddisk is not removable */
-	sata_dev_desc[ap->port_no].removable = 0;
+	if ((iop->config & 0x0080) == 0x0080) {
+		sata_dev_desc[ap->port_no].removable = 1;
+	} else {
+		sata_dev_desc[ap->port_no].removable = 0;
+	}
 
 	sata_dev_desc[ap->port_no].lba = (u32) n_sectors;
 	debug("lba=0x%x\n", sata_dev_desc[ap->port_no].lba);
 
 #ifdef CONFIG_LBA48
-	if (iobuf[83] & (1 << 10))
+	if (iop->command_set_2 & 0x0400)
 		sata_dev_desc[ap->port_no].lba48 = 1;
 	else
 		sata_dev_desc[ap->port_no].lba48 = 0;
@@ -1085,8 +1089,6 @@ int scan_sata(int dev)
 	 * bfin_dev_select() before access.
 	 */
 	struct ata_port *ap = &port[dev];
-	unsigned int fsclk = get_sclk();
-	int i;
 	static int scan_done[(CFG_SATA_MAX_DEVICE+1)/PATA_DEV_NUM_PER_PORT];
 
 	if (scan_done[dev/PATA_DEV_NUM_PER_PORT])
@@ -1107,6 +1109,7 @@ int scan_sata(int dev)
 		/* Probe device and set xfer mode */
 		bfin_ata_identify(ap, dev%PATA_DEV_NUM_PER_PORT);
 		bfin_ata_set_Feature_cmd(ap, dev%PATA_DEV_NUM_PER_PORT);
+		init_part(&sata_dev_desc[dev]);
 		return 0;
 	}
 
@@ -1213,6 +1216,8 @@ static u8 do_one_read(struct ata_port *ap, u64 blknr, u8 blkcnt, u16 *buffer,
 			printf("ata%u error %d\n", ap->port_no, err);
 			return sr;
 		}
+		bfin_irq_clear(ap);
+
 		/* Read one sector */
 		read_atapi_data(base, ATA_SECTOR_WORDS, buffer);
 		buffer += ATA_SECTOR_WORDS;
@@ -1270,7 +1275,7 @@ ulong sata_write(int dev, ulong block, ulong blkcnt, const void *buff)
 	void __iomem *base = (void __iomem *)ap->ioaddr.ctl_addr;
 	ulong n = 0;
 	u16 *buffer = (u16 *) buff;
-	unsigned char status = 0, num = 0;
+	unsigned char status = 0;
 	u64 blknr = (u64) block;
 #ifdef CONFIG_LBA48
 	unsigned char lba48 = 0;
@@ -1290,7 +1295,7 @@ ulong sata_write(int dev, ulong block, ulong blkcnt, const void *buff)
 	while (blkcnt-- > 0) {
 		status = bfin_ata_busy_wait(ap, ATA_BUSY, 50000, 0);
 		if (status & ATA_BUSY) {
-			printf("ata%u failed to respond\n", port[num].port_no);
+			printf("ata%u failed to respond\n", ap->port_no);
 			return n;
 		}
 #ifdef CONFIG_LBA48
@@ -1305,7 +1310,7 @@ ulong sata_write(int dev, ulong block, ulong blkcnt, const void *buff)
 				(blknr >> 40) & 0xFF);
 		}
 #endif
-		write_atapi_register(base, ATA_REG_NSECT, blkcnt);
+		write_atapi_register(base, ATA_REG_NSECT, 1);
 		write_atapi_register(base, ATA_REG_LBAL, (blknr >> 0) & 0xFF);
 		write_atapi_register(base, ATA_REG_LBAM, (blknr >> 8) & 0xFF);
 		write_atapi_register(base, ATA_REG_LBAH, (blknr >> 16) & 0xFF);
@@ -1323,7 +1328,7 @@ ulong sata_write(int dev, ulong block, ulong blkcnt, const void *buff)
 				ATA_CMD_PIO_WRITE);
 		}
 
-		/*may take up to 4 sec */
+		/*may take up to 5 sec */
 		status = bfin_ata_busy_wait(ap, ATA_BUSY, 50000, 0);
 		if ((status & (ATA_DRQ | ATA_BUSY | ATA_ERR)) != ATA_DRQ) {
 			printf("Error no DRQ dev %d blk %ld: sts 0x%02x\n",

@@ -166,6 +166,9 @@
 #ifndef CONFIG_CMD_FAT
 # define CONFIG_CMD_FAT
 #endif
+#ifndef CONFIG_SUPPORT_VFAT
+# define CONFIG_SUPPORT_VFAT
+#endif
 #endif
 
 
