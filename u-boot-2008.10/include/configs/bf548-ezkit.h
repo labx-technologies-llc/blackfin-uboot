@@ -61,7 +61,7 @@
 #define CONFIG_EBIU_FCTL_VAL	(BCLK_4)
 #define CONFIG_EBIU_MODE_VAL	(B0MODE_FLASH)
 
-#define CFG_MONITOR_LEN		(512 * 1024)	/* Reserve 512 kB for monitor */
+#define CFG_MONITOR_LEN		(512 * 1024)	/* Reserve 384 kB for monitor */
 #define CFG_MALLOC_LEN		(640 * 1024)	/* Reserve 640 kB for malloc() (video/spi are big) */
 
 
@@ -149,6 +149,25 @@
 #define CONFIG_BOARD_EARLY_INIT_F
 #define CONFIG_RTC_BFIN
 #define CONFIG_UART_CONSOLE	1
+
+/* SATA */
+#define CONFIG_LIBATA
+#define CONFIG_PATA_BFIN
+#define CFG_SATA_MAX_DEVICE     1
+#define CONFIG_BFIN_ATAPI_BASE_ADDR	0xFFC03800
+
+#ifdef CONFIG_PATA_BFIN
+#define CONFIG_BFIN_ATA_MODE	XFER_PIO_4
+#define CONFIG_LBA48
+#define CONFIG_CMD_SATA
+#ifndef CONFIG_DOS_PARTITION
+# define CONFIG_DOS_PARTITION
+#endif
+#ifndef CONFIG_CMD_FAT
+# define CONFIG_CMD_FAT
+#endif
+#endif
+
 
 #ifndef __ADSPBF542__
 /* Don't waste time transferring a logo over the UART */

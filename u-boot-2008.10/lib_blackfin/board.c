@@ -384,6 +384,11 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	}
 #endif
 
+#if defined(CONFIG_CMD_SATA)
+	printf("ATA:   ");
+	sata_initialize();
+#endif
+
 	display_global_data();
 
 #if defined(CONFIG_POST)
