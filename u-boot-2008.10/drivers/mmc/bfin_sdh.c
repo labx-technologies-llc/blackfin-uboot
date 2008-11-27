@@ -20,7 +20,7 @@
  * MA 02111-1307 USA
  */
 #include <common.h>
-
+#include <malloc.h>
 #include <part.h>
 #include <mmc.h>
 
@@ -29,6 +29,7 @@
 #include <asm/byteorder.h>
 #include <asm/blackfin.h>
 #include <asm/mach-common/bits/sdh.h>
+#include <asm/mach-common/bits/dma.h>
 
 #include "bfin_sdh.h"
 
@@ -41,7 +42,7 @@
 /*SD_CLK frequency must be less than 400k in identification mode*/
 #define CFG_MMC_CLK_ID		200000
 /*SD_CLK for normal working*/
-#define CFG_MMC_CLK_OP		25000000
+#define CFG_MMC_CLK_OP		10000000
 /*support 3.2-3.3V and 3.3-3.4V*/
 #define CFG_MMC_OP_COND		0x00300000
 #define MMC_DEFAULT_RCA		1
@@ -49,6 +50,25 @@
 static unsigned int mmc_rca;
 static int mmc_card_is_sd;
 static block_dev_desc_t mmc_blkdev;
+struct dma_desc_array sdh_dma[2];
+struct mmc_cid cid;
+static u32 csd[4];
+static u8 rx_buf[8];
+
+#define get_bits(resp, start, size)					\
+	({								\
+		const int __size = size;				\
+		const uint32_t __mask = (__size < 32 ? 1 << __size : 0) - 1;	\
+		const int32_t __off = 3 - ((start) / 32);			\
+		const int32_t __shft = (start) & 31;			\
+		uint32_t __res;						\
+									\
+		__res = resp[__off] >> __shft;				\
+		if (__size + __shft > 32)				\
+			__res |= resp[__off-1] << ((32 - __shft) % 32);	\
+		__res & __mask;						\
+	})
+
 
 block_dev_desc_t *mmc_get_dev(int dev)
 {
@@ -63,6 +83,7 @@ static void mci_set_clk(unsigned long clk)
 
 	/*setting SD_CLK*/
 	sys_clk = get_sclk();
+	bfin_write_SDH_CLK_CTL(0);
 	if (sys_clk % (2 * clk) == 0)
 			clk_div = sys_clk / (2 * clk) - 1;
 		else
@@ -70,7 +91,8 @@ static void mci_set_clk(unsigned long clk)
 
 	if (clk_div > 0xff)
 			clk_div = 0xFF;
-		clk_ctl |= clk_div & 0xFF;
+		clk_ctl |= (clk_div & 0xFF);
+		clk_ctl |= CLK_E;
 	bfin_write_SDH_CLK_CTL(clk_ctl);
 }
 
@@ -93,10 +115,10 @@ mmc_cmd(unsigned long cmd, unsigned long arg,
 
 	bfin_write_SDH_ARGUMENT(arg);
 	bfin_write_SDH_COMMAND(sdh_cmd | CMD_E);
-	bfin_write_SDH_CLK_CTL(bfin_read_SDH_CLK_CTL() | CLK_E);
+
 	/*wait for a while*/
 	do {
-		udelay(40);
+		udelay(1);
 		status = bfin_read_SDH_STATUS();
 	} while (!(status & (CMD_SENT | CMD_RESP_END | CMD_TIME_OUT |
 		CMD_CRC_FAIL)));
@@ -110,13 +132,15 @@ mmc_cmd(unsigned long cmd, unsigned long arg,
 		}
 	}
 
-	if (status & CMD_TIME_OUT)
+	if (status & CMD_TIME_OUT) {
+		printf("CMD%d timeout\n", (int)cmd);
 		ret |= -ETIMEDOUT;
-	else if (status & CMD_CRC_FAIL && flags & MMC_RSP_CRC)
+	} else if (status & CMD_CRC_FAIL && flags & MMC_RSP_CRC) {
+		printf("CMD%d CRC failure\n", (int)cmd);
 		ret |= -EILSEQ;
+	}
 	bfin_write_SDH_STATUS_CLR(CMD_SENT_STAT | CMD_RESP_END_STAT |
 				CMD_TIMEOUT_STAT | CMD_CRC_FAIL_STAT);
-	bfin_write_SDH_CLK_CTL(bfin_read_SDH_CLK_CTL() & ~CLK_E);
 	return ret;
 }
 
@@ -141,98 +165,73 @@ static unsigned long
 mmc_bread(int dev, unsigned long start, lbaint_t blkcnt,
 	  void *buffer)
 {
-	int ret, i = 0;
+
+	int ret, i;
 	unsigned long resp[4];
-	unsigned long card_status, data;
-	unsigned long wordcount;
-	u32 *p = buffer;
+	unsigned long card_status;
+	u8 *buf = buffer;
 	u32 status;
-	unsigned int length;
-	unsigned int blk_size;
-	unsigned int data_ctl = 0;
+	u16 data_ctl = 0;
+	u16 dma_cfg = 0;
 
 	if (blkcnt == 0)
 		return 0;
-	pr_debug("mmc_bread: dev %d, start %lx, blkcnt %lx\n",
-		 dev, start, blkcnt);
-	length = mmc_blkdev.blksz * blkcnt;
-	bfin_write_SDH_DATA_LGTH(length);
-	switch (mmc_blkdev.blksz) {
-	case 2048:
-		blk_size = 11;
-		break;
-	case 1024:
-		blk_size = 10;
-		break;
-	case 512:
-		blk_size = 9;
-		break;
-	case 256:
-		blk_size = 8;
-		break;
-	case 128:
-		blk_size = 7;
-		break;
-	case 64:
-		blk_size = 6;
-		break;
-	case 32:
-		blk_size = 5;
-		break;
-	case 16:
-		blk_size = 4;
-		break;
-	default:
-		blk_size = 3;
-		break;
-	}
-	data_ctl |= blk_size << 4;
+	pr_debug("mmc_bread: dev %d, start %d, blkcnt %d\n"dev, start, blkcnt);
+	bfin_write_SDH_DATA_LGTH(blkcnt*mmc_blkdev.blksz);
+	/*force to use 512-byte block */
+	data_ctl |= 9 << 4;
 	data_ctl |= DTX_DIR;
 	bfin_write_SDH_DATA_CTL(data_ctl);
+	dma_cfg |= WDSIZE_32 | RESTART | WNR | DMAEN;
+
 	/* FIXME later */
 	bfin_write_SDH_DATA_TIMER(0xFFFFFFFF);
-	/* Put the device into Transfer state */
-	ret = mmc_cmd(MMC_CMD_SELECT_CARD, mmc_rca << 16, resp, MMC_RSP_R1);
-	if (ret)
-		goto out;
-	/* Set block length */
-	ret = mmc_cmd(MMC_CMD_SET_BLOCKLEN, mmc_blkdev.blksz, resp, MMC_RSP_R1);
-	if (ret)
-		goto out;
 	for (i = 0; i < blkcnt; i++, start++) {
+
+		bfin_write_DMA22_START_ADDR(rx_buf);
+		bfin_write_DMA22_X_COUNT(mmc_blkdev.blksz/4);
+		bfin_write_DMA22_X_MODIFY(4);
+		bfin_write_DMA22_CONFIG(dma_cfg);
+
+		/* Put the device into Transfer state */
+		ret = mmc_cmd(MMC_CMD_SELECT_CARD, mmc_rca << 16, resp, MMC_RSP_R1);
+			if (ret) {
+				printf("MMC_CMD_SELECT_CARD failed\n");
+				goto out;
+			}
+		/* Set block length */
+		ret = mmc_cmd(MMC_CMD_SET_BLOCKLEN, mmc_blkdev.blksz, resp, MMC_RSP_R1);
+		if (ret) {
+			printf("MMC_CMD_SET_BLOCKLEN failed\n");
+			goto out;
+		}
 		ret = mmc_cmd(MMC_CMD_READ_SINGLE_BLOCK,
 			      start * mmc_blkdev.blksz, resp,
 			      MMC_RSP_R1);
-		if (ret)
+		if (ret) {
+			printf("MMC_CMD_READ_SINGLE_BLOCK failed\n");
 			goto out;
-bfin_write_SDH_DATA_CTL(bfin_read_SDH_DATA_CTL() | DTX_E);
-bfin_write_SDH_CLK_CTL(bfin_read_SDH_CLK_CTL() | CLK_E);
-		wordcount = 0;
+		}
+		bfin_write_SDH_DATA_CTL(bfin_read_SDH_DATA_CTL() | DTX_DMA_E | DTX_E);
+
 		do {
-			/*
-			do {
-				status = bfin_read_SDH_STATUS();
-			} while (!(status & (RX_FIFO_STAT | DAT_TIME_OUT | DAT_CRC_FAIL | RX_OVERRUN)));
-			if (status & (DAT_TIME_OUT | DAT_CRC_FAIL | RX_OVERRUN)) {
-				bfin_write_SDH_STATUS_CLR(DAT_TIMEOUT_STAT | \
-					DAT_CRC_FAIL_STAT | RX_OVERRUN);
-				goto read_error;
-			} else if (status & RX_FIFO_STAT) {
-				data = bfin_read_SDH_FIFO();
-				*p++ = data;
-				wordcount++;
-			}*/
-			data = bfin_read_SDH_FIFO();
-				*p++ = data;
-				wordcount++;
-		} while (wordcount < (mmc_blkdev.blksz / 4));
-		bfin_write_SDH_STATUS_CLR(DAT_END_STAT | DAT_TIMEOUT_STAT | \
-			DAT_CRC_FAIL_STAT | DAT_BLK_END_STAT | RX_OVERRUN_STAT);
+			udelay(1);
+			status = bfin_read_SDH_STATUS();
+		} while (!(status & (DAT_BLK_END | DAT_END | DAT_TIME_OUT | DAT_CRC_FAIL | RX_OVERRUN)));
+		if (status & (DAT_TIME_OUT | DAT_CRC_FAIL | RX_OVERRUN)) {
+			bfin_write_SDH_STATUS_CLR(DAT_TIMEOUT_STAT | \
+				DAT_CRC_FAIL_STAT | RX_OVERRUN);
+			goto read_error;
+		} else {
+			blackfin_dcache_flush_invalidate_range(rx_buf, rx_buf+512);
+			memcpy(buf + i*mmc_blkdev.blksz, (u8 *)rx_buf, 512);
+			bfin_write_SDH_STATUS_CLR(DAT_BLK_END_STAT);
+			mmc_cmd(MMC_CMD_SELECT_CARD, 0, resp, 0);
+		}
 	}
+	bfin_write_SDH_STATUS_CLR(DAT_END_STAT);
 out:
-	/* Put the device back into Standby state */
-	mmc_cmd(MMC_CMD_SELECT_CARD, 0, resp, 0);
-	bfin_write_SDH_CLK_CTL(bfin_read_SDH_CLK_CTL() & ~CLK_E);
+
 	return i;
 
 read_error:
@@ -240,6 +239,7 @@ read_error:
 	printf("mmc: bread failed, status = %08x, card status = %08lx\n",
 	       status, card_status);
 	goto out;
+
 }
 
 static unsigned long
@@ -253,7 +253,6 @@ mmc_bwrite(int dev, unsigned long start, lbaint_t blkcnt,
 	const u32 *p = buffer;
 	u32 status;
 	unsigned int length;
-	unsigned int blk_size;
 	unsigned int data_ctl = 0;
 
 	if (blkcnt == 0)
@@ -261,38 +260,10 @@ mmc_bwrite(int dev, unsigned long start, lbaint_t blkcnt,
 
 	pr_debug("mmc_bread: dev %d, start %lx, blkcnt %lx\n",
 		 dev, start, blkcnt);
+	bfin_write_SDH_DATA_CTL(0);
 	length = mmc_blkdev.blksz * blkcnt;
 	bfin_write_SDH_DATA_LGTH(length);
-	switch (mmc_blkdev.blksz) {
-	case 2048:
-		blk_size = 11;
-		break;
-	case 1024:
-		blk_size = 10;
-		break;
-	case 512:
-		blk_size = 9;
-		break;
-	case 256:
-		blk_size = 8;
-		break;
-	case 128:
-		blk_size = 7;
-		break;
-	case 64:
-		blk_size = 6;
-		break;
-	case 32:
-		blk_size = 5;
-		break;
-	case 16:
-		blk_size = 4;
-		break;
-	default:
-		blk_size = 3;
-		break;
-	}
-	data_ctl |= blk_size << 4;
+	data_ctl |= 9 << 4;
 	data_ctl &= ~DTX_DIR;
 	bfin_write_SDH_DATA_CTL(data_ctl);
 	/* FIXME later */
@@ -387,38 +358,17 @@ static void mmc_dump_cid(const struct mmc_cid *cid)
 	       cid->mdt >> 4, cid->mdt & 0x0f);
 }
 
-static void mmc_dump_csd(const struct mmc_csd *csd)
+static void mmc_dump_csd(u32 *csd)
 {
-	unsigned long *csd_raw = (unsigned long *)csd;
-	printf("CSD data: %08lx %08lx %08lx %08lx\n",
-	       csd_raw[0], csd_raw[1], csd_raw[2], csd_raw[3]);
-	printf("CSD structure version:   1.%u\n", csd->csd_structure);
-	printf("MMC System Spec version: %u\n", csd->spec_vers);
-	printf("Card command classes:    %03x\n", csd->ccc);
-	printf("Read block length:       %u\n", 1 << csd->read_bl_len);
-	if (csd->read_bl_partial)
-		puts("Supports partial reads\n");
-	else
-		puts("Does not support partial reads\n");
-	printf("Write block length:      %u\n", 1 << csd->write_bl_len);
-	if (csd->write_bl_partial)
-		puts("Supports partial writes\n");
-	else
-		puts("Does not support partial writes\n");
-	if (csd->wp_grp_enable)
-		printf("Supports group WP:      %u\n", csd->wp_grp_size + 1);
-	else
-		puts("Does not support group WP\n");
+	printf("CSD information:\n");
+	printf("CSD structure version:   1.%u\n", get_bits(csd, 126, 2));
+	printf("Card command classes:    %03x\n", get_bits(csd, 84, 12));
+	printf("Max trans speed: %s\n", (get_bits(csd, 96, 8) == 0x32) ? "25MHz" : "50MHz");
+	printf("Read block length:       %d\n", 1 << get_bits(csd, 80, 4));
+	printf("Write block length:      %u\n", 1 << get_bits(csd, 22, 4));
 	printf("Card capacity:		%u bytes\n",
-	       (csd->c_size + 1) * (1 << (csd->c_size_mult + 2)) *
-	       (1 << csd->read_bl_len));
-	printf("File format:            %u/%u\n",
-	       csd->file_format_grp, csd->file_format);
-	puts("Write protection:        ");
-	if (csd->perm_write_protect)
-		puts(" permanent");
-	if (csd->tmp_write_protect)
-		puts(" temporary");
+	       (get_bits(csd, 62, 12) + 1) * (1 << (get_bits(csd, 47, 3) + 2)) *
+	       (1 << get_bits(csd, 80, 4)));
 	putc('\n');
 }
 
@@ -459,7 +409,7 @@ static int sd_init_card(struct mmc_cid *cid, int verbose)
 	if (ret)
 		return ret;
 
-	mmc_rca = resp[0] >> 16;
+	mmc_rca = (resp[0] >> 16) & 0xffff;
 	if (verbose)
 		printf("SD Card detected (RCA %u)\n", mmc_rca);
 	mmc_card_is_sd = 1;
@@ -498,22 +448,16 @@ static int mmc_init_card(struct mmc_cid *cid, int verbose)
 
 int mmc_init(int verbose)
 {
-	struct mmc_cid cid;
-	struct mmc_csd csd;
 	u16 pwr_ctl = 0;
-	u16 data_ctl = 0;
 	int ret;
 	unsigned int max_blksz;
-
 	/* Initialize sdh controller */
+	bfin_write_DMAC1_PERIMUX(bfin_read_DMAC1_PERIMUX() | 0x1);
 	bfin_write_PORTC_FER(bfin_read_PORTC_FER() | 0x3F00);
 	bfin_write_PORTC_MUX(bfin_read_PORTC_MUX() & ~0xFFF0000);
 	bfin_write_SDH_CFG(bfin_read_SDH_CFG() | CLKS_EN);
 	/* Disable card detect pin */
 	bfin_write_SDH_CFG((bfin_read_SDH_CFG() & 0x1F) | 0x60);
-	/*block length always is 512*/
-	data_ctl |= 9 << 4;
-	bfin_write_SDH_DATA_CTL(data_ctl);
 	mci_set_clk(CFG_MMC_CLK_ID);
 	/*setting power control*/
 	pwr_ctl |= ROD_CTL;
@@ -528,13 +472,13 @@ int mmc_init(int verbose)
 	if (ret)
 		return ret;
 	/* Get CSD from the card */
-	ret = mmc_cmd(MMC_CMD_SEND_CSD, mmc_rca << 16, &csd, MMC_RSP_R2);
+	ret = mmc_cmd(MMC_CMD_SEND_CSD, mmc_rca << 16, csd, MMC_RSP_R2);
 	if (ret)
 		return ret;
 	if (verbose)
-		mmc_dump_csd(&csd);
+		mmc_dump_csd(csd);
 	/* Initialize the blockdev structure */
-	mmc_blkdev.if_type = IF_TYPE_SD;
+	mmc_blkdev.if_type = IF_TYPE_MMC;
 	mmc_blkdev.part_type = PART_TYPE_DOS;
 	mmc_blkdev.block_read = mmc_bread;
 	mmc_blkdev.block_write = mmc_bwrite;
@@ -546,19 +490,18 @@ int mmc_init(int verbose)
 	sprintf((char *)mmc_blkdev.revision, "%x %x",
 		cid.prv >> 4, cid.prv & 0x0f);
 
+	max_blksz = 1 << get_bits(csd, 80, 4);
 	/*
 	 * If we can't use 512 byte blocks, refuse to deal with the
 	 * card. Tons of code elsewhere seems to depend on this.
 	 */
-/*
-	max_blksz = 1 << csd.read_bl_len;
-	if (max_blksz < 512 || (max_blksz > 512 && !csd.read_bl_partial)) {
+	if (max_blksz < 512 || (max_blksz > 512 && !get_bits(csd, 79, 1))) {
 		printf("Card does not support 512 byte reads, aborting.\n");
 		return -ENODEV;
 	}
-*/
-	mmc_blkdev.blksz = 1 << csd.read_bl_len;
-	mmc_blkdev.lba = (csd.c_size + 1) * (1 << (csd.c_size_mult + 2));
+
+	mmc_blkdev.blksz = 512;
+	mmc_blkdev.lba = (get_bits(csd, 62, 12) + 1) * (1 << (get_bits(csd, 47, 3) + 2));
 	mci_set_clk(CFG_MMC_CLK_OP);
 	init_part(&mmc_blkdev);
 	return 0;
