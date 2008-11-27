@@ -23,7 +23,7 @@
 
 #ifndef _MMC_H_
 #define _MMC_H_
-#include <asm/arch/mmc.h>
+#include <asm/mmc.h>
 
 /* MMC command numbers */
 #define MMC_CMD_GO_IDLE_STATE		0
