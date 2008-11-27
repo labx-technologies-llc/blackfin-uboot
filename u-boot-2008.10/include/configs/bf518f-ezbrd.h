@@ -12,7 +12,7 @@
  * Processor Settings
  */
 #define CONFIG_BFIN_CPU             bf518-0.0
-#define CONFIG_BFIN_BOOT_MODE       BFIN_BOOT_PARA
+#define CONFIG_BFIN_BOOT_MODE       BFIN_BOOT_SPI_MASTER
 
 
 /*
@@ -75,7 +75,6 @@
 /*
  * Flash Settings
  */
-#if 0 /* parallel flash is busted in first spin of board */
 #define CFG_FLASH_BASE		0x20000000
 #define CFG_FLASH_CFI		/* The flash is CFI compatible */
 #define CONFIG_FLASH_CFI_DRIVER	/* Use common CFI driver */
@@ -92,9 +91,6 @@
 #endif
 #define CONFIG_ENV_SECT_SIZE	0x2000	/* Total Size of Environment Sector */
 #define ENV_IS_EMBEDDED_CUSTOM
-#endif
-#define CFG_NO_FLASH
-#define CONFIG_ENV_IS_NOWHERE 1
 #define CONFIG_ENV_SIZE		0x2000
 
 /* CONFIG_SPI_BAUD controls the SPI peripheral clock divider		*/
