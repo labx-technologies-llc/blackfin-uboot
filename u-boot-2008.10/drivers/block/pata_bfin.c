@@ -471,7 +471,7 @@ static inline u8 bfin_ata_busy_wait(struct ata_port *ap, unsigned int bits,
  *	RETURNS:
  *	0 on success, -errno otherwise.
  */
-int bfin_ata_busy_sleep(struct ata_port *ap,
+static int bfin_ata_busy_sleep(struct ata_port *ap,
 		       long tmout_pat, unsigned long tmout)
 {
 	u8 status;
