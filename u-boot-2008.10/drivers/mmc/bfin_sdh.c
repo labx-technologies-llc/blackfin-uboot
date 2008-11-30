@@ -50,7 +50,6 @@
 static unsigned int mmc_rca;
 static int mmc_card_is_sd;
 static block_dev_desc_t mmc_blkdev;
-struct dma_desc_array sdh_dma[2];
 struct mmc_cid cid;
 static u32 csd[4];
 static u8 rx_buf[8];
