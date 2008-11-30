@@ -6,7 +6,6 @@
 #define __BFIN_PERIPHERAL_SDH__
 
 /* Bit masks for SDH_COMMAND */
-
 #define                   CMD_IDX  0x3f       /* Command Index */
 #define                   CMD_RSP  0x40       /* Response */
 #define                 CMD_L_RSP  0x80       /* Long Response */
@@ -15,16 +14,11 @@
 #define                     CMD_E  0x400      /* Command Enable */
 
 /* Bit masks for SDH_PWR_CTL */
-
 #define                    PWR_ON  0x3        /* Power On */
-#if 0
-#define                       TBD  0x3c       /* TBD */
-#endif
 #define                 SD_CMD_OD  0x40       /* Open Drain Output */
 #define                   ROD_CTL  0x80       /* Rod Control */
 
 /* Bit masks for SDH_CLK_CTL */
-
 #define                    CLKDIV  0xff       /* MC_CLK Divisor */
 #define                     CLK_E  0x100      /* MC_CLK Bus Clock Enable */
 #define                  PWR_SV_E  0x200      /* Power Save Enable */
@@ -32,11 +26,9 @@
 #define                  WIDE_BUS  0x800      /* Wide Bus Mode Enable */
 
 /* Bit masks for SDH_RESP_CMD */
-
 #define                  RESP_CMD  0x3f       /* Response Command */
 
 /* Bit masks for SDH_DATA_CTL */
-
 #define                     DTX_E  0x1        /* Data Transfer Enable */
 #define                   DTX_DIR  0x2        /* Data Transfer Direction */
 #define                  DTX_MODE  0x4        /* Data Transfer Mode */
@@ -44,11 +36,10 @@
 #define              DTX_BLK_LGTH  0xf0       /* Data Transfer Block Length */
 
 /* Bit masks for SDH_STATUS */
-
 #define              CMD_CRC_FAIL  0x1        /* CMD CRC Fail */
 #define              DAT_CRC_FAIL  0x2        /* Data CRC Fail */
-#define               CMD_TIME_OUT  0x4        /* CMD Time Out */
-#define               DAT_TIME_OUT  0x8        /* Data Time Out */
+#define              CMD_TIME_OUT  0x4        /* CMD Time Out */
+#define              DAT_TIME_OUT  0x8        /* Data Time Out */
 #define               TX_UNDERRUN  0x10       /* Transmit Underrun */
 #define                RX_OVERRUN  0x20       /* Receive Overrun */
 #define              CMD_RESP_END  0x40       /* CMD Response End */
@@ -69,7 +60,6 @@
 #define               RX_FIFO_RDY  0x200000   /* Receive Data Available */
 
 /* Bit masks for SDH_STATUS_CLR */
-
 #define         CMD_CRC_FAIL_STAT  0x1        /* CMD CRC Fail Status */
 #define         DAT_CRC_FAIL_STAT  0x2        /* Data CRC Fail Status */
 #define          CMD_TIMEOUT_STAT  0x4        /* CMD Time Out Status */
@@ -83,7 +73,6 @@
 #define          DAT_BLK_END_STAT  0x400      /* Data Block End Status */
 
 /* Bit masks for SDH_MASK0 */
-
 #define         CMD_CRC_FAIL_MASK  0x1        /* CMD CRC Fail Mask */
 #define         DAT_CRC_FAIL_MASK  0x2        /* Data CRC Fail Mask */
 #define          CMD_TIMEOUT_MASK  0x4        /* CMD Time Out Mask */
@@ -108,21 +97,17 @@
 #define          RX_FIFO_RDY_MASK  0x200000   /* Receive Data Available Mask */
 
 /* Bit masks for SDH_FIFO_CNT */
-
 #define                FIFO_COUNT  0x7fff     /* FIFO Count */
 
 /* Bit masks for SDH_E_STATUS */
-
 #define              SDIO_INT_DET  0x2        /* SDIO Int Detected */
 #define               SD_CARD_DET  0x10       /* SD Card Detect */
 
 /* Bit masks for SDH_E_MASK */
-
 #define                  SDIO_MSK  0x2        /* Mask SDIO Int Detected */
 #define                   SCD_MSK  0x40       /* Mask Card Detect */
 
 /* Bit masks for SDH_CFG */
-
 #define                   CLKS_EN  0x1        /* Clocks Enable */
 #define                      SD4E  0x4        /* SDIO 4-Bit Enable */
 #define                       MWE  0x8        /* Moving Window Enable */
@@ -132,9 +117,6 @@
 #define                 PD_SDDAT3  0x80       /* Pull-down SD_DAT3 */
 
 /* Bit masks for SDH_RD_WAIT_EN */
-
 #define                       RWR  0x1        /* Read Wait Request */
-
-
 
 #endif
