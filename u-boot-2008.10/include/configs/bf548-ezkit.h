@@ -61,8 +61,8 @@
 #define CONFIG_EBIU_FCTL_VAL	(BCLK_4)
 #define CONFIG_EBIU_MODE_VAL	(B0MODE_FLASH)
 
-#define CFG_MONITOR_LEN		(640 * 1024)	/* Reserve 640 kB for monitor */
-#define CFG_MALLOC_LEN		(640 * 1024)	/* Reserve 640 kB for malloc() (video/spi are big) */
+#define CFG_MONITOR_LEN		(640 * 1024)
+#define CFG_MALLOC_LEN		(640 * 1024)
 
 
 /*
@@ -117,11 +117,11 @@
  * NAND Settings
  */
 #define CFG_BFIN_NFC_CTL_VAL	0x0033
-#define CONFIG_DRIVER_NAND_BFIN
 #if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_NAND)
 #define CFG_BFIN_NFC_BOOTROM_ECC
 #define CFG_NAND_SELECT_DEVICE	1
 #endif
+#define CONFIG_DRIVER_NAND_BFIN
 #define CFG_NAND_BASE		0 /* not actually used */
 #define CFG_MAX_NAND_DEVICE	1
 #define NAND_MAX_CHIPS		1
@@ -136,13 +136,24 @@
 #define CFG_I2C_SPEED		50000
 #define CFG_I2C_SLAVE		0
 
+
+/*
+ * SATA
+ */
+#define CONFIG_LIBATA
+#define CFG_SATA_MAX_DEVICE 1
+#define CONFIG_LBA48
+#define CONFIG_PATA_BFIN
+#define CONFIG_BFIN_ATAPI_BASE_ADDR	0xFFC03800
+#define CONFIG_BFIN_ATA_MODE	XFER_PIO_4
+
+
 /*
  * SDH Settings
  */
-#define CONFIG_BFIN_SDH 1
-#define CONFIG_CMD_MMC
-#define CONFIG_MMC      1
-#define CONFIG_DOS_PARTITION 1
+#define CONFIG_MMC
+#define CONFIG_BFIN_SDH
+
 
 /*
  * Misc Settings
@@ -150,28 +161,6 @@
 #define CONFIG_BOARD_EARLY_INIT_F
 #define CONFIG_RTC_BFIN
 #define CONFIG_UART_CONSOLE	1
-
-/* SATA */
-#define CONFIG_LIBATA
-#define CONFIG_PATA_BFIN
-#define CFG_SATA_MAX_DEVICE     1
-#define CONFIG_BFIN_ATAPI_BASE_ADDR	0xFFC03800
-
-#ifdef CONFIG_PATA_BFIN
-#define CONFIG_BFIN_ATA_MODE	XFER_PIO_4
-#define CONFIG_LBA48
-#define CONFIG_CMD_SATA
-#ifndef CONFIG_DOS_PARTITION
-# define CONFIG_DOS_PARTITION
-#endif
-#ifndef CONFIG_CMD_FAT
-# define CONFIG_CMD_FAT
-#endif
-#ifndef CONFIG_SUPPORT_VFAT
-# define CONFIG_SUPPORT_VFAT
-#endif
-#endif
-
 
 #ifndef __ADSPBF542__
 /* Don't waste time transferring a logo over the UART */

@@ -19,11 +19,21 @@
 #  undef CONFIG_CMD_NET
 #  undef CONFIG_CMD_NFS
 # endif
-# ifdef CONFIG_RTC_BFIN
-#  define CONFIG_CMD_DATE
+# ifdef CONFIG_LIBATA
+#  define CONFIG_CMD_FAT
+#  define CONFIG_CMD_SATA
+#  define CONFIG_DOS_PARTITION
+# endif
+# ifdef CONFIG_MMC
+#  define CONFIG_CMD_FAT
+#  define CONFIG_CMD_MMC
+#  define CONFIG_DOS_PARTITION
 # endif
 # ifdef CONFIG_POST
 #  define CONFIG_CMD_DIAG
+# endif
+# ifdef CONFIG_RTC_BFIN
+#  define CONFIG_CMD_DATE
 # endif
 # ifdef CONFIG_SPI
 #  define CONFIG_CMD_EEPROM
