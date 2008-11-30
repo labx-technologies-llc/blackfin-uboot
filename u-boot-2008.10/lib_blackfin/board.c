@@ -14,6 +14,7 @@
 #include <devices.h>
 #include <environment.h>
 #include <malloc.h>
+#include <sata.h>
 #include <net.h>
 #include <status_led.h>
 #include <version.h>
