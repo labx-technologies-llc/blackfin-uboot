@@ -52,7 +52,7 @@ static int mmc_card_is_sd;
 static block_dev_desc_t mmc_blkdev;
 struct mmc_cid cid;
 static u32 csd[4];
-static u8 rx_buf[8];
+static u8 rx_buf[512];
 
 #define get_bits(resp, start, size)					\
 	({								\
@@ -176,7 +176,6 @@ mmc_bread(int dev, unsigned long start, lbaint_t blkcnt,
 	if (blkcnt == 0)
 		return 0;
 	pr_debug("mmc_bread: dev %d, start %d, blkcnt %d\n"dev, start, blkcnt);
-	bfin_write_SDH_DATA_LGTH(blkcnt*mmc_blkdev.blksz);
 	/*force to use 512-byte block */
 	data_ctl |= 9 << 4;
 	data_ctl |= DTX_DIR;
@@ -191,7 +190,7 @@ mmc_bread(int dev, unsigned long start, lbaint_t blkcnt,
 		bfin_write_DMA22_X_COUNT(mmc_blkdev.blksz/4);
 		bfin_write_DMA22_X_MODIFY(4);
 		bfin_write_DMA22_CONFIG(dma_cfg);
-
+		bfin_write_SDH_DATA_LGTH(mmc_blkdev.blksz);
 		/* Put the device into Transfer state */
 		ret = mmc_cmd(MMC_CMD_SELECT_CARD, mmc_rca << 16, resp, MMC_RSP_R1);
 			if (ret) {
@@ -225,10 +224,10 @@ mmc_bread(int dev, unsigned long start, lbaint_t blkcnt,
 			blackfin_dcache_flush_invalidate_range(rx_buf, rx_buf+512);
 			memcpy(buf + i*mmc_blkdev.blksz, (u8 *)rx_buf, 512);
 			bfin_write_SDH_STATUS_CLR(DAT_BLK_END_STAT);
+			bfin_write_SDH_STATUS_CLR(DAT_END_STAT);
 			mmc_cmd(MMC_CMD_SELECT_CARD, 0, resp, 0);
 		}
 	}
-	bfin_write_SDH_STATUS_CLR(DAT_END_STAT);
 out:
 
 	return i;
