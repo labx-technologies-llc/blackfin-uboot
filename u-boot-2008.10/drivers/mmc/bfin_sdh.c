@@ -253,7 +253,7 @@ mmc_bwrite(int dev, unsigned long start, lbaint_t blkcnt,
 	if (blkcnt == 0)
 		return 0;
 
-	pr_debug("mmc_bread: dev %d, start %lx, blkcnt %lx\n",
+	pr_debug("mmc_bwrite: dev %d, start %lx, blkcnt %lx\n",
 		 dev, start, blkcnt);
 	/*Force to use 512-byte block,because a lot of code depends on this */
 	data_ctl |= 9 << 4;
@@ -296,7 +296,7 @@ mmc_bwrite(int dev, unsigned long start, lbaint_t blkcnt,
 			status = bfin_read_SDH_STATUS();
 		} while (!(status & (DAT_BLK_END | DAT_END | DAT_TIME_OUT | DAT_CRC_FAIL | TX_UNDERRUN)));
 
-		if (status & (DAT_TIME_OUT | DAT_CRC_FAIL | RX_OVERRUN)) {
+		if (status & (DAT_TIME_OUT | DAT_CRC_FAIL | TX_UNDERRUN)) {
 			bfin_write_SDH_STATUS_CLR(DAT_TIMEOUT_STAT |
 				DAT_CRC_FAIL_STAT | TX_UNDERRUN_STAT);
 			goto write_error;
