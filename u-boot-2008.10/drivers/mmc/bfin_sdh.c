@@ -42,7 +42,7 @@
 /*SD_CLK frequency must be less than 400k in identification mode*/
 #define CFG_MMC_CLK_ID		200000
 /*SD_CLK for normal working*/
-#define CFG_MMC_CLK_OP		10000000
+#define CFG_MMC_CLK_OP		25000000
 /*support 3.2-3.3V and 3.3-3.4V*/
 #define CFG_MMC_OP_COND		0x00300000
 #define MMC_DEFAULT_RCA		1
@@ -51,8 +51,7 @@ static unsigned int mmc_rca;
 static int mmc_card_is_sd;
 static block_dev_desc_t mmc_blkdev;
 struct mmc_cid cid;
-static u32 csd[4];
-static u8 rx_buf[512];
+static __u32 csd[4];
 
 #define get_bits(resp, start, size)					\
 	({								\
@@ -78,7 +77,7 @@ static void mci_set_clk(unsigned long clk)
 {
 	unsigned long sys_clk;
 	unsigned long clk_div;
-	u16 clk_ctl = 0;
+	__u16 clk_ctl = 0;
 
 	/*setting SD_CLK*/
 	sys_clk = get_sclk();
@@ -168,15 +167,15 @@ mmc_bread(int dev, unsigned long start, lbaint_t blkcnt,
 	int ret, i;
 	unsigned long resp[4];
 	unsigned long card_status;
-	u8 *buf = buffer;
-	u32 status;
-	u16 data_ctl = 0;
-	u16 dma_cfg = 0;
+	__u8 *buf = buffer;
+	__u32 status;
+	__u16 data_ctl = 0;
+	__u16 dma_cfg = 0;
 
 	if (blkcnt == 0)
 		return 0;
 	pr_debug("mmc_bread: dev %d, start %d, blkcnt %d\n"dev, start, blkcnt);
-	/*force to use 512-byte block */
+	/*Force to use 512-byte block,because a lot of code depends on this */
 	data_ctl |= 9 << 4;
 	data_ctl |= DTX_DIR;
 	bfin_write_SDH_DATA_CTL(data_ctl);
@@ -185,8 +184,9 @@ mmc_bread(int dev, unsigned long start, lbaint_t blkcnt,
 	/* FIXME later */
 	bfin_write_SDH_DATA_TIMER(0xFFFFFFFF);
 	for (i = 0; i < blkcnt; i++, start++) {
-
-		bfin_write_DMA22_START_ADDR(rx_buf);
+		blackfin_dcache_flush_invalidate_range(buf + i*mmc_blkdev.blksz,
+			buf + (i+1)*mmc_blkdev.blksz);
+		bfin_write_DMA22_START_ADDR((unsigned long)buf + i*mmc_blkdev.blksz);
 		bfin_write_DMA22_X_COUNT(mmc_blkdev.blksz/4);
 		bfin_write_DMA22_X_MODIFY(4);
 		bfin_write_DMA22_CONFIG(dma_cfg);
@@ -216,15 +216,13 @@ mmc_bread(int dev, unsigned long start, lbaint_t blkcnt,
 			udelay(1);
 			status = bfin_read_SDH_STATUS();
 		} while (!(status & (DAT_BLK_END | DAT_END | DAT_TIME_OUT | DAT_CRC_FAIL | RX_OVERRUN)));
+
 		if (status & (DAT_TIME_OUT | DAT_CRC_FAIL | RX_OVERRUN)) {
 			bfin_write_SDH_STATUS_CLR(DAT_TIMEOUT_STAT | \
-				DAT_CRC_FAIL_STAT | RX_OVERRUN);
+				DAT_CRC_FAIL_STAT | RX_OVERRUN_STAT);
 			goto read_error;
 		} else {
-			blackfin_dcache_flush_invalidate_range(rx_buf, rx_buf+512);
-			memcpy(buf + i*mmc_blkdev.blksz, (u8 *)rx_buf, 512);
-			bfin_write_SDH_STATUS_CLR(DAT_BLK_END_STAT);
-			bfin_write_SDH_STATUS_CLR(DAT_END_STAT);
+			bfin_write_SDH_STATUS_CLR(DAT_BLK_END_STAT | DAT_END_STAT);
 			mmc_cmd(MMC_CMD_SELECT_CARD, 0, resp, 0);
 		}
 	}
@@ -247,62 +245,67 @@ mmc_bwrite(int dev, unsigned long start, lbaint_t blkcnt,
 	int ret, i = 0;
 	unsigned long resp[4];
 	unsigned long card_status;
-	unsigned long wordcount;
-	const u32 *p = buffer;
-	u32 status;
-	unsigned int length;
-	unsigned int data_ctl = 0;
+	const __u8 *buf = buffer;
+	__u32 status;
+	__u16 data_ctl = 0;
+	__u16 dma_cfg = 0;
 
 	if (blkcnt == 0)
 		return 0;
 
 	pr_debug("mmc_bread: dev %d, start %lx, blkcnt %lx\n",
 		 dev, start, blkcnt);
-	bfin_write_SDH_DATA_CTL(0);
-	length = mmc_blkdev.blksz * blkcnt;
-	bfin_write_SDH_DATA_LGTH(length);
+	/*Force to use 512-byte block,because a lot of code depends on this */
 	data_ctl |= 9 << 4;
 	data_ctl &= ~DTX_DIR;
 	bfin_write_SDH_DATA_CTL(data_ctl);
+	dma_cfg |= WDSIZE_32 | RESTART | DMAEN;
 	/* FIXME later */
 	bfin_write_SDH_DATA_TIMER(0xFFFFFFFF);
-	bfin_write_SDH_DATA_CTL(bfin_read_SDH_DATA_CTL() | DTX_E);
-	/* Put the device into Transfer state */
-	ret = mmc_cmd(MMC_CMD_SELECT_CARD, mmc_rca << 16, resp, MMC_RSP_R1);
-	if (ret)
-		goto out;
-
-	/* Set block length */
-	ret = mmc_cmd(MMC_CMD_SET_BLOCKLEN, mmc_blkdev.blksz, resp, MMC_RSP_R1);
-	if (ret)
-		goto out;
-
 	for (i = 0; i < blkcnt; i++, start++) {
+
+		bfin_write_DMA22_START_ADDR((unsigned long)buf + i*mmc_blkdev.blksz);
+		bfin_write_DMA22_X_COUNT(mmc_blkdev.blksz/4);
+		bfin_write_DMA22_X_MODIFY(4);
+		bfin_write_DMA22_CONFIG(dma_cfg);
+		bfin_write_SDH_DATA_LGTH(mmc_blkdev.blksz);
+
+		/* Put the device into Transfer state */
+		ret = mmc_cmd(MMC_CMD_SELECT_CARD, mmc_rca << 16, resp, MMC_RSP_R1);
+			if (ret) {
+				printf("MMC_CMD_SELECT_CARD failed\n");
+				goto out;
+			}
+		/* Set block length */
+		ret = mmc_cmd(MMC_CMD_SET_BLOCKLEN, mmc_blkdev.blksz, resp, MMC_RSP_R1);
+		if (ret) {
+			printf("MMC_CMD_SET_BLOCKLEN failed\n");
+			goto out;
+		}
 		ret = mmc_cmd(MMC_CMD_WRITE_BLOCK,
 			      start * mmc_blkdev.blksz, resp,
 			      MMC_RSP_R1);
-		if (ret)
+		if (ret) {
+			printf("MMC_CMD_WRITE_SINGLE_BLOCK failed\n");
 			goto out;
-
-		wordcount = 0;
-		do {
-			bfin_write_SDH_FIFO(*p++);
-			wordcount++;
-		} while (wordcount < (mmc_blkdev.blksz / 4));
-
-		status = bfin_read_SDH_STATUS();
-		if (status & (DAT_TIME_OUT | DAT_CRC_FAIL | TX_UNDERRUN)) {
-			bfin_write_SDH_STATUS_CLR(DAT_TIMEOUT_STAT | \
-				DAT_CRC_FAIL_STAT | TX_UNDERRUN);
-			goto write_error;
 		}
-		bfin_write_SDH_STATUS_CLR(DAT_END_STAT | DAT_TIMEOUT_STAT | \
-			DAT_CRC_FAIL_STAT | DAT_BLK_END_STAT | TX_UNDERRUN);
+		bfin_write_SDH_DATA_CTL(bfin_read_SDH_DATA_CTL() | DTX_DMA_E | DTX_E);
+
+		do {
+			udelay(1);
+			status = bfin_read_SDH_STATUS();
+		} while (!(status & (DAT_BLK_END | DAT_END | DAT_TIME_OUT | DAT_CRC_FAIL | TX_UNDERRUN)));
+
+		if (status & (DAT_TIME_OUT | DAT_CRC_FAIL | RX_OVERRUN)) {
+			bfin_write_SDH_STATUS_CLR(DAT_TIMEOUT_STAT |
+				DAT_CRC_FAIL_STAT | TX_UNDERRUN_STAT);
+			goto write_error;
+		} else {
+			bfin_write_SDH_STATUS_CLR(DAT_BLK_END_STAT | DAT_END_STAT);
+			mmc_cmd(MMC_CMD_SELECT_CARD, 0, resp, 0);
+		}
 	}
 out:
-	/* Put the device back into Standby state */
-	mmc_cmd(MMC_CMD_SELECT_CARD, 0, resp, 0);
-	bfin_write_SDH_CLK_CTL(bfin_read_SDH_CLK_CTL() & ~CLK_E);
 	return i;
 
 write_error:
@@ -346,6 +349,7 @@ static void sd_parse_cid(struct mmc_cid *cid, unsigned long *resp)
 
 static void mmc_dump_cid(const struct mmc_cid *cid)
 {
+	printf("CID information:\n");
 	printf("Manufacturer ID:       %02X\n", cid->mid);
 	printf("OEM/Application ID:    %04X\n", cid->oid);
 	printf("Product name:          %s\n", cid->pnm);
@@ -356,7 +360,7 @@ static void mmc_dump_cid(const struct mmc_cid *cid)
 	       cid->mdt >> 4, cid->mdt & 0x0f);
 }
 
-static void mmc_dump_csd(u32 *csd)
+static void mmc_dump_csd(__u32 *csd)
 {
 	printf("CSD information:\n");
 	printf("CSD structure version:   1.%u\n", get_bits(csd, 126, 2));
@@ -374,9 +378,12 @@ static int mmc_idle_cards(void)
 {
 	int ret = 0;
 
-	/* Reset and initialize all cards */
+	/* Reset all cards */
 	ret = mmc_cmd(MMC_CMD_GO_IDLE_STATE, 0, NULL, 0);
-	return ret;
+	if (ret)
+		return ret;
+	udelay(500);
+	return mmc_cmd(MMC_CMD_GO_IDLE_STATE, 0, NULL, 0);
 }
 
 static int sd_init_card(struct mmc_cid *cid, int verbose)
@@ -446,7 +453,7 @@ static int mmc_init_card(struct mmc_cid *cid, int verbose)
 
 int mmc_init(int verbose)
 {
-	u16 pwr_ctl = 0;
+	__u16 pwr_ctl = 0;
 	int ret;
 	unsigned int max_blksz;
 	/* Initialize sdh controller */
