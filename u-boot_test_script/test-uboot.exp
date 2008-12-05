@@ -81,6 +81,7 @@ set TEST_PASS_PARAM			 1
 set TEST_DMA    			 1
 set TEST_SPI_FLASH			 1
 set TEST_TFTP_WITH_ETHTOOL               1
+set TEST_SDIO                            0
 
 
 set UBOOT_PROMPT             "bfin>"
@@ -142,6 +143,7 @@ set BDINFO_MEMSIZE           32*1024*1024
 } elseif { $board_type == "BF548-EZKIT" } {
 
 #set TEST_SPI_FLASH                       0
+set TEST_SDIO                            1
 
 set BDINFO_FLASHSIZE           "0x02000000"
 set KERNEL_FLASH_LOC           "0x20100000"
@@ -179,225 +181,200 @@ exit
 
 proc ethtool_tftp { speed status } {
 
-global password
-global ethtool_path
-global kermit_spawn_id
-global TEST_FAIL
-global TEST_PASS
-global BIG_ELF_LOAD_ADDRESS
+    global password
+    global ethtool_path
+    global kermit_spawn_id
+    global TEST_FAIL
+    global TEST_PASS
+    global BIG_ELF_LOAD_ADDRESS
 
-spawn su
-sleep 1.5
-while 1 {
-   expect {
-      "Password:" {
-         send "$password\r"
-         break
-      }
-
-      timeout {
-            puts "Fail su command. "
-            break
-         }
-     }
-}
-
-while 1 {
-   expect {
-      "#" {
-         puts "su success.\n"
-         break
-      }
-
-      timeout {
-            puts "Fail su as root. "
-            break
-         }
-     }
-}
-set su_id $spawn_id
-
-
-send -s "cd $ethtool_path/\r"
-while 1 {
-   expect {
-      "#" {
-     break
-      }
-
-      timeout {
-            puts "Failed enter $ethtool_path."
-            break
-         }
-     }
-}
-
-set timeout 3600
-
-send -s "./ethtool -s eth1 speed $speed duplex $status\r"
-while 1 {
-   expect {
-      "#" {
-     break
-      }
-
-      timeout {
-            puts "Failed to start ethtool."
-            break
-         }
-     }
-}
-
-spawn sudo ping -f 10.100.4.50
-sleep .5
-set timeout 5
-while 1 {
-   expect {
-     -re  "\[Pp]assword:" {
-         send "$password\r"
-         break
-      }
-
-      timeout {
-            puts "no password input "
-            break
-         }
-     }
-}
-
-while 1 {
-   expect {
-      "......" {
-         puts "ping flood working.\n"
-         break
-      }
-
-      timeout {
-            puts "Fail su ping flood as root. "
-            break
-         }
-     }
-}
-
-set ping_flood_spawn_id $spawn_id
-
-set spawn_id $kermit_spawn_id
-expect ">"
-set timeout 500
-set tftp_flag 0
-
-send -s "tftp $BIG_ELF_LOAD_ADDRESS linux.big\r"
+    spawn su
+    sleep 1.5
     while 1 {
         expect {
+            "Password:" {
+                send "$password\r"
+                break
+            }
+            timeout {
+                puts "Fail su command. "
+                break
+            }
+        }
+    }
 
+    while 1 {
+        expect {
+            "#" {
+                puts "su success.\n"
+                break
+            }
+            timeout {
+                puts "Fail su as root. "
+                break
+            }
+        }
+    }
+
+    set su_id $spawn_id
+
+    send -s "cd $ethtool_path/\r"
+    while 1 {
+        expect {
+            "#" {
+                break
+            }
+            timeout {
+                puts "Failed enter $ethtool_path."
+                break
+            }
+        }
+    }
+
+    set timeout 3600
+
+    send -s "./ethtool -s eth1 speed $speed duplex $status\r"
+    while 1 {
+        expect {
+            "#" {
+                break
+            }
+            timeout {
+                puts "Failed to start ethtool."
+                break
+            }
+        }
+    }
+
+    spawn sudo ping -f 10.100.4.50
+    sleep .5
+    set timeout 5
+    while 1 {
+        expect {
+            -re  "\[Pp]assword:" {
+                send "$password\r"
+                break
+            }
+            timeout {
+                puts "no password input "
+                break
+            }
+        }
+    }
+
+    while 1 {
+        expect {
+            "......" {
+                puts "ping flood working.\n"
+                break
+            }
+            timeout {
+                puts "Fail su ping flood as root. "
+                break
+            }
+        }
+    }
+
+    set ping_flood_spawn_id $spawn_id
+
+    set spawn_id $kermit_spawn_id
+    expect ">"
+    set timeout 500
+    set tftp_flag 0
+
+    send -s "tftp $BIG_ELF_LOAD_ADDRESS linux.big\r"
+    while 1 {
+        expect {
             -re "Bytes transferred = \[0-9]+ \\\((\[0-9a-fA-F]+) hex\\\)" {
                 set uimage_size $expect_out(1,string)
                 send_user "uImage size is $uimage_size\n"
                 set tftp_flag 1
                 break
             }
-
             "invalid RARP" {
                 send_user "invalid RARP error in tftp detected"
                 send_log "TFTP-ERROR\n"
                 set tftp_flag 0
-		break
+                break
             }
-
             "# T" {
                 send_user "tftp timeout detected"
                 send_log "TFTP-ERROR\n"
                 set tftp_flag 0
-
             }
-
             "TFTP error" {
                 send_user "TFTP error detected"
                 send_log "TFTP-ERROR\n"
                 set tftp_flag 0
-		
             }
-
             "T #" {
                 send_user "tftp timeout detected"
                 send_log "TFTP-ERROR\n"
                 set tftp_flag 0
-		
             }
-
             timeout {
                 send_user "ERROR: tftp timed out"
                 send_log "TFTP-ERROR\n"
                 set tftp_flag 0
-		break
+                break
             }
         }
     }
 
+    if { $tftp_flag == 0 }  {
+        puts "Fail to tftp download linux.big.\n"
+        set TFTP_RESULT  $TEST_FAIL
+    } else {
+        puts "Success to tftp download linux.big.\n"
+        set TFTP_RESULT $TEST_PASS
+    }
 
-if { $tftp_flag == 0 }  {
-   puts "Fail to tftp download linux.big.\n"
-   set TFTP_RESULT  $TEST_FAIL
-} else {
+    expect ">"
+    send -s "print\r"
+    while 1 {
+        expect {
+            ">" {
+                break
+            }
+        }
+    }
 
- puts "Success to tftp download linux.big.\n"
-  set TFTP_RESULT $TEST_PASS
-}
+    set spawn_id $ping_flood_spawn_id
 
-expect ">"
+    set timeout 2
+    while 1 {
+        expect {
+            "......" {
+                puts " on"
+                expect {
+                    timeout {
+                        puts " still on "
+                        break
+                    }
+                }
+            }
 
-send -s "print\r"
-while 1 {
-   expect {
+            timeout {
+                puts "still on . "
+                break
+            }
+        }
+    }
 
-      ">" {
-         break
-      }
-   }
-}
-
-set spawn_id $ping_flood_spawn_id
-
-set timeout 2
-while 1 {
-   expect {
-      "......" {
-         puts " on"
-	  expect {
-      	
-      		timeout {
-       		puts " still on "
-      		break
-           }
-      }
-
-      }
-
-      timeout {
-            puts "still on . "
-            break
-         }
-     }
-}
-
-send -s "\3"
-
-   expect {
-
-      ">" {
-	  puts "> is found.\r"
-
-	}
-      "#" {
-	   puts "# is found.\r"
-
-	}
-      timeout {
+    send -s "\3"
+    expect {
+        ">" {
+            puts "> is found.\r"
+        }
+        "#" {
+            puts "# is found.\r"
+        }
+        timeout {
             puts "Finished ping flood. "
+        }
+    }
 
-         }
-     }
-     return $TFTP_RESULT
+    return $TFTP_RESULT
 }
 
 
@@ -407,29 +384,26 @@ send -s "\3"
 #
 proc convert_to_seconds {before_conversion} {
 
-   # remove the text string after the number
-   set c_t_s_number [lindex $before_conversion 0]
+    # remove the text string after the number
+    set c_t_s_number [lindex $before_conversion 0]
+    set c_t_s_length [string length $c_t_s_number]
+    set c_t_s_retval 9999
 
-   set c_t_s_length [string length $c_t_s_number]
+    if { $c_t_s_length > 6} {
+        # we're dealing in seconds
+        set c_t_s_seconds [string range $c_t_s_number 0 \
+            [expr $c_t_s_length - 7]]
+        set c_t_s_decimals [string range $c_t_s_number \
+            [expr $c_t_s_length - 6] end]
+        set c_t_s_retval "$c_t_s_seconds.$c_t_s_decimals"
+    } else {
+        # we're dealing in something less than 1 second
+        set c_t_s_x "000000"
+        set c_t_s_retval ".[string range $c_t_s_x 0 \
+            [expr 5 - $c_t_s_length]]$c_t_s_number"
+    }
 
-   set c_t_s_retval 9999
-
-   if { $c_t_s_length > 6} {
-
-      # we're dealing in seconds
-      set c_t_s_seconds [string range $c_t_s_number 0 \
-[expr $c_t_s_length - 7]]
-      set c_t_s_decimals [string range $c_t_s_number \
-[expr $c_t_s_length - 6] end]
-      set c_t_s_retval "$c_t_s_seconds.$c_t_s_decimals"
-   } else {
-
-         # we're dealing in something less than 1 second
-         set c_t_s_x "000000"
-         set c_t_s_retval ".[string range $c_t_s_x 0 \
-[expr 5 - $c_t_s_length]]$c_t_s_number"
-   }
-   return $c_t_s_retval
+    return $c_t_s_retval
 }
 
 
@@ -444,95 +418,87 @@ proc recover {} {
     global uboot_scripts_dir
     global kermit_spawn_id
 
-
     send_user "Attempting to recover to u-boot prompt\n"
     for {set i 0} {$i < 5} {incr i} {
-	send "\3"
-	set flag 0
-	set timeout 1
-	expect {
-	    "<INTERRUPT>" {
-		send_user "got u-boot's attention\n"
-	    }
+        send "\3"
+        set flag 0
+        set timeout 1
+        expect {
+            "<INTERRUPT>" {
+                send_user "got u-boot's attention\n"
+            }
+            $AUTOBOOT_PROMPT {
+                send_user "got autoboot prompt\n"
+                send "\r"
+            }
+            $UBOOT_PROMPT {
+                send_user "got u-boot prompt\n"
+                set flag 1
+            }
+        }
 
-	    $AUTOBOOT_PROMPT {
-		send_user "got autoboot prompt\n"
-		send "\r"
-	    }
+        if { $flag == 0} {
+            set timeout 2
+            expect {
+                $UBOOT_PROMPT {
+                    send_user "got u-boot prompt\n"
+                    set flag 1
+                }
+                $AUTOBOOT_PROMPT {
+                    send_user "got autoboot prompt\n"
+                    send "\r"
+                }
+            }
 
-	    $UBOOT_PROMPT {
-		send_user "got u-boot prompt\n"
-		set flag 1
-	    }
-	}
-	if { $flag == 0} {
-	    set timeout 2
-	    expect {
-		$UBOOT_PROMPT {
-		    send_user "got u-boot prompt\n"
-		    set flag 1
-		}
-		
-		$AUTOBOOT_PROMPT {
-		    send_user "got autoboot prompt\n"
-		    send "\r"
-		}
-	    }
+            if { $flag == 0} {
+                set timeout 2
+                expect $UBOOT_PROMPT
+            }
+        }
 
-	    if { $flag == 0} {
-		set timeout 2
-		expect $UBOOT_PROMPT
-	    }
-	}
-	send -s "version\r"
-	set timeout 20
-	while 1 {
-	    expect {
-		
-		$AUTOBOOT_PROMPT {
-		    send "\r"
-		}
-		
-		$UBOOT_PROMPT {
-		    send_user "Recovered\n"
-		    return 0
-		}
-		
-		-re "\[Ll]inux" {
-		    send_user "We were in the kernel shell\n"
-		    send -s "reboot\r"
-		    break
-		}
-		
-		timeout {
+        send -s "version\r"
+        set timeout 20
+        while 1 {
+            expect {
+                $AUTOBOOT_PROMPT {
+                    send "\r"
+                }
+                $UBOOT_PROMPT {
+                    send_user "Recovered\n"
+                    return 0
+                }
+                -re "\[Ll]inux" {
+                    send_user "We were in the kernel shell\n"
+                    send -s "reboot\r"
+                    break
+                }
+                timeout {
                     source ./reset_board.exp
                     set spawn_id $kermit_spawn_id
-		    sleep 1
-		    break
-		}
-	    }
-	}
+                    sleep 1
+                    break
+                }
+            }
+        }
 
-	set timeout 20
-	while 1 {
-	    expect {
-		
-		$AUTOBOOT_PROMPT {
-		    send "\r"
-		}
-		
-		$UBOOT_PROMPT {
-		    send_user "Recovered to the u-boot prompt\n"
-		    return 0
-		}
-		
-		timeout {
-		    send_user "still timing out\n"
-		    break
-		}
-	    }
-	}
+        set timeout 20
+        while 1 {
+            expect {
+                $AUTOBOOT_PROMPT {
+                    send "\r"
+                }
+                $UBOOT_PROMPT {
+                    send_user "Recovered to the u-boot prompt\n"
+                    return 0
+                }
+                timeout {
+                    send_user "still timing out\n"
+                    break
+                }
+            }
+        }
     }
+
     # At this point, we can't recover.
     send_user "ERROR: could not recover to u-boot prompt\n"
     send_user "Need to add script to control the board through the JTAG interface\n"
@@ -553,56 +519,51 @@ proc wait_for_uboot {} {
     set timeout 10
     send_user "waiting for uboot prompt\n"
     expect {
-	
-	$UBOOT_PROMPT {
-	    send_user "got u-boot prompt\n"	
-
-	    if { $board_type != "BF533-EZKIT" }  {
-
-	    send -s "icache $icache_status\r"
-	    sleep 1
-	    while 1 {
-                 expect {
-			">" {
-             	#       send_user "icache $icache_status\n"
-			break
-			}
-	
-	                timeout {
-		        send_user "Set icache status error!\n"
-			break
-	             	}
-               }
+        $UBOOT_PROMPT {
+            send_user "got u-boot prompt\n"
+            if { $board_type != "BF533-EZKIT" }  {
+                send -s "icache $icache_status\r"
+                sleep 1
+                while 1 {
+                    expect {
+                        ">" {
+                            #send_user "icache $icache_status\n"
+                            break
+                        }
+                        timeout {
+                            send_user "Set icache status error!\n"
+                            break
+                        }
+                    }
+                }
+                send -s "dcache $dcache_status\r"
+                sleep 1
+                while 1 {
+                    expect {
+                        ">" {
+                            #send_user "dcache $dcache_status\n"
+                            break
+                        }
+                        timeout {
+                            send_user " Set dcache status error!\n"
+                            break
+                        }
+                    }
+                }
             }
-	    send -s "dcache $dcache_status\r"
-	    sleep 1
-	    while 1 {
-                 expect {	
-			">" {
-	   	#	send_user "dcache $dcache_status\n"
-			break	
-			}	
-	
-	                timeout {
-		        send_user " Set dcache status error!\n"
-			break
-	             	}
-               }
-            }	
+            return 0
+        }
 
+        timeout {
+            if { [recover] == 0} {
+                send_user "recover got back to u-boot prompt\n"
+                return 0
+            } else {
+                send_user "ERROR: Not able to recover to u-boot prompt\n"
             }
-	    return 0
-	}
-	
-	timeout {
-	    if { [recover] == 0} {
-		send_user "recover got back to u-boot prompt\n"
-		return 0
-	    } else {
-		send_user "ERROR: Not able to recover to u-boot prompt\n"
-	    }
-	}
+        }
     }
+
     return 1
 }
 
@@ -614,18 +575,21 @@ proc wait_for_uboot {} {
 #
 #
 proc record_test_result { test_num result } {
-   global result_matrix
-# Get the row associated with test_num.
-   set temp_2_element_matrix [lindex $result_matrix $test_num]
-# Set the 2nd element to result.
-   set temp_2_element_matrix [lreplace $temp_2_element_matrix 1 1 $result]
-# Write it back into the matrix.
-   set result_matrix [lreplace $result_matrix $test_num $test_num $temp_2_element_matrix]
+    global result_matrix
 
-   set x [lindex $result_matrix $test_num]
-   set y [lindex $x 0]
-   set z [lindex $x 1]
-   send_user "\n===== Recording result: $y is $z\n"
+    #Get the row associated with test_num.
+    set temp_2_element_matrix [lindex $result_matrix $test_num]
+
+    #Set the 2nd element to result.
+    set temp_2_element_matrix [lreplace $temp_2_element_matrix 1 1 $result]
+
+    #Write it back into the matrix.
+    set result_matrix [lreplace $result_matrix $test_num $test_num $temp_2_element_matrix]
+
+    set x [lindex $result_matrix $test_num]
+    set y [lindex $x 0]
+    set z [lindex $x 1]
+    send_user "\n===== Recording result: $y is $z\n"
 }
 
 
@@ -635,18 +599,21 @@ proc record_test_result { test_num result } {
 #    be collapsed due to how params are passed (by value only).
 #
 proc record_test_measurement { test_num result } {
-   global measurement_matrix
-# Get the row associated with test_num.
-   set temp_2_element_matrix [lindex $measurement_matrix $test_num]
-# Set the 2nd element to result.
-   set temp_2_element_matrix [lreplace $temp_2_element_matrix 1 1 $result]
-# Write it back into the matrix.
-   set measurement_matrix [lreplace $measurement_matrix $test_num $test_num $temp_2_element_matrix]
+    global measurement_matrix
 
-   set x [lindex $measurement_matrix $test_num]
-   set y [lindex $x 0]
-   set z [lindex $x 1]
-   send_user "===== Recording measurement: $y is $z\n"
+    #Get the row associated with test_num.
+    set temp_2_element_matrix [lindex $measurement_matrix $test_num]
+
+    #Set the 2nd element to result.
+    set temp_2_element_matrix [lreplace $temp_2_element_matrix 1 1 $result]
+
+    #Write it back into the matrix.
+    set measurement_matrix [lreplace $measurement_matrix $test_num $test_num $temp_2_element_matrix]
+
+    set x [lindex $measurement_matrix $test_num]
+    set y [lindex $x 0]
+    set z [lindex $x 1]
+    send_user "===== Recording measurement: $y is $z\n"
 }
 
 
@@ -677,31 +644,31 @@ proc all_done { } {
     global icache_status
     global dcache_status
 
-    # First, check if we need to compare with previous results.
-    # Later, we will save the current result overwriting the old results.
+# First, check if we need to compare with previous results.
+# Later, we will save the current result overwriting the old results.
     if { $compare_file != "/dev/null" } {
-	set comparing 1
-	if [catch {set comp [open $compare_file "r"] } ] {
-	    send_user "Can't open compare file, assuming no prior results\n"
-	    set compare_matrix [list "null-command" "notrun"]
-	} else {
-
-	    # New read in the previous results matrix.
-	    set init_flag 0
-	    while {[gets $comp line] != -1} {
-		if {$init_flag == 0 } {
-		    set compare_matrix [list $line]
-		    set init_flag 1
-		} else {
-		    lappend compare_matrix $line
-		}
-	    }
-	    close $comp
-	}
+        set comparing 1
+        if [catch {set comp [open $compare_file "r"] } ] {
+            send_user "Can't open compare file, assuming no prior results\n"
+            set compare_matrix [list "null-command" "notrun"]
+        } else {
+            #New read in the previous results matrix.
+            set init_flag 0
+            while {[gets $comp line] != -1} {
+                if {$init_flag == 0 } {
+                    set compare_matrix [list $line]
+                    set init_flag 1
+                } else {
+                    lappend compare_matrix $line
+                }
+            }
+            close $comp
+        }
     } else {
-	set comparing 0
+        set comparing 0
     }
-    # Assume the results are the same until we see something different.
+
+    #Assume the results are the same until we see something different.
     set results_are_same 0
 
     set total_tests 0
@@ -710,42 +677,39 @@ proc all_done { } {
     set tests_not_run 0
 
     for {set i 0} { $i < [expr [llength $result_matrix]]} {incr i} {
-	
-	incr total_tests
-	set x [lindex $result_matrix $i]
-	if {$TEST_PASS == [lindex $x 1]} {
-	    incr passed_tests
-	}
-	if {$TEST_FAIL == [lindex $x 1]} {
-	    incr failed_tests
-	}
-	if {$TEST_INFO == [lindex $x 1]} {
-	    incr tests_not_run
-	}
-	
-	if { $comparing != 0 } {
-	    set flag 0
-	    for {set j 0} {$j < [expr [llength $compare_matrix]]} {incr j} {
-		set y [lindex $compare_matrix $j]
-		
-		if { [lindex $y 0] == [lindex $x 0] } {
-		    set flag 1
-		    send_user "found the match for [lindex $x 0]\n"
-		    if {[lindex $y 1] != [lindex $x 1] } {
-			send_user "we found a difference: [lindex $x 1] to [lindex $y 1]\n"
-			set results_are_same 1
-		    }
-		}
-	    }
-	    if { $flag == 0 } {
-		# The results are different if there were no prior results
-		send_user "did not find a match for [lindex $x 0]\n"
-		set results_are_same 1
-	    }
-	}
+        incr total_tests
+        set x [lindex $result_matrix $i]
+        if {$TEST_PASS == [lindex $x 1]} {
+            incr passed_tests
+        }
+        if {$TEST_FAIL == [lindex $x 1]} {
+            incr failed_tests
+        }
+        if {$TEST_INFO == [lindex $x 1]} {
+            incr tests_not_run
+        }
+        if { $comparing != 0 } {
+            set flag 0
+            for {set j 0} {$j < [expr [llength $compare_matrix]]} {incr j} {
+                set y [lindex $compare_matrix $j]
+                if { [lindex $y 0] == [lindex $x 0] } {
+                    set flag 1
+                    send_user "found the match for [lindex $x 0]\n"
+                    if {[lindex $y 1] != [lindex $x 1] } {
+                        send_user "we found a difference: [lindex $x 1] to [lindex $y 1]\n"
+                        set results_are_same 1
+                    }
+                }
+            }
+            if { $flag == 0 } {
+                # The results are different if there were no prior results
+                send_user "did not find a match for [lindex $x 0]\n"
+                set results_are_same 1
+            }
+        }
     }
 
-    # Capture the information into a special logfile for an email
+# Capture the information into a special logfile for an email
     log_file
     cd $starting_dir
     log_file -noappend $summary_logfile
@@ -763,35 +727,34 @@ proc all_done { } {
     send_user "=====================================\n"
 
     for {set i [expr [llength $result_matrix]-1]} {$i>=0} {incr i -1} {
-	set x [lindex $result_matrix $i]
-      if {$TEST_FAIL == [lindex $x 1]} {
-	  send_user "  -  [lindex $x 0]\n"
-
-	  if { [lindex $result_matrix $i] != "tftp check for errors" } {
-	      set results_worth_posting 1
-	  }
-      }
+        set x [lindex $result_matrix $i]
+        if {$TEST_FAIL == [lindex $x 1]} {
+            send_user "  -  [lindex $x 0]\n"
+            if { [lindex $result_matrix $i] != "tftp check for errors" } {
+                set results_worth_posting 1
+            }
+        }
     }
 
     send_user "\n"
     send_user "Passing Tests\n"
     send_user "=====================================\n"
     for {set i [expr [llength $result_matrix]-1]} {$i>=0} {incr i -1} {
-	set x [lindex $result_matrix $i]
-	if {$TEST_PASS == [lindex $x 1]} {
-	    send_user "  -  [lindex $x 0]\n"
-	}
+        set x [lindex $result_matrix $i]
+        if {$TEST_PASS == [lindex $x 1]} {
+            send_user "  -  [lindex $x 0]\n"
+        }
     }
 
     send_user "\n"
     send_user "Tests Not Run\n"
     send_user "=====================================\n"
     for {set i [expr [llength $result_matrix]-1]} {$i>=0} {incr i -1} {
-	set x [lindex $result_matrix $i]
-	if {$TEST_INFO == [lindex $x 1]} {
+        set x [lindex $result_matrix $i]
+        if {$TEST_INFO == [lindex $x 1]} {
             send_user "  -  [lindex $x 0]\n"
-	    set results_worth_posting 1
-	}
+            set results_worth_posting 1
+        }
     }
 
     send_user "\n"
@@ -799,14 +762,14 @@ proc all_done { } {
     send_user "=====================================\n"
 
     for {set i [expr [llength $measurement_matrix]-1]} {$i>=0} {incr i -1} {
-	set x [lindex $measurement_matrix $i]
-	set y [lindex $x 0]
-	if {$TEST_INFO == [lindex $x 1]} {
-	    set z "not measured"
-	} else {
-	    set z [lindex $x 1]
-	}
-	send_user "  $y = $z\n"
+        set x [lindex $measurement_matrix $i]
+        set y [lindex $x 0]
+        if {$TEST_INFO == [lindex $x 1]} {
+            set z "not measured"
+        } else {
+            set z [lindex $x 1]
+        }
+        send_user "  $y = $z\n"
     }
 
     send_user "\n"
@@ -821,7 +784,7 @@ proc all_done { } {
     send_user "  dcache_status = $dcache_status\n"
     send_user "\n"
 
-    # End of results
+# End of results
     log_file
     exec /home/test/work/cruise/test_scripts/u-boot/summary.sh $summary_logfile
 
@@ -829,23 +792,22 @@ proc all_done { } {
 
     send_user "\n\nDone compiling summary logfile\n"
     if {$comparing == 1 } {
-	if {$results_are_same == 0} {
-	    send_user "NO CHANGE FROM PRIOR RESULTS\n"
-	} else {
-	    send_user "THE RESULTS HAVE CHANGED\n"
-	}
+        if {$results_are_same == 0} {
+            send_user "NO CHANGE FROM PRIOR RESULTS\n"
+        } else {
+            send_user "THE RESULTS HAVE CHANGED\n"
+        }
 
-	send_user "writing the results to the compare file $compare_file\n"
-	set comp [open $compare_file "w"]
-	for {set i 0} {$i < [llength $result_matrix]} {incr i} {
-	    set x [lindex $result_matrix $i]
-	    puts $comp $x
-	}
+        send_user "writing the results to the compare file $compare_file\n"
+        set comp [open $compare_file "w"]
+        for {set i 0} {$i < [llength $result_matrix]} {incr i} {
+            set x [lindex $result_matrix $i]
+            puts $comp $x
+        }
     }
-    # We never return back to the main program.
+# We never return back to the main program.
     exit
 }
-
 
 
 #
@@ -871,421 +833,381 @@ proc all_done { } {
 #  any bytes with the value FF.
 #
 proc copy_test {from_loc from_type to_loc to_type size flash_from_erase_start \
-flash_from_erase_end flash_to_erase_start flash_to_erase_end} {
+    flash_from_erase_end flash_to_erase_start flash_to_erase_end} {
 
-global COPY_TEST_FLASH
-global COPY_TEST_RAM
-global TEST_BIN_FILE
-global TEST_FAIL
-global TEST_PASS
-global TEST_INFO
-global UBOOT_PROMPT
-global SUCCESS
-global FAILURE
-global CFG_LOAD_ADDR
+    global COPY_TEST_FLASH
+    global COPY_TEST_RAM
+    global TEST_BIN_FILE
+    global TEST_FAIL
+    global TEST_PASS
+    global TEST_INFO
+    global UBOOT_PROMPT
+    global SUCCESS
+    global FAILURE
+    global CFG_LOAD_ADDR
 
-send_user "preparing to copy from $from_loc to $to_loc\n"
+    send_user "preparing to copy from $from_loc to $to_loc\n"
 
-#
-# FROM
-#
+    #
+    # FROM
+    #
+    if {$from_type == $COPY_TEST_FLASH} {
+        send_user "We're copying from flash\n"
+        set timeout 120
+        set tftp_flag $FAILURE
 
-if {$from_type == $COPY_TEST_FLASH} {
-
-    send_user "We're copying from flash\n"
-
-    set timeout 120
-    set tftp_flag $FAILURE
-
-    send -s "tftp $CFG_LOAD_ADDR $TEST_BIN_FILE\r"
-    while 1 {
-	expect {
-
-	    "done" {
-		set tftp_flag $SUCCESS
-	    }
-
-	    $UBOOT_PROMPT {
-		break
-	    }
-
-	    timeout {
-		send_user "ERROR: Uboot locked up during tftp\n"
-		recover
-		break
-	    }
-	}
-    }
-
-    if { $tftp_flag == $FAILURE } {
-	send_user "INFO: Can't execute cp test because tftp didn't work.\n"
-	return $TEST_INFO
-    }
-
-    set timeout 480
-    set erase_flag $FAILURE
-    set copy_flag  $FAILURE
-    set unprotect_flag  $FAILURE
-
-    send -s "protect off $flash_from_erase_start $flash_from_erase_end\r"
-    while 1 {
-        expect {
-
-            "done" {
-                send_user "\ngot done indicator\n"
-                set unprotect_flag $SUCCESS
-            }
-
-            -re "Un-Protected \[0-9]+ sectors" {
-                send_user "\ngot Un-Protected N sectors indicator\n"
-                set unprotect_flag $SUCCESS
-            }
-
-            $UBOOT_PROMPT {
-                break
-            }
-
-            timeout {
-                send_user "ERROR: timeout during unprotect flash\n"
-                recover
-                return $TEST_INFO
+        send -s "tftp $CFG_LOAD_ADDR $TEST_BIN_FILE\r"
+        while 1 {
+            expect {
+                "done" {
+                    set tftp_flag $SUCCESS
+                }
+                $UBOOT_PROMPT {
+                    break
+                }
+                timeout {
+                    send_user "ERROR: Uboot locked up during tftp\n"
+                    recover
+                    break
+                }
             }
         }
+
+        if { $tftp_flag == $FAILURE } {
+            send_user "INFO: Can't execute cp test because tftp didn't work.\n"
+            return $TEST_INFO
+        }
+
+        set timeout 480
+        set erase_flag $FAILURE
+        set copy_flag  $FAILURE
+        set unprotect_flag  $FAILURE
+
+        send -s "protect off $flash_from_erase_start $flash_from_erase_end\r"
+        while 1 {
+            expect {
+                "done" {
+                    send_user "\ngot done indicator\n"
+                    set unprotect_flag $SUCCESS
+                }
+                -re "Un-Protected \[0-9]+ sectors" {
+                    send_user "\ngot Un-Protected N sectors indicator\n"
+                    set unprotect_flag $SUCCESS
+                }
+                $UBOOT_PROMPT {
+                    break
+                }
+                timeout {
+                    send_user "ERROR: timeout during unprotect flash\n"
+                    recover
+                    return $TEST_INFO
+                }
+            }
+        }
+
+        if {$unprotect_flag==$FAILURE} {
+            send_user "ERROR: failed to unprotect flash, can't run cp test\n"
+            return $TEST_INFO
+        }
+
+        send -s "erase $flash_from_erase_start $flash_from_erase_end\r"
+        while 1 {
+            expect {
+                "done" {
+                    send_user "\ngot done indicator\n"
+                    set erase_flag $SUCCESS
+                }
+                -re "Erased \[0-9]+ sectors" {
+                    send_user "\ngot Erased N sectors indicator\n"
+                    set erase_flag $SUCCESS
+                }
+                $UBOOT_PROMPT {
+                    break
+                }
+                timeout {
+                    send_user "ERROR: timeout during erase flash\n"
+                    recover
+                    return $TEST_INFO
+                }
+            }
+        }
+
+        if {$erase_flag==$FAILURE} {
+            send_user "ERROR: failed to erase flash, can't run cp test\n"
+            return $TEST_INFO
+        }
+
+        #move the test data into the from location of flash.
+        set timeout 300
+        send -s "cp.b $CFG_LOAD_ADDR $from_loc $size\r"
+
+        while 1 {
+            expect {
+                "done" {
+                    send_user "copy to flash successful\n"
+                    set copy_flag $SUCCESS
+                }
+                $UBOOT_PROMPT {
+                    break
+                }
+                timeout {
+                    send_user "ERROR: cp.b timed out\n"
+                    recover
+                    return $TEST_FAIL
+                }
+            }
+        }
+
+        if {$copy_flag == $FAILURE} {
+            send_user "ERROR: can't copy data into the from flash location\n"
+            return $TEST_INFO
+        }
+
+    } else {
+        send_user "We're copying from RAM"
+        set timeout 120
+        set tftp_flag $FAILURE
+
+        send -s "tftp $from_loc $TEST_BIN_FILE\r"
+        while 1 {
+            expect {
+                "done" {
+                    set tftp_flag $SUCCESS
+                }
+                $UBOOT_PROMPT {
+                    break
+                }
+                timeout {
+                    send_user "ERROR: Uboot locked up during tftp\n"
+                    recover
+                    break
+                }
+            }
+        }
+
+        if { $tftp_flag == $FAILURE } {
+            send_user "INFO: Can't execute cp test because tftp didn't work.\n"
+            return $TEST_INFO
+        }
     }
-    if {$unprotect_flag==$FAILURE} {
-        send_user "ERROR: failed to unprotect flash, can't run cp test\n"
-        return $TEST_INFO
+
+    #
+    # TO
+    #
+    set to_loc_minus_4   [format "%08x" [expr $to_loc - 4]]
+    set to_loc_plus_size [format "%08x" [expr $to_loc + $size]]
+
+    if {$to_type == $COPY_TEST_FLASH} {
+
+        send_user "We're copying to flash\n"
+        set timeout 480
+        set erase_flag $FAILURE
+        set unprotect_flag  $FAILURE
+
+        send -s "protect off  $flash_to_erase_start $flash_to_erase_end\r"
+        while 1 {
+            expect {
+                "done" {
+                    send_user "\ngot done indicator\n"
+                    set unprotect_flag $SUCCESS
+                }
+                -re "Un-Protected \[0-9]+ sectors" {
+                    send_user "\ngot Un-Protected N sectors indicator\n"
+                    set unprotect_flag $SUCCESS
+                }
+                $UBOOT_PROMPT {
+                    break
+                }
+                timeout {
+                    send_user "ERROR: timeout during unprotect flash\n"
+                    recover
+                    return $TEST_INFO
+                }
+            }
+        }
+
+        if {$unprotect_flag==$FAILURE} {
+            send_user "ERROR: failed to unprotect flash, can't run cp test\n"
+            return $TEST_INFO
+        }
+
+        send -s "erase $flash_to_erase_start $flash_to_erase_end\r"
+        while 1 {
+            expect {
+                "Erased * sectors" {
+                    set erase_flag $SUCCESS
+                }
+                $UBOOT_PROMPT {
+                    break
+                }
+                timeout {
+                    send_user "ERROR: erase failed during test\n"
+                    recover
+                    break
+                }
+            }
+        }
+
+        if {$erase_flag==$FAILURE} {
+            send_user "ERROR: failed to erase flash, can't run cp test\n"
+            return $TEST_INFO
+        }
+
+    } else {
+
+        send_user "We're copying to RAM"
+        # change the bytes immediately preceding to_loc to FF
+        set timeout 5
+        send -s "mw.b $to_loc_minus_4 0xFFFFFFFF 4\r"
+        expect $UBOOT_PROMPT
+
+        set timeout 5
+        set flag 0
+        send -s "md.b $to_loc_minus_4\r"
+        while 1 {
+            expect {
+                "$to_loc_minus_4:*ff ff ff ff" {
+                    set flag 1
+                }
+                $UBOOT_PROMPT {
+                    break
+                }
+                timeout {
+                    send_user "ERROR: md failed during test\n"
+                    recover
+                    break
+                }
+            }
+        }
+
+        if {$flag == 0} {
+            send_user "ERROR: md doesn't work correctly, can't run cp test\n"
+            return $TEST_INFO
+        }
+
+        set timeout 5
+        send -s "mw.b $to_loc_plus_size 0xFF 4\r"
+        expect $UBOOT_PROMPT
+
+        set timeout 5
+        set flag 0
+        send -s "md.b $to_loc_plus_size\r"
+        while 1 {
+            expect {
+                "$to_loc_plus_size: ff ff ff ff" {
+                    set flag 1
+                }
+                $UBOOT_PROMPT {
+                    break
+                }
+                timeout {
+                    send_user "ERROR: md failed during test\n"
+                    recover
+                    break
+                }
+            }
+        }
+
+        if {$flag == 0} {
+            send_user "ERROR: md doesn't work correctly, can't run cp test\n"
+            return $TEST_INFO
+        }
     }
 
+    #
+    # COPY
+    #
 
-    send -s "erase $flash_from_erase_start $flash_from_erase_end\r"
-    while 1 {
-	expect {
-
-	    "done" {
-		send_user "\ngot done indicator\n"
-		set erase_flag $SUCCESS
-	    }
-
-	    -re "Erased \[0-9]+ sectors" {
-		send_user "\ngot Erased N sectors indicator\n"
-		set erase_flag $SUCCESS
-	    }
-
-	    $UBOOT_PROMPT {
-		break
-	    }
-
-	    timeout {
-		send_user "ERROR: timeout during erase flash\n"
-		recover
-		return $TEST_INFO
-	    }
-	}
-    }
-	
-    if {$erase_flag==$FAILURE} {
-	send_user "ERROR: failed to erase flash, can't run cp test\n"
-	return $TEST_INFO
-    }
-
-    # move the test data into the from location of flash.
     set timeout 300
-    send -s "cp.b $CFG_LOAD_ADDR $from_loc $size\r"
+    send -s "cp.b  $from_loc $to_loc $size\r"
 
-    while 1 {
-	expect {
-
-	    "done" {
-		send_user "copy to flash successful\n"
-		set copy_flag $SUCCESS
-	    }
-
-	    $UBOOT_PROMPT {
-		break
-	    }
-
-	    timeout {
-		send_user "ERROR: cp.b timed out\n"
-		recover
-		return $TEST_FAIL
-	    }
-	}
-    }
-    if {$copy_flag == $FAILURE} {
-	send_user "ERROR: can't copy data into the from flash location\n"
-	return $TEST_INFO
-    }
-
-} else {
-
-    send_user "We're copying from RAM"
-    set timeout 120
-    set tftp_flag $FAILURE
-	
-    send -s "tftp $from_loc $TEST_BIN_FILE\r"
-    while 1 {
-	expect {
-
-	    "done" {
-		set tftp_flag $SUCCESS
-	    }
-
-	    $UBOOT_PROMPT {
-		break
-	    }
-
-	    timeout {
-		send_user "ERROR: Uboot locked up during tftp\n"
-		recover
-		break
-	    }
-	}
-    }
-
-    if { $tftp_flag == $FAILURE } {
-	send_user "INFO: Can't execute cp test because tftp didn't work.\n"
-	return $TEST_INFO
-    }
-}
-
-#
-# TO
-#
-set to_loc_minus_4   [format "%08x" [expr $to_loc - 4]]
-set to_loc_plus_size [format "%08x" [expr $to_loc + $size]]
-
-if {$to_type == $COPY_TEST_FLASH} {
-
-    send_user "We're copying to flash\n"
-    set timeout 480
-    set erase_flag $FAILURE
-    set unprotect_flag  $FAILURE
-
-    send -s "protect off  $flash_to_erase_start $flash_to_erase_end\r"
     while 1 {
         expect {
-
-            "done" {
-                send_user "\ngot done indicator\n"
-                set unprotect_flag $SUCCESS
-            }
-
-            -re "Un-Protected \[0-9]+ sectors" {
-                send_user "\ngot Un-Protected N sectors indicator\n"
-                set unprotect_flag $SUCCESS
-            }
-
             $UBOOT_PROMPT {
                 break
             }
-
             timeout {
-                send_user "ERROR: timeout during unprotect flash\n"
+                send_user "ERROR: cp.b timed out\n"
                 recover
-                return $TEST_INFO
+                return $TEST_FAIL
             }
         }
     }
-    if {$unprotect_flag==$FAILURE} {
-        send_user "ERROR: failed to unprotect flash, can't run cp test\n"
-        return $TEST_INFO
-    }
 
-    send -s "erase $flash_to_erase_start $flash_to_erase_end\r"
+    set timeout 5
+    set compare_flag $TEST_FAIL
+    send -s "cmp.b  $from_loc $to_loc $size\r"
+
     while 1 {
-	expect {
-
-	    "Erased * sectors" {
-		set erase_flag $SUCCESS
-	    }
-
-	    $UBOOT_PROMPT {
-		break
-	    }
-
-	    timeout {
-		send_user "ERROR: erase failed during test\n"
-		recover
-		break
-	    }
-	}
+        expect {
+            "[expr $size]" {
+                send_user "all the copied bytes compare correctly\n"
+                set compare_flag $TEST_PASS
+            }
+            $UBOOT_PROMPT {
+                break
+            }
+            timeout {
+                send_user "ERROR: cp.b timed out\n"
+                recover
+                return $TEST_FAIL
+            }
+        }
     }
 
-    if {$erase_flag==$FAILURE} {
-	send_user "ERROR: failed to erase flash, can't run cp test\n"
-	return $TEST_INFO
+    if {$compare_flag == $TEST_FAIL} {
+        return $TEST_FAIL
     }
 
-} else {
-
-    send_user "We're copying to RAM"
-    # change the bytes immediately preceding to_loc to FF
+    send_user "We're looking for $to_loc_minus_4: ffffffff\n"
+    set before_check_flag $TEST_FAIL
     set timeout 5
-    send -s "mw.b $to_loc_minus_4 0xFFFFFFFF 4\r"
-    expect $UBOOT_PROMPT
-
-    set timeout 5
-    set flag 0
     send -s "md.b $to_loc_minus_4\r"
     while 1 {
-	expect {
-
-            "$to_loc_minus_4:*ff ff ff ff" {
-		set flag 1
+        expect {
+            "$to_loc_minus_4: ff ff ff ff" {
+                send_user "bytes before the copy location were correctly not modified\n"
+                set before_check_flag $TEST_PASS
             }
-
             $UBOOT_PROMPT {
-		break
+                break
             }
-
             timeout {
-		send_user "ERROR: md failed during test\n"
-		recover
-		break
+                send_user "ERROR: md command failed, can't run cp test\n"
+                recover
+                return $TEST_INFO
             }
-	}
-    }
-    if {$flag == 0} {
-	send_user "ERROR: md doesn't work correctly, can't run cp test\n"
-	return $TEST_INFO
+        }
     }
 
+    send_user "We're looking for $to_loc_plus_size: ffffffff\n"
+    set after_check_flag $TEST_FAIL
     set timeout 5
-    send -s "mw.b $to_loc_plus_size 0xFF 4\r"
-    expect $UBOOT_PROMPT
-
-    set timeout 5
-    set flag 0
     send -s "md.b $to_loc_plus_size\r"
     while 1 {
-	expect {
-
+        expect {
             "$to_loc_plus_size: ff ff ff ff" {
-		set flag 1
+                send_user "bytes after the copy location were correctly not modified\n"
+                set after_check_flag $TEST_PASS
             }
-
             $UBOOT_PROMPT {
-		break
+                break
             }
-
             timeout {
-		send_user "ERROR: md failed during test\n"
-		recover
-		break
+                send_user "ERROR: md command failed, can't run cp test\n"
+                recover
+                return $TEST_INFO
             }
-	}
+        }
     }
-    if {$flag == 0} {
-	send_user "ERROR: md doesn't work correctly, can't run cp test\n"
-	return $TEST_INFO
+
+    if {$before_check_flag==$TEST_PASS && $after_check_flag==$TEST_PASS} {
+        return $TEST_PASS
+    } else {
+        return $TEST_FAIL
     }
-}
 
-#
-# COPY
-#
-
-set timeout 300
-send -s "cp.b  $from_loc $to_loc $size\r"
-
-while 1 {
-    expect {
-	
-	$UBOOT_PROMPT {
-            break
-	}
-	
-	timeout {
-            send_user "ERROR: cp.b timed out\n"
-            recover
-            return $TEST_FAIL
-	}
-    }
-}
-
-set timeout 5
-set compare_flag $TEST_FAIL
-send -s "cmp.b  $from_loc $to_loc $size\r"
-
-while 1 {
-    expect {
-	
-	"[expr $size]" {
-            send_user "all the copied bytes compare correctly\n"
-            set compare_flag $TEST_PASS
-	}
-	
-	$UBOOT_PROMPT {
-            break
-	}
-	
-	timeout {
-            send_user "ERROR: cp.b timed out\n"
-            recover
-            return $TEST_FAIL
-	}
-    }
-}
-if {$compare_flag == $TEST_FAIL} {
-    return $TEST_FAIL
-}
-
-send_user "We're looking for $to_loc_minus_4: ffffffff\n"
-set before_check_flag $TEST_FAIL
-set timeout 5
-send -s "md.b $to_loc_minus_4\r"
-while 1 {
-    expect {
-	
-	"$to_loc_minus_4: ff ff ff ff" {
-            send_user "bytes before the copy location were correctly not modified\n"
-            set before_check_flag $TEST_PASS
-	}
-	
-	$UBOOT_PROMPT {
-            break
-	}
-	
-	timeout {
-            send_user "ERROR: md command failed, can't run cp test\n"
-            recover
-            return $TEST_INFO
-	}
-    }
-}
-
-send_user "We're looking for $to_loc_plus_size: ffffffff\n"
-set after_check_flag $TEST_FAIL
-set timeout 5
-send -s "md.b $to_loc_plus_size\r"
-while 1 {
-    expect {
-	
-	"$to_loc_plus_size: ff ff ff ff" {
-            send_user "bytes after the copy location were correctly not modified\n"
-            set after_check_flag $TEST_PASS
-	}
-	
-	$UBOOT_PROMPT {
-            break
-	}
-	
-	timeout {
-            send_user "ERROR: md command failed, can't run cp test\n"
-            recover
-            return $TEST_INFO
-	}
-    }
-}
-
-if {$before_check_flag==$TEST_PASS && $after_check_flag==$TEST_PASS} {
-    return $TEST_PASS
-} else {
-    return $TEST_FAIL
-}
-
-# end of procedure
+    # end of procedure
 }
 
 
@@ -1369,20 +1291,21 @@ set cp_flash_to_flash_unaligned_loc     33
 set cp_flash_to_RAM_aligned_loc         34
 set cp_flash_to_RAM_unaligned_loc       35
 set autoboot_seconds_loc                36
-set jffs2_loc				37
-set bootm_loc				38
-set pass_param_loc			39
-set DMA_loc     			40
-set SPI_flash_loc			41
-set boot_big_elf_kernel_loc		42
-set go_loc				43
+set jffs2_loc                           37
+set bootm_loc                           38
+set pass_param_loc                      39
+set DMA_loc                             40
+set SPI_flash_loc                       41
+set boot_big_elf_kernel_loc             42
+set go_loc                              43
 set tftp_10_half_loc                    44
 set tftp_10_full_loc                    45
 set tftp_100_half_loc                   46
 set tftp_100_full_loc                   47
+set SDIO_loc                            48
 
 set result_matrix { {mtest                                notrun} \
-		    {{version}                            notrun} \
+                    {{version}                            notrun} \
                     {echo                                 notrun} \
                     {{help date}                          notrun} \
                     {{date set}                           notrun} \
@@ -1416,19 +1339,21 @@ set result_matrix { {mtest                                notrun} \
                     {{cp flash-to-flash, aligned}         notrun} \
                     {{cp flash-to-flash, unaligned}       notrun} \
                     {{cp flash-to-RAM, aligned}           notrun} \
-		    {{cp flash-to-RAM, unaligned}         notrun} \
-		    {{autoboot countdown seconds}         notrun} \
-		    {jffs2 				  notrun} \
-		    {bootm 				  notrun} \
-		    {{pass param}			  notrun} \
-		    {DMA 				  notrun} \
-		    {SPI_flash				  notrun} \
-		    {{boot big elf kernel}		  notrun} \
-		    {go                 		  notrun} \
-		    {tftp_10_half              		  notrun} \
-		    {tftp_10_full              		  notrun} \
-		    {tftp_100_half             		  notrun} \
-		    {tftp_100_full			  notrun}}
+                    {{cp flash-to-RAM, unaligned}         notrun} \
+                    {{autoboot countdown seconds}         notrun} \
+                    {jffs2                                notrun} \
+                    {bootm                                notrun} \
+                    {{pass param}                         notrun} \
+                    {DMA                                  notrun} \
+                    {SPI_flash                            notrun} \
+                    {{boot big elf kernel}                notrun} \
+                    {go                                   notrun} \
+                    {tftp_10_half                         notrun} \
+                    {tftp_10_full                         notrun} \
+                    {tftp_100_half                        notrun} \
+                    {tftp_100_full                        notrun} \
+                    {sdio                                 notrun}}
+
 #
 #
 #  This matrix is similar to the one above, but it contains
@@ -1531,13 +1456,11 @@ if { $argc < 3 } {
 for {set i 1} {$i<$argc} {incr i} {
 
     switch -glob -- [lindex $argv $i] {
-	
 	"--lo*" {
 	    incr i
 	    if {$i>=$argc} { usage }
 	    set logfile [lindex $argv $i]
 	}
-	
 	"--su*" {
 	    incr i
 	    if {$i>=$argc} { usage }
@@ -1651,7 +1574,7 @@ sleep 2
 	    -re $KERNEL_PROMPT {
 	    send -s "version\r"
 	     break
-	    }	
+	    }
 
              timeout {
 	     send_user "failed version\n"
@@ -1724,7 +1647,7 @@ for {set i 0} {$i < $RESET_RETRIES} {incr i} {
 	    send_user "oops, gotta reset again\n"
 	    send -s "reset\r"
 	}
-	
+
 	timeout {
 	    send_user "timeout waiting for autoboot prompt\n"
 	}
@@ -1837,7 +1760,7 @@ while 1 {
 	    set gcc_version_result $TEST_PASS
 	    break
 	}
-	
+
 	timeout {
 	    send_user "ERROR: Uboot got lost during the version test\n"
 	    recover
@@ -1858,70 +1781,66 @@ if {$uboot_version_result==$TEST_PASS} {
 
 if { $TEST_ECHO } {
 
-expect ">"
-send "\r"
-wait_for_uboot
+    expect ">"
+    send "\r"
+    wait_for_uboot
 
-step "echo"
-set ECHO_TEST "We will be doing extensive testing of u-boot today."
-set timeout 5
-set send_slow {1 .01}
-send -s "echo $ECHO_TEST\r"
-set temp_status_flag $TEST_FAIL
-while 1 {
-    expect {
-	
-	$ECHO_TEST {
-	    set temp_status_flag $TEST_PASS
-	}
-	
-	$UBOOT_PROMPT {
-	    break
-	}
-	
-	timeout {
-	    send_user "ERROR: Uboot got lost during the echo test; not a good sign\n"
-	    recover
-	    break
-	}
+    step "echo"
+    set ECHO_TEST "We will be doing extensive testing of u-boot today."
+    set timeout 5
+    set send_slow {1 .01}
+    set temp_status_flag $TEST_FAIL
+
+    send -s "echo $ECHO_TEST\r"
+    while 1 {
+        expect {
+            $ECHO_TEST {
+                set temp_status_flag $TEST_PASS
+            }
+            $UBOOT_PROMPT {
+                break
+            }
+            timeout {
+                send_user "ERROR: Uboot got lost during the echo test; not a good sign\n"
+                recover
+                break
+            }
+        }
     }
-}
-record_test_result $echo_loc $temp_status_flag
 
+    record_test_result $echo_loc $temp_status_flag
 }
 
 #############################################################################################
 
 if { $TEST_HELP_DATE } {
 
-expect ">"
-send "\r"
-wait_for_uboot
+    expect ">"
+    send "\r"
+    wait_for_uboot
 
-step "help date"
-set timeout 15
-send -s "help date\r"
-set temp_status_flag $TEST_FAIL
-while 1 {
-   expect {
+    step "help date"
+    set timeout 15
+    set temp_status_flag $TEST_FAIL
 
-       "MMDDhhmm" {
-	   set temp_status_flag $TEST_PASS
-       }
+    send -s "help date\r"
+    while 1 {
+        expect {
+            "MMDDhhmm" {
+                set temp_status_flag $TEST_PASS
+            }
+            $UBOOT_PROMPT {
+                break
+            }
+            timeout {
+                send_user "ERROR: Uboot got lost during the help date test\n"
+                recover
+                break
+            }
+        }
+    }
 
-       $UBOOT_PROMPT {
-	   break
-       }
-
-       timeout {
-	   send_user "ERROR: Uboot got lost during the help date test\n"
-	   recover
-	   break
-       }
-   }
-}
-record_test_result $help_date_loc $temp_status_flag
-
+    record_test_result $help_date_loc $temp_status_flag
 }
 
 #############################################################################################
@@ -1971,12 +1890,12 @@ send -s "reset\r"
 step "Wait for uboot countdown"
 while 1 {
     expect {
-	
+
 	$AUTOBOOT_PROMPT {
 	    send "\r"
 	    break
 	}
-	
+
 	timeout {
 	    send_user "ERROR: Failed to reset board, no response\n"
 	    recover
@@ -1990,13 +1909,13 @@ sleep 2
 set timeout 5
 while 1 {
     expect {
-	
+
 	$UBOOT_PROMPT {
 	    break
 	}
-	
+
 	timeout {
-	    send_user "ERROR: Failed to enter Uboot!\n"	
+	    send_user "ERROR: Failed to enter Uboot!\n"
 	    break
 	}
     }
@@ -2066,27 +1985,27 @@ while 1 {
 	-re "autoscr\[ ]+- run script from memory" {
 	    set autoscr_help $TEST_PASS
 	}
-	
+
 	-re "base\[ ]+- print or set address offset" {
 	    set base_help $TEST_PASS
 	}
-	
+
 	-re "bdinfo\[ ]+- print Board Info structure" {
 	    set bdinfo_help $TEST_PASS
 	}
-	
+
 	-re "bootelf\[ ]+- Boot from an ELF image in memory" {
 	    set bootelf_help $TEST_PASS
 	}
-	
+
 	-re "flinfo\[ ]+- print FLASH memory information" {
 	    set flinfo_help $TEST_PASS
 	}
-	
+
 	-re "saveenv\[ ]+- save environment variables to persistent storage" {
 	    set saveenv_help $TEST_PASS
 	}
-	
+
 	-re "tftpboot\[ ]+- boot image via network using TFTP protocol" {
 	    set tftpboot_help $TEST_PASS
 	}
@@ -2095,15 +2014,15 @@ while 1 {
 	-re "tftpboot- boot image via network using TFTP protocol" {
 	    set tftpboot_help $TEST_PASS
 	}
-	
+
 	-re  "version\[ ]+- print monitor version" {
 	    set version_help $TEST_PASS
 	}
-	
+
 	$UBOOT_PROMPT {
 	    break
 	}
-	
+
 	timeout {
 	    send_user "ERROR: Uboot got lost when sending help command, ironic\n"
 	    recover
@@ -2172,15 +2091,15 @@ while 1 {
 		set random_flash_end2 $actual_sector
 	    }
 	}
-	
+
 	-re "Bank \# (\[0-9]+)" {
 	    set flinfo_bank_count $expect_out(1,string)
 	}
-	
+
 	$UBOOT_PROMPT {
 	    break
 	}
-	
+
 	timeout {
 	    send_user "ERROR: Uboot got lost when sending flinfo\n"
 	    recover
@@ -2211,12 +2130,12 @@ send "\r"
 set timeout 15
 while 1 {
     expect {
-	
+
 	$UBOOT_PROMPT {
 	    send_user "Got Uboot prompt!\n"
 	    break
 	}
-	
+
 	timeout {
 	    send_user "ERROR: Failed to get Uboot prompt!\n"
 	    break
@@ -2242,12 +2161,12 @@ send -s "mw.l $CFG_LOAD_ADDR 1234DEAD 0x1000\r"
 set timeout 15
 while 1 {
     expect {
-	
+
 	$UBOOT_PROMPT {
 	    send_user "Got Uboot prompt!\n"
 	    break
 	}
-	
+
 	timeout {
 	    send_user "ERROR: Failed to get Uboot prompt!\n"
 
@@ -2299,12 +2218,12 @@ sleep 5
 set timeout 15
 while 1 {
     expect {
-	
+
 	$UBOOT_PROMPT {
 	    send_user "Got Uboot prompt!\n"
 	    break
 	}
-	
+
 	timeout {
 	    send_user "ERROR: Failed to get Uboot prompt!\n"
 	    break
@@ -2385,12 +2304,12 @@ send "\003"
 set timeout 15
 while 1 {
     expect {
-	
+
 	$UBOOT_PROMPT {
 	    send_user "Got Uboot prompt!\n"
 	    break
 	}
-	
+
 	timeout {
 	    send_user "ERROR: Failed to get Uboot prompt!\n"
 	    break
@@ -2427,12 +2346,12 @@ sleep 5
 set timeout 15
 while 1 {
     expect {
-	
+
 	$UBOOT_PROMPT {
 	    send_user "Got Uboot prompt!\n"
 	    break
 	}
-	
+
 	timeout {
 	    send_user "ERROR: Failed to get Uboot prompt!\n"
 	    break
@@ -2456,13 +2375,12 @@ set temp_status_flag $TEST_FAIL
 send -s "mm.w $CFG_LOAD_ADDR\r"
 while 1 {
     expect {
-	
+
 	"[string range $CFG_LOAD_ADDR 2 end]:*\?" {
 	    set temp_status_flag $TEST_PASS
 	    break
 	}
-	
-		
+
 	timeout {
 	    send_user "ERROR: Uboot got lost when writing to memory using mm\n"
 	    break
@@ -2652,15 +2570,11 @@ for {set i 0} {$i < $SAVEENV_ITERATIONS} {incr i} {
     set temp_time [time {
 	while 1 {
 	    expect {
-		
 		"Erasing" { }
-		
 		"Writing" { }
-		
 		$UBOOT_PROMPT {
 		    break
 		}
-		
 		timeout {
 		    send_user "ERROR: Uboot got lost when saving environment variables\n"
 		    set saveenv_result $TEST_FAIL
@@ -2896,7 +2810,7 @@ send -s "tftp 0x1000000 add.bin\r"
 	    }
 
 	    timeout {
-		send_user "ERROR: Uboot locked up during tftp\n"		
+		send_user "ERROR: Uboot locked up during tftp\n"
 		break
 	    }
 	}
@@ -2916,7 +2830,7 @@ send -s "tftp 0x1000000 add.bin\r"
 	    }
 
 	    timeout {
-		send_user "ERROR: Run add.bin timeout\n"		
+		send_user "ERROR: Run add.bin timeout\n"
 		break
 	    }
 	}
@@ -2930,14 +2844,12 @@ send -s "tftp 0x1000000 add.bin\r"
     send -s "md.b 0x01000090\r"
     while 1 {
 	expect {
-		
 		"01000090: de*" {
 			set temp_status_flag $TEST_PASS
 			break
 		}
-		
 		timeout {
-		send_user "ERROR: md\n"		
+		send_user "ERROR: md\n"
 		break
 	        }
 	}
@@ -2950,14 +2862,12 @@ send -s "tftp 0x1000000 add.bin\r"
     send -s "md.b 0x01000090\r"
     while 1 {
 	expect {
-		
 		"01000090: 00*" {
 		        expect ">"
 			break
 		}
-		
 		timeout {
-		send_user "ERROR: mw\n"		
+		send_user "ERROR: mw\n"
 		break
 	        }
 	}
@@ -3028,39 +2938,39 @@ send -s "bdinfo\r"
 
 while 1 {
     expect {
-	
+
 	"memstart *= 0x[format "%08x" [expr $BDINFO_MEMSTART]]" {
 	    set memstart_result $TEST_PASS
 	}
-	
+
 	"memsize *= 0x[format "%08x" [expr $BDINFO_MEMSIZE]]" {
 	    set memsize_result $TEST_PASS
 	}
-	
+
 	"flashstart *= 0x[format "%08x" [expr $BDINFO_FLASHSTART]]" {
 	    set flashstart_result $TEST_PASS
 	}
-	
+
 	"flashsize *= 0x[format "%08x" [expr $BDINFO_FLASHSIZE]]" {
 	    set flashsize_result $TEST_PASS
 	}
-	
+
 	"ethaddr *= \[A-F0-9]\[A-F0-9]:\[A-F0-9]\[A-F0-9]:\[A-F0-9]\[A-F0-9]:\[A-F0-9]\[A-F0-9]:\[A-F0-9]\[A-F0-9]:\[A-F0-9]\[A-F0-9]" {
 	    set ethaddr_result $TEST_PASS
 	}
-	
+
 	-re "ip_addr.*= \[A-F0-9]+\.\[A-F0-9]+\.\[A-F0-9]+\.\[A-F0-9]+" {
 	    set ip_addr_result $TEST_PASS
 	}
-	
+
 	"baudrate *= $BDINFO_BAUDRATE bps" {
 	    set baudrate_result $TEST_PASS
 	}
-	
+
 	$UBOOT_PROMPT {
 	    break
 	}
-	
+
 	timeout {
 	    send_user "ERROR: Uboot is in some weird state during test\n"
 	    recover
@@ -3327,7 +3237,7 @@ set timeout 20
 	     send "\r"
 	     break
 	    }
-	    timeout {	
+	    timeout {
 		send_user "ERROR: u-boot failed to reset\n"
 		#recover
 		break
@@ -3362,7 +3272,6 @@ send -s "  tftpboot $BIG_ELF_LOAD_ADDRESS linux.big\r"
 			}
 			break
 		}
-		
 		timeout {
 			send_user "ERROR:  tftp download big elf kernel failed\n"
 			recover
@@ -3370,7 +3279,6 @@ send -s "  tftpboot $BIG_ELF_LOAD_ADDRESS linux.big\r"
 		}
     	    }
 	}
-	
 
 if {$big_kernel_temp_result == $TEST_PASS} {
 	set timeout 500
@@ -3388,7 +3296,7 @@ if {$big_kernel_temp_result == $TEST_PASS} {
 		}
     	    }
 	}
-}	
+}
 
 if {$big_kernel_result==$TEST_PASS} {
     record_test_result $boot_big_elf_kernel_loc $TEST_PASS
@@ -3439,15 +3347,15 @@ set timeout 60
 send -s "cp.b $CFG_LOAD_ADDR $random_flash_loc $random_flash_bytes\r"
 while 1 {
     expect {
-	
+
 	"Can't write to protected" {
 	    set protect_on_result $TEST_PASS
 	}
-	
+
 	$UBOOT_PROMPT {
 	    break
 	}
-	
+
 	timeout {
 	    send_user "ERROR: copy to flash took too long during protect test\n"
 	    recover
@@ -3501,15 +3409,15 @@ if { $random_flash_start == "undefined" || \
 	set protect_off_result $TEST_FAIL
 	while 1 {
 	    expect {
-		
+
 		"Total of [expr 0x$random_flash_bytes] bytes were the same" {
 		    set protect_off_result $TEST_PASS
 		}
-		
+
 		$UBOOT_PROMPT {
 		    break
 		}
-		
+
 		timeout {
 		    send_user "ERROR: cmp.b got lost\n"
 		    recover
@@ -3544,15 +3452,15 @@ set cmp_result $TEST_INFO
 send -s "tftp $CFG_LOAD_ADDR $TEST_BIN_FILE\r"
 while 1 {
     expect {
-	
+
 	"Bytes transferred" {
 	    set temp_status_flag $SUCCESS
 	}
-	
+
 	$UBOOT_PROMPT {
 	    break
 	}
-	
+
 	timeout {
 	    send_user "ERROR: Uboot is in some weird state during tftp.\n"
 	    recover
@@ -3608,7 +3516,7 @@ if { $temp_status_flag == $FAILURE } {
 	send -s "mm.b 0x$one_before_end\r"
 	while 1 {
 	    expect {
-		
+
 		-re "$one_before_end: (\[0-9a-fA-F]\[0-9a-fA-F])" {
 		    send_user "The location 1 before end contains 0x$expect_out(1,string)\n"
 		    send_user "set it to "
@@ -3621,7 +3529,7 @@ if { $temp_status_flag == $FAILURE } {
 		    send -s "0x$new_value\r"
 		    set temp_status_flag 1
 		}
-		
+
 		-re "$random_sdram_end: (\[0-9a-fA-F]\[0-9a-fA-F])" {
 		    send_user "The location at end contains 0x$expect_out(1,string)\n"
 		    send_user "set it to "
@@ -3638,7 +3546,7 @@ if { $temp_status_flag == $FAILURE } {
 			set temp_status_flag 2
 		    }
 		}
-		
+
 		"$random_sdram_end_plus_1:" {
 		    # send a control-C
 		    send_user "\nsending control-c\n"
@@ -3647,11 +3555,11 @@ if { $temp_status_flag == $FAILURE } {
 			set temp_status_flag 3
 		    }
 		}
-		
+
 		$UBOOT_PROMPT {
 		    break
 		}
-		
+
 		timeout {
 		    send_user "there was a testing problem during \
 the cp and cmp test\n"
@@ -3933,11 +3841,11 @@ while 1 {
     	"done" {
 		set jffs2_temp_result $TEST_PASS
 	}
-	
+
 	$UBOOT_PROMPT {
 		break
 	}
-	
+
 	timeout {
 	    send_user "ERROR: JFFS2 tftp download failed\n"
 	    recover
@@ -3954,11 +3862,11 @@ if {$jffs2_temp_result == $TEST_PASS} {
     	    	    "Un-Protected" {
 				set jffs2_temp_result $TEST_PASS
 			}
-	
+
 		    $UBOOT_PROMPT {
 				break
 			}
-	
+
 		    timeout {
 	    			send_user "ERROR: JFFS2 unprotect failed\n"
 	    			recover
@@ -3966,7 +3874,7 @@ if {$jffs2_temp_result == $TEST_PASS} {
 			}
     		}
 	}
-}	
+}
 
 set timeout 480
 if { $jffs2_temp_result == $TEST_PASS} {
@@ -3978,11 +3886,11 @@ if { $jffs2_temp_result == $TEST_PASS} {
 	    	"Erased * sectors" {
 	    		set jffs2_temp_result $TEST_PASS
 		}
-		
+
 		$UBOOT_PROMPT {
 			break
 		}
-		
+
 		timeout {
 		    send_user "ERROR: JFFS2 erase failed\n"
 		    recover
@@ -4002,11 +3910,11 @@ if { $jffs2_temp_result == $TEST_PASS } {
 	    	"done" {
 	    		set jffs2_temp_result $TEST_PASS
 		}
-		
+
 		$UBOOT_PROMPT {
 			break
 		}
-		
+
 		timeout {
 		    send_user "ERROR: JFFS2 cp failed\n"
 		    recover
@@ -4049,17 +3957,17 @@ if { $jffs2_temp_result == $TEST_PASS } {
 	    	"done" {
 		    	set jffs2_ls_result $TEST_PASS
 	    	}
-	
+
 	    	$UBOOT_PROMPT {
 			break
 	    	}
-	
+
 	    	timeout {
 	    		send_user "ERROR: Uboot can not support 'ls' command\n"
 	    		recover
 	    		break
 	    	}
-            }	
+            }
        }
 }
 
@@ -4072,11 +3980,11 @@ if { $jffs2_temp_result == $TEST_PASS } {
     		"Compression" {
 			set jffs2_fsinfo_result $TEST_PASS
 		}
-	
+
 		$UBOOT_PROMPT {
 			break
 		}
-	
+
 		timeout {
 	    		send_user "ERROR: Uboot can not support 'fsinfo' command\n"
 	    		recover
@@ -4096,11 +4004,11 @@ if { $jffs2_temp_result == $TEST_PASS } {
 	    	"complete" {
 	    		set jffs2_temp_result $TEST_PASS
 		}
-		
+
 		$UBOOT_PROMPT {
 			break
 		}
-		
+
 		timeout {
 		    send_user "ERROR: JFFS2 'fsload' failed\n"
 		    recover
@@ -4134,7 +4042,7 @@ send -s "reset\r"
 	     sleep 2
 	     send "\3"
 	    }
-		
+
 	    ">"
 	    {
 	    break
@@ -4155,282 +4063,258 @@ send "\r"
 
 if {  $TEST_BOOTM } {
 
-expect ">"
-send "\r"
-wait_for_uboot
+    expect ">"
+    send "\r"
+    wait_for_uboot
 
-step "bootm"
-set timeout 25
+    step "bootm"
+    set timeout 25
 
-set bootm_result $TEST_FAIL
-set bootm_temp_result $TEST_FAIL
+    set bootm_result $TEST_FAIL
+    set bootm_temp_result $TEST_FAIL
 
-	set timeout 300
-	send -s " tftpboot 0x1000000 uImage-beta\r"
-	while 1 {
-     	    expect {
-     		"done" {
-			set bootm_temp_result $TEST_PASS
-			while 1 {
-			expect ">" {
-				break
-				}
-			}
-			break
-		}
-		
-		timeout {
-			send_user "ERROR: bootm tftp download failed\n"
-			recover
-			break
-		}
-    	    }
-	}
-	
-
-if {$bootm_temp_result == $TEST_PASS} {
-	set timeout 300
-	send -s " bootm\r"
-	while 1 {
-     	    expect {
-     		-re $KERNEL_PROMPT {
-			set bootm_result $TEST_PASS
-			break
-		}
-		timeout {
-			send_user "ERROR: bootm failed\n"
-			recover
-			break
-		}
-    	    }
-	}
-}	
-
-send "\r"
-send -s "reboot\r"
-while 1 {
-    set timeout 200
-    expect {
-
-	"Hit any key" {
-	    send "\r"
-	    break
-	}
-
-	
-
-	timeout {
-	    send_user "ERROR: The kernel got stuck and didn't reboot\n"
-	    recover
-	    break
-	}
+    set timeout 300
+    send -s " tftpboot 0x1000000 uImage-beta\r"
+    while 1 {
+        expect {
+            "done" {
+                set bootm_temp_result $TEST_PASS
+                while 1 {
+                    expect ">" {
+                        break
+                    }
+                }
+                break
+            }
+            timeout {
+                send_user "ERROR: bootm tftp download failed\n"
+                recover
+                break
+            }
+        }
     }
-}
 
-if {$bootm_result == $TEST_PASS} {
-	record_test_result $bootm_loc $TEST_PASS
-} else {
-	record_test_result $bootm_loc $TEST_PASS
-}	
+    if { $bootm_temp_result == $TEST_PASS} {
+        set timeout 300
+        send -s " bootm\r"
+        while 1 {
+            expect {
+                -re $KERNEL_PROMPT {
+                    set bootm_result $TEST_PASS
+                    break
+                }
+                timeout {
+                    send_user "ERROR: bootm failed\n"
+                    recover
+                    break
+                }
+            }
+        }
+    }
 
-send -s " reset\r"
+    send "\r"
+    set timeout 200
+    send -s "reboot\r"
+    while 1 {
+        expect {
+            "Hit any key" {
+                send "\r"
+                break
+            }
+            timeout {
+                send_user "ERROR: The kernel got stuck and didn't reboot\n"
+                recover
+                break
+            }
+        }
+    }
+
+    if {$bootm_result == $TEST_PASS} {
+        record_test_result $bootm_loc $TEST_PASS
+    } else {
+        record_test_result $bootm_loc $TEST_PASS
+    }
+
+    send -s " reset\r"
     set timeout 20
     while 1 {
-	expect {
-	    "Hit any key"
-	    {
-	     sleep 2
-	     send "\3"
-	     break
-	    }
-
-	    timeout {
-		send_user "ERROR: u-boot failed to reset\n"
-		#recover
-		break
-	    }
-	}
+        expect {
+            "Hit any key" {
+                sleep 2
+                send "\3"
+                break
+            }
+            timeout {
+                send_user "ERROR: u-boot failed to reset\n"
+                #recover
+                break
+            }
+        }
     }
-
 }
 
 ###############################################################################################################################
 
 if {  $TEST_PASS_PARAM } {
 
-expect ">"
-send "\r"
-wait_for_uboot
+    expect ">"
+    send "\r"
+    wait_for_uboot
 
-step "pass parameter from uboot to kernel"
+    step "pass parameter from uboot to kernel"
 
-set temp_status_flag $TEST_FAIL
+    set temp_status_flag $TEST_FAIL
+    set timeout 20
+    send -s "set bootargs root=/dev/mtdblock0 rw ip=10.100.4.60\r"
+    while 1 {
+        expect {
+            ">" {
+                set flag 1
+                break
+            }
+        }
+    }
+    sleep 3
 
-send -s "set bootargs root=/dev/mtdblock0 rw ip=10.100.4.60\r"
-while 1 {
-   expect {
-      ">" {
-         set flag 1
-         break
-      }
-     }
-}
-sleep 3
+    set timeout 20
+    send -s "tftp 0x1000000 $KERNEL_GZ_FILENAME\r"
+    while 1 {
+        expect {
+            "invalid RARP" {
+                send_log "TFTP-ERROR\n"
+                incr tftp_errors
+            }
+            "# T" {
+                send_log "TFTP-ERROR\n"
+                incr tftp_errors
+            }
+            "TFTP error" {
+                send_log "TFTP-ERROR\n"
+                incr tftp_errors
+            }
+            "T #" {
+                send_log "TFTP-ERROR\n"
+                incr tftp_errors
+            }
+            "#" { }
+            $UBOOT_PROMPT {
+                break
+            }
+            timeout {
+                send_user "ERROR: tftp failed to execute, can't run bootelf test"
+                recover
+                break
+            }
+        }
+    }
 
-set timeout 20
-send -s "tftp 0x1000000 $KERNEL_GZ_FILENAME\r"
-while 1 {
-   expect {
+    set run_kernel_fail 0
+    send -s "bootm\r"
+    set timeout 60
+    while 1 {
+        expect {
+            -re "Kernel panic" {
+                send_log "kernel panic detected... trying to recover from it"
+                set run_kernel_fail 1
+                #recover
+                break
+            }
+            -re "Sash command shell.*/> " {
+                puts "successful boot attempt"
+                #incr successful_boots
+                break
+            }
+            -re $KERNEL_PROMPT {
+                puts "successful boot attempt"
+                break
+            }
+            -re "Linux version (.*) " {
+                set linux_version $expect_out(1,string)
+            }
+            timeout {
+                puts "failed boot attempt"
+                set run_kernel_fail 1
+                break
+            }
+        }
+    }
 
-      "invalid RARP" {
-         send_log "TFTP-ERROR\n"
-         incr tftp_errors
-      }
+    set timeout 4
+    set flag 0
+    send -s "cat /proc/cmdline\r"
+    while 1 {
+        expect {
+            "root=/dev/mtdblock0 rw ip=10.100.4.60" {
+                set flag 1
+                set temp_status_flag $TEST_PASS
+                puts "Pass argument from uboot success.\n"
+                break
+            }
+            timeout {
+                puts "Fail argument from uboot. "
+                break
+            }
+        }
+    }
 
-      "# T" {
-         send_log "TFTP-ERROR\n"
-         incr tftp_errors
-      }
+    while 1 {
+        expect {
+            -re $KERNEL_PROMPT {
+                send_user "Ending build_uboot_kernel.exp\n"
+                break
+            }
+            timeout {
+                puts "Can't get kernel prompt."
+                break
+            }
+        }
+    }
 
-      "TFTP error" {
-         send_log "TFTP-ERROR\n"
-         incr tftp_errors
-      }
+    record_test_result $pass_param_loc $temp_status_flag
 
-      "T #" {
-         send_log "TFTP-ERROR\n"
-         incr tftp_errors
-      }
+    if { $run_kernel_fail == "1" } {
+        recover
+    } else {
+        send -s "reboot\r"
+    }
 
-      "#" { }
-
-      $UBOOT_PROMPT {
-         break
-      }
-
-      timeout {
-         send_user "ERROR: tftp failed to execute, can't run bootelf test"
-         recover
-         break
-      }
-   }
-}
-
-set run_kernel_fail 0
-send -s "bootm\r"
-set timeout 60
-   while 1 {
-      expect {
-
-         -re "Kernel panic" {
-            send_log "kernel panic detected... trying to recover from it"
-            set run_kernel_fail 1
-         #   recover
-            break
-         }
-
-         -re "Sash command shell.*/> " {
-            puts "successful boot attempt"
-          #  incr successful_boots
-            break
-         }
-
-	 -re $KERNEL_PROMPT {
-            puts "successful boot attempt"
-            break
-         }
-
-         -re "Linux version (.*) " {
-            set linux_version $expect_out(1,string)
-         }
-
-         timeout {
-            puts "failed boot attempt"
-            set run_kernel_fail 1
-            break
-         }
-      }
-   }
-
-set timeout 4
-set flag 0
-send -s "cat /proc/cmdline\r"
-while 1 {
-   expect {
-      "root=/dev/mtdblock0 rw ip=10.100.4.60" {
-         set flag 1
-	 set temp_status_flag $TEST_PASS
-         puts "Pass argument from uboot success.\n"
-	 break
-      }
-
-      timeout {
-            puts "Fail argument from uboot. "
-            break
-         }
-     }
-}
-
-while 1 {
-   expect {
-      -re $KERNEL_PROMPT {
-         send_user "Ending build_uboot_kernel.exp\n"
-	 break
-      }
-
-      timeout {
-            puts "Can't get kernel prompt."
-            break
-         }
-     }
-}
-
-record_test_result $pass_param_loc $temp_status_flag
-
-if { $run_kernel_fail == "1" } {
-    recover
-} else {
-    send -s "reboot\r"
-}
-set timeout 20
-     while 1 {
-      expect {
-         -re "Hit any key to stop autoboot" {
-             send "\3"
-         }
-
-	 timeout {
-             break
-         }
-      }
-     }
-sleep 5
-
+    set timeout 20
+    while 1 {
+        expect {
+            -re "Hit any key to stop autoboot" {
+                send "\3"
+            }
+            timeout {
+                break
+            }
+        }
+    }
+    sleep 5
 }
 
 ###############################################################################################################################
 
 if {  $TEST_DMA } {
 
-expect ">"
-send "\r"
-wait_for_uboot
+    expect ">"
+    send "\r"
+    wait_for_uboot
 
-step "DMA test"
-set temp_status_flag $TEST_FAIL
+    step "DMA test"
+    set temp_status_flag $TEST_FAIL
 
-send -s "tftp $L1_INSTRUCT_SRAM_ADDRESS add.bin\r"
+    send -s "tftp $L1_INSTRUCT_SRAM_ADDRESS add.bin\r"
     while 1 {
-	expect {
-	    "done" {
-		set tftp_flag SUCCESS
-		break
-	    }
-	    timeout {
-		send_user "ERROR: Uboot locked up during tftp\n"		
-		break
-	    }
-	}
+        expect {
+            "done" {
+                set tftp_flag SUCCESS
+                break
+            }
+            timeout {
+                send_user "ERROR: Uboot locked up during tftp\n"
+                break
+            }
+        }
     }
 
     set timeout 15
@@ -4439,16 +4323,16 @@ send -s "tftp $L1_INSTRUCT_SRAM_ADDRESS add.bin\r"
     send -s "go $L1_INSTRUCT_SRAM_ADDRESS\r"
 
     while 1 {
-	expect {
-	    "Starting application" {
-		set tftp_flag SUCCESS
-		break
-	    }
-	    timeout {
-		send_user "ERROR: Run add.bin timeout\n"		
-		break
-	    }
-	}
+        expect {
+            "Starting application" {
+                set tftp_flag SUCCESS
+                break
+            }
+            timeout {
+                send_user "ERROR: Run add.bin timeout\n"
+                break
+            }
+        }
     }
 
     sleep 2
@@ -4458,18 +4342,16 @@ send -s "tftp $L1_INSTRUCT_SRAM_ADDRESS add.bin\r"
     send_user "sending md.b 0x01000090\n"
     send -s "md.b 0x01000090\r"
     while 1 {
-	expect {
-		
-		"01000090: de*" {
-			set temp_status_flag $TEST_PASS
-			break
-		}
-		
-		timeout {
-		send_user "ERROR: Uboot locked up during tftp\n"		
-		break
-	        }
-	}
+        expect {
+            "01000090: de*" {
+                set temp_status_flag $TEST_PASS
+                break
+            }
+            timeout {
+                send_user "ERROR: Uboot locked up during tftp\n"
+                break
+            }
+        }
     }
 
     sleep 3
@@ -4478,298 +4360,402 @@ send -s "tftp $L1_INSTRUCT_SRAM_ADDRESS add.bin\r"
     expect ">"
     send -s "md.b 0x01000090\r"
     while 1 {
-	expect {		
-		"01000090: 00*" {
-		        expect ">"
-			break
-		}
-		
-		timeout {
-		send_user "ERROR: Uboot locked up during tftp\n"		
-		break
-	        }
-	}
+        expect {
+            "01000090: 00*" {
+                expect ">"
+                break
+            }
+            timeout {
+                send_user "ERROR: Uboot locked up during tftp\n"
+                break
+            }
+        }
     }
 
-  record_test_result $DMA_loc $temp_status_flag
+    record_test_result $DMA_loc $temp_status_flag
 
-sleep 1
+    sleep 1
 
-
-send -s "reset\r"
+    send -s "reset\r"
     set timeout 20
     while 1 {
-	expect {
-	    "Hit any key" {
-	     sleep 2
-	     send "\3"
-	     break
-	    }
+        expect {
+            "Hit any key" {
+                sleep 2
+                send "\3"
+                break
+            }
+            timeout {
+                send_user "ERROR: u-boot failed to reset\n"
+                #recover
+                break
+            }
+        }
+    }
+}
 
-	    timeout {
-		send_user "ERROR: u-boot failed to reset\n"
-		#recover
-		break
-	    }
-	}
+###############################################################################################################################
+
+if { $TEST_SDIO } {
+
+    expect ">"
+    send "\r"
+    wait_for_uboot
+
+    step "Test SDIO MMC/SD"
+
+    set sdio_result $TEST_FAIL
+
+    set sdio_test_image linux
+    set sdio_imgload_addr 0x1000000
+    set sdio_interface mmc
+    set sdio_dev 0
+
+    set timeout 5
+    send "mmcinit\r"
+    while 1 {
+        expect {
+            -re "SD Card detected.*Card capacity.*bytes.*>" {
+                set sdio_result $TEST_PASS
+                break
+            }
+            timeout {
+                send_user "ERROR: init sdiommc failed\n"
+                recover
+                break
+            }
+        }
     }
 
+    if {$sdio_result == $TEST_PASS} {
+        set timeout 5
+        send "fatls $sdio_interface $sdio_dev\r"
+        while 1 {
+            expect {
+                -re "\[0-9]+.*$sdio_test_image.*$UBOOT_PROMPT" {
+                    set sdio_result $TEST_PASS
+                    break
+                }
+                timeout {
+                    send_user "ERROR: can not find $sdio_test_image\n"
+                    set sdio_result $TEST_FAIL
+                    recover
+                    break
+                }
+            }
+        }
+    }
 
+    if {$sdio_result == $TEST_PASS} {
+        set timeout 300
+        send "fatload $sdio_interface $sdio_dev $sdio_imgload_addr $sdio_test_image"
+        while 1 {
+            expect {
+                -re "\[uU]nable|\[iI]nvalid|\[fF]ail|\[eE]rror" {
+                    set sdio_result $TEST_FAIL
+                    sleep 5
+                    send_user "ERROR: load $sdio_test_image to memory failed\n"
+                    recover
+                    break
+                }
+                -re "reading linux.*\[0-9]+ bytes read.*$UBOOT_PROMPT" {
+                    set sdio_result $TEST_PASS
+                    break
+                }
+                timeout {
+                    set sdio_result $TEST_FAIL
+                    send_user "ERROR: load $sdio_test_image to memory failed\n"
+                    recover
+                    break
+                }
+            }
+        }
+    }
+
+    if {$sdio_result == $TEST_PASS} {
+        set timeout 60
+        send "boote $sdio_imgload_addr\r"
+        while 1 {
+            expect {
+                -re $KERNEL_PROMPT {
+                    set sdio_result $TEST_PASS
+                    break
+                }
+                timeout {
+                    send_user "ERROR: boot kernel failed\n"
+                    set sdio_result $TEST_FAIL
+                    break
+                }
+            }
+        }
+    }
+
+    record_test_result $SDIO_loc $sdio_result
+
+    #Reboot out of the kernel and back to u-boot.
+    if { $sdio_result == $TEST_PASS } {
+        send "reboot\r"
+    } else {
+        recover
+    }
+
+    set timeout 20
+    while 1 {
+        expect {
+            "Hit any key" {
+                sleep 2
+                send "\r"
+                break
+            }
+            timeout {
+                send_user "ERROR: u-boot failed to reset\n"
+                recover
+                break
+            }
+        }
+    }
 }
+
 ###############################################################################################################################
 
 if {  $TEST_TFTP } {
 
-step "do tftp $TFTP_ITERATIONS times"
-set timeout 100
+    step "do tftp $TFTP_ITERATIONS times"
+    set timeout 100
 #
 # Note: the tftp error counter can by incremented at various
 #  place in the code above, so don't reset it to zero here.
 #  But the good transfers flag should be reset.
 #
-set good_tftp_transfers 0
-set uimage_size 0
-for {set i 0} {$i < $TFTP_ITERATIONS} {incr i} {
+    set good_tftp_transfers 0
+    set uimage_size 0
+    for {set i 0} {$i < $TFTP_ITERATIONS} {incr i} {
 
-    wait_for_uboot
-    sleep 3
-    send_log "This is the $i time of tftp downloading\n"
+        wait_for_uboot
+        sleep 3
+        send_log "This is the $i time of tftp downloading\n"
 
-    send -s "tftp $CFG_LOAD_ADDR $KERNEL_GZ_FILENAME\r"
-    while 1 {
-	expect {
-	    -re "Bytes transferred = \[0-9]+ \\\((\[0-9a-fA-F]+) hex\\\)" {
-		incr good_tftp_transfers
-		set uimage_size $expect_out(1,string)
-		send_user "uImage size is $uimage_size\n"
-		break
-	    }
+        send -s "tftp $CFG_LOAD_ADDR $KERNEL_GZ_FILENAME\r"
+        while 1 {
+            expect {
+                -re "Bytes transferred = \[0-9]+ \\\((\[0-9a-fA-F]+) hex\\\)" {
+                    incr good_tftp_transfers
+                    set uimage_size $expect_out(1,string)
+                    send_user "uImage size is $uimage_size\n"
+                    break
+                }
 
-	    "invalid RARP" {
-		send_user "invalid RARP error in tftp detected"
-		send_log "TFTP-ERROR\n"
-		incr tftp_errors
-		break
-	    }
+                "invalid RARP" {
+                    send_user "invalid RARP error in tftp detected"
+                    send_log "TFTP-ERROR\n"
+                    incr tftp_errors
+                    break
+                }
 
-	    "TFTP error" {
-		send_user "TFTP error detected"
-		send_log "TFTP-ERROR\n"
-		incr tftp_errors
-		break
-	    }
+                "TFTP error" {
+                    send_user "TFTP error detected"
+                    send_log "TFTP-ERROR\n"
+                    incr tftp_errors
+                    break
+                }
 
-	    timeout {
-		send_user "ERROR: tftp timed out"
-		send_log "TFTP-ERROR\n"
-		incr tftp_errors
-		recover
-		break
-	    }
-	}
+                timeout {
+                    send_user "ERROR: tftp timed out"
+                    send_log "TFTP-ERROR\n"
+                    incr tftp_errors
+                    recover
+                    break
+                }
+            }
+        }
     }
-}
-if {$tftp_errors == 0} {
-    record_test_result $tftp_errors_loc $TEST_PASS
-} else {
-    send_log "\ntftp_errors = $tftp_errors\n\n"
-    record_test_result $tftp_errors_loc $TEST_FAIL
-}
-if {$good_tftp_transfers == $TFTP_ITERATIONS} {
-    record_test_result $tftp_loc $TEST_PASS
-} else {
-    record_test_result $tftp_loc $TEST_FAIL
-}
-
-if {$uimage_size == 0} {
-    send_user "can't do the kernel flash and boot test \
-because tftp never worked"
-} else {
-    step "Load kernel into flash"
-    set timeout 180
-
-    expect ">"
-    send -s "protect off $KERNEL_FLASH_LOC $KERNEL_FLASH_END\r"
-    sleep 3
-    send -s "erase $KERNEL_FLASH_LOC $KERNEL_FLASH_END\r"
-    set temp_status_flag $FAILURE
-    while 1 {
-	expect {
-
-	    "Erased * sectors" {
-		set temp_status_flag $SUCCESS
-		break
-	    }
-
-	    timeout {
-		puts "ERROR: Didn't seem to erase flash\n"
-		break
-	    }
-	}
-    }
-    if {$temp_status_flag != $SUCCESS } {
-	send_user "Failed to erase flash\n"
-	all_done
-    }
-
-    sleep 1
-
-   set timeout 2500
-   send_user "\nAbout to copy the kernel to flash.\n"
-   send -s "cp.b $CFG_LOAD_ADDR $KERNEL_FLASH_LOC 0x$uimage_size\r"
-   set temp_status_flag $FAILURE
-   while 1 {
-	expect {
-
-	    "done" {
-		set temp_status_flag $SUCCESS
-		break
-	    }
-
-	    -re "\[Ff]lash not \[Ee]rased" {
-		set temp_status_flag $FAILURE
-		send_user "ERROR: Tried to copy kernel to flash, got error, not erased\n"
-		break
-	    }
-
-	    timeout {
-		send_user "FATAL ERROR: Not able to erase flash\n"
-		all_done
-	    }
-	}
-    }
-    if { $temp_status_flag == $SUCCESS } {
-	set do_bootm_test $TEST_PASS
-	send_user "copying kernel to flash seemed to work\n"
+    if {$tftp_errors == 0} {
+        record_test_result $tftp_errors_loc $TEST_PASS
     } else {
-	set do_bootm_test $TEST_FAIL
-	send_user "WARNING: copying kernel to flash didn't seem to work, can't do bootm test\n"
+        send_log "\ntftp_errors = $tftp_errors\n\n"
+        record_test_result $tftp_errors_loc $TEST_FAIL
+    }
+    if {$good_tftp_transfers == $TFTP_ITERATIONS} {
+        record_test_result $tftp_loc $TEST_PASS
+    } else {
+        record_test_result $tftp_loc $TEST_FAIL
     }
 
-   expect ">"
-   send -s "set bootcmd bootm $KERNEL_FLASH_LOC\r"
-   expect ">"
+    if {$uimage_size == 0} {
+        send_user "can't do the kernel flash and boot test \
+        because tftp never worked"
+    } else {
+        step "Load kernel into flash"
+        set timeout 180
+        expect ">"
+        send -s "protect off $KERNEL_FLASH_LOC $KERNEL_FLASH_END\r"
+        sleep 3
+        send -s "erase $KERNEL_FLASH_LOC $KERNEL_FLASH_END\r"
+        set temp_status_flag $FAILURE
+        while 1 {
+            expect {
+                "Erased * sectors" {
+                    set temp_status_flag $SUCCESS
+                    break
+                }
+                timeout {
+                    puts "ERROR: Didn't seem to erase flash\n"
+                    break
+                }
+            }
+        }
+        if {$temp_status_flag != $SUCCESS } {
+            send_user "Failed to erase flash\n"
+            all_done
+        }
 
-   send -s "save\r"
-   expect ">"
+        sleep 1
 
-    step "Reset the board and boot from flash"
-    send -s "reset\r"
-    set timeout 20
-    while 1 {
-	expect {
+        set timeout 2500
+        send_user "\nAbout to copy the kernel to flash.\n"
+        send -s "cp.b $CFG_LOAD_ADDR $KERNEL_FLASH_LOC 0x$uimage_size\r"
+        set temp_status_flag $FAILURE
+        while 1 {
+            expect {
+                "done" {
+                    set temp_status_flag $SUCCESS
+                    break
+                }
+                -re "\[Ff]lash not \[Ee]rased" {
+                    set temp_status_flag $FAILURE
+                    send_user "ERROR: Tried to copy kernel to flash, got error, not erased\n"
+                    break
+                }
 
-	    $AUTOBOOT_PROMPT {
-		break
-	    }
+                timeout {
+                    send_user "FATAL ERROR: Not able to erase flash\n"
+                    all_done
+                }
+            }
+        }
+        if { $temp_status_flag == $SUCCESS } {
+            set do_bootm_test $TEST_PASS
+            send_user "copying kernel to flash seemed to work\n"
+        } else {
+            set do_bootm_test $TEST_FAIL
+            send_user "WARNING: copying kernel to flash didn't seem to work, can't do bootm test\n"
+        }
 
-	    timeout {
-		send_user "ERROR: u-boot failed to reset\n"
-		recover
-		break
-	    }
-	}
+        expect ">"
+        send -s "set bootcmd bootm $KERNEL_FLASH_LOC\r"
+        expect ">"
+
+        send -s "save\r"
+        expect ">"
+
+        step "Reset the board and boot from flash"
+        send -s "reset\r"
+        set timeout 20
+        while 1 {
+            expect {
+                $AUTOBOOT_PROMPT {
+                break
+                }
+                timeout {
+                    send_user "ERROR: u-boot failed to reset\n"
+                    recover
+                    break
+                }
+            }
+        }
+
+        if {$do_bootm_test==$TEST_PASS} {
+            set temp_status_flag $TEST_FAIL
+            while 1 {
+                set timeout 120
+                expect {
+                    -re $KERNEL_PROMPT {
+                        set temp_status_flag $TEST_PASS
+                        break
+                    }
+                    timeout {
+                        send_user "WARNING: kernel never booted from flash"
+                        break
+                    }
+                }
+            }
+# Wait for actual kernel prompt.
+            set timeout 20
+            expect -re $KERNEL_PROMPT
+
+            if { $temp_status_flag == $TEST_PASS } {
+                step "Make sure kernel is functional"
+
+                set timeout 4
+                send -s "ls\r"
+                set temp_status_flag $TEST_FAIL
+                while 1 {
+                    expect {
+                        "sbin" {
+                            send_user "we got an indication that the kernel is working\n"
+                            set temp_status_flag $TEST_PASS
+                            break
+                        }
+                        -re $KERNEL_PROMPT {
+                            break
+                        }
+                        timeout {
+                            send_log "\nERROR: Kernel never responded correctly"
+                            break
+                        }
+                    }
+                }
+            }
+            record_test_result $boot_from_flash_loc $temp_status_flag
+
+            step "Reboot"
+            send -s "reboot\r"
+
+            set timeout 10
+            while 1 {
+                expect {
+                    $AUTOBOOT_PROMPT {
+                        send "\r"
+                        break
+                    }
+                    timeout {
+                        send_user "FATAL ERROR: board failed to reset, it worked before"
+                        recover
+                        break
+                    }
+                }
+            }
+        }
     }
-
-    if {$do_bootm_test==$TEST_PASS} {
-	set temp_status_flag $TEST_FAIL
-	while 1 {
-	    set timeout 120
-	    expect {
-		
-		-re $KERNEL_PROMPT {
-		    set temp_status_flag $TEST_PASS
-		    break
-		}
-		
-		timeout {
-		    send_user "WARNING: kernel never booted from flash"
-		    break
-		}
-	    }
-	}
-	# Wait for actual kernel prompt.
-	set timeout 20
-	expect -re $KERNEL_PROMPT
-	
-	if { $temp_status_flag == $TEST_PASS } {
-	    step "Make sure kernel is functional"
-
-	    set timeout 4
-	    send -s "ls\r"
-	    set temp_status_flag $TEST_FAIL
-	    while 1 {
-		expect {
-
-		    "sbin" {
-			send_user "we got an indication that the kernel is working\n"
-			set temp_status_flag $TEST_PASS
-			break
-		    }
-
-		    -re $KERNEL_PROMPT {
-			break
-		    }
-
-		    timeout {
-			send_log "\nERROR: Kernel never responded correctly"
-			break
-		    }
-		}
-	    }
-	}
-	record_test_result $boot_from_flash_loc $temp_status_flag
-
-	step "Reboot"
-	send -s "reboot\r"
-	
-	set timeout 10
-	while 1 {
-	    expect {
-		
-		$AUTOBOOT_PROMPT {
-		    send "\r"
-		    break
-		}
-		
-		timeout {
-		    send_user "FATAL ERROR: board failed to reset, it worked before"
-		    recover
-		    break
-		}
-	    }
-	}	
-    }
-}
 }
 
 ###############################################################################################################################
 
-if {  $TEST_TFTP_WITH_ETHTOOL } {
+if { $TEST_TFTP_WITH_ETHTOOL } {
 
-expect ">"
-send "\r"
-wait_for_uboot
+    expect ">"
+    send "\r"
+    wait_for_uboot
 
-step "tftp download linux.big at 10 duplux half"
+    step "tftp download linux.big at 10 duplux half"
 
-set tftp_10_half_result [ ethtool_tftp 10 half ]
-record_test_result $tftp_10_half_loc $tftp_10_half_result
+    set tftp_10_half_result [ ethtool_tftp 10 half ]
+    record_test_result $tftp_10_half_loc $tftp_10_half_result
 
-step "tftp download linux.big at 10 duplux full"
+    step "tftp download linux.big at 10 duplux full"
 
-set tftp_10_full_result [ ethtool_tftp 10 half ]
-record_test_result $tftp_10_full_loc $tftp_10_full_result
+    set tftp_10_full_result [ ethtool_tftp 10 half ]
+    record_test_result $tftp_10_full_loc $tftp_10_full_result
 
-step "tftp download linux.big at 100 duplux half"
+    step "tftp download linux.big at 100 duplux half"
 
-set tftp_100_half_result [ ethtool_tftp 100 half ]
-record_test_result $tftp_100_half_loc $tftp_100_half_result
+    set tftp_100_half_result [ ethtool_tftp 100 half ]
+    record_test_result $tftp_100_half_loc $tftp_100_half_result
 
-step "tftp download linux.big at 100 duplux full"
+    step "tftp download linux.big at 100 duplux full"
 
-set tftp_100_full_result [ ethtool_tftp 100 half ]
-record_test_result $tftp_100_full_loc $tftp_100_full_result
+    set tftp_100_full_result [ ethtool_tftp 100 half ]
+    record_test_result $tftp_100_full_loc $tftp_100_full_result
 }
 
 all_done
