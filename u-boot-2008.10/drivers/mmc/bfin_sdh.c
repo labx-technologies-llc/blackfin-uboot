@@ -1,24 +1,11 @@
 /*
- * Copyright (C) 2008 Analog Device Inc.
+ * Driver for Blackfin on-chip SDH controller
  *
- * See file CREDITS for list of people who contributed to this
- * project.
+ * Copyright (c) 2008 Analog Devices Inc.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
+ * Licensed under the GPL-2 or later.
  */
+
 #include <common.h>
 #include <malloc.h>
 #include <part.h>
@@ -39,15 +26,15 @@
 #define pr_debug(...) do { } while (0)
 #endif
 
-/*SD_CLK frequency must be less than 400k in identification mode*/
+/* SD_CLK frequency must be less than 400k in identification mode */
 #ifndef CFG_MMC_CLK_ID
 #define CFG_MMC_CLK_ID		200000
 #endif
-/*SD_CLK for normal working*/
+/* SD_CLK for normal working */
 #ifndef CFG_MMC_CLK_OP
 #define CFG_MMC_CLK_OP		25000000
 #endif
-/*support 3.2-3.3V and 3.3-3.4V*/
+/* support 3.2-3.3V and 3.3-3.4V */
 #define CFG_MMC_OP_COND		0x00300000
 #define MMC_DEFAULT_RCA		1
 
@@ -83,24 +70,23 @@ static void mci_set_clk(unsigned long clk)
 	unsigned long clk_div;
 	__u16 clk_ctl = 0;
 
-	/*setting SD_CLK*/
+	/* setting SD_CLK */
 	sys_clk = get_sclk();
 	bfin_write_SDH_CLK_CTL(0);
 	if (sys_clk % (2 * clk) == 0)
-			clk_div = sys_clk / (2 * clk) - 1;
-		else
-			clk_div = sys_clk / (2 * clk);
+		clk_div = sys_clk / (2 * clk) - 1;
+	else
+		clk_div = sys_clk / (2 * clk);
 
 	if (clk_div > 0xff)
-			clk_div = 0xFF;
-		clk_ctl |= (clk_div & 0xFF);
-		clk_ctl |= CLK_E;
+		clk_div = 0xff;
+	clk_ctl |= (clk_div & 0xff);
+	clk_ctl |= CLK_E;
 	bfin_write_SDH_CLK_CTL(clk_ctl);
 }
 
 static int
-mmc_cmd(unsigned long cmd, unsigned long arg,
-	void *resp, unsigned long flags)
+mmc_cmd(unsigned long cmd, unsigned long arg, void *resp, unsigned long flags)
 {
 	unsigned int sdh_cmd;
 	unsigned int status;
@@ -118,7 +104,7 @@ mmc_cmd(unsigned long cmd, unsigned long arg,
 	bfin_write_SDH_ARGUMENT(arg);
 	bfin_write_SDH_COMMAND(sdh_cmd | CMD_E);
 
-	/*wait for a while*/
+	/* wait for a while */
 	do {
 		udelay(1);
 		status = bfin_read_SDH_STATUS();
@@ -146,8 +132,8 @@ mmc_cmd(unsigned long cmd, unsigned long arg,
 	return ret;
 }
 
-static int mmc_acmd(unsigned long cmd, unsigned long arg,
-		    void *resp, unsigned long flags)
+static int
+mmc_acmd(unsigned long cmd, unsigned long arg, void *resp, unsigned long flags)
 {
 	unsigned long aresp[4];
 	int ret = 0;
@@ -164,10 +150,8 @@ static int mmc_acmd(unsigned long cmd, unsigned long arg,
 }
 
 static unsigned long
-mmc_bread(int dev, unsigned long start, lbaint_t blkcnt,
-	  void *buffer)
+mmc_bread(int dev, unsigned long start, lbaint_t blkcnt, void *buffer)
 {
-
 	int ret, i;
 	unsigned long resp[4];
 	unsigned long card_status;
@@ -178,8 +162,8 @@ mmc_bread(int dev, unsigned long start, lbaint_t blkcnt,
 
 	if (blkcnt == 0)
 		return 0;
-	pr_debug("mmc_bread: dev %d, start %d, blkcnt %d\n"dev, start, blkcnt);
-	/*Force to use 512-byte block,because a lot of code depends on this */
+	pr_debug("mmc_bread: dev %d, start %d, blkcnt %d\n", dev, start, blkcnt);
+	/* Force to use 512-byte block,because a lot of code depends on this */
 	data_ctl |= 9 << 4;
 	data_ctl |= DTX_DIR;
 	bfin_write_SDH_DATA_CTL(data_ctl);
@@ -187,20 +171,20 @@ mmc_bread(int dev, unsigned long start, lbaint_t blkcnt,
 
 	/* FIXME later */
 	bfin_write_SDH_DATA_TIMER(0xFFFFFFFF);
-	for (i = 0; i < blkcnt; i++, start++) {
-		blackfin_dcache_flush_invalidate_range(buf + i*mmc_blkdev.blksz,
-			buf + (i+1)*mmc_blkdev.blksz);
-		bfin_write_DMA22_START_ADDR((unsigned long)buf + i*mmc_blkdev.blksz);
-		bfin_write_DMA22_X_COUNT(mmc_blkdev.blksz/4);
+	for (i = 0; i < blkcnt; ++i, ++start) {
+		blackfin_dcache_flush_invalidate_range(buf + i * mmc_blkdev.blksz,
+			buf + (i + 1) * mmc_blkdev.blksz);
+		bfin_write_DMA22_START_ADDR(buf + i * mmc_blkdev.blksz);
+		bfin_write_DMA22_X_COUNT(mmc_blkdev.blksz / 4);
 		bfin_write_DMA22_X_MODIFY(4);
 		bfin_write_DMA22_CONFIG(dma_cfg);
 		bfin_write_SDH_DATA_LGTH(mmc_blkdev.blksz);
 		/* Put the device into Transfer state */
 		ret = mmc_cmd(MMC_CMD_SELECT_CARD, mmc_rca << 16, resp, MMC_RSP_R1);
-			if (ret) {
-				printf("MMC_CMD_SELECT_CARD failed\n");
-				goto out;
-			}
+		if (ret) {
+			printf("MMC_CMD_SELECT_CARD failed\n");
+			goto out;
+		}
 		/* Set block length */
 		ret = mmc_cmd(MMC_CMD_SET_BLOCKLEN, mmc_blkdev.blksz, resp, MMC_RSP_R1);
 		if (ret) {
@@ -230,21 +214,19 @@ mmc_bread(int dev, unsigned long start, lbaint_t blkcnt,
 			mmc_cmd(MMC_CMD_SELECT_CARD, 0, resp, 0);
 		}
 	}
-out:
+ out:
 
 	return i;
 
-read_error:
+ read_error:
 	mmc_cmd(MMC_CMD_SEND_STATUS, mmc_rca << 16, &card_status, MMC_RSP_R1);
 	printf("mmc: bread failed, status = %08x, card status = %08lx\n",
 	       status, card_status);
 	goto out;
-
 }
 
 static unsigned long
-mmc_bwrite(int dev, unsigned long start, lbaint_t blkcnt,
-	  const void *buffer)
+mmc_bwrite(int dev, unsigned long start, lbaint_t blkcnt, const void *buffer)
 {
 	int ret, i = 0;
 	unsigned long resp[4];
@@ -259,27 +241,26 @@ mmc_bwrite(int dev, unsigned long start, lbaint_t blkcnt,
 
 	pr_debug("mmc_bwrite: dev %d, start %lx, blkcnt %lx\n",
 		 dev, start, blkcnt);
-	/*Force to use 512-byte block,because a lot of code depends on this */
+	/* Force to use 512-byte block,because a lot of code depends on this */
 	data_ctl |= 9 << 4;
 	data_ctl &= ~DTX_DIR;
 	bfin_write_SDH_DATA_CTL(data_ctl);
 	dma_cfg |= WDSIZE_32 | RESTART | DMAEN;
 	/* FIXME later */
 	bfin_write_SDH_DATA_TIMER(0xFFFFFFFF);
-	for (i = 0; i < blkcnt; i++, start++) {
-
-		bfin_write_DMA22_START_ADDR((unsigned long)buf + i*mmc_blkdev.blksz);
-		bfin_write_DMA22_X_COUNT(mmc_blkdev.blksz/4);
+	for (i = 0; i < blkcnt; ++i, ++start) {
+		bfin_write_DMA22_START_ADDR(buf + i * mmc_blkdev.blksz);
+		bfin_write_DMA22_X_COUNT(mmc_blkdev.blksz / 4);
 		bfin_write_DMA22_X_MODIFY(4);
 		bfin_write_DMA22_CONFIG(dma_cfg);
 		bfin_write_SDH_DATA_LGTH(mmc_blkdev.blksz);
 
 		/* Put the device into Transfer state */
 		ret = mmc_cmd(MMC_CMD_SELECT_CARD, mmc_rca << 16, resp, MMC_RSP_R1);
-			if (ret) {
-				printf("MMC_CMD_SELECT_CARD failed\n");
-				goto out;
-			}
+		if (ret) {
+			printf("MMC_CMD_SELECT_CARD failed\n");
+			goto out;
+		}
 		/* Set block length */
 		ret = mmc_cmd(MMC_CMD_SET_BLOCKLEN, mmc_blkdev.blksz, resp, MMC_RSP_R1);
 		if (ret) {
@@ -396,16 +377,16 @@ static int sd_init_card(struct mmc_cid *cid, int verbose)
 	int i, ret = 0;
 
 	mmc_idle_cards();
-	for (i = 0; i < 1000; i++) {
+	for (i = 0; i < 1000; ++i) {
 		ret = mmc_acmd(SD_CMD_APP_SEND_OP_COND, CFG_MMC_OP_COND,
 			       resp, MMC_RSP_R3);
 		if (ret || (resp[0] & 0x80000000))
 			break;
 		ret = -ETIMEDOUT;
 	}
-
 	if (ret)
 		return ret;
+
 	ret = mmc_cmd(MMC_CMD_ALL_SEND_CID, 0, resp, MMC_RSP_R2);
 	if (ret)
 		return ret;
@@ -429,18 +410,18 @@ static int mmc_init_card(struct mmc_cid *cid, int verbose)
 {
 	unsigned long resp[4];
 	int i, ret = 0;
-	mmc_idle_cards();
 
-	for (i = 0; i < 1000; i++) {
+	mmc_idle_cards();
+	for (i = 0; i < 1000; ++i) {
 		ret = mmc_cmd(MMC_CMD_SEND_OP_COND, CFG_MMC_OP_COND, resp,
 			      MMC_RSP_R3);
 		if (ret || (resp[0] & 0x80000000))
 			break;
 		ret = -ETIMEDOUT;
 	}
-
 	if (ret)
 		return ret;
+
 	/* Get CID of all cards. FIXME: Support more than one card */
 	ret = mmc_cmd(MMC_CMD_ALL_SEND_CID, 0, resp, MMC_RSP_R2);
 	if (ret)
@@ -468,7 +449,7 @@ int mmc_init(int verbose)
 	/* Disable card detect pin */
 	bfin_write_SDH_CFG((bfin_read_SDH_CFG() & 0x1F) | 0x60);
 	mci_set_clk(CFG_MMC_CLK_ID);
-	/*setting power control*/
+	/* setting power control */
 	pwr_ctl |= ROD_CTL;
 	pwr_ctl |= PWR_ON;
 	bfin_write_SDH_PWR_CTL(pwr_ctl);
@@ -491,12 +472,12 @@ int mmc_init(int verbose)
 	mmc_blkdev.part_type = PART_TYPE_DOS;
 	mmc_blkdev.block_read = mmc_bread;
 	mmc_blkdev.block_write = mmc_bwrite;
-	sprintf((char *)mmc_blkdev.vendor,
+	sprintf(mmc_blkdev.vendor,
 		"Man %02x%04x Snr %08lx",
 		cid.mid, cid.oid, cid.psn);
-	strncpy((char *)mmc_blkdev.product, cid.pnm,
+	strncpy(mmc_blkdev.product, cid.pnm,
 		sizeof(mmc_blkdev.product));
-	sprintf((char *)mmc_blkdev.revision, "%x %x",
+	sprintf(mmc_blkdev.revision, "%x %x",
 		cid.prv >> 4, cid.prv & 0x0f);
 
 	max_blksz = 1 << get_bits(csd, 80, 4);
