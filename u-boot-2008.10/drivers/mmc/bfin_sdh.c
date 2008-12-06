@@ -40,9 +40,13 @@
 #endif
 
 /*SD_CLK frequency must be less than 400k in identification mode*/
+#ifndef CFG_MMC_CLK_ID
 #define CFG_MMC_CLK_ID		200000
+#endif
 /*SD_CLK for normal working*/
+#ifndef CFG_MMC_CLK_OP
 #define CFG_MMC_CLK_OP		25000000
+#endif
 /*support 3.2-3.3V and 3.3-3.4V*/
 #define CFG_MMC_OP_COND		0x00300000
 #define MMC_DEFAULT_RCA		1
