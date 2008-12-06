@@ -20,12 +20,6 @@
 
 #include "bfin_sdh.h"
 
-#ifdef DEBUG
-#define pr_debug(fmt, args...) printf(fmt, ##args)
-#else
-#define pr_debug(...) do { } while (0)
-#endif
-
 /* SD_CLK frequency must be less than 400k in identification mode */
 #ifndef CFG_MMC_CLK_ID
 #define CFG_MMC_CLK_ID		200000
@@ -162,7 +156,7 @@ mmc_bread(int dev, unsigned long start, lbaint_t blkcnt, void *buffer)
 
 	if (blkcnt == 0)
 		return 0;
-	pr_debug("mmc_bread: dev %d, start %d, blkcnt %d\n", dev, start, blkcnt);
+	debug("mmc_bread: dev %d, start %d, blkcnt %d\n", dev, start, blkcnt);
 	/* Force to use 512-byte block,because a lot of code depends on this */
 	data_ctl |= 9 << 4;
 	data_ctl |= DTX_DIR;
@@ -239,7 +233,7 @@ mmc_bwrite(int dev, unsigned long start, lbaint_t blkcnt, const void *buffer)
 	if (blkcnt == 0)
 		return 0;
 
-	pr_debug("mmc_bwrite: dev %d, start %lx, blkcnt %lx\n",
+	debug("mmc_bwrite: dev %d, start %lx, blkcnt %lx\n",
 		 dev, start, blkcnt);
 	/* Force to use 512-byte block,because a lot of code depends on this */
 	data_ctl |= 9 << 4;
