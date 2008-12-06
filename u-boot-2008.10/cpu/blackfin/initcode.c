@@ -357,7 +357,13 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 		memory_settings.uwPllCtl = CONFIG_PLL_CTL_VAL;
 		memory_settings.uwPllDiv = CONFIG_PLL_DIV_VAL;
 		memory_settings.uwPllLockCnt = CONFIG_PLL_LOCKCNT_VAL;
+#if ANOMALY_05000432
+		bfin_write_SIC_IWR1(0);
+#endif
 		bfrom_SysControl(actions, &memory_settings, NULL);
+#if ANOMALY_05000432
+		bfin_write_SIC_IWR1(-1);
+#endif
 	} else {
 		serial_putc('G');
 
