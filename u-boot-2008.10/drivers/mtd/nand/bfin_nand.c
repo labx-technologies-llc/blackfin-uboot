@@ -321,7 +321,7 @@ void board_nand_select_device(struct nand_chip *nand, int chip)
  * Members with a "?" were not set in the merged testing-NAND branch,
  * so they are not set here either.
  */
-void board_nand_init(struct nand_chip *chip)
+int board_nand_init(struct nand_chip *chip)
 {
 	pr_stamp();
 
@@ -371,4 +371,6 @@ void board_nand_init(struct nand_chip *chip)
 		chip->ecc.mode = NAND_ECC_SOFT;
 	chip->dev_ready = bfin_nfc_devready;
 	chip->chip_delay = 0;
+
+	return 0;
 }
