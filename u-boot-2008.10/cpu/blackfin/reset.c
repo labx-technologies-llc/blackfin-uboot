@@ -56,8 +56,9 @@ static void bfin_reset(void)
 		bfin_write_SWRST(0);
 
 		/* The BF526 ROM will crash during reset */
-		if (ANOMALY_BF526)
-			bfin_read_SWRST();
+#if defined(__ADSPBF522__) || defined(__ADSPBF524__) || defined(__ADSPBF526__)
+		bfin_read_SWRST();
+#endif
 
 		/* Wait for the SWRST write to complete.  Cannot rely on SSYNC
 		 * though as the System state is all reset now.
