@@ -17,7 +17,7 @@
 
 #ifndef __ADSPBF534__
 #define CONFIG_BFIN_MAC
-#define CONFIG_BFIN_MAC_RMII
+#define CONFIG_RMII
 #define CONFIG_NET_MULTI	1
 #endif
 

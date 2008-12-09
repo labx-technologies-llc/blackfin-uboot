@@ -77,7 +77,7 @@
     !defined(__ADSPBF524__) && !defined(__ADSPBF525__) && !defined(CONFIG_BFIN_NFC)
 #define ADI_CMDS_NETWORK	1
 #define CONFIG_BFIN_MAC
-#define CONFIG_BFIN_MAC_RMII
+#define CONFIG_RMII
 #define CONFIG_NETCONSOLE	1
 #define CONFIG_NET_MULTI	1
 #endif
