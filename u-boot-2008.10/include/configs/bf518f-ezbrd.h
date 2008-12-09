@@ -97,7 +97,6 @@
 /* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)				*/
 #define CONFIG_SPI
 #define CONFIG_SPI_BAUD			2
-#define CONFIG_SPI_BAUD_INITBLOCK	4
 #define CFG_I2C_FRAM
 
 
