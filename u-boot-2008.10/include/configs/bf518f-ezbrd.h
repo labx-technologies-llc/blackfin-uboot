@@ -63,7 +63,6 @@
 #if !defined(__ADSPBF512__) && !defined(__ADSPBF514__)
 #define ADI_CMDS_NETWORK	1
 #define CONFIG_BFIN_MAC
-#define CONFIG_BFIN_MAC_RMII
 #define CONFIG_NETCONSOLE	1
 #define CONFIG_NET_MULTI	1
 #endif
