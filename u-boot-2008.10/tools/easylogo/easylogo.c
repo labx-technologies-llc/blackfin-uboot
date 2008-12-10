@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/stat.h>
 
 #pragma pack(1)
 
@@ -261,6 +263,8 @@ int image_rgb_to_yuyv (image_t * rgb_image, image_t * yuyv_image)
 	return 0;
 }
 
+int use_gzip = 0;
+
 int image_save_header (image_t * image, char *filename, char *varname)
 {
 	FILE *file = fopen (filename, "w");
@@ -283,6 +287,33 @@ int image_save_header (image_t * image, char *filename, char *varname)
 	fprintf (file, " *\t\t'x'\t\tis the horizontal position\n");
 	fprintf (file, " *\t\t'y'\t\tis the vertical position\n */\n\n");
 
+	/*  gzip compress */
+	if (use_gzip & 0x1) {
+		unsigned char *compressed;
+		struct stat st;
+		FILE *gz;
+
+		sprintf (str, "%s.gz", filename);
+		sprintf (app, "gzip > %s", str);
+		gz = popen (app, "w");
+		fwrite (image->data, image->size, 1, gz);
+		pclose (gz);
+
+		gz = fopen (str, "r");
+		stat (str, &st);
+		compressed = malloc (st.st_size);
+		fread (compressed, st.st_size, 1, gz);
+		fclose (gz);
+
+		unlink (str);
+
+		dataptr = compressed;
+		count = st.st_size;
+		fprintf (file, "#define EASYLOGO_ENABLE_GZIP %i\n\n", count);
+		if (use_gzip & 0x2)
+			fprintf (file, "static unsigned char EASYLOGO_DECOMP_BUFFER[%i];\n\n", image->size);
+	}
+
 	/*	Headers */
 	fprintf (file, "#include <video_easylogo.h>\n\n");
 	/*	Macros */
@@ -300,8 +331,8 @@ int image_save_header (image_t * image, char *filename, char *varname)
 	fprintf (file, "#define	DEF_%s_SIZE\t\t%d\n\n", def_name,
 		 image->size);
 	/*  Declaration */
-	fprintf (file, "unsigned char DEF_%s_DATA[DEF_%s_SIZE] = {\n",
-		 def_name, def_name);
+	fprintf (file, "unsigned char DEF_%s_DATA[] = {\n",
+		 def_name);
 
 	/*	Data */
 	while (count)
@@ -359,6 +390,8 @@ static void usage (int exit_status)
 		"\n"
 		"Options:\n"
 		"  -r     Output RGB instead of YUYV\n"
+		"  -g     Compress with gzip\n"
+		"  -b     Preallocate space in bss for decompressing image\n"
 		"  -h     Help output\n"
 		"\n"
 		"Where: 'inputfile'   is the TGA image to load\n"
@@ -377,7 +410,7 @@ int main (int argc, char *argv[])
 
 	image_t rgb_logo, yuyv_logo;
 
-	while ((c = getopt(argc, argv, "hr")) > 0) {
+	while ((c = getopt(argc, argv, "hrgb")) > 0) {
 		switch (c) {
 		case 'h':
 			usage (0);
@@ -385,6 +418,14 @@ int main (int argc, char *argv[])
 		case 'r':
 			use_rgb = true;
 			puts ("Using 24-bit RGB Output Fromat");
+			break;
+		case 'g':
+			use_gzip |= 0x1;
+			puts ("Compressing with gzip");
+			break;
+		case 'b':
+			use_gzip |= 0x2;
+			puts ("Preallocating bss space for decompressing image");
 			break;
 		default:
 			usage (1);
