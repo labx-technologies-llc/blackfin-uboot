@@ -3,10 +3,12 @@
 ** ==============================
 ** (C) 2000 by Paolo Scaffardi (arsenio@tin.it)
 ** AIRVENT SAM s.p.a - RIMINI(ITALY)
+** (C) 2007-2008 Mike Frysinger <vapier@gentoo.org>
 **
 ** This is still under construction!
 */
 
+#include <errno.h>
 #include <getopt.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -50,6 +52,17 @@ typedef struct {
 	void *data, *palette;
 	int width, height, pixels, bpp, pixel_size, size, palette_size, yuyv;
 } image_t;
+
+void *xmalloc (size_t size)
+{
+	void *ret = malloc (size);
+	if (!ret) {
+		fprintf (stderr, "\nerror: malloc(%zu) failed: %s",
+			size, strerror(errno));
+		exit (1);
+	}
+	return ret;
+}
 
 void StringUpperCase (char *str)
 {
@@ -173,7 +186,7 @@ int image_load_tga (image_t * image, char *filename)
 	image->pixel_size = ((image->bpp - 1) / 8) + 1;
 	image->pixels = image->width * image->height;
 	image->size = image->pixels * image->pixel_size;
-	image->data = malloc (image->size);
+	image->data = xmalloc (image->size);
 
 	if (image->bpp != 24) {
 		printf ("Bpp not supported: %d!\n", image->bpp);
@@ -194,7 +207,7 @@ int image_load_tga (image_t * image, char *filename)
 /* Swapping image */
 
 	if (!(header.ImageDescriptorByte & 0x20)) {
-		unsigned char *temp = malloc (image->size);
+		unsigned char *temp = xmalloc (image->size);
 		int linesize = image->pixel_size * image->width;
 		void *dest = image->data,
 			*source = temp + image->size - linesize;
@@ -241,7 +254,7 @@ int image_rgb_to_yuyv (image_t * rgb_image, image_t * yuyv_image)
 	yuyv_image->pixels = yuyv_image->width * yuyv_image->height;
 	yuyv_image->size = yuyv_image->pixels * yuyv_image->pixel_size;
 	dest = (unsigned short *) (yuyv_image->data =
-				   malloc (yuyv_image->size));
+				   xmalloc (yuyv_image->size));
 	yuyv_image->palette = 0;
 	yuyv_image->palette_size = 0;
 
@@ -292,26 +305,54 @@ int image_save_header (image_t * image, char *filename, char *varname)
 		unsigned char *compressed;
 		struct stat st;
 		FILE *gz;
+		char *gzfilename = xmalloc(strlen (filename) + 20);
+		char *gzcmd = xmalloc(strlen (filename) + 20);
 
-		sprintf (str, "%s.gz", filename);
-		sprintf (app, "gzip > %s", str);
-		gz = popen (app, "w");
-		fwrite (image->data, image->size, 1, gz);
-		pclose (gz);
+		sprintf (gzfilename, "%s.gz", filename);
+		sprintf (gzcmd, "gzip > %s", gzfilename);
+		gz = popen (gzcmd, "w");
+		if (!gz) {
+			perror ("\nerror: popen() failed");
+ gzerr:
+			free (gzfilename);
+			free (gzcmd);
+			return -1;
+		}
+		if (fwrite (image->data, image->size, 1, gz) != 1) {
+			perror ("\nerror: writing data to gzip failed");
+			goto gzerr;
+		}
+		if (pclose (gz)) {
+			perror ("\nerror: gzip process failed");
+			goto gzerr;
+		}
 
-		gz = fopen (str, "r");
-		stat (str, &st);
-		compressed = malloc (st.st_size);
-		fread (compressed, st.st_size, 1, gz);
+		gz = fopen (gzfilename, "r");
+		if (!gz) {
+			perror ("\nerror: open() on gzip data failed");
+			goto gzerr;
+		}
+		if (stat (gzfilename, &st)) {
+			perror ("\nerror: stat() on gzip file failed");
+			goto gzerr;
+		}
+		compressed = xmalloc (st.st_size);
+		if (fread (compressed, st.st_size, 1, gz) != 1) {
+			perror ("\nerror: reading gzip data failed");
+			goto gzerr;
+		}
 		fclose (gz);
 
-		unlink (str);
+		unlink (gzfilename);
 
 		dataptr = compressed;
 		count = st.st_size;
 		fprintf (file, "#define EASYLOGO_ENABLE_GZIP %i\n\n", count);
 		if (use_gzip & 0x2)
 			fprintf (file, "static unsigned char EASYLOGO_DECOMP_BUFFER[%i];\n\n", image->size);
+
+		free (gzfilename);
+		free (gzcmd);
 	}
 
 	/*	Headers */
