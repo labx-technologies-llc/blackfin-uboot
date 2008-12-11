@@ -261,7 +261,7 @@ static char *strexcause(uint16_t excause)
 void dump(struct pt_regs *fp)
 {
 	char buf[150];
-	size_t i;
+	int i;
 	uint16_t hwerrcause, excause;
 
 	if (!ENABLE_DUMP)
@@ -337,7 +337,7 @@ void dump_bfin_trace_buffer(void)
 {
 	char buf[150];
 	unsigned long tflags;
-	size_t i = 0;
+	int i = 0;
 
 	if (!ENABLE_DUMP)
 		return;
