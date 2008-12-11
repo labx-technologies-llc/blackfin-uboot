@@ -26,7 +26,7 @@ static const char *cplb_page_size(uint32_t data)
  */
 static void show_cplb_table(uint32_t *addr, uint32_t *data)
 {
-	size_t i;
+	int i;
 	printf("      Address     Data   Size  Valid  Locked\n");
 	for (i = 1; i <= 16; ++i) {
 		printf(" %2i 0x%p  0x%05X   %s     %c      %c\n",

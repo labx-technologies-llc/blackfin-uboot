@@ -282,7 +282,7 @@ unsigned long load_elf_image (unsigned long addr)
 	Elf32_Ehdr *ehdr;
 	Elf32_Phdr *phdr;
 	unsigned long entry;
-	size_t i;
+	int i;
 
 	ehdr = (Elf32_Ehdr *) addr;
 	phdr = (Elf32_Phdr *) (addr + ehdr->e_phoff);
