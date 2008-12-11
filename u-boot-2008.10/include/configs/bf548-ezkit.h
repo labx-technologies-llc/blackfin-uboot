@@ -12,7 +12,7 @@
  * Processor Settings
  */
 #define CONFIG_BFIN_CPU             bf548-0.0
-#define CONFIG_BFIN_BOOT_MODE       BFIN_BOOT_PARA
+#define CONFIG_BFIN_BOOT_MODE       BFIN_BOOT_SPI_MASTER
 
 
 /*
@@ -86,10 +86,14 @@
 #define CFG_FLASH_PROTECTION
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	259	/* max number of sectors on one chip */
+#define CONFIG_BFIN_SPI
+#define CONFIG_SPI_FLASH
+#define CONFIG_SPI_FLASH_STMICRO
 #if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
-#define CONFIG_ENV_IS_IN_EEPROM           1
-#define CONFIG_ENV_OFFSET                 0x4000
+#define CONFIG_ENV_IS_IN_SPI_FLASH        1
+#define CONFIG_ENV_OFFSET                 0x10000
 #define CONFIG_ENV_SIZE                   0x2000
+#define CONFIG_ENV_SECT_SIZE              0x10000
 #define ENV_IS_EMBEDDED_CUSTOM
 #elif (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_NAND)
 #define CONFIG_ENV_IS_IN_NAND             1
@@ -103,13 +107,6 @@
 #define CONFIG_ENV_SECT_SIZE	(128 * 1024)	/* Total Size of Environment Sector */
 #define ENV_IS_EMBEDDED_CUSTOM
 #endif
-
-/* CONFIG_SPI_BAUD controls the SPI peripheral clock divider		*/
-/* Values can range from 2-65535					*/
-/* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)				*/
-#define CONFIG_SPI
-#define CONFIG_SPI_BAUD			2
-#define CFG_I2C_FRAM
 
 
 /*
