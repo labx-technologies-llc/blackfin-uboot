@@ -67,6 +67,17 @@
 # define CFG_LINUX_CMDLINE_SIZE L1_SRAM_SCRATCH_SIZE
 #endif
 
+/* Set default SPI flash CS to the one we boot from */
+#if defined(CONFIG_ENV_IS_IN_SPI_FLASH) && !defined(CONFIG_ENV_SPI_CS)
+# if defined(__ADSPBF531__) || defined(__ADSPBF532__) || defined(__ADSPBF533__) || \
+     defined(__ADSPBF538__) || defined(__ADSPBF539__) || defined(__ADSPBF561__) || \
+     defined(__ADSPBF51x__)
+#  define CONFIG_ENV_SPI_CS 2
+# else
+#  define CONFIG_ENV_SPI_CS 1
+# endif
+#endif
+
 /* Default/common Blackfin memory layout */
 #ifndef CFG_SDRAM_BASE
 # define CFG_SDRAM_BASE 0
