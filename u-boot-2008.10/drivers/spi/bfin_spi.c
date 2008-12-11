@@ -88,9 +88,9 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 
 	baud = get_sclk() / (2 * max_hz);
 	if (baud < 2)
-		return NULL; /* too slow */
-	if (baud > (u16)-1)
-		return NULL; /* too fast */
+		baud = 2;
+	else if (baud > (u16)-1)
+		baud = -1;
 
 	bss = malloc(sizeof(*bss));
 	if (!bss)
