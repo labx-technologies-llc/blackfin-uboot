@@ -65,15 +65,21 @@ int do_sata(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 {
 	int rc = 0;
 
+	if (argc == 2 && strcmp(argv[1], "init") == 0)
+		return sata_initialize();
+
+	/* If the user has not yet run `sata init`, do it now */
+	if (curr_device == -1)
+		if (sata_initialize())
+			return 1;
+
 	switch (argc) {
 	case 0:
 	case 1:
 		printf("Usage:\n%s\n", cmdtp->usage);
 		return 1;
 	case 2:
-		if (strcmp(argv[1], "init") == 0) {
-			return sata_initialize();
-		} else if (strncmp(argv[1],"inf", 3) == 0) {
+		if (strncmp(argv[1],"inf", 3) == 0) {
 			int i;
 			putc('\n');
 			for (i = 0; i < CFG_SATA_MAX_DEVICE; ++i) {
