@@ -14,7 +14,6 @@
 #include <devices.h>
 #include <environment.h>
 #include <malloc.h>
-#include <sata.h>
 #include <net.h>
 #include <status_led.h>
 #include <version.h>
@@ -383,11 +382,6 @@ void board_init_r(gd_t * id, ulong dest_addr)
 			bd->bi_enetaddr[0], bd->bi_enetaddr[1], bd->bi_enetaddr[2],
 			bd->bi_enetaddr[3], bd->bi_enetaddr[4], bd->bi_enetaddr[5]);
 	}
-#endif
-
-#if defined(CONFIG_CMD_SATA)
-	printf("ATA:   ");
-	sata_initialize();
 #endif
 
 	display_global_data();

@@ -31,7 +31,7 @@
 int curr_device = -1;
 block_dev_desc_t sata_dev_desc[CFG_SATA_MAX_DEVICE];
 
-int sata_initialize(void)
+static int sata_initialize(void)
 {
 	int rc;
 	int i;
@@ -71,7 +71,9 @@ int do_sata(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		printf("Usage:\n%s\n", cmdtp->usage);
 		return 1;
 	case 2:
-		if (strncmp(argv[1],"inf", 3) == 0) {
+		if (strcmp(argv[1], "init") == 0) {
+			return sata_initialize();
+		} else if (strncmp(argv[1],"inf", 3) == 0) {
 			int i;
 			putc('\n');
 			for (i = 0; i < CFG_SATA_MAX_DEVICE; ++i) {
@@ -186,6 +188,7 @@ int do_sata(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 U_BOOT_CMD(
 	sata, 5, 1, do_sata,
 	"sata	- SATA sub system\n",
+	"init - init SATA sub system\n"
 	"sata info - show available SATA devices\n"
 	"sata device [dev] - show or set current device\n"
 	"sata part [dev] - print partition table\n"
