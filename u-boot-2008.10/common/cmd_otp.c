@@ -175,7 +175,7 @@ int do_otp(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		}
 	}
 
-	printf("OTP memory %s: addr 0x%p  page 0x%03X  count %u ... ",
+	printf("OTP memory %s: addr 0x%p  page 0x%03X  count %zu ... ",
 		argv[1], addr, page, count);
 
 	set_otp_timing(otp_func == bfrom_OtpWrite);
