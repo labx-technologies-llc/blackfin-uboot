@@ -87,6 +87,8 @@
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	259	/* max number of sectors on one chip */
 #define CONFIG_BFIN_SPI
+#define CONFIG_ENV_SPI_MAX_HZ	30000000
+#define CONFIG_SF_DEFAULT_HZ	30000000
 #define CONFIG_SPI_FLASH
 #define CONFIG_SPI_FLASH_STMICRO
 #if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
