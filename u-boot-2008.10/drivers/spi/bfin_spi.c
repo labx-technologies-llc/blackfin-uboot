@@ -225,9 +225,9 @@ static void spi_portmux(struct spi_slave *slave)
 			case 2: DO_MUX(E, 5); break;
 			case 3: DO_MUX(E, 6); break;
 		}
-		break;
 		bfin_write_PORTE_MUX(mux);
 		bfin_write_PORTE_FER(fer);
+		break;
 	case 1:
 		mux = bfin_read_PORTG_MUX();
 		fer = bfin_read_PORTG_FER();
