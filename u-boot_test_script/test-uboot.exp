@@ -82,6 +82,7 @@ set TEST_DMA    			 1
 set TEST_SPI_FLASH			 1
 set TEST_TFTP_WITH_ETHTOOL               1
 set TEST_SDIO                            0
+set TEST_ATAPI                           0
 
 
 set UBOOT_PROMPT             "bfin>"
@@ -144,6 +145,7 @@ set BDINFO_MEMSIZE           32*1024*1024
 
 #set TEST_SPI_FLASH                       0
 set TEST_SDIO                            1
+set TEST_ATAPI                           1
 
 set BDINFO_FLASHSIZE           "0x02000000"
 set KERNEL_FLASH_LOC           "0x20100000"
@@ -1303,6 +1305,7 @@ set tftp_10_full_loc                    45
 set tftp_100_half_loc                   46
 set tftp_100_full_loc                   47
 set SDIO_loc                            48
+set ATAPI_loc                           49
 
 set result_matrix { {mtest                                notrun} \
                     {{version}                            notrun} \
@@ -1352,7 +1355,8 @@ set result_matrix { {mtest                                notrun} \
                     {tftp_10_full                         notrun} \
                     {tftp_100_half                        notrun} \
                     {tftp_100_full                        notrun} \
-                    {sdio                                 notrun}}
+                    {sdio                                 notrun} \
+                    {atapi                                notrun}}
 
 #
 #
@@ -4448,7 +4452,7 @@ if { $TEST_SDIO } {
 
     if {$sdio_result == $TEST_PASS} {
         set timeout 300
-        send "fatload $sdio_interface $sdio_dev $sdio_imgload_addr $sdio_test_image"
+        send "fatload $sdio_interface $sdio_dev $sdio_imgload_addr $sdio_test_image \r"
         while 1 {
             expect {
                 -re "\[uU]nable|\[iI]nvalid|\[fF]ail|\[eE]rror" {
@@ -4494,6 +4498,128 @@ if { $TEST_SDIO } {
 
     #Reboot out of the kernel and back to u-boot.
     if { $sdio_result == $TEST_PASS } {
+        send "reboot\r"
+    } else {
+        recover
+    }
+
+    set timeout 20
+    while 1 {
+        expect {
+            "Hit any key" {
+                sleep 2
+                send "\r"
+                break
+            }
+            timeout {
+                send_user "ERROR: u-boot failed to reset\n"
+                recover
+                break
+            }
+        }
+    }
+}
+
+###############################################################################################################################
+
+if { $TEST_ATAPI } {
+
+    expect ">"
+    send "\r"
+    wait_for_uboot
+
+    step "Test ATAPI"
+
+    set atapi_result $TEST_FAIL
+
+    set atapi_test_image linux
+    set atapi_imgload_addr 0x1000000
+    set atapi_interface sata
+    set atapi_dev 0
+
+    set timeout 5
+    send "sata init\r"
+    while 1 {
+        expect {
+            -re "PATA devic.*is found.*>" {
+                set atapi_result $TEST_PASS
+                break
+            }
+            timeout {
+                send_user "ERROR: init atapi failed.\n"
+                recover
+                break
+            }
+        }
+    }
+
+    if {$atapi_result == $TEST_PASS} {
+        set timeout 5
+        send "fatls $atapi_interface $atapi_dev\r"
+        while 1 {
+            expect {
+                -re "\[0-9]+.*$atapi_test_image.*$UBOOT_PROMPT" {
+                    set atapi_result $TEST_PASS
+                    break
+                }
+                timeout {
+                    send_user "ERROR: can not find $atapi_test_image\n"
+                    set atapi_result $TEST_FAIL
+                    recover
+                    break
+                }
+            }
+        }
+    }
+
+    if {$atapi_result == $TEST_PASS} {
+        set timeout 300
+        send "fatload $atapi_interface $atapi_dev $atapi_imgload_addr $atapi_test_image \r"
+        while 1 {
+            expect {
+                -re "\[uU]nable|\[iI]nvalid|\[fF]ail|\[eE]rror" {
+                    set atapi_result $TEST_FAIL
+                    sleep 5
+                    send_user "ERROR: load $atapi_test_image to memory failed\n"
+                    recover
+                    break
+                }
+                -re "reading linux.*\[0-9]+ bytes read.*$UBOOT_PROMPT" {
+                    set atapi_result $TEST_PASS
+                    break
+                }
+                timeout {
+                    set atapi_result $TEST_FAIL
+                    send_user "ERROR: load $atapi_test_image to memory failed\n"
+                    recover
+                    break
+                }
+            }
+        }
+    }
+
+    if {$atapi_result == $TEST_PASS} {
+        set timeout 60
+        send "boote $atapi_imgload_addr\r"
+        while 1 {
+            expect {
+                -re $KERNEL_PROMPT {
+                    set atapi_result $TEST_PASS
+                    break
+                }
+                timeout {
+                    send_user "ERROR: boot kernel failed\n"
+                    set atapi_result $TEST_FAIL
+                    break
+                }
+            }
+        }
+    }
+
+    record_test_result $ATAPI_loc $atapi_result
+
+    #Reboot out of the kernel and back to u-boot.
+    if { $atapi_result == $TEST_PASS } {
         send "reboot\r"
     } else {
         recover
