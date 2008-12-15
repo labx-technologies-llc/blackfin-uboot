@@ -133,6 +133,12 @@
 #define NAND_MAX_CHIPS		1
 #define BFIN_NAND_READY		PF3
 
+/*
+ * SPI_MMC Settings
+ */
+#define CONFIG_MMC
+#define CONFIG_BFIN_SPI_MMC
+
 #define NAND_WAIT_READY(nand) \
 	do { \
 		int timeout = 0; \
