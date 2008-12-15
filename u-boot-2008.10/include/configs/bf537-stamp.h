@@ -114,6 +114,13 @@
 
 
 /*
+ * SPI_MMC Settings
+ */
+#define CONFIG_MMC
+#define CONFIG_BFIN_SPI_MMC
+
+
+/*
  * NAND Settings
  */
 /* #define CONFIG_BF537_NAND */
@@ -132,12 +139,6 @@
 #define NAND_MAX_FLOORS		1
 #define NAND_MAX_CHIPS		1
 #define BFIN_NAND_READY		PF3
-
-/*
- * SPI_MMC Settings
- */
-#define CONFIG_MMC
-#define CONFIG_BFIN_SPI_MMC
 
 #define NAND_WAIT_READY(nand) \
 	do { \
