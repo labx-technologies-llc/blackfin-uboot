@@ -32,6 +32,38 @@
 #define CFG_MMC_OP_COND		0x00300000
 #define MMC_DEFAULT_RCA		1
 
+#if defined(__ADSPBF51x__)
+#define bfin_read_SDH_PWR_CTL		bfin_read_RSI_PWR_CONTROL
+#define bfin_write_SDH_PWR_CTL		bfin_write_RSI_PWR_CONTROL
+#define bfin_read_SDH_CLK_CTL		bfin_read_RSI_CLK_CONTROL
+#define bfin_write_SDH_CLK_CTL		bfin_write_RSI_CLK_CONTROL
+#define bfin_write_SDH_ARGUMENT		bfin_write_RSI_ARGUMENT
+#define bfin_write_SDH_COMMAND		bfin_write_RSI_COMMAND
+#define bfin_read_SDH_RESPONSE0		bfin_read_RSI_RESPONSE0
+#define bfin_read_SDH_RESPONSE1		bfin_read_RSI_RESPONSE1
+#define bfin_read_SDH_RESPONSE2		bfin_read_RSI_RESPONSE2
+#define bfin_read_SDH_RESPONSE3		bfin_read_RSI_RESPONSE3
+#define bfin_write_SDH_DATA_TIMER	bfin_write_RSI_DATA_TIMER
+#define bfin_write_SDH_DATA_LGTH	bfin_write_RSI_DATA_LGTH
+#define bfin_read_SDH_DATA_CTL		bfin_read_RSI_DATA_CONTROL
+#define bfin_write_SDH_DATA_CTL		bfin_write_RSI_DATA_CONTROL
+#define bfin_read_SDH_STATUS		bfin_read_RSI_STATUS
+#define bfin_write_SDH_STATUS_CLR 	bfin_write_RSI_STATUSCL
+#define bfin_read_SDH_CFG		bfin_read_RSI_CONFIG
+#define bfin_write_SDH_CFG		bfin_write_RSI_CONFIG
+#endif
+#if defined(__ADSPBF54x__)
+#define bfin_write_DMA_START_ADDR	bfin_write_DMA22_START_ADDR
+#define bfin_write_DMA_X_COUNT		bfin_write_DMA22_X_COUNT
+#define bfin_write_DMA_X_MODIFY		bfin_write_DMA22_X_MODIFY
+#define bfin_write_DMA_CONFIG		bfin_write_DMA22_CONFIG
+#elif defined(__ADSPBF51x__)
+#define bfin_write_DMA_START_ADDR	bfin_write_DMA4_START_ADDR
+#define bfin_write_DMA_X_COUNT		bfin_write_DMA4_X_COUNT
+#define bfin_write_DMA_X_MODIFY		bfin_write_DMA4_X_MODIFY
+#define bfin_write_DMA_CONFIG		bfin_write_DMA4_CONFIG
+#endif
+
 static unsigned int mmc_rca;
 static int mmc_card_is_sd;
 static block_dev_desc_t mmc_blkdev;
@@ -168,10 +200,10 @@ mmc_bread(int dev, unsigned long start, lbaint_t blkcnt, void *buffer)
 	for (i = 0; i < blkcnt; ++i, ++start) {
 		blackfin_dcache_flush_invalidate_range(buf + i * mmc_blkdev.blksz,
 			buf + (i + 1) * mmc_blkdev.blksz);
-		bfin_write_DMA22_START_ADDR(buf + i * mmc_blkdev.blksz);
-		bfin_write_DMA22_X_COUNT(mmc_blkdev.blksz / 4);
-		bfin_write_DMA22_X_MODIFY(4);
-		bfin_write_DMA22_CONFIG(dma_cfg);
+		bfin_write_DMA_START_ADDR(buf + i * mmc_blkdev.blksz);
+		bfin_write_DMA_X_COUNT(mmc_blkdev.blksz / 4);
+		bfin_write_DMA_X_MODIFY(4);
+		bfin_write_DMA_CONFIG(dma_cfg);
 		bfin_write_SDH_DATA_LGTH(mmc_blkdev.blksz);
 		/* Put the device into Transfer state */
 		ret = mmc_cmd(MMC_CMD_SELECT_CARD, mmc_rca << 16, resp, MMC_RSP_R1);
@@ -243,10 +275,10 @@ mmc_bwrite(int dev, unsigned long start, lbaint_t blkcnt, const void *buffer)
 	/* FIXME later */
 	bfin_write_SDH_DATA_TIMER(0xFFFFFFFF);
 	for (i = 0; i < blkcnt; ++i, ++start) {
-		bfin_write_DMA22_START_ADDR(buf + i * mmc_blkdev.blksz);
-		bfin_write_DMA22_X_COUNT(mmc_blkdev.blksz / 4);
-		bfin_write_DMA22_X_MODIFY(4);
-		bfin_write_DMA22_CONFIG(dma_cfg);
+		bfin_write_DMA_START_ADDR(buf + i * mmc_blkdev.blksz);
+		bfin_write_DMA_X_COUNT(mmc_blkdev.blksz / 4);
+		bfin_write_DMA_X_MODIFY(4);
+		bfin_write_DMA_CONFIG(dma_cfg);
 		bfin_write_SDH_DATA_LGTH(mmc_blkdev.blksz);
 
 		/* Put the device into Transfer state */
@@ -436,9 +468,14 @@ int mmc_init(int verbose)
 	int ret;
 	unsigned int max_blksz;
 	/* Initialize sdh controller */
+#if defined(__ADSPBF54x__)
 	bfin_write_DMAC1_PERIMUX(bfin_read_DMAC1_PERIMUX() | 0x1);
 	bfin_write_PORTC_FER(bfin_read_PORTC_FER() | 0x3F00);
 	bfin_write_PORTC_MUX(bfin_read_PORTC_MUX() & ~0xFFF0000);
+#elif defined(__ADSPBF51x__)
+	bfin_write_PORTG_FER(bfin_read_PORTG_FER() | 0x01F8);
+	bfin_write_PORTG_MUX((bfin_read_PORTG_MUX() & ~0x3FC) | 0x154);
+#endif
 	bfin_write_SDH_CFG(bfin_read_SDH_CFG() | CLKS_EN);
 	/* Disable card detect pin */
 	bfin_write_SDH_CFG((bfin_read_SDH_CFG() & 0x1F) | 0x60);
