@@ -33,35 +33,35 @@
 #define MMC_DEFAULT_RCA		1
 
 #if defined(__ADSPBF51x__)
-#define bfin_read_SDH_PWR_CTL		bfin_read_RSI_PWR_CONTROL
-#define bfin_write_SDH_PWR_CTL		bfin_write_RSI_PWR_CONTROL
-#define bfin_read_SDH_CLK_CTL		bfin_read_RSI_CLK_CONTROL
-#define bfin_write_SDH_CLK_CTL		bfin_write_RSI_CLK_CONTROL
-#define bfin_write_SDH_ARGUMENT		bfin_write_RSI_ARGUMENT
-#define bfin_write_SDH_COMMAND		bfin_write_RSI_COMMAND
-#define bfin_read_SDH_RESPONSE0		bfin_read_RSI_RESPONSE0
-#define bfin_read_SDH_RESPONSE1		bfin_read_RSI_RESPONSE1
-#define bfin_read_SDH_RESPONSE2		bfin_read_RSI_RESPONSE2
-#define bfin_read_SDH_RESPONSE3		bfin_read_RSI_RESPONSE3
-#define bfin_write_SDH_DATA_TIMER	bfin_write_RSI_DATA_TIMER
-#define bfin_write_SDH_DATA_LGTH	bfin_write_RSI_DATA_LGTH
-#define bfin_read_SDH_DATA_CTL		bfin_read_RSI_DATA_CONTROL
-#define bfin_write_SDH_DATA_CTL		bfin_write_RSI_DATA_CONTROL
-#define bfin_read_SDH_STATUS		bfin_read_RSI_STATUS
-#define bfin_write_SDH_STATUS_CLR 	bfin_write_RSI_STATUSCL
-#define bfin_read_SDH_CFG		bfin_read_RSI_CONFIG
-#define bfin_write_SDH_CFG		bfin_write_RSI_CONFIG
-#endif
-#if defined(__ADSPBF54x__)
-#define bfin_write_DMA_START_ADDR	bfin_write_DMA22_START_ADDR
-#define bfin_write_DMA_X_COUNT		bfin_write_DMA22_X_COUNT
-#define bfin_write_DMA_X_MODIFY		bfin_write_DMA22_X_MODIFY
-#define bfin_write_DMA_CONFIG		bfin_write_DMA22_CONFIG
-#elif defined(__ADSPBF51x__)
-#define bfin_write_DMA_START_ADDR	bfin_write_DMA4_START_ADDR
-#define bfin_write_DMA_X_COUNT		bfin_write_DMA4_X_COUNT
-#define bfin_write_DMA_X_MODIFY		bfin_write_DMA4_X_MODIFY
-#define bfin_write_DMA_CONFIG		bfin_write_DMA4_CONFIG
+# define bfin_read_SDH_PWR_CTL		bfin_read_RSI_PWR_CONTROL
+# define bfin_write_SDH_PWR_CTL		bfin_write_RSI_PWR_CONTROL
+# define bfin_read_SDH_CLK_CTL		bfin_read_RSI_CLK_CONTROL
+# define bfin_write_SDH_CLK_CTL		bfin_write_RSI_CLK_CONTROL
+# define bfin_write_SDH_ARGUMENT	bfin_write_RSI_ARGUMENT
+# define bfin_write_SDH_COMMAND		bfin_write_RSI_COMMAND
+# define bfin_read_SDH_RESPONSE0	bfin_read_RSI_RESPONSE0
+# define bfin_read_SDH_RESPONSE1	bfin_read_RSI_RESPONSE1
+# define bfin_read_SDH_RESPONSE2	bfin_read_RSI_RESPONSE2
+# define bfin_read_SDH_RESPONSE3	bfin_read_RSI_RESPONSE3
+# define bfin_write_SDH_DATA_TIMER	bfin_write_RSI_DATA_TIMER
+# define bfin_write_SDH_DATA_LGTH	bfin_write_RSI_DATA_LGTH
+# define bfin_read_SDH_DATA_CTL		bfin_read_RSI_DATA_CONTROL
+# define bfin_write_SDH_DATA_CTL	bfin_write_RSI_DATA_CONTROL
+# define bfin_read_SDH_STATUS		bfin_read_RSI_STATUS
+# define bfin_write_SDH_STATUS_CLR 	bfin_write_RSI_STATUSCL
+# define bfin_read_SDH_CFG		bfin_read_RSI_CONFIG
+# define bfin_write_SDH_CFG		bfin_write_RSI_CONFIG
+# define bfin_write_DMA_START_ADDR	bfin_write_DMA4_START_ADDR
+# define bfin_write_DMA_X_COUNT		bfin_write_DMA4_X_COUNT
+# define bfin_write_DMA_X_MODIFY	bfin_write_DMA4_X_MODIFY
+# define bfin_write_DMA_CONFIG		bfin_write_DMA4_CONFIG
+#elif defined(__ADSPBF54x__)
+# define bfin_write_DMA_START_ADDR	bfin_write_DMA22_START_ADDR
+# define bfin_write_DMA_X_COUNT		bfin_write_DMA22_X_COUNT
+# define bfin_write_DMA_X_MODIFY	bfin_write_DMA22_X_MODIFY
+# define bfin_write_DMA_CONFIG		bfin_write_DMA22_CONFIG
+#else
+# error no support for this proc yet
 #endif
 
 static unsigned int mmc_rca;
@@ -316,10 +316,10 @@ mmc_bwrite(int dev, unsigned long start, lbaint_t blkcnt, const void *buffer)
 			mmc_cmd(MMC_CMD_SELECT_CARD, 0, resp, 0);
 		}
 	}
-out:
+ out:
 	return i;
 
-write_error:
+ write_error:
 	mmc_cmd(MMC_CMD_SEND_STATUS, mmc_rca << 16, &card_status, MMC_RSP_R1);
 	printf("mmc: bwrite failed, status = %08x, card status = %08lx\n",
 	       status, card_status);
@@ -475,6 +475,8 @@ int mmc_init(int verbose)
 #elif defined(__ADSPBF51x__)
 	bfin_write_PORTG_FER(bfin_read_PORTG_FER() | 0x01F8);
 	bfin_write_PORTG_MUX((bfin_read_PORTG_MUX() & ~0x3FC) | 0x154);
+#else
+# error no portmux for this proc yet
 #endif
 	bfin_write_SDH_CFG(bfin_read_SDH_CFG() | CLKS_EN);
 	/* Disable card detect pin */
