@@ -152,7 +152,7 @@
 /* bfrom_SysControl() Does Not Clear SIC_IWR1 Before Executing PLL Programming Sequence */
 #define ANOMALY_05000432 (ANOMALY_BF526)
 /* Certain SIC Registers are not Reset After Soft or Core Double Fault Reset */
-#define ANOMALY_05000435 (ANOMALY_BF526 && __SILICON_REVISION__ < 1 || ANOMALY_BF527)
+#define ANOMALY_05000435 ((ANOMALY_BF526 && __SILICON_REVISION__ < 1) || ANOMALY_BF527)
 /* IFLUSH Instruction at End of Hardware Loop Causes Infinite Stall */
 #define ANOMALY_05000443 (1)
 
@@ -173,5 +173,6 @@
 #define ANOMALY_05000312 (0)
 #define ANOMALY_05000323 (0)
 #define ANOMALY_05000363 (0)
+#define ANOMALY_05000412 (0)
 
 #endif
