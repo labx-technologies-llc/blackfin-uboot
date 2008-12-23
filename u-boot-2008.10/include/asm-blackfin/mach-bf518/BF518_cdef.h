@@ -424,18 +424,6 @@
 #define pRSI_PID3                      ((uint16_t volatile *)RSI_PID3) /* RSI Peripheral ID Register 3 */
 #define bfin_read_RSI_PID3()           bfin_read16(RSI_PID3)
 #define bfin_write_RSI_PID3(val)       bfin_write16(RSI_PID3, val)
-#define pRSI_PID4                      ((uint16_t volatile *)RSI_PID4) /* RSI Peripheral ID Register 4 */
-#define bfin_read_RSI_PID4()           bfin_read16(RSI_PID4)
-#define bfin_write_RSI_PID4(val)       bfin_write16(RSI_PID4, val)
-#define pRSI_PID5                      ((uint16_t volatile *)RSI_PID5) /* RSI Peripheral ID Register 5 */
-#define bfin_read_RSI_PID5()           bfin_read16(RSI_PID5)
-#define bfin_write_RSI_PID5(val)       bfin_write16(RSI_PID5, val)
-#define pRSI_PID6                      ((uint16_t volatile *)RSI_PID6) /* RSI Peripheral ID Register 6 */
-#define bfin_read_RSI_PID6()           bfin_read16(RSI_PID6)
-#define bfin_write_RSI_PID6(val)       bfin_write16(RSI_PID6, val)
-#define pRSI_PID7                      ((uint16_t volatile *)RSI_PID7) /* RSI Peripheral ID Register 7 */
-#define bfin_read_RSI_PID7()           bfin_read16(RSI_PID7)
-#define bfin_write_RSI_PID7(val)       bfin_write16(RSI_PID7, val)
 #define pEMAC_OPMODE                   ((uint32_t volatile *)EMAC_OPMODE) /* Operating Mode Register */
 #define bfin_read_EMAC_OPMODE()        bfin_read32(EMAC_OPMODE)
 #define bfin_write_EMAC_OPMODE(val)    bfin_write32(EMAC_OPMODE, val)

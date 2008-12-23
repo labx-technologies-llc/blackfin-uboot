@@ -120,37 +120,6 @@
 #define TSCALE                         0xFFE03008 /* Core Timer Scale Register */
 #define TCOUNT                         0xFFE0300C /* Core Timer Count Register */
 #define DSPID                          0xFFE05000
-#define SDH_PWR_CTL                    0xFFC03900 /* SDH Power Control */
-#define SDH_CLK_CTL                    0xFFC03904 /* SDH Clock Control */
-#define SDH_ARGUMENT                   0xFFC03908 /* SDH Argument */
-#define SDH_COMMAND                    0xFFC0390C /* SDH Command */
-#define SDH_RESP_CMD                   0xFFC03910 /* SDH Response Command */
-#define SDH_RESPONSE0                  0xFFC03914 /* SDH Response0 */
-#define SDH_RESPONSE1                  0xFFC03918 /* SDH Response1 */
-#define SDH_RESPONSE2                  0xFFC0391C /* SDH Response2 */
-#define SDH_RESPONSE3                  0xFFC03920 /* SDH Response3 */
-#define SDH_DATA_TIMER                 0xFFC03924 /* SDH Data Timer */
-#define SDH_DATA_LGTH                  0xFFC03928 /* SDH Data Length */
-#define SDH_DATA_CTL                   0xFFC0392C /* SDH Data Control */
-#define SDH_DATA_CNT                   0xFFC03930 /* SDH Data Counter */
-#define SDH_STATUS                     0xFFC03934 /* SDH Status */
-#define SDH_STATUS_CLR                 0xFFC03938 /* SDH Status Clear */
-#define SDH_MASK0                      0xFFC0393C /* SDH Interrupt0 Mask */
-#define SDH_MASK1                      0xFFC03940 /* SDH Interrupt1 Mask */
-#define SDH_FIFO_CNT                   0xFFC03948 /* SDH FIFO Counter */
-#define SDH_FIFO                       0xFFC03980 /* SDH Data FIFO */
-#define SDH_E_STATUS                   0xFFC039C0 /* SDH Exception Status */
-#define SDH_E_MASK                     0xFFC039C4 /* SDH Exception Mask */
-#define SDH_CFG                        0xFFC039C8 /* SDH Configuration */
-#define SDH_RD_WAIT_EN                 0xFFC039CC /* SDH Read Wait Enable */
-#define SDH_PID0                       0xFFC039D0 /* SDH Peripheral Identification0 */
-#define SDH_PID1                       0xFFC039D4 /* SDH Peripheral Identification1 */
-#define SDH_PID2                       0xFFC039D8 /* SDH Peripheral Identification2 */
-#define SDH_PID3                       0xFFC039DC /* SDH Peripheral Identification3 */
-#define SDH_PID4                       0xFFC039E0 /* SDH Peripheral Identification4 */
-#define SDH_PID5                       0xFFC039E4 /* SDH Peripheral Identification5 */
-#define SDH_PID6                       0xFFC039E8 /* SDH Peripheral Identification6 */
-#define SDH_PID7                       0xFFC039EC /* SDH Peripheral Identification7 */
 #define RSI_PWR_CONTROL                0xFFC03800 /* RSI Power Control Register */
 #define RSI_CLK_CONTROL                0xFFC03804 /* RSI Clock Control Register */
 #define RSI_ARGUMENT                   0xFFC03808 /* RSI Argument Register */
@@ -175,14 +144,10 @@
 #define RSI_EMASK                      0xFFC038C4 /* RSI Exception Mask Register */
 #define RSI_CONFIG                     0xFFC038C8 /* RSI Configuration Register */
 #define RSI_RD_WAIT_EN                 0xFFC038CC /* RSI Read Wait Enable Register */
-#define RSI_PID0                       0xFFC03FE0 /* RSI Peripheral ID Register 0 */
-#define RSI_PID1                       0xFFC03FE4 /* RSI Peripheral ID Register 1 */
-#define RSI_PID2                       0xFFC03FE8 /* RSI Peripheral ID Register 2 */
-#define RSI_PID3                       0xFFC03FEC /* RSI Peripheral ID Register 3 */
-#define RSI_PID4                       0xFFC03FF0 /* RSI Peripheral ID Register 4 */
-#define RSI_PID5                       0xFFC03FF4 /* RSI Peripheral ID Register 5 */
-#define RSI_PID6                       0xFFC03FF8 /* RSI Peripheral ID Register 6 */
-#define RSI_PID7                       0xFFC03FFC /* RSI Peripheral ID Register 7 */
+#define RSI_PID0                       0xFFC038D0 /* RSI Peripheral ID Register 0 */
+#define RSI_PID1                       0xFFC038D4 /* RSI Peripheral ID Register 1 */
+#define RSI_PID2                       0xFFC038D8 /* RSI Peripheral ID Register 2 */
+#define RSI_PID3                       0xFFC038DC /* RSI Peripheral ID Register 3 */
 #define EMAC_OPMODE                    0xFFC03000 /* Operating Mode Register */
 #define EMAC_ADDRLO                    0xFFC03004 /* Address Low (32 LSBs) Register */
 #define EMAC_ADDRHI                    0xFFC03008 /* Address High (16 MSBs) Register */
