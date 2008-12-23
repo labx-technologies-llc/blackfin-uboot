@@ -31,7 +31,7 @@
 int curr_device = -1;
 block_dev_desc_t sata_dev_desc[CFG_SATA_MAX_DEVICE];
 
-static int sata_initialize(void)
+int __sata_initialize(void)
 {
 	int rc;
 	int i;
@@ -55,6 +55,7 @@ static int sata_initialize(void)
 	curr_device = 0;
 	return rc;
 }
+int sata_initialize(void) __attribute__((weak,alias("__sata_initialize")));
 
 block_dev_desc_t *sata_get_dev(int dev)
 {
