@@ -52,8 +52,8 @@
 #define CONFIG_EBIU_AMBCTL0_VAL	0x7BB07BB0
 #define CONFIG_EBIU_AMBCTL1_VAL	0xFFC27BB0
 
-#define CFG_MONITOR_LEN		(256 * 1024)	/* Reserve 256 kB for monitor */
-#define CFG_MALLOC_LEN		(384 * 1024)	/* Reserve 384 kB for malloc() (video/spi are big) */
+#define CFG_MONITOR_LEN		(384 * 1024)
+#define CFG_MALLOC_LEN		(384 * 1024)
 
 
 /*
