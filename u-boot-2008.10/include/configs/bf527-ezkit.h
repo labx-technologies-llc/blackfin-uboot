@@ -52,8 +52,8 @@
 #define CONFIG_EBIU_AMBCTL0_VAL	(B1WAT_15 | B1RAT_15 | B1HT_3 | B1RDYPOL | B0WAT_15 | B0RAT_15 | B0HT_3 | B0RDYPOL)
 #define CONFIG_EBIU_AMBCTL1_VAL	(B3WAT_15 | B3RAT_15 | B3HT_3 | B3RDYPOL | B2WAT_15 | B2RAT_15 | B2HT_3 | B2RDYPOL)
 
-#define CFG_MONITOR_LEN		(640 * 1024)	/* Reserve 640 kB for monitor */
-#define CFG_MALLOC_LEN		(640 * 1024)	/* Reserve 640 kB for malloc() (video/spi are big) */
+#define CFG_MONITOR_LEN		(640 * 1024)
+#define CFG_MALLOC_LEN		(640 * 1024)
 
 
 /*
@@ -123,13 +123,13 @@
 #define CFG_I2C_SPEED		50000
 #define CFG_I2C_SLAVE		0
 
+
 /*
  * USB Setting
  */
 #define CONFIG_USB
 #define CONFIG_MUSB_HCD
 #define CONFIG_USB_BLACKFIN
-#define LITTLEENDIAN			1
 #define CONFIG_USB_STORAGE
 
 

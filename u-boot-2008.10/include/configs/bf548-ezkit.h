@@ -159,7 +159,6 @@
 #define CONFIG_USB
 #define CONFIG_MUSB_HCD
 #define CONFIG_USB_BLACKFIN
-#define LITTLEENDIAN			1
 #define CONFIG_USB_STORAGE
 
 
