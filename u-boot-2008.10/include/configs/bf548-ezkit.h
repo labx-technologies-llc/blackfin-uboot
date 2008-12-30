@@ -61,8 +61,8 @@
 #define CONFIG_EBIU_FCTL_VAL	(BCLK_4)
 #define CONFIG_EBIU_MODE_VAL	(B0MODE_FLASH)
 
-#define CFG_MONITOR_LEN		(640 * 1024)
-#define CFG_MALLOC_LEN		(640 * 1024)
+#define CFG_MONITOR_LEN		(768 * 1024)
+#define CFG_MALLOC_LEN		(768 * 1024)
 
 
 /*
@@ -151,6 +151,16 @@
  */
 #define CONFIG_MMC
 #define CONFIG_BFIN_SDH
+
+
+/*
+ * USB Setting
+ */
+#define CONFIG_USB
+#define CONFIG_MUSB_HCD
+#define CONFIG_USB_BLACKFIN
+#define LITTLEENDIAN			1
+#define CONFIG_USB_STORAGE
 
 
 /*

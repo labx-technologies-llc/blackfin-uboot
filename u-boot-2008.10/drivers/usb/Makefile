@@ -26,7 +26,11 @@ include $(TOPDIR)/config.mk
 LIB	:= $(obj)libusb.a
 
 COBJS-$(CONFIG_USB_R8A66597_HCD) += r8a66597-hcd.o
+#COBJS-$(CONFIG_MUSB_HCD) += musb_hcd.o musb_core.o
+#COBJS-$(CONFIG_USB_BLACKFIN) += blackfin_usb.o
 
+COBJS-y += musb_hcd.o musb_core.o
+COBJS-y += blackfin_usb.o
 COBJS-y += isp116x-hcd.o
 COBJS-y += sl811_usb.o
 COBJS-y += usb_ohci.o
