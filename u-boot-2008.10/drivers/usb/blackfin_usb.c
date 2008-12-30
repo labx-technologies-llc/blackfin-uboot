@@ -117,6 +117,16 @@ int musb_platform_init(void)
 	SSYNC();
 #endif
 
+#if defined(__ADSPBF52x__)
+	/*
+	 * BF527 EZ-KITs require PG13 to be high for HOST mode
+	 */
+	*pPORTG_FER = *pPORTG_FER & ~PG13;
+	*pPORTGIO_DIR |= PG13;
+	*pPORTGIO_SET |= PG13;
+	SSYNC();
+#endif
+
 	if (ANOMALY_05000346) {
 		bfin_write_USB_APHY_CALIB(ANOMALY_05000346_value);
 		SSYNC();
