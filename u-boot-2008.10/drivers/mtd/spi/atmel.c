@@ -52,6 +52,14 @@ to_atmel_spi_flash(struct spi_flash *flash)
 
 static const struct atmel_spi_flash_params atmel_spi_flash_table[] = {
 	{
+		.idcode1		= 0x27,
+		.l2_page_size		= 9,
+		.pages_per_block	= 8,
+		.blocks_per_sector	= 32,
+		.nr_sectors		= 32,
+		.name			= "AT45DB321D",
+	},
+	{
 		.idcode1		= 0x28,
 		.l2_page_size		= 10,
 		.pages_per_block	= 8,
