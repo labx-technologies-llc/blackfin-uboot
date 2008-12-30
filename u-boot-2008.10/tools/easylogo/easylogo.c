@@ -302,6 +302,7 @@ int image_save_header (image_t * image, char *filename, char *varname)
 
 	/*  gzip compress */
 	if (use_gzip & 0x1) {
+		const char *errstr = NULL;
 		unsigned char *compressed;
 		struct stat st;
 		FILE *gz;
@@ -312,34 +313,31 @@ int image_save_header (image_t * image, char *filename, char *varname)
 		sprintf (gzcmd, "gzip > %s", gzfilename);
 		gz = popen (gzcmd, "w");
 		if (!gz) {
-			perror ("\nerror: popen() failed");
- gzerr:
-			free (gzfilename);
-			free (gzcmd);
-			return -1;
+			errstr = "\nerror: popen() failed";
+			goto done;
 		}
 		if (fwrite (image->data, image->size, 1, gz) != 1) {
-			perror ("\nerror: writing data to gzip failed");
-			goto gzerr;
+			errstr = "\nerror: writing data to gzip failed";
+			goto done;
 		}
 		if (pclose (gz)) {
-			perror ("\nerror: gzip process failed");
-			goto gzerr;
+			errstr = "\nerror: gzip process failed";
+			goto done;
 		}
 
 		gz = fopen (gzfilename, "r");
 		if (!gz) {
-			perror ("\nerror: open() on gzip data failed");
-			goto gzerr;
+			errstr = "\nerror: open() on gzip data failed";
+			goto done;
 		}
 		if (stat (gzfilename, &st)) {
-			perror ("\nerror: stat() on gzip file failed");
-			goto gzerr;
+			errstr = "\nerror: stat() on gzip file failed";
+			goto done;
 		}
 		compressed = xmalloc (st.st_size);
 		if (fread (compressed, st.st_size, 1, gz) != 1) {
-			perror ("\nerror: reading gzip data failed");
-			goto gzerr;
+			errstr = "\nerror: reading gzip data failed";
+			goto done;
 		}
 		fclose (gz);
 
@@ -351,8 +349,14 @@ int image_save_header (image_t * image, char *filename, char *varname)
 		if (use_gzip & 0x2)
 			fprintf (file, "static unsigned char EASYLOGO_DECOMP_BUFFER[%i];\n\n", image->size);
 
+ done:
 		free (gzfilename);
 		free (gzcmd);
+
+		if (errstr) {
+			perror (errstr);
+			return -1;
+		}
 	}
 
 	/*	Headers */
