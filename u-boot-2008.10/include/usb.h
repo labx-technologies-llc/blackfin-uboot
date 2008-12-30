@@ -132,7 +132,7 @@ struct usb_config_descriptor {
 
 struct usb_device {
 	int devnum;			/* Device number on USB bus */
-	int slow;			/* Slow device? */
+	int speed;			/* full/low/high */
 	char mf[32];			/* manufacturer */
 	char prod[32];			/* product */
 	char serial[32];		/* serial number */
@@ -161,6 +161,7 @@ struct usb_device {
 	unsigned long status;
 	int act_len;			/* transfered bytes */
 	int maxchild;			/* Number of ports if hub */
+	int portnr;
 	struct usb_device *parent;
 	struct usb_device *children[USB_MAXCHILDREN];
 };
@@ -264,7 +265,7 @@ int usb_set_interface(struct usb_device *dev, int interface, int alternate);
  *  - endpoint number (4 bits)
  *  - current Data0/1 state (1 bit)
  *  - direction (1 bit)
- *  - speed (1 bit)
+ *  - speed (2 bits)
  *  - max packet size (2 bits: 8, 16, 32 or 64)
  *  - pipe type (2 bits: control, interrupt, bulk, isochronous)
  *
@@ -280,7 +281,7 @@ int usb_set_interface(struct usb_device *dev, int interface, int alternate);
  *  - device:		bits 8-14
  *  - endpoint:		bits 15-18
  *  - Data0/1:		bit 19
- *  - speed:		bit 26		(0 = Full, 1 = Low Speed)
+ *  - speed:		bit 26		(0 = Full, 1 = Low Speed, 2 = High)
  *  - pipe type:	bits 30-31	(00 = isochronous, 01 = interrupt, 10 = control, 11 = bulk)
  *
  * Why? Because it's arbitrary, and whatever encoding we select is really
@@ -290,8 +291,8 @@ int usb_set_interface(struct usb_device *dev, int interface, int alternate);
  */
 /* Create various pipes... */
 #define create_pipe(dev,endpoint) \
-		(((dev)->devnum << 8) | (endpoint << 15) | ((dev)->slow << 26) | (dev)->maxpacketsize)
-#define default_pipe(dev) ((dev)->slow <<26)
+		(((dev)->devnum << 8) | (endpoint << 15) | ((dev)->speed << 26) | (dev)->maxpacketsize)
+#define default_pipe(dev) ((dev)->speed << 26)
 
 #define usb_sndctrlpipe(dev,endpoint)	((PIPE_CONTROL << 30) | create_pipe(dev,endpoint))
 #define usb_rcvctrlpipe(dev,endpoint)	((PIPE_CONTROL << 30) | create_pipe(dev,endpoint) | USB_DIR_IN)
@@ -323,7 +324,8 @@ int usb_set_interface(struct usb_device *dev, int interface, int alternate);
 #define usb_pipe_endpdev(pipe)	(((pipe) >> 8) & 0x7ff)
 #define usb_pipeendpoint(pipe)	(((pipe) >> 15) & 0xf)
 #define usb_pipedata(pipe)	(((pipe) >> 19) & 1)
-#define usb_pipeslow(pipe)	(((pipe) >> 26) & 1)
+#define usb_pipespeed(pipe)	(((pipe) >> 26) & 3)
+#define usb_pipeslow(pipe)	(usb_pipespeed(pipe) == USB_SPEED_LOW)
 #define usb_pipetype(pipe)	(((pipe) >> 30) & 3)
 #define usb_pipeisoc(pipe)	(usb_pipetype((pipe)) == PIPE_ISOCHRONOUS)
 #define usb_pipeint(pipe)	(usb_pipetype((pipe)) == PIPE_INTERRUPT)
