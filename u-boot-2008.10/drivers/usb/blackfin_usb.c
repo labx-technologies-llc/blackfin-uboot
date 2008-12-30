@@ -111,9 +111,9 @@ int musb_platform_init(void)
 	 * be low for DEVICE mode and high for HOST mode. We set it high
 	 * here because we are in host mode
 	 */
-	*pPORTE_FER = *pPORTE_FER & ~(1 << 7);
-	*pPORTE_DIR_SET |= (1 << 7);
-	*pPORTE_SET |= (1 << 7);
+	*pPORTE_FER = *pPORTE_FER & ~PE7;
+	*pPORTE_DIR_SET |= PE7;
+	*pPORTE_SET |= PE7;
 	SSYNC();
 #endif
 
