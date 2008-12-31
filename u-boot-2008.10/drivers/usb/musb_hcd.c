@@ -411,7 +411,9 @@ static void config_hub_port(struct usb_device *dev, u8 ep)
 int submit_control_msg(struct usb_device *dev, unsigned long pipe, void *buffer,
 			int len, struct devrequest *setup)
 {
+#ifndef CONFIG_USB_BLACKFIN
 	int devnum = usb_pipedevice(pipe);
+#endif
 	u16 csr;
 	u8  devspeed;
 
@@ -510,7 +512,9 @@ int submit_bulk_msg(struct usb_device *dev, unsigned long pipe,
 {
 	int dir_out = usb_pipeout(pipe);
 	int ep = usb_pipeendpoint(pipe);
+#ifndef CONFIG_USB_BLACKFIN
 	int devnum = usb_pipedevice(pipe);
+#endif
 	u8  type;
 	u16 csr;
 	u32 txlen = 0;

@@ -55,8 +55,8 @@ void rw_fifo(u8 ep, u32 length, void *fifo_data, int is_write)
 {
 	u16 dma_reg = 0;
 
-	blackfin_dcache_flush_invalidate_range((unsigned int)fifo_data,
-		(unsigned int)(fifo_data + length));
+	blackfin_dcache_flush_invalidate_range(fifo_data,
+		(fifo_data + length));
 
 	/* Setup DMA address register */
 	dma_reg = (u16) ((u32) fifo_data & 0xFFFF);
