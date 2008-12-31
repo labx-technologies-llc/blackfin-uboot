@@ -71,7 +71,7 @@ static int running;
 static int asynch_allowed;
 static struct devrequest setup_packet;
 
-int usb_started; /* flag for the started/stopped USB status */
+char usb_started; /* flag for the started/stopped USB status */
 
 /**********************************************************************
  * some forward declerations...
