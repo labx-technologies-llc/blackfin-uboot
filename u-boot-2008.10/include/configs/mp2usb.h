@@ -214,7 +214,6 @@
 #define CFG_PBSIZE		(CFG_CBSIZE+sizeof(CFG_PROMPT)+16) /* Print Buffer Size */
 
 #define CFG_DEVICE_DEREGISTER           /* needs device_deregister */
-#define LITTLEENDIAN            1       /* used by usb_ohci.c  */
 
 #define CFG_HZ 1000
 #define CFG_HZ_CLOCK (AT91C_MASTER_CLOCK/2)	/* AT91C_TC0_CMR is implicitly set to */
