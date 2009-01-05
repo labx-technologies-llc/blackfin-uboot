@@ -758,15 +758,16 @@ LIST_blackfin="		\
 
 procs() {
 	case ${@:-${target}} in
-		*bf51[2468]*)   echo bf51{2,4,6,8};;
-		*bf52[234567]*) echo bf52{2,3,4,5,6,7};;
-		*bf53[123]*)    echo bf53{1,2,3};;
-		*bf53[467]*)    echo bf53{4,6,7};;
-		*bf53[89]*)     echo bf53{8,9};;
-		*bf54[24789]*)  echo bf54{2,4,7,9,8};;
-		*bf561*)        echo bf561;;
-		*)              echo $(procs $(echo CONFIG_BFIN_CPU | ${CPP:-cpp} -P -include include/configs/${target}.h -I include -)) ;;
+		*bf51[2468]*)   procs=bf51{2,4,6,8};;
+		*bf52[234567]*) procs=bf52{2,3,4,5,6,7};;
+		*bf53[123]*)    procs=bf53{1,2,3};;
+		*bf53[467]*)    procs=bf53{4,6,7};;
+		*bf53[89]*)     procs=bf53{8,9};;
+		*bf54[24789]*)  procs=bf54{2,4,7,9,8};;
+		*bf561*)        procs=bf561;;
+		*)              procs=$(procs $(echo CONFIG_BFIN_CPU | ${CPP:-cpp} -P -include include/configs/${target}.h -I include -)) ;;
 	esac
+	bash -c "echo ${procs}"
 }
 
 #########################################################################
