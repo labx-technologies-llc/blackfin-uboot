@@ -25,6 +25,9 @@
 #ifndef _SMC911X_H_
 #define _SMC911X_H_
 
+#include <linux/types.h>
+#include <stdbool.h>
+
 #if defined (CONFIG_DRIVER_SMC911X_32_BIT) && \
 	defined (CONFIG_DRIVER_SMC911X_16_BIT)
 #error "SMC911X: Only one of CONFIG_DRIVER_SMC911X_32_BIT and \
