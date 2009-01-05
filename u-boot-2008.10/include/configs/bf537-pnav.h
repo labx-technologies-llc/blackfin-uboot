@@ -96,6 +96,9 @@
 #undef CONFIG_CMD_LOADS
 #define CONFIG_CMD_NAND
 #undef CONFIG_CMD_NFS
+#ifndef CONFIG_BFIN_MAC
+#undef CONFIG_CMD_NET
+#endif
 
 #define CONFIG_BOOTARGS "root=/dev/mtdblock1 rw rootfstype=yaffs"
 #define CONFIG_LOADADDR	0x1000000
