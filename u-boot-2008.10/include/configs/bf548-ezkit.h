@@ -138,28 +138,34 @@
 /*
  * SATA
  */
+#if !defined(__ADSPBF544__)
 #define CONFIG_LIBATA
 #define CFG_SATA_MAX_DEVICE 1
 #define CONFIG_LBA48
 #define CONFIG_PATA_BFIN
 #define CONFIG_BFIN_ATAPI_BASE_ADDR	0xFFC03800
 #define CONFIG_BFIN_ATA_MODE	XFER_PIO_4
+#endif
 
 
 /*
  * SDH Settings
  */
+#if !defined(__ADSPBF544__)
 #define CONFIG_MMC
 #define CONFIG_BFIN_SDH
+#endif
 
 
 /*
  * USB Setting
  */
+#if !defined(__ADSPBF544__)
 #define CONFIG_USB
 #define CONFIG_MUSB_HCD
 #define CONFIG_USB_BLACKFIN
 #define CONFIG_USB_STORAGE
+#endif
 
 
 /*
