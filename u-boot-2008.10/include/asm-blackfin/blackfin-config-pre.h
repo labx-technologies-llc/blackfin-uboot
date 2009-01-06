@@ -55,6 +55,7 @@ static inline const char *get_bfin_boot_mode(int bfin_boot)
 	case BFIN_BOOT_16HOST_DMA: return "16bit dma";
 	case BFIN_BOOT_8HOST_DMA:  return "8bit dma";
 	case BFIN_BOOT_NAND:       return "nand flash";
+	default:                   return "INVALID";
 	}
 }
 #endif
