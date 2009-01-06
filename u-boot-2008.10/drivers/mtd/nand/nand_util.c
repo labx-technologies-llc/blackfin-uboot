@@ -496,7 +496,7 @@ int nand_write_skip_bad(nand_info_t *nand, size_t offset, size_t *length,
 	if (len_incl_bad == *length) {
 		rval = nand_write (nand, offset, length, buffer);
 		if (rval != 0) {
-			printf ("NAND write to offset %x failed %d\n",
+			printf ("NAND write to offset %zx failed %d\n",
 				offset, rval);
 			return rval;
 		}
@@ -507,7 +507,7 @@ int nand_write_skip_bad(nand_info_t *nand, size_t offset, size_t *length,
 		size_t write_size;
 
 		if (nand_block_isbad (nand, offset & ~(nand->erasesize - 1))) {
-			printf ("Skip bad block 0x%08x\n",
+			printf ("Skip bad block 0x%08lx\n",
 				offset & ~(nand->erasesize - 1));
 			offset += nand->erasesize - block_offset;
 			continue;
@@ -520,7 +520,7 @@ int nand_write_skip_bad(nand_info_t *nand, size_t offset, size_t *length,
 
 		rval = nand_write (nand, offset, &write_size, p_buffer);
 		if (rval != 0) {
-			printf ("NAND write to offset %x failed %d\n",
+			printf ("NAND write to offset %zx failed %d\n",
 				offset, rval);
 			*length -= left_to_write;
 			return rval;
@@ -566,7 +566,7 @@ int nand_read_skip_bad(nand_info_t *nand, size_t offset, size_t *length,
 	if (len_incl_bad == *length) {
 		rval = nand_read (nand, offset, length, buffer);
 		if (rval != 0) {
-			printf ("NAND read from offset %x failed %d\n",
+			printf ("NAND read from offset %zx failed %d\n",
 				offset, rval);
 			return rval;
 		}
@@ -577,7 +577,7 @@ int nand_read_skip_bad(nand_info_t *nand, size_t offset, size_t *length,
 		size_t read_length;
 
 		if (nand_block_isbad (nand, offset & ~(nand->erasesize - 1))) {
-			printf ("Skipping bad block 0x%08x\n",
+			printf ("Skipping bad block 0x%08lx\n",
 				offset & ~(nand->erasesize - 1));
 			offset += nand->erasesize - block_offset;
 			continue;
@@ -590,7 +590,7 @@ int nand_read_skip_bad(nand_info_t *nand, size_t offset, size_t *length,
 
 		rval = nand_read (nand, offset, &read_length, p_buffer);
 		if (rval != 0) {
-			printf ("NAND read from offset %x failed %d\n",
+			printf ("NAND read from offset %zx failed %d\n",
 				offset, rval);
 			*length -= left_to_read;
 			return rval;
