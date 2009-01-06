@@ -342,7 +342,7 @@ GEN_UBOOT = \
 $(obj)u-boot:		depend $(SUBDIRS) $(OBJS) $(LIBBOARD) $(LIBS) $(LDSCRIPT)
 		$(GEN_UBOOT)
 		$(call SYSTEM_MAP,u-boot) \
-			| awk '$$2 ~ /[tTwW]/ {print $$1" "$$3}' \
+			| awk '$$2 ~ /[tTwW]/ {print $$1 $$3}' \
 			| sed -e 's:^\(.*\):.asciz "\1":' > $(obj).syms.u-boot.S
 		$(CC) $(AFLAGS) -I. -DSYM_FILE='"$(obj).syms.u-boot.S"' -c cpu/blackfin/system_map.S -o $(obj)cpu/blackfin/system_map.o
 		$(GEN_UBOOT) $(obj)cpu/blackfin/system_map.o
