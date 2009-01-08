@@ -675,8 +675,8 @@ stop:
 		 Or some cards are just sloppy made.
 		*/
 		if (wrb[WRB_LEN-1] == 0xFF) {
-			debug("Got final MBW busy wait done(as 0x%x after %d reads @ %08x..
-				last_resp=%x, resp_oldest=%x \n", wrb[WRB_LEN-1], n_polls, address,
+			debug("Got final MBW busy wait done(as 0x%x after %d reads @ %08x.. "
+				"last_resp=%x, resp_oldest=%x\n", wrb[WRB_LEN-1], n_polls, address,
 					resp_last, resp_oldest);
 			goto out;
 		}
@@ -852,8 +852,8 @@ short mmc_spi_mmc_spi_get_card_old(struct mmc_spi_dev *pdev)
 	card->cid.fwrev = getvalue(raw_cid, 127-55, 8) & 0x0F;
 	card->cid.month = (getvalue(raw_cid, 127-15, 8) & 0xF0) >> 4;
 
-	printf("MMC found:\n\t Capacity: %dM\n\t Name: %s \n\t Rev: %d.%d \n\t
-		Date: %d/%d \n\t Serial: 0x%x (%u)\n", cap/(1024*1024),
+	printf("MMC found:\n\t Capacity: %dM\n\t Name: %s \n\t Rev: %d.%d \n\t"
+		"Date: %d/%d \n\t Serial: 0x%x (%u)\n", cap/(1024*1024),
 		card.cid.prod_name, card.cid.hwrev, card.cid.fwrev,
 		card.cid.year, card.cid.month, card.cid.serial, card.cid.serial);
 	return 0;
