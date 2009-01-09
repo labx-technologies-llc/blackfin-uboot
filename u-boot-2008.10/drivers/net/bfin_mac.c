@@ -66,8 +66,7 @@ static int bfin_miiphy_wait(void)
 {
 	/* poll the STABUSY bit */
 	while (bfin_read_EMAC_STAADD() & STABUSY)
-		if (ctrlc())
-			return 1;
+		continue;
 	return 0;
 }
 
