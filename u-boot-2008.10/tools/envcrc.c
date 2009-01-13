@@ -21,11 +21,15 @@
  * MA 02111-1307 USA
  */
 
+#include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "elf.h"
+#include "uswap.h"
 
 #ifndef __ASSEMBLY__
 #define	__ASSEMBLY__			/* Dirty trick to get only #defines	*/
@@ -67,40 +71,151 @@
 
 #define ENV_SIZE (CONFIG_ENV_SIZE - ENV_HEADER_SIZE)
 
+unsigned char host_endian(void)
+{
+	struct {
+		union {
+			uint16_t sint;
+			unsigned char str[2];
+		} u;
+	} data;
+	data.u.sint = 0xBBAA;
+	return data.u.str[0] == 0xBB ? ELFDATA2MSB : ELFDATA2LSB;
+}
+bool swapit;
+#define EGET(val) ( \
+	!swapit ? (val) : \
+		sizeof(val) == 1 ? (val) : \
+		sizeof(val) == 2 ? uswap_16(val) : \
+		sizeof(val) == 4 ? uswap_32(val) : \
+		/*sizeof(val) == 8 ? uswap_64(val) :*/ \
+		1 \
+)
 
 extern uint32_t crc32 (uint32_t, const unsigned char *, unsigned int);
 
-#if defined(ENV_IS_EMBEDDED) || defined(ENV_IS_EMBEDDED_CUSTOM)
-extern unsigned int env_size;
-extern unsigned char environment;
-#endif	/* ENV_IS_EMBEDDED */
+static bool elfread(FILE *fp, long offset, void *ptr, size_t size, size_t nmemb)
+{
+	if (fseek(fp, offset, SEEK_SET))
+		return false;
+	if (fread(ptr, size, nmemb, fp) != nmemb)
+		return false;
+	return true;
+}
+
+/* Avoid using elf.h since not all systems have it */
+unsigned char environment[CONFIG_ENV_SIZE];
+bool read_env_from_elf(const char *elf_file)
+{
+	const char env_symbol[] = "default_environment";
+	char buf[256];
+	FILE *fp;
+	bool ret = false;
+	int i;
+
+	Elf32_Ehdr ehdr;
+	Elf32_Shdr shdr, strtab, symtab;
+	Elf32_Sym sym;
+
+	fp = fopen(elf_file, "r");
+	if (!fp)
+		return false;
+
+	/* Make sure this is a valid ELF */
+	if (!elfread(fp, 0, &ehdr, sizeof(ehdr), 1))
+		goto done;
+	if (memcmp(ehdr.e_ident, ELFMAG, SELFMAG)) {
+		errno = EINVAL;
+		goto done;
+	}
+	if (ehdr.e_ident[EI_CLASS] != ELFCLASS32) {
+		errno = EINVAL;
+		goto done;
+	}
+	swapit = host_endian() == ehdr.e_ident[EI_DATA] ? false : true;
+
+	/* Find the string & symbol table */
+	memset(&strtab, 0, sizeof(strtab)); /* shut gcc the hell up */
+	memset(&symtab, 0, sizeof(symtab)); /* shut gcc the hell up */
+	strtab.sh_type = SHT_NULL;
+	symtab.sh_type = SHT_NULL;
+	for (i = 0; i < EGET(ehdr.e_shnum); ++i) {
+		long off = EGET(ehdr.e_shoff) + i * EGET(ehdr.e_shentsize);
+		if (!elfread(fp, off, &shdr, sizeof(shdr), 1))
+			goto done;
+		if (EGET(shdr.sh_type) == SHT_STRTAB)
+			strtab = shdr;
+		else if (EGET(shdr.sh_type) == SHT_SYMTAB)
+			symtab = shdr;
+	}
+	if (strtab.sh_type == SHT_NULL || symtab.sh_type == SHT_NULL) {
+		errno = EINVAL;
+		goto done;
+	}
+
+	/* Find the environment symbol */
+	for (i = 0; i < EGET(symtab.sh_size) / EGET(symtab.sh_entsize); ++i) {
+		char *tbuf;
+		long off = EGET(symtab.sh_offset) + i * sizeof(sym);
+		if (!elfread(fp, off, &sym, sizeof(sym), 1))
+			goto done;
+		off = EGET(strtab.sh_offset) + EGET(sym.st_name);
+		tbuf = buf;
+		if (!elfread(fp, off, tbuf, 1, sizeof(env_symbol)))
+			goto done;
+		/* handle ABI prefixed symbols automatically */
+		if (tbuf[0] == '_') {
+			tbuf[sizeof(env_symbol)] = '\0';
+			++tbuf;
+		}
+		if (!strcmp(tbuf, env_symbol)) {
+			off = EGET(ehdr.e_shoff) + EGET(sym.st_shndx) * EGET(ehdr.e_shentsize);
+			if (!elfread(fp, off, &shdr, sizeof(shdr), 1))
+				goto done;
+			off = EGET(shdr.sh_offset) + EGET(sym.st_value);
+			if (!elfread(fp, off, environment + ENV_HEADER_SIZE, 1, EGET(sym.st_size)))
+				goto done;
+			ret = true;
+			break;
+		}
+	}
+
+ done:
+	fclose(fp);
+	return ret;
+}
 
 int main (int argc, char **argv)
 {
 #if defined(ENV_IS_EMBEDDED) || defined(ENV_IS_EMBEDDED_CUSTOM)
 	uint32_t crc;
-	unsigned char *envptr = &environment,
+	unsigned char *envptr = environment,
 		*dataptr = envptr + ENV_HEADER_SIZE;
 	unsigned int datasize = ENV_SIZE;
+	const char *env_file;
 
 #if defined(ENV_IS_EMBEDDED_CUSTOM)
-	/* find the end of env */
-	unsigned int eoe;
-	for (eoe = 0; eoe < datasize - 1; ++eoe)
-		if (!dataptr[eoe] && !dataptr[eoe+1]) {
-			eoe += 2;
-			break;
-		}
-	if (eoe < datasize - 1)
-		memset(dataptr + eoe, 0xff, datasize - eoe);
+	memset(dataptr, 0xff, datasize);
 #endif
+
+	if (argc < 2) {
+		puts("Usage: envcrc <environment object> [--binary [le]]");
+		return 1;
+	}
+	env_file = argv[1];
+
+	if (!read_env_from_elf(env_file)) {
+		fprintf(stderr, "unable to read environment from %s: %s\n",
+			env_file, strerror(errno));
+		return 1;
+	}
 
 	crc = crc32 (0, dataptr, datasize);
 
 	/* Check if verbose mode is activated passing a parameter to the program */
-	if (argc > 1) {
-		if (!strcmp(argv[1], "--binary")) {
-			int le = (argc > 2 ? !strcmp(argv[2], "le") : 1);
+	if (argc > 2) {
+		if (!strcmp(argv[2], "--binary")) {
+			int le = (argc > 3 ? !strcmp(argv[3], "le") : 1);
 			size_t i, start, end, step;
 			if (le) {
 				start = 0;

@@ -21,30 +21,14 @@
  * MA 02111-1307 USA
  */
 
-#ifndef __ASSEMBLY__
-#define	__ASSEMBLY__			/* Dirty trick to get only #defines	*/
-#endif
-#define	__ASM_STUB_PROCESSOR_H__	/* don't include asm/processor.		*/
 #include <config.h>
-#undef	__ASSEMBLY__
 #include <environment.h>
-
-/*
- * Handle HOSTS that have prepended
- * crap on symbol names, not TARGETS.
- */
-#if defined(__APPLE__)
-/* Leading underscore on symbols */
-#  define SYM_CHAR "_"
-#else /* No leading character on symbols */
-#  define SYM_CHAR
-#endif
 
 /*
  * Generate embedded environment table
  * inside U-Boot image, if needed.
  */
-#if defined(ENV_IS_EMBEDDED) || (defined(ENV_IS_EMBEDDED_CUSTOM) && defined(USE_HOSTCC))
+#if defined(ENV_IS_EMBEDDED)
 /*
  * Only put the environment in it's own section when we are building
  * U-Boot proper.  The host based program "tools/envcrc" does not need
@@ -75,7 +59,7 @@
 #else
 # define GEN_SET_VALUE(name, value) asm (GEN_SYMNAME(name) " = " GEN_VALUE(value))
 #endif
-#define GEN_SYMNAME(str) SYM_CHAR #str
+#define GEN_SYMNAME(str) #str
 #define GEN_VALUE(str) #str
 #define GEN_ABS(name, value) \
 		asm (".globl " GEN_SYMNAME(name)); \
@@ -191,17 +175,7 @@ env_t redundand_environment __PPCENV__ = {
 #endif	/* CONFIG_ENV_ADDR_REDUND */
 
 /*
- * These will end up in the .text section
- * if the environment strings are embedded
- * in the image.  When this is used for
- * tools/envcrc, they are placed in the
- * .data/.sdata section.
- *
- */
-unsigned long env_size __PPCTEXT__ = sizeof(env_t);
-
-/*
- * Add in absolutes.
+ * Add in absolutes.  This symbol is only referenced from linker scripts.
  */
 GEN_ABS(env_offset, CONFIG_ENV_OFFSET);
 

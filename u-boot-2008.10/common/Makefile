@@ -168,9 +168,9 @@ all:	$(LIB) $(AOBJS)
 $(LIB): $(obj).depend $(OBJS)
 	$(AR) $(ARFLAGS) $@ $(OBJS)
 
-$(obj)env_embedded.o: $(src)env_embedded.c $(obj)../tools/envcrc
+$(obj)env_embedded.o: $(src)env_embedded.c $(obj)env_common.o $(obj)../tools/envcrc
 	$(CC) $(AFLAGS) -Wa,--no-warn \
-		-DENV_CRC=$(shell $(obj)../tools/envcrc) \
+		-DENV_CRC=$(shell $(obj)../tools/envcrc $(obj)env_common.o) \
 		-c -o $@ $(src)env_embedded.c
 
 $(obj)../tools/envcrc:
