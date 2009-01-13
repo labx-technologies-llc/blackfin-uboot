@@ -123,8 +123,15 @@
 #  define UBOOT_ENV_FILE "u-boot.ldr"
 # endif
 # if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
-#  define UBOOT_ENV_UPDATE \
+#  ifdef CONFIG_SPI
+#   define UBOOT_ENV_UPDATE \
 		"eeprom write $(loadaddr) 0x0 $(filesize)"
+#  else
+#   define UBOOT_ENV_UPDATE \
+		"sf probe " MK_STR(BFIN_BOOT_SPI_SSEL) ";" \
+		"sf erase 0 0x40000;" \
+		"sf write $(loadaddr) 0 $(filesize)"
+#  endif
 # elif (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_NAND)
 #  define UBOOT_ENV_UPDATE \
 		"nand unlock 0 0x40000;" \
