@@ -83,6 +83,7 @@ set TEST_SPI_FLASH			 1
 set TEST_TFTP_WITH_ETHTOOL               1
 set TEST_SDIO                            0
 set TEST_ATAPI                           0
+set TEST_USB                             0
 
 
 set UBOOT_PROMPT             "bfin>"
@@ -146,6 +147,7 @@ set BDINFO_MEMSIZE           32*1024*1024
 #set TEST_SPI_FLASH                       0
 set TEST_SDIO                            1
 set TEST_ATAPI                           1
+set TEST_USB                             1
 
 set BDINFO_FLASHSIZE           "0x02000000"
 set KERNEL_FLASH_LOC           "0x20100000"
@@ -159,6 +161,8 @@ set BDINFO_MEMSIZE           64*1024*1024
 } elseif { $board_type == "BF527-EZKIT" } {
 
 #set TEST_SPI_FLASH                       0
+set TEST_USB                             1
+
 set NUMBER_OF_FLASH_SECTORS    71
 set BDINFO_FLASHSIZE           "0x00400000"
 set KERNEL_FLASH_LOC           "0x20100000"
@@ -289,7 +293,7 @@ proc ethtool_tftp { speed status } {
         expect {
             -re "Bytes transferred = \[0-9]+ \\\((\[0-9a-fA-F]+) hex\\\)" {
                 set uimage_size $expect_out(1,string)
-                send_user "uImage size is $uimage_size\n"
+                send_user "Image size is $uimage_size\n"
                 set tftp_flag 1
                 break
             }
@@ -1306,6 +1310,7 @@ set tftp_100_half_loc                   46
 set tftp_100_full_loc                   47
 set SDIO_loc                            48
 set ATAPI_loc                           49
+set USB_loc                             50
 
 set result_matrix { {mtest                                notrun} \
                     {{version}                            notrun} \
@@ -4620,6 +4625,128 @@ if { $TEST_ATAPI } {
 
     #Reboot out of the kernel and back to u-boot.
     if { $atapi_result == $TEST_PASS } {
+        send "reboot\r"
+    } else {
+        recover
+    }
+
+    set timeout 20
+    while 1 {
+        expect {
+            "Hit any key" {
+                sleep 2
+                send "\r"
+                break
+            }
+            timeout {
+                send_user "ERROR: u-boot failed to reset\n"
+                recover
+                break
+            }
+        }
+    }
+}
+
+###############################################################################################################################
+
+if { $TEST_USB } {
+
+    expect ">"
+    send "\r"
+    wait_for_uboot
+
+    step "Test USB Storage"
+
+    set usb_result $TEST_FAIL
+
+    set usb_test_image uimage
+    set usb_imgload_addr 0x1000000
+    set usb_interface usb
+    set usb_dev 0
+
+    set timeout 5
+    send "usb start\r"
+    while 1 {
+        expect {
+            -re "1 USB Device\\\(s\\\) found.*1 Storage Device\\\(s\\\) found.*>" {
+                set usb_result $TEST_PASS
+                break
+            }
+            timeout {
+                send_user "ERROR: init usb failed\n"
+                recover
+                break
+            }
+        }
+    }
+
+    if {$usb_result== $TEST_PASS} {
+        set timeout 5
+        send "fatls $usb_interface $usb_dev\r"
+        while 1 {
+            expect {
+                -re "\[0-9]+.*$usb_test_image.*$UBOOT_PROMPT" {
+                    set usb_result $TEST_PASS
+                    break
+                }
+                timeout {
+                    send_user "ERROR: can not find $usb_test_image\n"
+                    set usb_result $TEST_FAIL
+                    recover
+                    break
+                }
+            }
+        }
+    }
+
+    if {$usb_result == $TEST_PASS} {
+        set timeout 300
+        send "fatload $usb_interface $usb_dev $usb_imgload_addr $usb_test_image\r"
+        while 1 {
+            expect {
+                -re "\[uU]nable|\[iI]nvalid|\[fF]ail|\[eE]rror" {
+                    set usb_result $TEST_FAIL
+                    sleep 5
+                    send_user "ERROR: load $usb_test_image to memory failed\n"
+                    recover
+                    break
+                }
+                -re "reading $usb_test_image.*\[0-9]+ bytes read.*$UBOOT_PROMPT" {
+                    set usb_result $TEST_PASS
+                    break
+                }
+                timeout {
+                    set usb_result $TEST_FAIL
+                    send_user "ERROR: load $usb_test_image to memory failed\n"
+                    recover
+                    break
+                }
+            }
+        }
+    }
+
+    if {$usb_result == $TEST_PASS} {
+        set timeout 60
+        send "bootm $usb_imgload_addr\r"
+        while 1 {
+            expect {
+                -re $KERNEL_PROMPT {
+                    set usb_result $TEST_PASS
+                    break
+                }
+                timeout {
+                    send_user "ERROR: boot kernel failed\n"
+                    set usb_result $TEST_FAIL
+                    break
+                }
+            }
+        }
+    }
+
+    record_test_result $USB_loc $usb_result
+
+    #Reboot out of the kernel and back to u-boot.
+    if { $usb_result == $TEST_PASS } {
         send "reboot\r"
     } else {
         recover
