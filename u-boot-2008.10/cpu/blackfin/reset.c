@@ -30,7 +30,6 @@ static void bfin_reset(void)
 	 */
 	__builtin_bfin_ssync();
 
-
 	/* The bootrom checks to see how it was reset and will
 	 * automatically perform a software reset for us when
 	 * it starts executing after the core reset.
