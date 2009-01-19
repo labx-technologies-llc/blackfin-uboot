@@ -26,17 +26,123 @@
 #ifdef CONFIG_MUSB_HCD
 #include "musb_hcd.h"
 
+#undef	MUSB_DEBUG
+
+#ifdef	MUSB_DEBUG
+#define	MUSB_PRINTF(fmt, args...)	printf(fmt, ##args)
+#else
+#define MUSB_PRINTF(fmt, args...)
+#endif
+
 /* MSC control transfers */
 #define USB_MSC_BBB_RESET 	0xFF
 #define USB_MSC_BBB_GET_MAX_LUN	0xFE
 
 /* speed negotiated with the connected device */
 static u8 musb_speed;
+static int rh_devnum;
+static u32 port_status;
 
 /* Endpoint configuration information */
 static struct musb_epinfo epinfo[2] = {
 	{MUSB_BULK_EP, 1, 512}, /* EP1 - Bluk Out - 512 Bytes */
 	{MUSB_BULK_EP, 0, 512}  /* EP1 - Bluk In  - 512 Bytes */
+};
+
+/* --- Virtual Root Hub ---------------------------------------------------- */
+
+/* Device descriptor */
+static __u8 root_hub_dev_des[] = {
+	0x12,			/*  __u8  bLength; */
+	0x01,			/*  __u8  bDescriptorType; Device */
+	0x00,			/*  __u16 bcdUSB; v1.1 */
+	0x02,
+	0x09,			/*  __u8  bDeviceClass; HUB_CLASSCODE */
+	0x00,			/*  __u8  bDeviceSubClass; */
+	0x00,			/*  __u8  bDeviceProtocol; */
+	0x08,			/*  __u8  bMaxPacketSize0; 8 Bytes */
+	0x00,			/*  __u16 idVendor; */
+	0x00,
+	0x00,			/*  __u16 idProduct; */
+	0x00,
+	0x00,			/*  __u16 bcdDevice; */
+	0x00,
+	0x00,			/*  __u8  iManufacturer; */
+	0x01,			/*  __u8  iProduct; */
+	0x00,			/*  __u8  iSerialNumber; */
+	0x01			/*  __u8  bNumConfigurations; */
+};
+
+/* Configuration descriptor */
+static __u8 root_hub_config_des[] = {
+	0x09,			/*  __u8  bLength; */
+	0x02,			/*  __u8  bDescriptorType; Configuration */
+	0x19,			/*  __u16 wTotalLength; */
+	0x00,
+	0x01,			/*  __u8  bNumInterfaces; */
+	0x01,			/*  __u8  bConfigurationValue; */
+	0x00,			/*  __u8  iConfiguration; */
+	0x40,			/*  __u8  bmAttributes;
+				   Bit 7: Bus-powered, 6: Self-powered, 5 Remote-wakwup, 4..0: resvd */
+	0x00,			/*  __u8  MaxPower; */
+
+	/* interface */
+	0x09,			/*  __u8  if_bLength; */
+	0x04,			/*  __u8  if_bDescriptorType; Interface */
+	0x00,			/*  __u8  if_bInterfaceNumber; */
+	0x00,			/*  __u8  if_bAlternateSetting; */
+	0x01,			/*  __u8  if_bNumEndpoints; */
+	0x09,			/*  __u8  if_bInterfaceClass; HUB_CLASSCODE */
+	0x00,			/*  __u8  if_bInterfaceSubClass; */
+	0x00,			/*  __u8  if_bInterfaceProtocol; */
+	0x00,			/*  __u8  if_iInterface; */
+
+	/* endpoint */
+	0x07,			/*  __u8  ep_bLength; */
+	0x05,			/*  __u8  ep_bDescriptorType; Endpoint */
+	0x81,			/*  __u8  ep_bEndpointAddress; IN Endpoint 1 */
+	0x03,			/*  __u8  ep_bmAttributes; Interrupt */
+	0x00,			/*  __u16 ep_wMaxPacketSize; ((MAX_ROOT_PORTS + 1) / 8 */
+	0x02,
+	0xff			/*  __u8  ep_bInterval; 255 ms */
+};
+
+static unsigned char root_hub_str_index0[] = {
+	0x04,			/*  __u8  bLength; */
+	0x03,			/*  __u8  bDescriptorType; String-descriptor */
+	0x09,			/*  __u8  lang ID */
+	0x04,			/*  __u8  lang ID */
+};
+
+static unsigned char root_hub_str_index1[] = {
+	0x1c,			/*  __u8  bLength; */
+	0x03,			/*  __u8  bDescriptorType; String-descriptor */
+	'M',			/*  __u8  Unicode */
+	0,			/*  __u8  Unicode */
+	'U',			/*  __u8  Unicode */
+	0,			/*  __u8  Unicode */
+	'S',			/*  __u8  Unicode */
+	0,			/*  __u8  Unicode */
+	'B',			/*  __u8  Unicode */
+	0,			/*  __u8  Unicode */
+	' ',			/*  __u8  Unicode */
+	0,			/*  __u8  Unicode */
+	'R',			/*  __u8  Unicode */
+	0,			/*  __u8  Unicode */
+	'o',			/*  __u8  Unicode */
+	0,			/*  __u8  Unicode */
+	'o',			/*  __u8  Unicode */
+	0,			/*  __u8  Unicode */
+	't',			/*  __u8  Unicode */
+	0,			/*  __u8  Unicode */
+	' ',			/*  __u8  Unicode */
+	0,			/*  __u8  Unicode */
+	'H',			/*  __u8  Unicode */
+	0,			/*  __u8  Unicode */
+	'u',			/*  __u8  Unicode */
+	0,			/*  __u8  Unicode */
+	'b',			/*  __u8  Unicode */
+	0,			/*  __u8  Unicode */
 };
 
 /*
@@ -436,17 +542,322 @@ static void config_hub_port(struct usb_device *dev, u8 ep)
 #endif
 }
 
+void musb_port_reset(int do_reset)
+{
+	u8 power = musb_readb(MUSB_POWER);
+
+	if (do_reset) {
+		power &= 0xf0;
+		musb_writeb(MUSB_POWER, power | MUSB_POWER_RESET);
+		port_status |= USB_PORT_STAT_RESET;
+		port_status &= ~USB_PORT_STAT_ENABLE;
+		udelay(30000);
+	} else {
+		musb_writeb(MUSB_POWER, power & ~MUSB_POWER_RESET);
+
+		power = musb_readb(MUSB_POWER);
+		if (power & MUSB_POWER_HSMODE)
+			port_status |= USB_PORT_STAT_HIGH_SPEED;
+
+		port_status &= ~(USB_PORT_STAT_RESET | (USB_PORT_STAT_C_CONNECTION << 16));
+		port_status |= USB_PORT_STAT_ENABLE
+			| (USB_PORT_STAT_C_RESET << 16)
+			| (USB_PORT_STAT_C_ENABLE << 16);
+	}
+}
+/*
+ * root hub control
+ */
+int musb_submit_rh_msg(struct usb_device *dev, unsigned long pipe, void *buffer,
+			int transfer_len, struct devrequest *cmd)
+{
+	int leni = transfer_len;
+	int len = 0;
+	int stat = 0;
+	u32 datab[4];
+	u8 *data_buf = (u8 *) datab;
+	u16 bmRType_bReq;
+	u16 wValue;
+	u16 wIndex;
+	u16 wLength;
+	u16 int_usb;
+
+	if ((pipe & PIPE_INTERRUPT) == PIPE_INTERRUPT) {
+		MUSB_PRINTF("Root-Hub submit IRQ: NOT implemented\n");
+		return 0;
+	}
+
+	bmRType_bReq = cmd->requesttype | (cmd->request << 8);
+	wValue = swap_16(cmd->value);
+	wIndex = swap_16(cmd->index);
+	wLength = swap_16(cmd->length);
+
+	MUSB_PRINTF("--- HUB ----------------------------------------\n");
+	MUSB_PRINTF("submit rh urb, req=%x val=%#x index=%#x len=%d\n",
+	    bmRType_bReq, wValue, wIndex, wLength);
+	MUSB_PRINTF("------------------------------------------------\n");
+
+	switch (bmRType_bReq) {
+	case RH_GET_STATUS:
+		MUSB_PRINTF("RH_GET_STATUS\n");
+
+		*(__u16 *) data_buf = swap_16(1);
+		len = 2;
+		break;
+
+	case RH_GET_STATUS | RH_INTERFACE:
+		MUSB_PRINTF("RH_GET_STATUS | RH_INTERFACE\n");
+
+		*(__u16 *) data_buf = swap_16(0);
+		len = 2;
+		break;
+
+	case RH_GET_STATUS | RH_ENDPOINT:
+		MUSB_PRINTF("RH_GET_STATUS | RH_ENDPOINT\n");
+
+		*(__u16 *) data_buf = swap_16(0);
+		len = 2;
+		break;
+
+	case RH_GET_STATUS | RH_CLASS:
+		MUSB_PRINTF("RH_GET_STATUS | RH_CLASS\n");
+
+		*(__u32 *) data_buf = swap_32(0);
+		len = 4;
+		break;
+
+	case RH_GET_STATUS | RH_OTHER | RH_CLASS:
+		MUSB_PRINTF("RH_GET_STATUS | RH_OTHER | RH_CLASS\n");
+
+		int_usb = musb_readw(MUSB_INTRUSB);
+		if (int_usb & MUSB_INTR_CONNECT) {
+			port_status |= USB_PORT_STAT_CONNECTION
+				| (USB_PORT_STAT_C_CONNECTION << 16);
+			port_status |= USB_PORT_STAT_HIGH_SPEED
+				| USB_PORT_STAT_ENABLE;
+		}
+
+		if (port_status & USB_PORT_STAT_RESET)
+			musb_port_reset(0);
+
+		*(__u32 *) data_buf = swap_32(port_status);
+		len = 4;
+		break;
+
+	case RH_CLEAR_FEATURE | RH_ENDPOINT:
+		MUSB_PRINTF("RH_CLEAR_FEATURE | RH_ENDPOINT\n");
+
+		switch (wValue) {
+		case RH_ENDPOINT_STALL:
+			MUSB_PRINTF("C_HUB_ENDPOINT_STALL\n");
+			len = 0;
+			break;
+		}
+		port_status &= ~(1 << wValue);
+		break;
+
+	case RH_CLEAR_FEATURE | RH_CLASS:
+		MUSB_PRINTF("RH_CLEAR_FEATURE | RH_CLASS\n");
+
+		switch (wValue) {
+		case RH_C_HUB_LOCAL_POWER:
+			MUSB_PRINTF("C_HUB_LOCAL_POWER\n");
+			len = 0;
+			break;
+
+		case RH_C_HUB_OVER_CURRENT:
+			MUSB_PRINTF("C_HUB_OVER_CURRENT\n");
+			len = 0;
+			break;
+		}
+		port_status &= ~(1 << wValue);
+		break;
+
+	case RH_CLEAR_FEATURE | RH_OTHER | RH_CLASS:
+		MUSB_PRINTF("RH_CLEAR_FEATURE | RH_OTHER | RH_CLASS\n");
+
+		switch (wValue) {
+		case RH_PORT_ENABLE:
+			len = 0;
+			break;
+
+		case RH_PORT_SUSPEND:
+			len = 0;
+			break;
+
+		case RH_PORT_POWER:
+			len = 0;
+			break;
+
+		case RH_C_PORT_CONNECTION:
+			len = 0;
+			break;
+
+		case RH_C_PORT_ENABLE:
+			len = 0;
+			break;
+
+		case RH_C_PORT_SUSPEND:
+			len = 0;
+			break;
+
+		case RH_C_PORT_OVER_CURRENT:
+			len = 0;
+			break;
+
+		case RH_C_PORT_RESET:
+			len = 0;
+			break;
+
+		default:
+			MUSB_PRINTF("invalid wValue\n");
+			stat = USB_ST_STALLED;
+		}
+
+		port_status &= ~(1 << wValue);
+		break;
+
+	case RH_SET_FEATURE | RH_OTHER | RH_CLASS:
+		MUSB_PRINTF("RH_SET_FEATURE | RH_OTHER | RH_CLASS\n");
+
+		switch (wValue) {
+		case RH_PORT_SUSPEND:
+			len = 0;
+			break;
+
+		case RH_PORT_RESET:
+			musb_port_reset(1);
+			len = 0;
+			break;
+
+		case RH_PORT_POWER:
+			len = 0;
+			break;
+
+		case RH_PORT_ENABLE:
+			len = 0;
+			break;
+
+		default:
+			MUSB_PRINTF("invalid wValue\n");
+			stat = USB_ST_STALLED;
+		}
+
+		port_status |= 1 << wValue;
+		break;
+
+	case RH_SET_ADDRESS:
+		MUSB_PRINTF("RH_SET_ADDRESS\n");
+
+		rh_devnum = wValue;
+		len = 0;
+		break;
+
+	case RH_GET_DESCRIPTOR:
+		MUSB_PRINTF("RH_GET_DESCRIPTOR: %x, %d\n", wValue, wLength);
+
+		switch (wValue) {
+		case (USB_DT_DEVICE << 8):	/* device descriptor */
+			len = min_t(unsigned int,
+				    leni, min_t(unsigned int,
+						sizeof(root_hub_dev_des),
+						wLength));
+			data_buf = root_hub_dev_des;
+			break;
+
+		case (USB_DT_CONFIG << 8):	/* configuration descriptor */
+			len = min_t(unsigned int,
+				    leni, min_t(unsigned int,
+						sizeof(root_hub_config_des),
+						wLength));
+			data_buf = root_hub_config_des;
+			break;
+
+		case ((USB_DT_STRING << 8) | 0x00):	/* string 0 descriptors */
+			len = min_t(unsigned int,
+				    leni, min_t(unsigned int,
+						sizeof(root_hub_str_index0),
+						wLength));
+			data_buf = root_hub_str_index0;
+			break;
+
+		case ((USB_DT_STRING << 8) | 0x01):	/* string 1 descriptors */
+			len = min_t(unsigned int,
+				    leni, min_t(unsigned int,
+						sizeof(root_hub_str_index1),
+						wLength));
+			data_buf = root_hub_str_index1;
+			break;
+
+		default:
+			MUSB_PRINTF("invalid wValue\n");
+			stat = USB_ST_STALLED;
+		}
+
+		break;
+
+	case RH_GET_DESCRIPTOR | RH_CLASS:
+		MUSB_PRINTF("RH_GET_DESCRIPTOR | RH_CLASS\n");
+
+		data_buf[0] = 0x09;	/* min length; */
+		data_buf[1] = 0x29;
+		data_buf[2] = 0x1;	/* 1 port */
+		data_buf[3] = 0x01;	/* per-port power switching */
+		data_buf[3] |= 0x10;	/* no overcurrent reporting */
+
+		/* Corresponds to data_buf[4-7] */
+		data_buf[4] = 0;
+		data_buf[5] = 5;
+		data_buf[6] = 0;
+		data_buf[7] = 0x02;
+		data_buf[8] = 0xff;
+
+		len = min_t(unsigned int, leni,
+			    min_t(unsigned int, data_buf[0], wLength));
+		break;
+
+	case RH_GET_CONFIGURATION:
+		MUSB_PRINTF("RH_GET_CONFIGURATION\n");
+
+		*(__u8 *) data_buf = 0x01;
+		len = 1;
+		break;
+
+	case RH_SET_CONFIGURATION:
+		MUSB_PRINTF("RH_SET_CONFIGURATION\n");
+
+		len = 0;
+		break;
+
+	default:
+		MUSB_PRINTF("*** *** *** unsupported root hub command *** *** ***\n");
+		stat = USB_ST_STALLED;
+	}
+
+	len = min_t(int, len, leni);
+	if (buffer != data_buf)
+		memcpy(buffer, data_buf, len);
+
+	dev->act_len = len;
+	dev->status = stat;
+	MUSB_PRINTF("dev act_len %d, status %d\n", dev->act_len, dev->status);
+
+	return stat;
+}
+
 /*
  * do a control transfer
  */
 int submit_control_msg(struct usb_device *dev, unsigned long pipe, void *buffer,
 			int len, struct devrequest *setup)
 {
-#ifndef CONFIG_USB_BLACKFIN
 	int devnum = usb_pipedevice(pipe);
-#endif
 	u16 csr;
 	u8  devspeed;
+
+	/* Control message is for the HUB? */
+	if (devnum == rh_devnum)
+		return musb_submit_rh_msg(dev, pipe, buffer, len, setup);
 
 	/* select control endpoint */
 	musb_writeb(MUSB_INDEX, MUSB_CONTROL_EP);
@@ -707,6 +1118,9 @@ int usb_lowlevel_init(void)
 {
 	u8  power;
 	u32 timeout;
+
+	rh_devnum = 0;
+	port_status = 0;
 
 	if (musb_platform_init() == -1)
 		return -1;
