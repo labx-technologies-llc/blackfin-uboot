@@ -58,6 +58,15 @@ proc usage {} {
     send_user "\n 2   100         50         16          4         8        \n"
     send_user "\n 3   600         50         24          1        12        \n"
     send_user "\n********************************************************************\n"
+
+    send_user "\n********************************************************************\n"
+    send_user "\nFor BF518F-EZBRD (ExtClock=25Mhz, CPU_MaxClock=600Mhz) :\n"
+    send_user "\n NUM CCLK(Mhz)  SCLK (Mhz)   VCO_MULT  CCLK_DIV  SCLK_DIV  \n"
+    send_user "\n 0   400         80         16          1         5        \n"
+    send_user "\n 1   300         50         12          1         6        \n"
+    send_user "\n 2   100         50         12          3         6        \n"
+    send_user "\n 3   400         40         16          1        10        \n"
+    send_user "\n********************************************************************\n"
     exit
 }
 
@@ -211,6 +220,25 @@ if { $board_type == "BF533-STAMP" } {
            set vco_mult  24
            set cclk_div  1
            set sclk_div  12
+        }
+} elseif { $board_type == "BF518F-EZBRD" } {
+    set config_file bf518f-ezbrd.h
+        if { $num == "0" } {
+           set vco_mult  16
+           set cclk_div  1
+           set sclk_div  5
+        } elseif { $num == "1" } {
+           set vco_mult  12
+           set cclk_div  1
+           set sclk_div  6
+        } elseif { $num == "2" } {
+           set vco_mult  12
+           set cclk_div  3
+           set sclk_div  6
+        } elseif { $num == "3" } {
+           set vco_mult  16
+           set cclk_div  1
+           set sclk_div  10
         }
 } else { 
     send_user "\n Unknown target board type.\n"

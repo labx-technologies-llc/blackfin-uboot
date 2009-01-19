@@ -173,6 +173,20 @@ set BIG_ELF_LOAD_ADDRESS       "0x1000000"
 
 set BDINFO_MEMSIZE           64*1024*1024
 
+} elseif { $board_type == "BF518F-EZBRD" } {
+
+set TEST_SDIO                            1
+
+set NUMBER_OF_FLASH_SECTORS    71
+set BDINFO_FLASHSIZE           "0x00400000"
+set KERNEL_FLASH_LOC           "0x20100000"
+set KERNEL_FLASH_END           "0x203fffff"
+set L1_INSTRUCT_SRAM_ADDRESS   "0xffa03000"
+
+set BIG_ELF_LOAD_ADDRESS       "0x1000000"
+
+set BDINFO_MEMSIZE           64*1024*1024
+
 } elseif { $board_type == "BF537-EZKIT" } {
 
 set TEST_SPI_FLASH			 0
@@ -1361,7 +1375,8 @@ set result_matrix { {mtest                                notrun} \
                     {tftp_100_half                        notrun} \
                     {tftp_100_full                        notrun} \
                     {sdio                                 notrun} \
-                    {atapi                                notrun}}
+                    {atapi                                notrun} \
+                    {usb                                  notrun}}
 
 #
 #
