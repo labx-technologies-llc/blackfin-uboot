@@ -275,8 +275,19 @@ void usb_show_tree_graph(struct usb_device *dev,char *pre)
 	pre[index++]=' ';
 	pre[index++]= has_child ? '|' : ' ';
 	pre[index]=0;
-	printf(" %s (%s, %dmA)\n",usb_get_class_desc(dev->config.if_desc[0].bInterfaceClass),
-		dev->speed ? "1.5MBit/s" : "12MBit/s", dev->config.MaxPower * 2);
+	printf(" %s (", usb_get_class_desc(dev->config.if_desc[0].bInterfaceClass));
+	switch (dev->speed) {
+	case 0:
+		printf("%s, ", "12MBit/s");
+		break;
+	case 1:
+		printf("%s, ", "1.5MBit/s");
+		break;
+	case 2:
+		printf("%s, ", "480MBit/s");
+		break;
+	}
+	printf("%dmA)\n", dev->config.MaxPower * 2);
 	if (strlen(dev->mf) ||
 	   strlen(dev->prod) ||
 	   strlen(dev->serial))
