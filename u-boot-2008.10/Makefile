@@ -3058,6 +3058,9 @@ BFIN_BOARDS += cm-bf527 cm-bf533 cm-bf537e cm-bf548 cm-bf561 tcm-bf537
 # Misc third party boards
 BFIN_BOARDS += bf537-minotaur bf537-srv1 blackstamp
 
+# I-SYST Micromodule
+BFIN_BOARDS += ibf-dsp561
+
 $(BFIN_BOARDS:%=%_config)	: unconfig
 	@$(MKCONFIG) $(@:_config=) blackfin blackfin $(@:_config=)
 	@$(MAKE) -s -B $(obj)include/autoconf.mk
