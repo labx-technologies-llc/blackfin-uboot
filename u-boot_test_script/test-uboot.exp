@@ -4683,7 +4683,7 @@ if { $TEST_USB } {
     send "usb start\r"
     while 1 {
         expect {
-            -re "1 USB Device\\\(s\\\) found.*1 Storage Device\\\(s\\\) found.*>" {
+            -re "2 USB Device\\\(s\\\) found.*1 Storage Device\\\(s\\\) found.*>" {
                 set usb_result $TEST_PASS
                 break
             }
