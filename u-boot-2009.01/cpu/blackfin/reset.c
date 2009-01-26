@@ -9,7 +9,6 @@
 #include <common.h>
 #include <command.h>
 #include <asm/blackfin.h>
-#include <asm/mach-common/bits/bootrom.h>
 #include "cpu.h"
 
 /* A system soft reset makes external memory unusable so force
