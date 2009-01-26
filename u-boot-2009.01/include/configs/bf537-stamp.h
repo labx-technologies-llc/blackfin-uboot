@@ -112,6 +112,7 @@
 #define CONFIG_SYS_I2C_SLAVE	0
 
 
+
 /*
  * SPI_MMC Settings
  */
