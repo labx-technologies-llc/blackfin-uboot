@@ -110,7 +110,10 @@
 #define CONFIG_BOOTARGS	\
 	"root=/dev/mtdblock0 rw " \
 	"clkin_hz=" MK_STR(CONFIG_CLKIN_HZ) " " \
-	"earlyprintk=serial,uart" MK_STR(CONFIG_UART_CONSOLE) "," MK_STR(CONFIG_BAUDRATE) " " \
+	"earlyprintk=" \
+		"serial," \
+		"uart" MK_STR(CONFIG_UART_CONSOLE) "," \
+		MK_STR(CONFIG_BAUDRATE) " " \
 	CONFIG_BOOTARGS_VIDEO \
 	"console=ttyBF0," MK_STR(CONFIG_BAUDRATE)
 
@@ -147,7 +150,10 @@
 		"tftp $(loadaddr) $(ubootfile);" \
 		UBOOT_ENV_UPDATE \
 		"\0" \
-	"addip=set bootargs $(bootargs) ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask):$(hostname):eth0:off\0" \
+	"addip=set bootargs $(bootargs) " \
+		"ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask):" \
+		   "$(hostname):eth0:off" \
+		"\0" \
 	"ramargs=set bootargs " CONFIG_BOOTARGS "\0" \
 	"ramboot=" \
 		"tftp $(loadaddr) uImage;" \
@@ -155,7 +161,10 @@
 		"run addip;" \
 		"bootm" \
 		"\0" \
-	"nfsargs=set bootargs root=/dev/nfs rw nfsroot=$(serverip):$(rootpath),tcp,nfsvers=3\0" \
+	"nfsargs=set bootargs " \
+		"root=/dev/nfs rw " \
+		"nfsroot=$(serverip):$(rootpath),tcp,nfsvers=3" \
+		"\0" \
 	"nfsboot=" \
 		"tftp $(loadaddr) vmImage;" \
 		"run nfsargs;" \

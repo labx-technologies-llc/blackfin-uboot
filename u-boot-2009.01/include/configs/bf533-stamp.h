@@ -62,7 +62,12 @@
 #define ADI_CMDS_NETWORK	1
 #define CONFIG_DRIVER_SMC91111	1
 #define CONFIG_SMC91111_BASE	0x20300300
-#define SMC91111_EEPROM_INIT()	{ *pFIO_DIR = 0x01; *pFIO_FLAG_S = 0x01; SSYNC(); }
+#define SMC91111_EEPROM_INIT() \
+	do { \
+		*pFIO_DIR |= PF1; \
+		*pFIO_FLAG_S = PF1; \
+		SSYNC(); \
+	} while (0)
 #define CONFIG_HOSTNAME		bf533-stamp
 /* To remove hardcoding and enable MAC storage in EEPROM  */
 /* #define CONFIG_ETHADDR	02:80:ad:20:31:b8 */
@@ -71,24 +76,24 @@
 /*
  * Flash Settings
  */
-#define CONFIG_SYS_FLASH_CFI		/* The flash is CFI compatible  */
-#define CONFIG_FLASH_CFI_DRIVER	/* Use common CFI driver	*/
+#define CONFIG_SYS_FLASH_CFI
+#define CONFIG_FLASH_CFI_DRIVER
 #define	CONFIG_SYS_FLASH_CFI_AMD_RESET
 
 #define CONFIG_SYS_FLASH_BASE		0x20000000
-#define CONFIG_SYS_MAX_FLASH_BANKS	1	/* max number of memory banks */
-#define CONFIG_SYS_MAX_FLASH_SECT	67	/* max number of sectors on one chip */
+#define CONFIG_SYS_MAX_FLASH_BANKS	1
+#define CONFIG_SYS_MAX_FLASH_SECT	67
 
 #if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CONFIG_ENV_IS_IN_EEPROM	1
-#define CONFIG_ENV_OFFSET		0x4000
+#define CONFIG_ENV_OFFSET	0x4000
 #else
 #define CONFIG_ENV_IS_IN_FLASH	1
 #define CONFIG_ENV_ADDR		0x20004000
-#define	CONFIG_ENV_OFFSET		(CONFIG_ENV_ADDR - CONFIG_SYS_FLASH_BASE)
+#define	CONFIG_ENV_OFFSET	(CONFIG_ENV_ADDR - CONFIG_SYS_FLASH_BASE)
 #endif
 #define	CONFIG_ENV_SIZE		0x2000
-#define CONFIG_ENV_SECT_SIZE	0x2000	/* Total Size of Environment Sector */
+#define CONFIG_ENV_SECT_SIZE	0x2000
 #if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #define	ENV_IS_EMBEDDED
 #else
@@ -108,13 +113,27 @@
  * By default PF2 is used as SDA and PF3 as SCL on the Stamp board
  */
 #define CONFIG_SOFT_I2C
-#define PF_SCL			PF3
-#define PF_SDA			PF2
 #ifdef CONFIG_SOFT_I2C
-#define I2C_INIT       do { *pFIO_DIR |= PF_SCL; SSYNC(); } while (0)
-#define I2C_ACTIVE     do { *pFIO_DIR |= PF_SDA; *pFIO_INEN &= ~PF_SDA; SSYNC(); } while (0)
-#define I2C_TRISTATE   do { *pFIO_DIR &= ~PF_SDA; *pFIO_INEN |= PF_SDA; SSYNC(); } while (0)
-#define I2C_READ       ((*pFIO_FLAG_D & PF_SDA) != 0)
+#define PF_SCL PF3
+#define PF_SDA PF2
+#define I2C_INIT \
+	do { \
+		*pFIO_DIR |= PF_SCL; \
+		SSYNC(); \
+	} while (0)
+#define I2C_ACTIVE \
+	do { \
+		*pFIO_DIR |= PF_SDA; \
+		*pFIO_INEN &= ~PF_SDA; \
+		SSYNC(); \
+	} while (0)
+#define I2C_TRISTATE \
+	do { \
+		*pFIO_DIR &= ~PF_SDA; \
+		*pFIO_INEN |= PF_SDA; \
+		SSYNC(); \
+	} while (0)
+#define I2C_READ ((*pFIO_FLAG_D & PF_SDA) != 0)
 #define I2C_SDA(bit) \
 	do { \
 		if (bit) \
@@ -151,15 +170,15 @@
 #undef  CONFIG_IDE_LED			/* no led for ide supported */
 #undef  CONFIG_IDE_RESET		/* no reset for ide supported */
 
-#define CONFIG_SYS_IDE_MAXBUS		1	/* max. 1 IDE busses */
-#define CONFIG_SYS_IDE_MAXDEVICE	(CONFIG_SYS_IDE_MAXBUS*1) /* max. 1 drives per IDE bus */
+#define CONFIG_SYS_IDE_MAXBUS		1
+#define CONFIG_SYS_IDE_MAXDEVICE	(CONFIG_SYS_IDE_MAXBUS * 1)
 
 #define CONFIG_SYS_ATA_BASE_ADDR	0x20200000
 #define CONFIG_SYS_ATA_IDE0_OFFSET	0x0000
 
-#define CONFIG_SYS_ATA_DATA_OFFSET	0x0020	/* Offset for data I/O */
-#define CONFIG_SYS_ATA_REG_OFFSET	0x0020	/* Offset for normal register accesses */
-#define CONFIG_SYS_ATA_ALT_OFFSET	0x0007	/* Offset for alternate registers */
+#define CONFIG_SYS_ATA_DATA_OFFSET	0x0020	/* data I/O */
+#define CONFIG_SYS_ATA_REG_OFFSET	0x0020	/* normal register accesses */
+#define CONFIG_SYS_ATA_ALT_OFFSET	0x0007	/* alternate registers */
 
 #define CONFIG_SYS_ATA_STRIDE		2
 
