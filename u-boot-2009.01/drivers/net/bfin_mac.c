@@ -115,7 +115,6 @@ int bfin_EMAC_initialize(bd_t *bd)
 #endif
 
 	ethaddr = getenv("ethaddr");
-#ifndef CONFIG_ETHADDR
 	if (ethaddr == NULL) {
 		char nid[20];
 		board_get_enetaddr(bd->bi_enetaddr);
@@ -124,9 +123,7 @@ int bfin_EMAC_initialize(bd_t *bd)
 			bd->bi_enetaddr[2], bd->bi_enetaddr[3],
 			bd->bi_enetaddr[4], bd->bi_enetaddr[5]);
 		setenv("ethaddr", nid);
-	} else
-#endif
-	{
+	} else {
 		int i;
 		char *e;
 		for (i = 0; i < 6; ++i) {

@@ -29,7 +29,7 @@
 #include <config.h>
 #include <command.h>
 #include <asm/blackfin.h>
-#include <asm/io.h>
+#include <asm/net.h>
 #include <net.h>
 #include <asm/mach-common/bits/bootrom.h>
 #include <netdev.h>
@@ -107,16 +107,7 @@ void board_get_enetaddr(uchar *mac_addr)
 	}
 
 	puts("Warning: Generating 'random' MAC address\n");
-
-	/* make something up */
-	const char s[] = __DATE__;
-	size_t i;
-	u32 cycles;
-	for (i = 0; i < 6; ++i) {
-		asm("%0 = CYCLES;" : "=r" (cycles));
-		mac_addr[i] = cycles ^ s[i];
-	}
-	mac_addr[0] = (mac_addr[0] | 0x02) & ~0x01; /* make it local unicast */
+	bfin_gen_rand_mac(mac_addr);
 }
 
 void board_reset(void)
