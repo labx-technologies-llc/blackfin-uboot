@@ -273,8 +273,21 @@ static int bfin_nfc_calculate_ecc(struct mtd_info *mtd,
 }
 
 #ifdef CFG_BFIN_NFC_BOOTROM_ECC
-static struct nand_oobinfo bfin_nfc_autooob = {
-	.useecc = MTD_NANDECC_AUTOPLACE,
+# define BOOTROM_ECC 1
+#else
+# define BOOTROM_ECC 0
+#endif
+
+static uint8_t bbt_pattern[] = { 0xff };
+
+static struct nand_bbt_descr bootrom_bbt = {
+	.options = 0,
+	.offs = 63,
+	.len = 1,
+	.pattern = bbt_pattern,
+};
+
+static struct nand_ecclayout bootrom_ecclayout = {
 	.eccbytes = 24,
 	.eccpos = {
 		0x8 * 0, 0x8 * 0 + 1, 0x8 * 0 + 2,
@@ -284,7 +297,8 @@ static struct nand_oobinfo bfin_nfc_autooob = {
 		0x8 * 4, 0x8 * 4 + 1, 0x8 * 4 + 2,
 		0x8 * 5, 0x8 * 5 + 1, 0x8 * 5 + 2,
 		0x8 * 6, 0x8 * 6 + 1, 0x8 * 6 + 2,
-		0x8 * 7, 0x8 * 7 + 1, 0x8 * 7 + 2},
+		0x8 * 7, 0x8 * 7 + 1, 0x8 * 7 + 2
+	},
 	.oobfree = {
 		{ 0x8 * 0 + 3, 5 },
 		{ 0x8 * 1 + 3, 5 },
@@ -296,12 +310,6 @@ static struct nand_oobinfo bfin_nfc_autooob = {
 		{ 0x8 * 7 + 3, 5 },
 	}
 };
-
-void board_nand_select_device(struct nand_chip *nand, int chip)
-{
-	nand->badblockpos = 63;
-}
-#endif
 
 /*
  * Board-specific NAND initialization. The following members of the
@@ -353,9 +361,10 @@ int board_nand_init(struct nand_chip *chip)
 # define ECC_HW 1
 #endif
 	if (ECC_HW) {
-#ifdef CFG_BFIN_NFC_BOOTROM_ECC
-		chip->autooob = &bfin_nfc_autooob;
-#endif
+		if (BOOTROM_ECC) {
+			chip->badblock_pattern = &bootrom_bbt;
+			chip->ecc.layout = &bootrom_ecclayout;
+		}
 		if (!NAND_IS_512()) {
 			chip->ecc.bytes = 3;
 			chip->ecc.size = 256;
