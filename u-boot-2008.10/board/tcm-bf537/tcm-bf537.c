@@ -25,8 +25,8 @@ int checkboard(void)
 
 phys_size_t initdram(int board_type)
 {
-	gd->bd->bi_memstart = CONFIG_SYS_SDRAM_BASE;
-	gd->bd->bi_memsize = CONFIG_SYS_MAX_RAM_SIZE;
+	gd->bd->bi_memstart = CFG_SDRAM_BASE;
+	gd->bd->bi_memsize = CFG_MAX_RAM_SIZE;
 	return gd->bd->bi_memsize;
 }
 
