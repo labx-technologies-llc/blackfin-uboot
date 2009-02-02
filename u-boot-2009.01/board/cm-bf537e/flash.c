@@ -245,10 +245,8 @@ static int check_sector(unsigned short usSector)
 	printf("Checking sector %d", usSector);
 	memIndex = (unsigned long)(CONFIG_SYS_FLASH_BASE +
 				   (usSector * FLASH_SECTOR_SIZE));
-	printf("\nmemIndex 1  %lx crossed %d\n", memIndex, crossed);
 
 	SWITCH_BANK;
-	printf("\nmemIndex 2  %lx crossed %d\n", memIndex, crossed);
 
 	ret = ERR_OK;
 
@@ -410,6 +408,42 @@ int do_pf4(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 }
 
 U_BOOT_CMD(pf4, CONFIG_SYS_MAXARGS, 1, do_pf4,
-	   "pf4- set/clear pf4 mem bank switch\n",
+	   "pf4\t- set/clear pf4 mem bank switch\n",
 	   "\n    - set (1) uses 2nd bank clear (0) uses 1st bank\n"
 	   "pf4  1 ...\n" "pf4  0 ...\n");
+
+int do_readflash(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
+{
+	unsigned long src;
+	unsigned long dest;
+	int size;
+
+	if (argc == 4) {
+		src = simple_strtoul(argv[1], NULL, 16);
+		dest = simple_strtoul(argv[2], NULL, 16);
+		size = simple_strtol(argv[3], NULL, 16);
+		if (src < CONFIG_SYS_FLASH_BASE ||
+		    (src + size) > CONFIG_SYS_FLASH_BASE + CONFIG_SYS_FLASH_SIZE) {
+			printf("Error: Memory area %#08lx to %#08lx is not in flash.\n",
+			       src, src + size);
+			return 1;
+		}
+		if (dest < CONFIG_SYS_SDRAM_BASE ||
+		    (dest + size) > CONFIG_SYS_SDRAM_BASE + CONFIG_SYS_MAX_RAM_SIZE) {
+			printf("Error: Memory area %#08lx to %#08lx is not in RAM.\n",
+			       dest, dest + size);
+			return 1;
+		}
+		read_flash((char *)src, size, (char *)dest);
+		printf("Done.\n");
+	} else
+		printf("Error: Arguments missing.\n");
+
+	return 0;
+}
+
+U_BOOT_CMD(flread, 4, 0, do_readflash,
+	   "flread  - read from flash\n",
+	   "reads flash memory and handles pf4 bank switching\n\n"
+	   "readflash addr dest length\n"
+	   "  (all arguments in hex)\n");

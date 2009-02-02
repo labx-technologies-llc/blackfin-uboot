@@ -326,12 +326,8 @@ static int check_sector(unsigned short usSector)
 	printf("Checking sector %d", usSector);
 	memIndex = (unsigned long)(CONFIG_SYS_FLASH_BASE +
 				   (usSector * FLASH_SECTOR_SIZE));
-	printf("\nmemIndex 1  %lx crossed4 %d\n", memIndex, crossed4);
-	printf("\nmemIndex 1  %lx crossed5 %d\n", memIndex, crossed5);
 
 	SWITCH_BANK;
-	printf("\nmemIndex 2  %lx crossed4 %d\n", memIndex, crossed4);
-	printf("\nmemIndex 2  %lx crossed5 %d\n", memIndex, crossed5);
 
 	ret = ERR_OK;
 
@@ -527,6 +523,64 @@ int do_pf4(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 }
 
 U_BOOT_CMD(pf4, CONFIG_SYS_MAXARGS, 1, do_pf4,
-	   "pf4- set/clear pf4 mem bank switch\n",
-	   "\n    - set (1) uses 2nd bank clear (0) uses 1st bank\n"
-	   "pf4  1 ...\n" "pf4  0 ...\n");
+	   "pf4\t- set/clear pf4 mem bank switch\n",
+	   "\npf4  1 ...\n" "pf4  0 ...\n");
+
+int do_pf5(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
+{
+	ushort data;
+	ulong dflg;
+
+	if (argc > 1) {
+		dflg = simple_strtoul(argv[1], NULL, 16);
+		if (dflg > 0)
+			*pPORTFIO_SET = PF5;
+		else
+			*pPORTFIO_CLEAR = PF5;
+	} else {
+		data = *pPORTFIO;
+		printf(" PF5 command argc = %d data %04x\n", argc, data);
+	}
+
+	return 0;
+}
+
+U_BOOT_CMD(pf5, CONFIG_SYS_MAXARGS, 1, do_pf5,
+	   "pf5\t- set/clear pf5 mem bank switch\n",
+	   "\npf5  1 ...\n" "pf5  0 ...\n");
+
+int do_readflash(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
+{
+	unsigned long src;
+	unsigned long dest;
+	int size;
+
+	if (argc == 4) {
+		src = simple_strtoul(argv[1], NULL, 16);
+		dest = simple_strtoul(argv[2], NULL, 16);
+		size = simple_strtol(argv[3], NULL, 16);
+		if (src < CONFIG_SYS_FLASH_BASE ||
+		    (src + size) > CONFIG_SYS_FLASH_BASE + CONFIG_SYS_FLASH_SIZE) {
+			printf("Error: Memory area %#08lx to %#08lx is not in flash.\n",
+			       src, src + size);
+			return 1;
+		}
+		if (dest < CONFIG_SYS_SDRAM_BASE ||
+		    (dest + size) > CONFIG_SYS_SDRAM_BASE + CONFIG_SYS_MAX_RAM_SIZE) {
+			printf("Error: Memory area %#08lx to %#08lx is not in RAM.\n",
+			       dest, dest + size);
+			return 1;
+		}
+		read_flash((char *)src, size, (char *)dest);
+		printf("Done.\n");
+	} else
+		printf("Error: Arguments missing.\n");
+
+	return 0;
+}
+
+U_BOOT_CMD(flread, 4, 0, do_readflash,
+	   "flread  - read from flash\n",
+	   "reads flash memory and handles pf4/pf5 bank switching\n\n"
+	   "readflash addr dest length\n"
+	   "  (all arguments in hex)\n");
