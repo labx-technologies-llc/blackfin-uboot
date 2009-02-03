@@ -118,7 +118,7 @@ unsigned long flash_init(void)
 	memIndex = CONFIG_SYS_FLASH_BASE;
 
 	/* [0...2 MB] */
-	for(; memIndex < 0x20020000; memIndex += 0x4000) {
+	for (; memIndex < 0x20020000; memIndex += 0x4000) {
 		/* first 4 sectors a 32Kbyte */
 		*(volatile unsigned short *)memIndex = 0x0050; /* clear status reg */
 		SSYNC();
@@ -129,7 +129,7 @@ unsigned long flash_init(void)
 		*(volatile unsigned short *)memIndex = 0x00ff; /* read array mode */
 		SSYNC();
 	}
-	for(; memIndex < 0x20800000; memIndex += 0x10000) {
+	for (; memIndex < 0x20800000; memIndex += 0x10000) {
 		SWITCH_BANK;
 		*(volatile unsigned short *)memIndex = 0x0050; /* clear status reg */
 		SSYNC();
