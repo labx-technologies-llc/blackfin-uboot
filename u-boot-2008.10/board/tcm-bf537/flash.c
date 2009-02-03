@@ -559,14 +559,14 @@ int do_readflash(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		src = simple_strtoul(argv[1], NULL, 16);
 		dest = simple_strtoul(argv[2], NULL, 16);
 		size = simple_strtol(argv[3], NULL, 16);
-		if (src < CONFIG_SYS_FLASH_BASE ||
-		    (src + size) > CONFIG_SYS_FLASH_BASE + CONFIG_SYS_FLASH_SIZE) {
+		if (src < CFG_FLASH_BASE ||
+		    (src + size) > CFG_FLASH_BASE + CFG_FLASH_SIZE) {
 			printf("Error: Memory area %#08lx to %#08lx is not in flash.\n",
 			       src, src + size);
 			return 1;
 		}
-		if (dest < CONFIG_SYS_SDRAM_BASE ||
-		    (dest + size) > CONFIG_SYS_SDRAM_BASE + CONFIG_SYS_MAX_RAM_SIZE) {
+		if (dest < CFG_SDRAM_BASE ||
+		    (dest + size) > CFG_SDRAM_BASE + CFG_MAX_RAM_SIZE) {
 			printf("Error: Memory area %#08lx to %#08lx is not in RAM.\n",
 			       dest, dest + size);
 			return 1;
