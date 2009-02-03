@@ -91,10 +91,10 @@
  */
 #define CONFIG_SYS_FLASH_BASE		0x20000000
 #define CONFIG_SYS_FLASH_CFI		/* The flash is CFI compatible */
-#define CONFIG_FLASH_CFI_DRIVER	/* Use common CFI driver */
-#define CONFIG_SYS_FLASH_PROTECTION
+#define FLASH_TOT_SECT		64
+#define CONFIG_SYS_FLASH_SIZE		0x800000
 #define CONFIG_SYS_MAX_FLASH_BANKS	1	/* max number of memory banks */
-#define CONFIG_SYS_MAX_FLASH_SECT	259	/* max number of sectors on one chip */
+#define CONFIG_SYS_MAX_FLASH_SECT 64
 
 #if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CONFIG_ENV_IS_IN_EEPROM	1

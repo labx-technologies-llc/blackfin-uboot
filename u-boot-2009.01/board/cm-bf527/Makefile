@@ -29,7 +29,7 @@ include $(TOPDIR)/config.mk
 
 LIB	= $(obj)lib$(BOARD).a
 
-COBJS-y	:= $(BOARD).o gpio.o
+COBJS-y	:= $(BOARD).o gpio.o flash.o
 COBJS-$(CONFIG_CMD_EEPROM) += spi_flash.o
 COBJS-$(CONFIG_CMD_NAND)   += nand.o
 
