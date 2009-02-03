@@ -1,7 +1,6 @@
 /*
  * U-boot - flash.c Flash driver for MT28F320J3FS-11
  *
-
  * Copyright (c) 2005 blackfin.uclinux.org
  * This file is based on BF533EzFlash.c originally written by Analog Devices, Inc.
  *
@@ -115,37 +114,35 @@ unsigned long flash_init(void)
 		SSYNC();
 	}
 
-	// unlock all flash sectors (default: locked)
+	/* unlock all flash sectors (default: locked) */
+	memIndex = CONFIG_SYS_FLASH_BASE;
 
-	memIndex = (unsigned long)CONFIG_SYS_FLASH_BASE;
-
-	// [0...2 MB]
-	for(;memIndex < 0x20020000;memIndex+=0x4000) // first 4 sectors a 32Kbyte
-	{
-		*(volatile unsigned short *)memIndex = 0x0050; // clear status reg
+	/* [0...2 MB] */
+	for(; memIndex < 0x20020000; memIndex += 0x4000) {
+		/* first 4 sectors a 32Kbyte */
+		*(volatile unsigned short *)memIndex = 0x0050; /* clear status reg */
 		SSYNC();
-		*(volatile unsigned short *)memIndex = 0x0060;  // lock setup
+		*(volatile unsigned short *)memIndex = 0x0060;  /* lock setup */
 		SSYNC();
-		*(volatile unsigned short *)memIndex = 0x00d0;  // lock confirm
+		*(volatile unsigned short *)memIndex = 0x00d0;  /* lock confirm */
 		SSYNC();
-		*(volatile unsigned short *)memIndex = 0x00ff; // read array mode
+		*(volatile unsigned short *)memIndex = 0x00ff; /* read array mode */
 		SSYNC();
 	}
-	for(;memIndex < 0x20800000;memIndex+=0x10000)
-	{
+	for(; memIndex < 0x20800000; memIndex += 0x10000) {
 		SWITCH_BANK;
-		*(volatile unsigned short *)memIndex = 0x0050; // clear status reg
+		*(volatile unsigned short *)memIndex = 0x0050; /* clear status reg */
 		SSYNC();
-		*(volatile unsigned short *)memIndex = 0x0060;  // lock setup
+		*(volatile unsigned short *)memIndex = 0x0060;  /* lock setup */
 		SSYNC();
-		*(volatile unsigned short *)memIndex = 0x00d0;  // lock confirm
+		*(volatile unsigned short *)memIndex = 0x00d0;  /* lock confirm */
 		SSYNC();
-		*(volatile unsigned short *)memIndex = 0x00ff; // read array mode
+		*(volatile unsigned short *)memIndex = 0x00ff; /* read array mode */
 		SSYNC();
 		SWITCH_BACK;
 	}
 
-	return (CONFIG_SYS_FLASH_SIZE);
+	return CONFIG_SYS_FLASH_SIZE;
 }
 
 void flash_print_info(flash_info_t *info)
