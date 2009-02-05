@@ -2010,7 +2010,7 @@ while 1 {
 	    set autoscr_help $TEST_PASS
 	}
 
-	-re "base\[ ]+- print or set address offset" {
+	-re "base\t- print or set address offset" {
 	    set base_help $TEST_PASS
 	}
 
