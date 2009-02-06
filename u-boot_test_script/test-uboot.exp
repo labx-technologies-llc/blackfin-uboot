@@ -335,6 +335,7 @@ proc ethtool_tftp { speed status } {
             timeout {
                 send_user "ERROR: tftp timed out"
                 send_log "TFTP-ERROR\n"
+                send "\3"
                 set tftp_flag 0
                 break
             }
