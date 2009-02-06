@@ -69,7 +69,7 @@
 		SSYNC(); \
 	} while (0)
 #define CONFIG_HOSTNAME		bf533-stamp
-/* To remove hardcoding and enable MAC storage in EEPROM  */
+/* Uncomment next line to use fixed MAC address */
 /* #define CONFIG_ETHADDR	02:80:ad:20:31:b8 */
 
 
@@ -78,7 +78,7 @@
  */
 #define CONFIG_SYS_FLASH_CFI
 #define CONFIG_FLASH_CFI_DRIVER
-#define	CONFIG_SYS_FLASH_CFI_AMD_RESET
+#define CONFIG_SYS_FLASH_CFI_AMD_RESET
 
 #define CONFIG_SYS_FLASH_BASE		0x20000000
 #define CONFIG_SYS_MAX_FLASH_BANKS	1
@@ -90,14 +90,14 @@
 #else
 #define CONFIG_ENV_IS_IN_FLASH	1
 #define CONFIG_ENV_ADDR		0x20004000
-#define	CONFIG_ENV_OFFSET	(CONFIG_ENV_ADDR - CONFIG_SYS_FLASH_BASE)
+#define CONFIG_ENV_OFFSET	(CONFIG_ENV_ADDR - CONFIG_SYS_FLASH_BASE)
 #endif
-#define	CONFIG_ENV_SIZE		0x2000
+#define CONFIG_ENV_SIZE		0x2000
 #define CONFIG_ENV_SECT_SIZE	0x2000
 #if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
-#define	ENV_IS_EMBEDDED
+#define ENV_IS_EMBEDDED
 #else
-#define	ENV_IS_EMBEDDED_CUSTOM
+#define ENV_IS_EMBEDDED_CUSTOM
 #endif
 
 /* CONFIG_SPI_BAUD controls the SPI peripheral clock divider		*/

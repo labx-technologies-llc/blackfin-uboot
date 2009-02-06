@@ -78,17 +78,18 @@
 #define CONFIG_FLASH_CFI_DRIVER	/* Use common CFI driver */
 #define CONFIG_SYS_FLASH_PROTECTION
 #define CONFIG_SYS_MAX_FLASH_BANKS	1
-#define CONFIG_SYS_MAX_FLASH_SECT	71	/* some have 67 sectors (M29W320DB), but newer have 71 (M29W320EB) */
+/* some have 67 sectors (M29W320DB), but newer have 71 (M29W320EB) */
+#define CONFIG_SYS_MAX_FLASH_SECT	71
 #if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CONFIG_ENV_IS_IN_EEPROM	1
-#define CONFIG_ENV_OFFSET		0x4000
+#define CONFIG_ENV_OFFSET	0x4000
 #else
-#define	CONFIG_ENV_IS_IN_FLASH	1
+#define CONFIG_ENV_IS_IN_FLASH	1
 #define CONFIG_ENV_ADDR		0x20004000
-#define CONFIG_ENV_OFFSET		(CONFIG_ENV_ADDR - CONFIG_SYS_FLASH_BASE)
+#define CONFIG_ENV_OFFSET	(CONFIG_ENV_ADDR - CONFIG_SYS_FLASH_BASE)
 #endif
 #define CONFIG_ENV_SIZE		0x2000
-#define	CONFIG_ENV_SECT_SIZE	0x2000	/* Total Size of Environment Sector */
+#define CONFIG_ENV_SECT_SIZE	0x2000
 #if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #define ENV_IS_EMBEDDED
 #else
@@ -148,13 +149,12 @@
 				break; \
 	} while (0)
 
-#define BFIN_NAND_CLE		(1<<2)	/* A2 -> Command Enable */
-#define BFIN_NAND_ALE		(1<<1)	/* A1 -> Address Enable */
-
-#define WRITE_NAND_COMMAND(d, adr) do{ *(volatile __u8 *)((unsigned long)adr | BFIN_NAND_CLE) = (__u8)(d); } while(0)
-#define WRITE_NAND_ADDRESS(d, adr) do{ *(volatile __u8 *)((unsigned long)adr | BFIN_NAND_ALE) = (__u8)(d); } while(0)
-#define WRITE_NAND(d, adr) do{ *(volatile __u8 *)((unsigned long)adr) = (__u8)d; } while(0)
-#define READ_NAND(adr) ((volatile unsigned char)(*(volatile __u8 *)(unsigned long)adr))
+#define BFIN_NAND_CLE		(1 << 2)	/* A2 -> Command Enable */
+#define BFIN_NAND_ALE		(1 << 1)	/* A1 -> Address Enable */
+#define WRITE_NAND_COMMAND(d, adr) bfin_write8(adr | BFIN_NAND_CLE, d)
+#define WRITE_NAND_ADDRESS(d, adr) bfin_write8(adr | BFIN_NAND_ALE, d)
+#define WRITE_NAND(d, adr)         bfin_write8(adr, d)
+#define READ_NAND(adr)             bfin_read8(adr)
 
 
 /*
@@ -164,7 +164,9 @@
 /* #define CONFIG_BFIN_CF_IDE */	/* Add CF flash card support */
 /* #define CONFIG_BFIN_HDD_IDE */	/* Add IDE Disk Drive (HDD) support */
 
-#if defined(CONFIG_BFIN_CF_IDE) || defined(CONFIG_BFIN_HDD_IDE) || defined(CONFIG_BFIN_TRUE_IDE)
+#if defined(CONFIG_BFIN_CF_IDE) || \
+    defined(CONFIG_BFIN_HDD_IDE) || \
+    defined(CONFIG_BFIN_TRUE_IDE)
 # define CONFIG_BFIN_IDE	1
 # define CONFIG_CMD_IDE
 #endif
@@ -179,8 +181,8 @@
 #undef  CONFIG_IDE_LED		/* no led for ide supported */
 #undef  CONFIG_IDE_RESET	/* no reset for ide supported */
 
-#define CONFIG_SYS_IDE_MAXBUS		1	/* max. 1 IDE busses */
-#define CONFIG_SYS_IDE_MAXDEVICE	(CONFIG_SYS_IDE_MAXBUS*1)	/* max. 1 drives per IDE bus */
+#define CONFIG_SYS_IDE_MAXBUS		1
+#define CONFIG_SYS_IDE_MAXDEVICE	(CONFIG_SYS_IDE_MAXBUS * 1)
 
 #undef  CONFIG_EBIU_AMBCTL1_VAL
 #define CONFIG_EBIU_AMBCTL1_VAL		0xFFC3FFC3
@@ -195,34 +197,31 @@
  */
 #define CONFIG_SYS_ATA_BASE_ADDR	0x2031C000
 #define CONFIG_SYS_ATA_IDE0_OFFSET	0x0000
-#define CONFIG_SYS_ATA_DATA_OFFSET	0x0020	/* Offset for data I/O */
-#define CONFIG_SYS_ATA_REG_OFFSET	0x0020	/* Offset for normal register accesses */
-#define CONFIG_SYS_ATA_ALT_OFFSET	0x001C	/* Offset for alternate registers */
+#define CONFIG_SYS_ATA_DATA_OFFSET	0x0020	/* data I/O */
+#define CONFIG_SYS_ATA_REG_OFFSET	0x0020	/* normal register accesses */
+#define CONFIG_SYS_ATA_ALT_OFFSET	0x001C	/* alternate registers */
 #define CONFIG_SYS_ATA_STRIDE		2	/* CF.A0 --> Blackfin.Ax */
-#endif				/* CONFIG_BFIN_TRUE_IDE */
 
-#if defined(CONFIG_BFIN_CF_IDE)	/* USE CompactFlash Storage Card in the common memory space */
+#elif defined(CONFIG_BFIN_CF_IDE)
 #define CONFIG_SYS_ATA_BASE_ADDR	0x20211800
 #define CONFIG_SYS_ATA_IDE0_OFFSET	0x0000
-#define CONFIG_SYS_ATA_DATA_OFFSET	0x0000	/* Offset for data I/O */
-#define CONFIG_SYS_ATA_REG_OFFSET	0x0000	/* Offset for normal register accesses */
-#define CONFIG_SYS_ATA_ALT_OFFSET	0x000E	/* Offset for alternate registers */
+#define CONFIG_SYS_ATA_DATA_OFFSET	0x0000	/* data I/O */
+#define CONFIG_SYS_ATA_REG_OFFSET	0x0000	/* normal register accesses */
+#define CONFIG_SYS_ATA_ALT_OFFSET	0x000E	/* alternate registers */
 #define CONFIG_SYS_ATA_STRIDE		1	/* CF.A0 --> Blackfin.Ax */
-#endif				/* CONFIG_BFIN_CF_IDE */
 
-#if defined(CONFIG_BFIN_HDD_IDE)	/* USE TRUE IDE */
+#elif defined(CONFIG_BFIN_HDD_IDE)
 #define CONFIG_SYS_ATA_BASE_ADDR	0x20314000
 #define CONFIG_SYS_ATA_IDE0_OFFSET	0x0000
-#define CONFIG_SYS_ATA_DATA_OFFSET	0x0020	/* Offset for data I/O */
-#define CONFIG_SYS_ATA_REG_OFFSET	0x0020	/* Offset for normal register accesses */
-#define CONFIG_SYS_ATA_ALT_OFFSET	0x001C	/* Offset for alternate registers */
+#define CONFIG_SYS_ATA_DATA_OFFSET	0x0020	/* data I/O */
+#define CONFIG_SYS_ATA_REG_OFFSET	0x0020	/* normal register accesses */
+#define CONFIG_SYS_ATA_ALT_OFFSET	0x001C	/* alternate registers */
 #define CONFIG_SYS_ATA_STRIDE		2	/* CF.A0 --> Blackfin.A1 */
-
 #undef  CONFIG_SCLK_DIV
 #define CONFIG_SCLK_DIV		8
-#endif				/* CONFIG_BFIN_HDD_IDE */
+#endif
 
-#endif				/*CONFIG_BFIN_IDE */
+#endif
 
 
 /*
