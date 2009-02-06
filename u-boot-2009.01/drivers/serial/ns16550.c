@@ -5,9 +5,6 @@
  */
 
 #include <config.h>
-
-#ifdef CONFIG_SYS_NS16550
-
 #include <ns16550.h>
 
 #define LCRVAL LCR_8N1					/* 8 data, 1 stop, no parity */
@@ -75,5 +72,3 @@ int NS16550_tstc (NS16550_t com_port)
 {
 	return ((com_port->lsr & LSR_DR) != 0);
 }
-
-#endif
