@@ -3030,22 +3030,22 @@ send_user "\nGet uImage header info\n"
 spawn $readimage_cmd -l /tftpboot/$KERNEL_GZ_FILENAME
 while 1 {
     expect {
-        -re "(Image Name:   )(.*)\r\n" {
+        -re "(Image Name:   )(.*svn\[0-9]*)" {
             set KERNEL_GZ_NAME "$expect_out(2,string)"
         }
-        -re "(Created:      )(.*)\r\n" {
+        -re "(Created:      )(.*20\[0-9]{2,2})" {
             set KERNEL_GZ_DATE "$expect_out(2,string)"
         }
-        -re "(Image Type:   )(.*)\r\n" {
+        -re "(Image Type:   )(.*\\\))" {
             set KERNEL_GZ_TYPE "$expect_out(2,string)"
         }
-        -re "(Data Size:    )(.*)Bytes.*kB.*MB\r\n" {
+        -re "(Data Size:    )(.*)Bytes.*kB.*MB" {
             set KERNEL_GZ_SIZE "$expect_out(2,string)"
         }
-        -re "(Load Address: 0x)(.*)\r\n" {
+        -re "(Load Address: 0x)(\[0-9]+)" {
             set KERNEL_GZ_ADDR "$expect_out(2,string)"
         }
-        -re "(Entry Point:  0x)(.*)\r\n" {
+        -re "(Entry Point:  0x)(.*)" {
             set KERNEL_GZ_ENTRY "$expect_out(2,string)"
         }
         eof {
@@ -5012,7 +5012,7 @@ if { $TEST_TFTP_WITH_ETHTOOL } {
 
     step "tftp download linux.big at 10 duplux full"
 
-    set tftp_10_full_result [ ethtool_tftp 10 half ]
+    set tftp_10_full_result [ ethtool_tftp 10 full ]
     record_test_result $tftp_10_full_loc $tftp_10_full_result
 
     step "tftp download linux.big at 100 duplux half"
@@ -5022,7 +5022,7 @@ if { $TEST_TFTP_WITH_ETHTOOL } {
 
     step "tftp download linux.big at 100 duplux full"
 
-    set tftp_100_full_result [ ethtool_tftp 100 half ]
+    set tftp_100_full_result [ ethtool_tftp 100 full ]
     record_test_result $tftp_100_full_loc $tftp_100_full_result
 }
 
