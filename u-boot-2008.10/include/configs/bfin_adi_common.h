@@ -12,8 +12,10 @@
 # include <config_cmd_default.h>
 # if ADI_CMDS_NETWORK
 #  define CONFIG_CMD_DHCP
-#  define CONFIG_CMD_MII
 #  define CONFIG_CMD_PING
+#  ifdef CONFIG_BFIN_MAC
+#   define CONFIG_CMD_MII
+#  endif
 # else
 #  undef CONFIG_CMD_BOOTD
 #  undef CONFIG_CMD_NET
