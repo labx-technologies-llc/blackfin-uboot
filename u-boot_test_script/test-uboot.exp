@@ -4431,7 +4431,7 @@ if { $TEST_SDIO } {
 
     set sdio_result $TEST_FAIL
 
-    set sdio_test_image linux
+    set sdio_test_image uimage
     set sdio_imgload_addr 0x1000000
     set sdio_interface mmc
     set sdio_dev 0
