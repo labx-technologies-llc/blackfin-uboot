@@ -3209,7 +3209,9 @@ BFIN_BOARDS += ibf-dsp561
 
 $(BFIN_BOARDS:%=%_config)	: unconfig
 	@$(MKCONFIG) $(@:_config=) blackfin blackfin $(@:_config=)
+	@# autoconf.mk affects toplevel build flags, so force it before `make`
 	@$(MAKE) -s -B $(obj)include/autoconf.mk
+	@# toplevel build flags can affect board config, so force it again
 	@$(MAKE) -s -B $(obj)include/autoconf.mk
 
 $(BFIN_BOARDS):
