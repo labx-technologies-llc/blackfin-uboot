@@ -31,6 +31,10 @@
    returned. */
 #define MUSB_HCD_TIMEOUT 0x3FFFFFF
 
+#ifndef CONFIG_MUSB_TIMEOUT
+# define CONFIG_MUSB_TIMEOUT 100000
+#endif
+
 /* This defines the endpoint number used for control transfers */
 #define MUSB_CONTROL_EP 0
 
