@@ -66,7 +66,7 @@ set TEST_BASE                            1
 set TEST_BDINFO                          1
 set TEST_IMINFO                          1
 set TEST_BOOTELF                         1
-set TEST_BOOT_BIG_ELF_KERNEL		 1
+set TEST_BOOT_BIG_KERNEL_IMG		 1
 set TEST_BOOTM				 1
 set TEST_PROTECT                         1
 set TEST_CMP                             1
@@ -96,7 +96,7 @@ set TEST_SPI_FLASH			 0
 set BDINFO_FLASHSIZE        "0x00400000"
 set KERNEL_FLASH_LOC        "0x20100000"
 set KERNEL_FLASH_END        "0x203FFFFF"
-set BIG_ELF_LOAD_ADDRESS    "0x3000000"
+set BIG_IMG_LOAD_ADDRESS    "0x3000000"
 
 set L1_INSTRUCT_SRAM_ADDRESS "0xffa0b000"
 
@@ -109,7 +109,7 @@ set NUMBER_OF_FLASH_SECTORS 67
 set BDINFO_FLASHSIZE        "0x00400000"
 set KERNEL_FLASH_LOC        "0x20100000"
 set KERNEL_FLASH_END        "0x203EFFFF"
-set BIG_ELF_LOAD_ADDRESS    "0x2000000"
+set BIG_IMG_LOAD_ADDRESS    "0x2000000"
 set L1_INSTRUCT_SRAM_ADDRESS "0xffa0b000"
 set BDINFO_MEMSIZE           64*1024*1024
 
@@ -124,7 +124,7 @@ set BDINFO_FLASHSIZE        "0x00800000"
 set KERNEL_FLASH_LOC        "0x20100000"
 set KERNEL_FLASH_END        "0x207FFFFF"
 set L1_INSTRUCT_SRAM_ADDRESS "0xffa03000"
-set BIG_ELF_LOAD_ADDRESS    "0x2000000"
+set BIG_IMG_LOAD_ADDRESS    "0x2000000"
 set BDINFO_MEMSIZE           64*1024*1024
 
 
@@ -137,7 +137,7 @@ set KERNEL_FLASH_LOC           "0x20040000"
 set KERNEL_FLASH_END           "0x2021ffff"
 set L1_INSTRUCT_SRAM_ADDRESS   "0xffa03000"
 
-set BIG_ELF_LOAD_ADDRESS       "0x1000000"
+set BIG_IMG_LOAD_ADDRESS       "0x1000000"
 
 set TEST_JFFS2				 0
 set BDINFO_MEMSIZE           32*1024*1024
@@ -154,7 +154,7 @@ set KERNEL_FLASH_LOC           "0x20100000"
 set KERNEL_FLASH_END           "0x205fffff"
 set L1_INSTRUCT_SRAM_ADDRESS   "0xffa03000"
 
-set BIG_ELF_LOAD_ADDRESS       "0x1000000"
+set BIG_IMG_LOAD_ADDRESS       "0x1000000"
 
 set BDINFO_MEMSIZE           64*1024*1024
 
@@ -169,7 +169,7 @@ set KERNEL_FLASH_LOC           "0x20100000"
 set KERNEL_FLASH_END           "0x203fffff"
 set L1_INSTRUCT_SRAM_ADDRESS   "0xffa03000"
 
-set BIG_ELF_LOAD_ADDRESS       "0x1000000"
+set BIG_IMG_LOAD_ADDRESS       "0x1000000"
 
 set BDINFO_MEMSIZE           64*1024*1024
 
@@ -183,7 +183,7 @@ set KERNEL_FLASH_LOC           "0x20100000"
 set KERNEL_FLASH_END           "0x203fffff"
 set L1_INSTRUCT_SRAM_ADDRESS   "0xffa03000"
 
-set BIG_ELF_LOAD_ADDRESS       "0x1000000"
+set BIG_IMG_LOAD_ADDRESS       "0x1000000"
 
 set BDINFO_MEMSIZE           64*1024*1024
 
@@ -206,7 +206,7 @@ proc ethtool_tftp { speed status } {
     global kermit_spawn_id
     global TEST_FAIL
     global TEST_PASS
-    global BIG_ELF_LOAD_ADDRESS
+    global BIG_IMG_LOAD_ADDRESS
 
     spawn su
     sleep 1.5
@@ -302,7 +302,7 @@ proc ethtool_tftp { speed status } {
     set timeout 500
     set tftp_flag 0
 
-    send -s "tftp $BIG_ELF_LOAD_ADDRESS linux.big\r"
+    send -s "tftp $BIG_IMG_LOAD_ADDRESS $BIG_KERNEL_GZ_FILE\r"
     while 1 {
         expect {
             -re "Bytes transferred = \[0-9]+ \\\((\[0-9a-fA-F]+) hex\\\)" {
@@ -343,10 +343,10 @@ proc ethtool_tftp { speed status } {
     }
 
     if { $tftp_flag == 0 }  {
-        puts "Fail to tftp download linux.big.\n"
+        puts "Fail to tftp download $BIG_KERNEL_GZ_FILE.\n"
         set TFTP_RESULT  $TEST_FAIL
     } else {
-        puts "Success to tftp download linux.big.\n"
+        puts "Success to tftp download $BIG_KERNEL_GZ_FILE.\n"
         set TFTP_RESULT $TEST_PASS
     }
 
@@ -1317,7 +1317,7 @@ set bootm_loc                           38
 set pass_param_loc                      39
 set DMA_loc                             40
 set SPI_flash_loc                       41
-set boot_big_elf_kernel_loc             42
+set boot_big_kernel_img_loc             42
 set go_loc                              43
 set tftp_10_half_loc                    44
 set tftp_10_full_loc                    45
@@ -1369,7 +1369,7 @@ set result_matrix { {mtest                                notrun} \
                     {{pass param}                         notrun} \
                     {DMA                                  notrun} \
                     {SPI_flash                            notrun} \
-                    {{boot big elf kernel}                notrun} \
+                    {{boot big kernel img}                notrun} \
                     {go                                   notrun} \
                     {tftp_10_half                         notrun} \
                     {tftp_10_full                         notrun} \
@@ -1427,6 +1427,7 @@ set AUTOSCR_TEST_FILE       "uboot-autoscr-test.img"
 # the autoscr file above will echo the characters below.
 set AUTOSCR_TEST_RESULT     "hello Robin"
 set LINUX_DXE_FILE          "linux.dxe"
+set BIG_KERNEL_GZ_FILE      "uImage.big"
 
 # The test bin file can by anything roughly 100,000 bytes decimal
 # HOWEVER, the binary should not contain any FF bytes.
@@ -3101,7 +3102,7 @@ while 1 {
       }
 
       timeout {
-         send_user "ERROR: tftp failed to execute, can't run bootelf test\n"
+         send_user "ERROR: tftp failed to execute, can't run iminfo test\n"
          recover
          break
       }
@@ -3273,19 +3274,19 @@ set timeout 20
 
 #############################################################################################
 
-if {  $TEST_BOOT_BIG_ELF_KERNEL } {
+if {  $TEST_BOOT_BIG_KERNEL_IMG } {
 
 expect ">"
 send "\r"
 wait_for_uboot
 
-step "boot big elf kernel"
+step "boot big kernel image"
 
 set big_kernel_temp_result $TEST_FAIL
 set big_kernel_result $TEST_FAIL
 
 set timeout 600
-send -s "  tftpboot $BIG_ELF_LOAD_ADDRESS linux.big\r"
+send -s "tftpboot $BIG_IMG_LOAD_ADDRESS $BIG_KERNEL_GZ_FILE\r"
 	while 1 {
      	    expect {
      		"done" {
@@ -3298,7 +3299,7 @@ send -s "  tftpboot $BIG_ELF_LOAD_ADDRESS linux.big\r"
 			break
 		}
 		timeout {
-			send_user "ERROR:  tftp download big elf kernel failed\n"
+			send_user "ERROR:  tftp download big kernel image failed\n"
 			recover
 			break
 		}
@@ -3307,7 +3308,7 @@ send -s "  tftpboot $BIG_ELF_LOAD_ADDRESS linux.big\r"
 
 if {$big_kernel_temp_result == $TEST_PASS} {
 	set timeout 500
-	send -s "  bootelf\r"
+	send -s "bootm\r"
 	while 1 {
      	    expect {
      		-re $KERNEL_PROMPT {
@@ -3315,7 +3316,7 @@ if {$big_kernel_temp_result == $TEST_PASS} {
 			break
 		}
 		timeout {
-			send_user "ERROR: DCACHE bootelf download failed\n"
+			send_user "ERROR: bootm failed\n"
 			recover
 			break
 		}
@@ -3324,9 +3325,9 @@ if {$big_kernel_temp_result == $TEST_PASS} {
 }
 
 if {$big_kernel_result==$TEST_PASS} {
-    record_test_result $boot_big_elf_kernel_loc $TEST_PASS
+    record_test_result $boot_big_kernel_img_loc $TEST_PASS
 } else {
-    record_test_result $boot_big_elf_kernel_loc $TEST_FAIL
+    record_test_result $boot_big_kernel_img_loc $TEST_FAIL
 }
 
 
@@ -4231,7 +4232,7 @@ if {  $TEST_PASS_PARAM } {
                 break
             }
             timeout {
-                send_user "ERROR: tftp failed to execute, can't run bootelf test"
+                send_user "ERROR: tftp failed to execute"
                 recover
                 break
             }
@@ -4290,7 +4291,7 @@ if {  $TEST_PASS_PARAM } {
     while 1 {
         expect {
             -re $KERNEL_PROMPT {
-                send_user "Ending build_uboot_kernel.exp\n"
+                send_user "Command is successfully passed to kernel\n"
                 break
             }
             timeout {
@@ -4504,7 +4505,7 @@ if { $TEST_SDIO } {
 
     if {$sdio_result == $TEST_PASS} {
         set timeout 60
-        send "boote $sdio_imgload_addr\r"
+        send "bootm $sdio_imgload_addr\r"
         while 1 {
             expect {
                 -re $KERNEL_PROMPT {
@@ -4558,7 +4559,7 @@ if { $TEST_ATAPI } {
 
     set atapi_result $TEST_FAIL
 
-    set atapi_test_image linux
+    set atapi_test_image uimage
     set atapi_imgload_addr 0x1000000
     set atapi_interface sata
     set atapi_dev 0
@@ -4626,7 +4627,7 @@ if { $TEST_ATAPI } {
 
     if {$atapi_result == $TEST_PASS} {
         set timeout 60
-        send "boote $atapi_imgload_addr\r"
+        send "bootm $atapi_imgload_addr\r"
         while 1 {
             expect {
                 -re $KERNEL_PROMPT {
@@ -5011,22 +5012,22 @@ if { $TEST_TFTP_WITH_ETHTOOL } {
     send "\r"
     wait_for_uboot
 
-    step "tftp download linux.big at 10 duplux half"
+    step "tftp download $BIG_KERNEL_GZ_FILE at 10 duplux half"
 
     set tftp_10_half_result [ ethtool_tftp 10 half ]
     record_test_result $tftp_10_half_loc $tftp_10_half_result
 
-    step "tftp download linux.big at 10 duplux full"
+    step "tftp download $BIG_KERNEL_GZ_FILE at 10 duplux full"
 
     set tftp_10_full_result [ ethtool_tftp 10 full ]
     record_test_result $tftp_10_full_loc $tftp_10_full_result
 
-    step "tftp download linux.big at 100 duplux half"
+    step "tftp download $BIG_KERNEL_GZ_FILE at 100 duplux half"
 
     set tftp_100_half_result [ ethtool_tftp 100 half ]
     record_test_result $tftp_100_half_loc $tftp_100_half_result
 
-    step "tftp download linux.big at 100 duplux full"
+    step "tftp download $BIG_KERNEL_GZ_FILE at 100 duplux full"
 
     set tftp_100_full_result [ ethtool_tftp 100 full ]
     record_test_result $tftp_100_full_loc $tftp_100_full_result
