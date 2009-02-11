@@ -4490,7 +4490,7 @@ if { $TEST_SDIO } {
                     recover
                     break
                 }
-                -re "reading linux.*\[0-9]+ bytes read.*$UBOOT_PROMPT" {
+                -re "reading $sdio_test_image.*\[0-9]+ bytes read.*$UBOOT_PROMPT" {
                     set sdio_result $TEST_PASS
                     break
                 }
@@ -4612,7 +4612,7 @@ if { $TEST_ATAPI } {
                     recover
                     break
                 }
-                -re "reading linux.*\[0-9]+ bytes read.*$UBOOT_PROMPT" {
+                -re "reading $atapi_test_image.*\[0-9]+ bytes read.*$UBOOT_PROMPT" {
                     set atapi_result $TEST_PASS
                     break
                 }
