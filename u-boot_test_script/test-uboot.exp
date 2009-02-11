@@ -207,6 +207,7 @@ proc ethtool_tftp { speed status } {
     global TEST_FAIL
     global TEST_PASS
     global BIG_IMG_LOAD_ADDRESS
+    global BIG_KERNEL_GZ_FILE
 
     spawn su
     sleep 1.5
