@@ -149,7 +149,8 @@ set TEST_SDIO                            1
 set TEST_ATAPI                           1
 set TEST_USB                             1
 
-set BDINFO_FLASHSIZE           "0x02000000"
+set NUMBER_OF_FLASH_SECTORS    131
+set BDINFO_FLASHSIZE           "0x01000000"
 set KERNEL_FLASH_LOC           "0x20100000"
 set KERNEL_FLASH_END           "0x205fffff"
 set L1_INSTRUCT_SRAM_ADDRESS   "0xffa03000"
