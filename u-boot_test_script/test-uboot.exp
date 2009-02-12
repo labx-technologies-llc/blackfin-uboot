@@ -2940,88 +2940,80 @@ record_test_result $base_loc $temp_status_flag
 
 #############################################################################################
 
-if {  $TEST_BDINFO } {
+if { $TEST_BDINFO } {
 
+    send "\r"
+    wait_for_uboot
 
-send "\r"
-wait_for_uboot
+    step "bdinfo test"
+    set timeout 7
 
-step "bdinfo test"
-set timeout 7
+    send_user "expecting memstart of   $BDINFO_MEMSTART\n"
+    send_user "expecting memsize of    $BDINFO_MEMSIZE\n"
+    send_user "expecting flashstart of $BDINFO_FLASHSTART\n"
+    send_user "expecting flashsize of  $BDINFO_FLASHSIZE\n"
+    send_user "expecting baudrate of   $BDINFO_BAUDRATE\n\n"
 
-send_user "expecting memstart of   $BDINFO_MEMSTART\n"
-send_user "expecting memsize of    $BDINFO_MEMSIZE\n"
-send_user "expecting flashstart of $BDINFO_FLASHSTART\n"
-send_user "expecting flashsize of  $BDINFO_FLASHSIZE\n"
-send_user "expecting baudrate of   $BDINFO_BAUDRATE\n\n"
+    set memstart_result    $TEST_FAIL
+    set memsize_result     $TEST_FAIL
+    set flashstart_result  $TEST_FAIL
+    set flashsize_result   $TEST_FAIL
+    set ethaddr_result     $TEST_FAIL
+    set ip_addr_result     $TEST_FAIL
+    set baudrate_result    $TEST_FAIL
+    send -s "bdinfo\r"
 
-set memstart_result    $TEST_FAIL
-set memsize_result     $TEST_FAIL
-set flashstart_result  $TEST_FAIL
-set flashsize_result   $TEST_FAIL
-set ethaddr_result     $TEST_FAIL
-set ip_addr_result     $TEST_FAIL
-set baudrate_result    $TEST_FAIL
-send -s "bdinfo\r"
-
-while 1 {
-    expect {
-
-	"memstart *= 0x[format "%08x" [expr $BDINFO_MEMSTART]]" {
-	    set memstart_result $TEST_PASS
-	}
-
-	"memsize *= 0x[format "%08x" [expr $BDINFO_MEMSIZE]]" {
-	    set memsize_result $TEST_PASS
-	}
-
-	"flashstart *= 0x[format "%08x" [expr $BDINFO_FLASHSTART]]" {
-	    set flashstart_result $TEST_PASS
-	}
-
-	"flashsize *= 0x[format "%08x" [expr $BDINFO_FLASHSIZE]]" {
-	    set flashsize_result $TEST_PASS
-	}
-
-	"ethaddr *= \[A-F0-9]\[A-F0-9]:\[A-F0-9]\[A-F0-9]:\[A-F0-9]\[A-F0-9]:\[A-F0-9]\[A-F0-9]:\[A-F0-9]\[A-F0-9]:\[A-F0-9]\[A-F0-9]" {
-	    set ethaddr_result $TEST_PASS
-	}
-
-	-re "ip_addr.*= \[A-F0-9]+\.\[A-F0-9]+\.\[A-F0-9]+\.\[A-F0-9]+" {
-	    set ip_addr_result $TEST_PASS
-	}
-
-	"baudrate *= $BDINFO_BAUDRATE bps" {
-	    set baudrate_result $TEST_PASS
-	}
-
-	$UBOOT_PROMPT {
-	    break
-	}
-
-	timeout {
-	    send_user "ERROR: Uboot is in some weird state during test\n"
-	    recover
-	    break
-	}
+    while 1 {
+        expect {
+            -re "memstart += 0x[format "%08x" [expr $BDINFO_MEMSTART]]" {
+                set memstart_result $TEST_PASS
+            }
+            -re "memsize += 0x[format "%08x" [expr $BDINFO_MEMSIZE]]" {
+                set memsize_result $TEST_PASS
+            }
+            -re "flashstart += 0x[format "%08x" [expr $BDINFO_FLASHSTART]]" {
+                set flashstart_result $TEST_PASS
+            }
+            -re "flashsize += 0x[format "%08x" [expr $BDINFO_FLASHSIZE]]" {
+                set flashsize_result $TEST_PASS
+            }
+            -re "ethaddr += \[A-F0-9]\[A-F0-9]:\[A-F0-9]\[A-F0-9]:\[A-F0-9]\[A-F0-9]:\[A-F0-9]\[A-F0-9]:\[A-F0-9]\[A-F0-9]:\[A-F0-9]\[A-F0-9]" {
+                set ethaddr_result $TEST_PASS
+            }
+            -re "ip_addr += \[A-F0-9]+\.\[A-F0-9]+\.\[A-F0-9]+\.\[A-F0-9]+" {
+                set ip_addr_result $TEST_PASS
+            }
+            -re "baudrate += $BDINFO_BAUDRATE bps" {
+                set baudrate_result $TEST_PASS
+            }
+            -re $UBOOT_PROMPT {
+                break
+            }
+            timeout {
+                send_user "ERROR: Uboot is in some weird state during test\n"
+                recover
+                break
+            }
+        }
     }
-}
-if {$memstart_result==$TEST_PASS && $memsize_result==$TEST_PASS \
-	&& $flashstart_result==$TEST_PASS && $flashsize_result==$TEST_PASS \
-	&& $ethaddr_result==$TEST_PASS && $ip_addr_result==$TEST_PASS \
-	&& $baudrate_result==$TEST_PASS} {
-    set bdinfo_result $TEST_PASS
-} else {
-    set bdinfo_result $TEST_FAIL
-    send_user "bdinfo memstart result: $memstart_result\n"
-    send_user "bdinfo memsize result: $memsize_result\n"
-    send_user "bdinfo flashstart result: $flashstart_result\n"
-    send_user "bdinfo flashsize result: $flashsize_result\n"
-    send_user "bdinfo ethaddr result: $ethaddr_result\n"
-    send_user "bdinfo ip_addr result: $ip_addr_result\n"
-    send_user "bdinfo baudrate result: $baudrate_result\n"
-}
-record_test_result $bdinfo_loc $bdinfo_result
+
+    if {$memstart_result==$TEST_PASS && $memsize_result==$TEST_PASS \
+        && $flashstart_result==$TEST_PASS && $flashsize_result==$TEST_PASS \
+        && $ethaddr_result==$TEST_PASS && $ip_addr_result==$TEST_PASS \
+        && $baudrate_result==$TEST_PASS} {
+            set bdinfo_result $TEST_PASS
+    } else {
+        set bdinfo_result $TEST_FAIL
+        send_user "bdinfo memstart result: $memstart_result\n"
+        send_user "bdinfo memsize result: $memsize_result\n"
+        send_user "bdinfo flashstart result: $flashstart_result\n"
+        send_user "bdinfo flashsize result: $flashsize_result\n"
+        send_user "bdinfo ethaddr result: $ethaddr_result\n"
+        send_user "bdinfo ip_addr result: $ip_addr_result\n"
+        send_user "bdinfo baudrate result: $baudrate_result\n"
+    }
+
+    record_test_result $bdinfo_loc $bdinfo_result
 }
 
 #############################################################################################
