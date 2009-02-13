@@ -90,9 +90,8 @@ static int bfin_miiphy_write(char *devname, uchar addr, uchar reg, ushort val)
 	return 0;
 }
 
-int bfin_EMAC_initialize(bd_t *bd)
+int bfin_EMAC_initialize(bd_t *bis)
 {
-	const char *ethaddr;
 	struct eth_device *dev;
 	dev = malloc(sizeof(*dev));
 	if (dev == NULL)
@@ -113,24 +112,6 @@ int bfin_EMAC_initialize(bd_t *bd)
 #if defined(CONFIG_MII) || defined(CONFIG_CMD_MII)
 	miiphy_register(dev->name, bfin_miiphy_read, bfin_miiphy_write);
 #endif
-
-	ethaddr = getenv("ethaddr");
-	if (ethaddr == NULL) {
-		char nid[20];
-		board_get_enetaddr(bd->bi_enetaddr);
-		sprintf(nid, "%02X:%02X:%02X:%02X:%02X:%02X",
-			bd->bi_enetaddr[0], bd->bi_enetaddr[1],
-			bd->bi_enetaddr[2], bd->bi_enetaddr[3],
-			bd->bi_enetaddr[4], bd->bi_enetaddr[5]);
-		setenv("ethaddr", nid);
-	} else {
-		int i;
-		char *e;
-		for (i = 0; i < 6; ++i) {
-			bd->bi_enetaddr[i] = simple_strtoul(ethaddr, &e, 16);
-			ethaddr = (*e) ? e + 1 : e;
-		}
-	}
 
 	return 0;
 }
@@ -334,7 +315,7 @@ static int bfin_EMAC_init(struct eth_device *dev, bd_t *bd)
 		return -1;
 
 	/* Initialize EMAC address */
-	bfin_EMAC_setup_addr(bd);
+	bfin_EMAC_setup_addr(dev->enetaddr);
 
 	/* Initialize TX and RX buffer */
 	for (i = 0; i < PKTBUFSRX; i++) {
@@ -392,16 +373,16 @@ static void bfin_EMAC_halt(struct eth_device *dev)
 
 }
 
-void bfin_EMAC_setup_addr(bd_t *bd)
+void bfin_EMAC_setup_addr(uchar *enetaddr)
 {
 	*pEMAC_ADDRLO =
-		bd->bi_enetaddr[0] |
-		bd->bi_enetaddr[1] << 8 |
-		bd->bi_enetaddr[2] << 16 |
-		bd->bi_enetaddr[3] << 24;
+		enetaddr[0] |
+		enetaddr[1] << 8 |
+		enetaddr[2] << 16 |
+		enetaddr[3] << 24;
 	*pEMAC_ADDRHI =
-		bd->bi_enetaddr[4] |
-		bd->bi_enetaddr[5] << 8;
+		enetaddr[4] |
+		enetaddr[5] << 8;
 }
 
 ADI_ETHER_BUFFER *SetupRxBuffer(int no)
