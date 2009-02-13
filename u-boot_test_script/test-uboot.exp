@@ -4186,7 +4186,7 @@ if {  $TEST_PASS_PARAM } {
     set temp_status_flag $TEST_FAIL
     set timeout 20
 
-    if { $board_type == "BF548-EZKIT" || $board_type == "BF527-EZKIT" } {
+    if { $board_type == "BF548-EZKIT" || $board_type == "BF527-EZKIT" || $board_type == "BF518F-EZBRD" } {
         send -s "set bootargs root=/dev/mtdblock0 rw ip=10.100.4.60 console=ttyBF0\r"
     } else {
         send -s "set bootargs root=/dev/mtdblock0 rw ip=10.100.4.60\r"
