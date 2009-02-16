@@ -4857,143 +4857,164 @@ if {  $TEST_TFTP } {
         step "Load kernel into flash"
         set timeout 180
         expect ">"
+
         send -s "protect off $KERNEL_FLASH_LOC $KERNEL_FLASH_END\r"
+        set temp_status_flag $FAILURE
+        while 1 {
+            expect {
+                -re "Error" {
+                    break
+                }
+                -re "done.*Un-Protected \[0-9]+ sectors" {
+                    set temp_status_flag $SUCCESS
+                    break
+                }
+                timeout {
+                    send_user "ERROR: protect off fails in flash\n"
+                    break
+                }
+            }
+        }
+
         sleep 3
-        send -s "erase $KERNEL_FLASH_LOC $KERNEL_FLASH_END\r"
-        set temp_status_flag $FAILURE
-        while 1 {
-            expect {
-                "Erased * sectors" {
-                    set temp_status_flag $SUCCESS
-                    break
-                }
-                timeout {
-                    puts "ERROR: Didn't seem to erase flash\n"
-                    break
-                }
-            }
-        }
-        if {$temp_status_flag != $SUCCESS } {
-            send_user "Failed to erase flash\n"
-            all_done
-        }
-
-        sleep 1
-
-        set timeout 2500
-        send_user "\nAbout to copy the kernel to flash.\n"
-        send -s "cp.b $CFG_LOAD_ADDR $KERNEL_FLASH_LOC 0x$uimage_size\r"
-        set temp_status_flag $FAILURE
-        while 1 {
-            expect {
-                "done" {
-                    set temp_status_flag $SUCCESS
-                    break
-                }
-                -re "\[Ff]lash not \[Ee]rased" {
-                    set temp_status_flag $FAILURE
-                    send_user "ERROR: Tried to copy kernel to flash, got error, not erased\n"
-                    break
-                }
-
-                timeout {
-                    send_user "FATAL ERROR: Not able to erase flash\n"
-                    all_done
-                }
-            }
-        }
         if { $temp_status_flag == $SUCCESS } {
-            set do_bootm_test $TEST_PASS
-            send_user "copying kernel to flash seemed to work\n"
-        } else {
-            set do_bootm_test $TEST_FAIL
-            send_user "WARNING: copying kernel to flash didn't seem to work, can't do bootm test\n"
-        }
-
-        expect ">"
-        send -s "set bootcmd bootm $KERNEL_FLASH_LOC\r"
-        expect ">"
-
-        send -s "save\r"
-        expect ">"
-
-        step "Reset the board and boot from flash"
-        send -s "reset\r"
-        set timeout 20
-        while 1 {
-            expect {
-                $AUTOBOOT_PROMPT {
-                break
-                }
-                timeout {
-                    send_user "ERROR: u-boot failed to reset\n"
-                    recover
-                    break
-                }
-            }
-        }
-
-        if {$do_bootm_test==$TEST_PASS} {
-            set temp_status_flag $TEST_FAIL
+            send -s "erase $KERNEL_FLASH_LOC $KERNEL_FLASH_END\r"
+            set temp_status_flag $FAILURE
             while 1 {
-                set timeout 120
                 expect {
-                    -re $KERNEL_PROMPT {
-                        set temp_status_flag $TEST_PASS
+                    -re "Error" {
+                        break
+                    }
+                    "Erased * sectors" {
+                        set temp_status_flag $SUCCESS
                         break
                     }
                     timeout {
-                        send_user "WARNING: kernel never booted from flash"
+                        send_user "ERROR: erase flash timeout\n"
                         break
                     }
                 }
             }
-# Wait for actual kernel prompt.
-            set timeout 20
-            expect -re $KERNEL_PROMPT
+        }
 
-            if { $temp_status_flag == $TEST_PASS } {
-                step "Make sure kernel is functional"
-
-                set timeout 4
-                send -s "ls\r"
-                set temp_status_flag $TEST_FAIL
-                while 1 {
-                    expect {
-                        "sbin" {
-                            send_user "we got an indication that the kernel is working\n"
-                            set temp_status_flag $TEST_PASS
-                            break
-                        }
-                        -re $KERNEL_PROMPT {
-                            break
-                        }
-                        timeout {
-                            send_log "\nERROR: Kernel never responded correctly"
-                            break
-                        }
+        if {$temp_status_flag == $SUCCESS } {
+            sleep 1
+            set timeout 2500
+            send_user "\nAbout to copy the kernel to flash.\n"
+            send -s "cp.b $CFG_LOAD_ADDR $KERNEL_FLASH_LOC 0x$uimage_size\r"
+            set temp_status_flag $FAILURE
+            while 1 {
+                expect {
+                    "done" {
+                        set temp_status_flag $SUCCESS
+                        break
+                    }
+                    -re "\[Ff]lash not \[Ee]rased" {
+                        set temp_status_flag $FAILURE
+                        send_user "ERROR: Tried to copy kernel to flash, got error, not erased\n"
+                        break
+                    }
+                    timeout {
+                        send_user "FATAL ERROR: Not able to erase flash\n"
+                        all_done
                     }
                 }
             }
-            record_test_result $boot_from_flash_loc $temp_status_flag
+            if { $temp_status_flag == $SUCCESS } {
+                set do_bootm_test $TEST_PASS
+                send_user "copying kernel to flash seemed to work\n"
+            } else {
+                set do_bootm_test $TEST_FAIL
+                send_user "WARNING: copying kernel to flash didn't seem to work, can't do bootm test\n"
+            }
 
-            step "Reboot"
-            send -s "reboot\r"
+            expect ">"
+            send -s "set bootcmd bootm $KERNEL_FLASH_LOC\r"
+            expect ">"
 
-            set timeout 10
+            send -s "save\r"
+            expect ">"
+
+            step "Reset the board and boot from flash"
+            send -s "reset\r"
+            set timeout 20
             while 1 {
                 expect {
                     $AUTOBOOT_PROMPT {
-                        send "\r"
                         break
                     }
                     timeout {
-                        send_user "FATAL ERROR: board failed to reset, it worked before"
+                        send_user "ERROR: u-boot failed to reset\n"
                         recover
                         break
                     }
                 }
             }
+
+            if {$do_bootm_test==$TEST_PASS} {
+                set temp_status_flag $TEST_FAIL
+                set timeout 120
+                while 1 {
+                    expect {
+                        -re $KERNEL_PROMPT {
+                            set temp_status_flag $TEST_PASS
+                            break
+                        }
+                        timeout {
+                            send_user "WARNING: kernel never booted from flash"
+                            break
+                        }
+                    }
+                }
+# Wait for actual kernel prompt.
+                set timeout 20
+                expect -re $KERNEL_PROMPT
+
+                if { $temp_status_flag == $TEST_PASS } {
+                    step "Make sure kernel is functional"
+                    set timeout 4
+                    send -s "ls\r"
+                    set temp_status_flag $TEST_FAIL
+                    while 1 {
+                        expect {
+                            "sbin" {
+                                send_user "we got an indication that the kernel is working\n"
+                                set temp_status_flag $TEST_PASS
+                                break
+                            }
+                            -re $KERNEL_PROMPT {
+                                break
+                            }
+                            timeout {
+                                send_log "\nERROR: Kernel never responded correctly"
+                                break
+                            }
+                        }
+                    }
+                }
+                record_test_result $boot_from_flash_loc $temp_status_flag
+
+                step "Reboot"
+                send -s "reboot\r"
+
+                set timeout 10
+                while 1 {
+                    expect {
+                        $AUTOBOOT_PROMPT {
+                            send "\r"
+                            break
+                        }
+                        timeout {
+                            send_user "FATAL ERROR: board failed to reset, it worked before"
+                            recover
+                            break
+                        }
+                    }
+                }
+            }
+        } else {
+            send_user "Failed to erase flash\n"
+            record_test_result $boot_from_flash_loc $TEST_FAIL
         }
     }
 }
