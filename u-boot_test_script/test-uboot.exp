@@ -4865,7 +4865,7 @@ if {  $TEST_TFTP } {
                 -re "Error" {
                     break
                 }
-                -re "done.*Un-Protected \[0-9]+ sectors" {
+                -re "Un-Protected \[0-9]+ sectors" {
                     set temp_status_flag $SUCCESS
                     break
                 }
