@@ -28,6 +28,8 @@
 #define CONFIG_ENV_OVERWRITE	1
 #define CONFIG_BAUDRATE		57600
 
+#define CONFIG_MISC_INIT_R
+
 /* We don't have a parallel flash chip there */
 #define CONFIG_SYS_NO_FLASH
 

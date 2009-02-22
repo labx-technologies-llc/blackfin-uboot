@@ -31,6 +31,7 @@ LIB	= $(obj)lib$(BOARD).a
 
 COBJS-y	:= $(BOARD).o
 COBJS-$(CONFIG_CMD_EEPROM) += spi_flash.o
+COBJS-$(CONFIG_STATUS_LED) += status-led.o
 
 SRCS	:= $(SOBJS-y:.o=.S) $(COBJS-y:.o=.c)
 OBJS	:= $(addprefix $(obj),$(COBJS-y))

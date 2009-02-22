@@ -139,6 +139,7 @@
 /*
  * Misc Settings
  */
+#define CONFIG_MISC_INIT_R
 #define CONFIG_RTC_BFIN
 #define CONFIG_UART_CONSOLE	1
 

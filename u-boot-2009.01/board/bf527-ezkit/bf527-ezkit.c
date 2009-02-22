@@ -31,9 +31,11 @@ phys_size_t initdram(int board_type)
 	return gd->bd->bi_memsize;
 }
 
-#if defined(CONFIG_BFIN_MAC)
-void board_get_enetaddr(uchar *mac_addr)
+#ifdef CONFIG_BFIN_MAC
+static void board_init_enetaddr(uchar *mac_addr)
 {
+	bool valid_mac = false;
+
 	/* the MAC is stored in OTP memory page 0xDF */
 	uint32_t ret;
 	uint64_t otp_mac;
@@ -46,11 +48,15 @@ void board_get_enetaddr(uchar *mac_addr)
 			mac_addr[ret] = otp_mac_p[5 - ret];
 
 		if (is_valid_ether_addr(mac_addr))
-			return;
+			valid_mac = true;
 	}
 
-	puts("Warning: Generating 'random' MAC address\n");
-	bfin_gen_rand_mac(mac_addr);
+	if (!valid_mac) {
+		puts("Warning: Generating 'random' MAC address\n");
+		bfin_gen_rand_mac(mac_addr);
+	}
+
+	eth_setenv_enetaddr("ethaddr", mac_addr);
 }
 
 int board_eth_init(bd_t *bis)
@@ -58,3 +64,14 @@ int board_eth_init(bd_t *bis)
 	return bfin_EMAC_initialize(bis);
 }
 #endif
+
+int misc_init_r(void)
+{
+#ifdef CONFIG_BFIN_MAC
+	uchar enetaddr[6];
+	if (!eth_getenv_enetaddr("ethaddr", enetaddr))
+		board_init_enetaddr(enetaddr);
+#endif
+
+	return 0;
+}

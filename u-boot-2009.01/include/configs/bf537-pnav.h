@@ -15,6 +15,8 @@
 #define CONFIG_ENV_OVERWRITE	1
 #define CONFIG_BAUDRATE		115200
 
+#define CONFIG_MISC_INIT_R
+
 #ifndef __ADSPBF534__
 #define CONFIG_BFIN_MAC
 #define CONFIG_RMII

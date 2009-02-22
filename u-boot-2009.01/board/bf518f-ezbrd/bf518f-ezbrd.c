@@ -33,8 +33,10 @@ phys_size_t initdram(int board_type)
 }
 
 #if defined(CONFIG_BFIN_MAC)
-void board_get_enetaddr(uchar *mac_addr)
+static void board_init_enetaddr(uchar *mac_addr)
 {
+	bool valid_mac = false;
+
 #if 0
 	/* the MAC is stored in OTP memory page 0xDF */
 	uint32_t ret;
@@ -48,29 +50,52 @@ void board_get_enetaddr(uchar *mac_addr)
 			mac_addr[ret] = otp_mac_p[5 - ret];
 
 		if (is_valid_ether_addr(mac_addr))
-			return;
+			valid_mac = true;
 	}
 #endif
 
-	puts("Warning: Generating 'random' MAC address\n");
-	bfin_gen_rand_mac(mac_addr);
+	if (!valid_mac) {
+		puts("Warning: Generating 'random' MAC address\n");
+		bfin_gen_rand_mac(mac_addr);
+	}
+
+	eth_setenv_enetaddr("ethaddr", mac_addr);
 }
 
 int board_eth_init(bd_t *bis)
 {
-	int ret = -1;
-	struct spi_slave *slave = spi_setup_slave(0, 1, 5000000, SPI_MODE_3);
-	if (slave) {
-		if (!spi_claim_bus(slave)) {
-			unsigned char dout[3] = { 2, 1, 1, };
-			unsigned char din[3];
-			ret = spi_xfer(slave, sizeof(dout) * 8, dout, din, SPI_XFER_BEGIN | SPI_XFER_END);
-			if (!ret)
-				bfin_EMAC_initialize(bis);
-			spi_release_bus(slave);
+	static bool switch_is_alive = false;
+	int ret;
+
+	if (!switch_is_alive) {
+		struct spi_slave *slave = spi_setup_slave(0, 1, 5000000, SPI_MODE_3);
+		if (slave) {
+			if (!spi_claim_bus(slave)) {
+				unsigned char dout[3] = { 2, 1, 1, };
+				unsigned char din[3];
+				ret = spi_xfer(slave, sizeof(dout) * 8, dout, din, SPI_XFER_BEGIN | SPI_XFER_END);
+				if (!ret)
+					switch_is_alive = true;
+				spi_release_bus(slave);
+			}
+			spi_free_slave(slave);
 		}
-		spi_free_slave(slave);
 	}
-	return ret;
+
+	if (switch_is_alive)
+		return bfin_EMAC_initialize(bis);
+	else
+		return -1;
 }
 #endif
+
+int misc_init_r(void)
+{
+#ifdef CONFIG_BFIN_MAC
+	uchar enetaddr[6];
+	if (!eth_getenv_enetaddr("ethaddr", enetaddr))
+		board_init_enetaddr(enetaddr);
+#endif
+
+	return 0;
+}
