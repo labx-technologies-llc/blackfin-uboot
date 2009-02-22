@@ -89,27 +89,6 @@ phys_size_t initdram(int board_type)
 	return gd->bd->bi_memsize;
 }
 
-void board_get_enetaddr(uchar *mac_addr)
-{
-#ifdef CONFIG_SYS_NO_FLASH
-# define USE_MAC_IN_FLASH 0
-#else
-# define USE_MAC_IN_FLASH 1
-#endif
-	if (USE_MAC_IN_FLASH) {
-		/* we cram the MAC in the last flash sector */
-		uchar *board_mac_addr = (uchar *)0x203F0000;
-
-		if (is_valid_ether_addr(board_mac_addr)) {
-			memcpy(mac_addr, board_mac_addr, 6);
-			return;
-		}
-	}
-
-	puts("Warning: Generating 'random' MAC address\n");
-	bfin_gen_rand_mac(mac_addr);
-}
-
 void board_reset(void)
 {
 	/* workaround for weak pull ups on ssel */
@@ -120,13 +99,52 @@ void board_reset(void)
 	}
 }
 
+#ifdef CONFIG_BFIN_MAC
+static void board_init_enetaddr(uchar *mac_addr)
+{
+#ifdef CONFIG_SYS_NO_FLASH
+# define USE_MAC_IN_FLASH 0
+#else
+# define USE_MAC_IN_FLASH 1
+#endif
+	bool valid_mac = false;
+
+	if (USE_MAC_IN_FLASH) {
+		/* we cram the MAC in the last flash sector */
+		uchar *board_mac_addr = (uchar *)0x203F0000;
+		if (is_valid_ether_addr(board_mac_addr)) {
+			memcpy(mac_addr, board_mac_addr, 6);
+			valid_mac = true;
+		}
+	}
+
+	if (!valid_mac) {
+		puts("Warning: Generating 'random' MAC address\n");
+		bfin_gen_rand_mac(mac_addr);
+	}
+
+	eth_setenv_enetaddr("ethaddr", mac_addr);
+}
+
+int board_eth_init(bd_t *bis)
+{
+	return bfin_EMAC_initialize(bis);
+}
+#endif
+
 #if defined(CONFIG_MISC_INIT_R)
 /* miscellaneous platform dependent initialisations */
+extern flash_info_t flash_info[];
 int misc_init_r(void)
 {
+#ifdef CONFIG_BFIN_MAC
+	uchar enetaddr[6];
+	if (!eth_getenv_enetaddr("ethaddr", enetaddr))
+		board_init_enetaddr(enetaddr);
+#endif
+
 #ifndef CONFIG_SYS_NO_FLASH
 	/* we use the last sector for the MAC address / POST LDR */
-	extern flash_info_t flash_info[];
 	flash_protect(FLAG_PROTECT_SET, 0x203F0000, 0x203FFFFF, &flash_info[0]);
 #endif
 
@@ -149,14 +167,6 @@ int misc_init_r(void)
 	return 0;
 }
 #endif				/* CONFIG_MISC_INIT_R */
-
-#if defined(CONFIG_BFIN_MAC)
-
-int board_eth_init(bd_t *bis)
-{
-	return bfin_EMAC_initialize(bis);
-}
-#endif
 
 #ifdef CONFIG_POST
 /* Using sw10-PF5 as the hotkey */
