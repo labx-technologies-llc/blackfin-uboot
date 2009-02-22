@@ -42,7 +42,7 @@ static int smx911x_handle_mac_address(bd_t *bd)
 	uchar m[6];
 
 	/* if the environment has a valid mac address then use it */
-	if (!eth_getenv_enetaddr("ethaddr", m))
+	if (!eth_getenv_enetaddr("ethaddr", m)) {
 		/* if not, try to get one from the eeprom */
 		addrh = smc911x_get_mac_csr(ADDRH);
 		addrl = smc911x_get_mac_csr(ADDRL);
