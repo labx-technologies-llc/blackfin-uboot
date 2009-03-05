@@ -599,6 +599,7 @@ proc wait_for_uboot {} {
 #
 proc record_test_result { test_num result } {
     global result_matrix
+    global log_dir
 
     #Get the row associated with test_num.
     set temp_2_element_matrix [lindex $result_matrix $test_num]
@@ -613,6 +614,22 @@ proc record_test_result { test_num result } {
     set y [lindex $x 0]
     set z [lindex $x 1]
     send_user "\n===== Recording result: $y is $z\n"
+
+    if { $z == "fail" } {
+        if {[ catch { eval exec grep -nrl {"===== Recording result: $y is $z"} [glob $log_dir/\*/] } errmsg ]} {
+            send_user "Fail to find last passed $y result!\n\n"
+        } else {
+            set pass_files [ eval exec grep -nrl {"===== Recording result: $y is $z"} [glob $log_dir/\*/] ]
+            set last_pass_dir [exec echo $pass_files | awk -F/ {{print $9}} | sort -u | tail -n 1 ]
+
+            if {[ catch { exec grep -E "Revision: \[0-9]+" $log_dir/$last_pass_dir/summary } errmsg ]} {
+                send_user "\nLast passed time: $last_pass_dir.  Revision is not found!\n"
+            } else {
+                set last_pass_uboot [exec grep -E "Revision: \[0-9]+" $log_dir/$last_pass_dir/summary | awk {{print $2}} ]
+                send_user "\nLast passed time: $last_pass_dir, u-boot ver: $last_pass_uboot\n"
+            }
+        }
+    }
 }
 
 
@@ -1470,8 +1487,8 @@ set tftp_errors             0
 set test_started            "...test was never started"
 
 # Set up defaults
-set logfile                 "$log_dir/test-uboot-$logcore-detailed-log"
-set summary_logfile         "$log_dir/test-uboot-$logcore-summary-log"
+set logfile                 "$log_dir/test-uboot-$logcore-i$icache_status-d$dcache_status-detailed-log"
+set summary_logfile         "$log_dir/test-uboot-$logcore-i$icache_status-d$dcache_status-summary-log"
 set compare_file            "/dev/null"
 set starting_dir            [exec pwd]
 
@@ -1513,6 +1530,7 @@ log_file $logfile
 send_user "Running u-boot testing on $test_started\n"
 send_user "logfile=$logfile\n"
 
+exec svn info /home/$user/checkouts/u-boot >> $logfile
 
 step "Start up kermit on port $ttydev"
 
@@ -4720,7 +4738,7 @@ if { $TEST_USB } {
         send "fatload $usb_interface $usb_dev $usb_imgload_addr $usb_test_image\r"
         while 1 {
             expect {
-                -re "\[uU]nable|\[iI]nvalid|\[fF]ail|\[eE]rror" {
+                -re "\[uU]nable|\[iI]nvalid|\[fF]ail|\[eE]rror|usage:" {
                     set usb_result $TEST_FAIL
                     sleep 5
                     send_user "ERROR: load $usb_test_image to memory failed\n"
@@ -4746,6 +4764,10 @@ if { $TEST_USB } {
         send "bootm $usb_imgload_addr\r"
         while 1 {
             expect {
+                -re "ERROR.*$UBOOT_PROMPT" {
+                    set usb_result $TEST_FAIL
+                    break
+                }
                 -re $KERNEL_PROMPT {
                     set usb_result $TEST_PASS
                     break

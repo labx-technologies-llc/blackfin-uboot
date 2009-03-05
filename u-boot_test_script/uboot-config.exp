@@ -28,7 +28,7 @@ set send_slow {1 .01}
 set password                "blackfin"
 
 # Default logfiles contain this core as a unique ID.
-set logcore  [exec date +%b-%d-%G-%H-%M]
+set logcore  [exec date +%Y_%m_%d_%H_%M]
 
 # directories and file locations
 set user                    test/work/cruise
