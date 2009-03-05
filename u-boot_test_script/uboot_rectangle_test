@@ -12,23 +12,20 @@ $UBOOT_SCRIPTS/uboot-test  BF548-EZKIT 1 3
 $UBOOT_SCRIPTS/uboot-test  BF548-EZKIT 2 3
 $UBOOT_SCRIPTS/uboot-test  BF548-EZKIT 3 3
 
-  cd $UBOOT_SCRIPTS/logs
-  e=`ls *-summary-* | wc -l`
-  if [ $e != 0 ] ; then
-  cat *-summary-* > summary
-  fi
-  $UBOOT_SCRIPTS/compare_uboot_results lastrun-summary  summary > uboot.diff 
-  if [ $? = 0 ] ; then
-  echo  "success"  > test_results
-  cat uboot.diff
- # echo  "Don't send email of uboot test."
-  else
-  echo  "failed" > test_results
-  echo
-  cat uboot.diff
-  cat summary
- # echo  "Sent email of uboot test."
-  fi
-
-
-
+cd $UBOOT_SCRIPTS/logs
+e=`ls *-summary-* | wc -l`
+if [ $e != 0 ] ; then
+    cat *-summary-* > summary
+fi
+$UBOOT_SCRIPTS/compare_uboot_results lastrun-summary  summary > uboot.diff
+if [ $? = 0 ] ; then
+    echo  "success"  > test_results
+    cat uboot.diff
+    # echo  "Don't send email of uboot test."
+else
+    echo  "failed" > test_results
+    echo
+    cat uboot.diff
+    cat summary
+    # echo  "Sent email of uboot test."
+fi
