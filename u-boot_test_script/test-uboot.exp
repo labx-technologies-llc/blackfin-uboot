@@ -84,6 +84,9 @@ set TEST_TFTP_WITH_ETHTOOL               1
 set TEST_SDIO                            0
 set TEST_ATAPI                           0
 set TEST_USB                             0
+set TEST_BUILD_SPI                       1
+set TEST_BUILD_UART                      1
+set TEST_BUILD_NAND                      1
 
 
 set UBOOT_PROMPT             "bfin>"
@@ -92,7 +95,12 @@ set NUMBER_OF_FLASH_SECTORS [get_uboot_define CFG_MAX_FLASH_SECT $uboot_test_loc
 
 if { $board_type == "BF533-STAMP" } {
 
+set make_board_type         bf533-stamp
+
 set TEST_SPI_FLASH			 0
+set TEST_BUILD_UART                      0
+set TEST_BUILD_NAND                      0
+
 set BDINFO_FLASHSIZE        "0x00400000"
 set KERNEL_FLASH_LOC        "0x20100000"
 set KERNEL_FLASH_END        "0x203FFFFF"
@@ -103,6 +111,8 @@ set L1_INSTRUCT_SRAM_ADDRESS "0xffa0b000"
 set BDINFO_MEMSIZE           128*1024*1024
 
 } elseif { $board_type == "BF537-STAMP" } {
+
+set make_board_type         bf537-stamp
 
 set TEST_SPI_FLASH			 0
 set NUMBER_OF_FLASH_SECTORS 67
@@ -115,10 +125,15 @@ set BDINFO_MEMSIZE           64*1024*1024
 
 } elseif { $board_type == "BF561-EZKIT" } {
 
+set make_board_type         bf561-ezkit
+
 set TEST_HELP_DATE                       0
 set TEST_DATE_SET                        0
 set TEST_DATE_SET_AFTER_POWER_CYCLE      0
 set TEST_SPI_FLASH			 0
+set TEST_BUILD_SPI                       0
+set TEST_BUILD_UART                      0
+set TEST_BUILD_NAND                      0
 
 set BDINFO_FLASHSIZE        "0x00800000"
 set KERNEL_FLASH_LOC        "0x20100000"
@@ -130,7 +145,12 @@ set BDINFO_MEMSIZE           64*1024*1024
 
 } elseif { $board_type == "BF533-EZKIT" } {
 
+set make_board_type            bf533-ezkit
+
 set TEST_SPI_FLASH			 0
+set TEST_BUILD_SPI                       0
+set TEST_BUILD_UART                      0
+set TEST_BUILD_NAND                      0
 
 set BDINFO_FLASHSIZE           "0x00220000"
 set KERNEL_FLASH_LOC           "0x20040000"
@@ -143,6 +163,8 @@ set TEST_JFFS2				 0
 set BDINFO_MEMSIZE           32*1024*1024
 
 } elseif { $board_type == "BF548-EZKIT" } {
+
+set make_board_type            bf548-ezkit
 
 #set TEST_SPI_FLASH                       0
 set TEST_SDIO                            1
@@ -161,6 +183,8 @@ set BDINFO_MEMSIZE           64*1024*1024
 
 } elseif { $board_type == "BF527-EZKIT" } {
 
+set make_board_type            bf527-ezkit
+
 #set TEST_SPI_FLASH                       0
 set TEST_USB                             1
 
@@ -176,6 +200,8 @@ set BDINFO_MEMSIZE           64*1024*1024
 
 } elseif { $board_type == "BF518F-EZBRD" } {
 
+set make_board_type            bf518f-ezkit
+
 set TEST_SDIO                            1
 
 set NUMBER_OF_FLASH_SECTORS    71
@@ -190,6 +216,8 @@ set BDINFO_MEMSIZE           64*1024*1024
 
 } elseif { $board_type == "BF537-EZKIT" } {
 
+set make_board_type            bf537-ezkit
+
 set TEST_SPI_FLASH			 0
 
 } else {
@@ -197,6 +225,57 @@ set TEST_SPI_FLASH			 0
 send_user "\n Unknown target board type.\n"
 exit
 
+}
+
+
+proc make_uboot {} {
+    global HOST_KERNEL_PROMPT
+    global host_spawn_id
+    global uboot_test_loc
+    global uboot_scripts_dir
+    global make_board_type
+
+    set spawn_id $host_spawn_id
+
+    set timeout 10
+    send "cd $uboot_test_loc\n"
+    expect -re $HOST_KERNEL_PROMPT
+    send "echo \$PATH\n"
+    expect -re $HOST_KERNEL_PROMPT
+
+    set timeout 120
+    send "make mrproper\n"
+    while 1 {
+        expect {
+            -re "\r\n.*$HOST_KERNEL_PROMPT" {
+                send_user "make mrproper pass\n"
+                break
+            }
+            timeout {
+                send_user "\nmake clean timeout\n"
+                return 1
+            }
+        }
+    }
+
+    set timeout 500
+    send "make $make_board_type\n"
+    while 1 {
+        expect {
+            -re "\[eE]rror.*$HOST_KERNEL_PROMPT" {
+                send_user "make fail\n"
+                return 1
+            }
+            -re "OK.*Done.*$HOST_KERNEL_PROMPT" {
+                send_user "make pass\n"
+                return 2
+            }
+            timeout {
+                send_user "\nmake timeout\n"
+                return 1
+            }
+        }
+    }
 }
 
 
@@ -1345,6 +1424,9 @@ set tftp_100_full_loc                   47
 set SDIO_loc                            48
 set ATAPI_loc                           49
 set USB_loc                             50
+set build_spi_loc                       51
+set build_uart_loc                      52
+set build_nand_loc                      53
 
 set result_matrix { {mtest                                notrun} \
                     {{version}                            notrun} \
@@ -1396,7 +1478,10 @@ set result_matrix { {mtest                                notrun} \
                     {tftp_100_full                        notrun} \
                     {sdio                                 notrun} \
                     {atapi                                notrun} \
-                    {usb                                  notrun}}
+                    {usb                                  notrun} \
+                    {{build spi uboot}                    notrun} \
+                    {{build uart uboot}                   notrun} \
+                    {{build nand uboot}                   notrun}}
 
 #
 #
@@ -1479,6 +1564,7 @@ set RESET_RETRIES           5
 #set UBOOT_PROMPT [get_uboot_define CFG_PROMPT $uboot_test_loc ]
 send_user "UBOOT_PROMPT = $UBOOT_PROMPT\n"
 set KERNEL_PROMPT           "root:\[^>].*>"
+set HOST_KERNEL_PROMPT      "@.*:.*>"
 set AUTOBOOT_PROMPT         "Hit any key to stop"
 
 # tftp_errors is important for counting any errors in tftp seen anywhere.
@@ -1487,8 +1573,8 @@ set tftp_errors             0
 set test_started            "...test was never started"
 
 # Set up defaults
-set logfile                 "$log_dir/test-uboot-$logcore-i$icache_status-d$dcache_status-detailed-log"
-set summary_logfile         "$log_dir/test-uboot-$logcore-i$icache_status-d$dcache_status-summary-log"
+set logfile                 "$log_dir/test-uboot-$logcore-detailed-log"
+set summary_logfile         "$log_dir/test-uboot-$logcore-summary-log"
 set compare_file            "/dev/null"
 set starting_dir            [exec pwd]
 
@@ -1531,6 +1617,13 @@ send_user "Running u-boot testing on $test_started\n"
 send_user "logfile=$logfile\n"
 
 exec svn info /home/$user/checkouts/u-boot >> $logfile
+
+spawn /bin/sh
+set host_spawn_id $spawn_id
+set timeout 5
+send "export PATH=/opt/uClinux/bfin-uclinux/bin:/opt/uClinux/bfin-elf/bin:/opt/uClinux/bfin-linux-uclibc/bin:\$PATH\n"
+expect -re $HOST_KERNEL_PROMPT
+
 
 step "Start up kermit on port $ttydev"
 
@@ -5068,6 +5161,153 @@ if { $TEST_TFTP_WITH_ETHTOOL } {
 
     set tftp_100_full_result [ ethtool_tftp 100 full ]
     record_test_result $tftp_100_full_loc $tftp_100_full_result
+}
+
+###############################################################################################################################
+
+if { $TEST_BUILD_SPI } {
+
+    step "Test build u-boot for SPI flash mode"
+
+    set build_spi_result $TEST_FAIL
+    set search_str "CONFIG_BFIN_BOOT_MODE"
+    set change_str "#define CONFIG_BFIN_BOOT_MODE  BFIN_BOOT_SPI_MASTER"
+
+    exec rm -f /tftpboot/u-boot.bin.spi /tftpboot/u-boot.ldr.spi
+
+    if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
+        send_user "\nfail to change configs for $make_board_type\n"
+        set build_spi_result $TEST_FAIL
+    } else {
+        set build_spi_result $TEST_PASS
+    }
+
+    if { $build_spi_result == $TEST_PASS } {
+        if { [make_uboot] == 2 } {
+            set build_spi_result $TEST_PASS
+        } else {
+            set build_spi_result $TEST_FAIL
+        }
+    }
+
+    if { $build_spi_result == $TEST_PASS } {
+        if { [catch {exec cp $uboot_test_loc/u-boot.bin /tftpboot/u-boot.bin.spi} ] } {
+            send_user "\nfail to copy u-boot.bin.spi\n"
+            set build_spi_result $TEST_FAIL
+        } else {
+            set build_spi_result $TEST_PASS
+        }
+
+        if { [catch {exec cp $uboot_test_loc/u-boot.ldr /tftpboot/u-boot.ldr.spi} ] } {
+            send_user "\nfail to copy u-boot.ldr.spi\n"
+            set build_spi_result $TEST_FAIL
+        } else {
+            set build_spi_result $TEST_PASS
+        }
+    }
+
+    set spawn_id $kermit_spawn_id
+
+    record_test_result $build_spi_loc $build_spi_result
+
+}
+
+###############################################################################################################################
+
+if { $TEST_BUILD_UART } {
+
+    step "Test build u-boot for uart mode"
+
+    set build_uart_result $TEST_FAIL
+    set search_str "CONFIG_BFIN_BOOT_MODE"
+    set change_str "#define CONFIG_BFIN_BOOT_MODE  BFIN_BOOT_UART"
+
+    exec rm -f /tftpboot/u-boot.bin.uart /tftpboot/u-boot.ldr.uart
+
+    if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
+        send_user "\nfail to change configs for $make_board_type\n"
+        set build_uart_result $TEST_FAIL
+    } else {
+        set build_uart_result $TEST_PASS
+    }
+
+    if { $build_uart_result == $TEST_PASS } {
+        if { [make_uboot] == 2 } {
+            set build_uart_result $TEST_PASS
+        } else {
+            set build_uart_result $TEST_FAIL
+        }
+    }
+
+    if { $build_uart_result == $TEST_PASS } {
+        if { [catch {exec cp $uboot_test_loc/u-boot.bin /tftpboot/u-boot.bin.uart} ] } {
+            send_user "\nfail to copy u-boot.bin.uart\n"
+            set build_uart_result $TEST_FAIL
+        } else {
+            set build_uart_result $TEST_PASS
+        }
+
+        if { [catch {exec cp $uboot_test_loc/u-boot.ldr /tftpboot/u-boot.ldr.uart} ] } {
+            send_user "\nfail to copy u-boot.ldr.uart\n"
+            set build_uart_result $TEST_FAIL
+        } else {
+            set build_uart_result $TEST_PASS
+        }
+    }
+
+    set spawn_id $kermit_spawn_id
+
+    record_test_result $build_uart_loc $build_uart_result
+
+}
+
+###############################################################################################################################
+
+if { $TEST_BUILD_NAND } {
+
+    step "Test build u-boot for nand mode"
+
+    set build_nand_result $TEST_FAIL
+    set search_str "CONFIG_BFIN_BOOT_MODE"
+    set change_str "#define CONFIG_BFIN_BOOT_MODE  BFIN_BOOT_NAND"
+
+    exec rm -f /tftpboot/u-boot.bin.nand /tftpboot/u-boot.ldr.nand
+
+    if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
+        send_user "\nfail to change configs for $make_board_type\n"
+        set build_nand_result $TEST_FAIL
+    } else {
+        set build_nand_result $TEST_PASS
+    }
+
+    if { $build_nand_result == $TEST_PASS } {
+        if { [make_uboot] == 2 } {
+            set build_nand_result $TEST_PASS
+        } else {
+            set build_nand_result $TEST_FAIL
+        }
+    }
+
+    if { $build_nand_result == $TEST_PASS } {
+        if { [catch {exec cp $uboot_test_loc/u-boot.bin /tftpboot/u-boot.bin.nand} ] } {
+            send_user "\nfail to copy u-boot.bin.nand\n"
+            set build_nand_result $TEST_FAIL
+        } else {
+            set build_nand_result $TEST_PASS
+        }
+
+        if { [catch {exec cp $uboot_test_loc/u-boot.ldr /tftpboot/u-boot.ldr.nand} ] } {
+            send_user "\nfail to copy u-boot.ldr.nand\n"
+            set build_nand_result $TEST_FAIL
+        } else {
+            set build_nand_result $TEST_PASS
+        }
+    }
+
+    set spawn_id $kermit_spawn_id
+
+    record_test_result $build_nand_loc $build_nand_result
+
 }
 
 all_done
