@@ -87,6 +87,7 @@ set TEST_USB                             0
 set TEST_BUILD_SPI                       1
 set TEST_BUILD_UART                      1
 set TEST_BUILD_NAND                      1
+set TEST_BUILD_SPLASH                    0
 
 
 set UBOOT_PROMPT             "bfin>"
@@ -100,6 +101,7 @@ set make_board_type         bf533-stamp
 set TEST_SPI_FLASH			 0
 set TEST_BUILD_UART                      0
 set TEST_BUILD_NAND                      0
+set TEST_BUILD_SPLASH                    1
 
 set BDINFO_FLASHSIZE        "0x00400000"
 set KERNEL_FLASH_LOC        "0x20100000"
@@ -1427,6 +1429,7 @@ set USB_loc                             50
 set build_spi_loc                       51
 set build_uart_loc                      52
 set build_nand_loc                      53
+set build_splash_loc                    54
 
 set result_matrix { {mtest                                notrun} \
                     {{version}                            notrun} \
@@ -1481,7 +1484,8 @@ set result_matrix { {mtest                                notrun} \
                     {usb                                  notrun} \
                     {{build spi uboot}                    notrun} \
                     {{build uart uboot}                   notrun} \
-                    {{build nand uboot}                   notrun}}
+                    {{build nand uboot}                   notrun} \
+                    {{build splash uboot}                 notrun}}
 
 #
 #
@@ -5308,6 +5312,81 @@ if { $TEST_BUILD_NAND } {
 
     record_test_result $build_nand_loc $build_nand_result
 
+}
+
+###############################################################################################################################
+
+if { $TEST_BUILD_SPLASH } {
+
+    step "Test build u-boot for splash test"
+
+    set build_splash_result $TEST_FAIL
+    set search_str "CONFIG_VIDEO"
+    set change_str "#define CONFIG_VIDEO"
+
+    exec rm -f /tftpboot/u-boot.bin.splash /tftpboot/u-boot.ldr.splash
+
+    set spawn_id $host_spawn_id
+    send "cd $uboot_test_loc/tools/easylogo\n"
+    expect -re $HOST_KERNEL_PROMPT
+    send "chmod +x runme.sh\n"
+    expect -re $HOST_KERNEL_PROMPT
+
+    set timeout 20
+    send "./runme.sh\n"
+    while 1 {
+        expect {
+            -re "Doing.*LSCS.*$HOST_KERNEL_PROMPT" {
+                set build_splash_result $TEST_PASS
+                break
+            }
+            timeout {
+                send_user "run runme.sh timeout!"
+                set build_splash_result $TEST_FAIL
+                break
+            }
+        }
+    }
+
+    if { $build_splash_result == $TEST_PASS } {
+        if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
+            send_user "\nfail to change configs for $make_board_type\n"
+            set build_splash_result $TEST_FAIL
+        } else {
+            set build_splash_result $TEST_PASS
+        }
+    }
+
+    if { $build_splash_result == $TEST_PASS } {
+        if { [make_uboot] == 2 } {
+            set build_splash_result $TEST_PASS
+        } else {
+            set build_splash_result $TEST_FAIL
+        }
+    }
+
+    if { $build_splash_result == $TEST_PASS } {
+        if { [catch {exec cp $uboot_test_loc/u-boot.bin /tftpboot/u-boot.bin.splash} ] } {
+            send_user "\nfail to copy u-boot.bin.splash\n"
+            set build_splash_result $TEST_FAIL
+        } else {
+            set build_splash_result $TEST_PASS
+        }
+
+        if { [catch {exec cp $uboot_test_loc/u-boot.ldr /tftpboot/u-boot.ldr.splash} ] } {
+            send_user "\nfail to copy u-boot.ldr.splash\n"
+            set build_splash_result $TEST_FAIL
+        } else {
+            set build_splash_result $TEST_PASS
+        }
+    }
+
+    set spawn_id $kermit_spawn_id
+
+    record_test_result $build_splash_loc $build_splash_result
+
+    exec rm -f $uboot_test_loc/include/video_logo.h
+    exec svn up $uboot_test_loc/include/video_logo.h
 }
 
 all_done
