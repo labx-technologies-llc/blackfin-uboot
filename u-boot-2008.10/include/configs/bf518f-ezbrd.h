@@ -94,6 +94,7 @@
 #else
 #define CONFIG_ENV_IS_IN_FLASH
 #define CONFIG_ENV_OFFSET                 0x4000
+#define CONFIG_ENV_SIZE                   0x2000
 #define CONFIG_ENV_ADDR                   (CFG_FLASH_BASE + CONFIG_ENV_OFFSET)
 #define CONFIG_ENV_SECT_SIZE              0x2000
 #endif
