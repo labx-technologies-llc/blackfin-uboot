@@ -1,0 +1,1089 @@
+#!/usr/bin/expect
+
+source ./uboot-config.exp
+
+set board_type        [lindex $argv 0]
+set uboot_test_image            u-boot.bin
+
+set TEST_BUILD_SPI                       1
+set TEST_BUILD_UART                      1
+set TEST_BUILD_NAND                      1
+set TEST_BUILD_SPLASH                    0
+set TEST_CF_IDE                          0
+set TEST_HDD_IDE                         0
+if { $board_type == "BF533-STAMP" } {
+    set make_board_type    bf533-stamp
+    set TEST_BUILD_UART              0
+    set TEST_BUILD_NAND              0
+    set TEST_BUILD_SPLASH            1
+} elseif { $board_type == "BF537-STAMP" } {
+    set make_board_type    bf537-stamp
+    set TEST_CF_IDE                  1
+    set TEST_HDD_IDE                 1
+} elseif { $board_type == "BF561-EZKIT" } {
+    set make_board_type    bf561-ezkit
+    set TEST_BUILD_SPI               0
+    set TEST_BUILD_UART              0
+    set TEST_BUILD_NAND              0
+} elseif { $board_type == "BF533-EZKIT" } {
+    set make_board_type    bf533-ezkit
+    set TEST_BUILD_SPI               0
+    set TEST_BUILD_UART              0
+    set TEST_BUILD_NAND              0
+} elseif { $board_type == "BF548-EZKIT" } {
+    set make_board_type    bf548-ezkit
+    set TEST_BUILD_SPLASH            0 #BF548-EZKIT enable splash by default
+    set uboot_test_image    u-boot.ldr
+} elseif { $board_type == "BF527-EZKIT" } {
+    set make_board_type    bf527-ezkit
+    set TEST_BUILD_SPLASH            0 #BF527-EZKIT enable splash by default
+    set uboot_test_image    u-boot.ldr
+} elseif { $board_type == "BF518F-EZBRD" } {
+    set make_board_type    bf518f-ezkit
+    set uboot_test_image    u-boot.ldr
+} else {
+    send_user "\n Unknown target board type.\n"
+    exit
+}
+
+
+proc make_uboot {} {
+    global HOST_KERNEL_PROMPT
+    global host_spawn_id
+    global uboot_test_loc
+    global uboot_scripts_dir
+    global make_board_type
+
+    set spawn_id $host_spawn_id
+
+    set timeout 10
+    send "cd $uboot_test_loc\n"
+    expect -re $HOST_KERNEL_PROMPT
+    send "echo \$PATH\n"
+    expect -re $HOST_KERNEL_PROMPT
+
+    set timeout 120
+    send "make mrproper\n"
+    while 1 {
+        expect {
+            -re "\r\n.*$HOST_KERNEL_PROMPT" {
+                send_user "make mrproper pass\n"
+                break
+            }
+            timeout {
+                send_user "\nmake clean timeout\n"
+                return 1
+            }
+        }
+    }
+
+    set timeout 500
+    send "make $make_board_type\n"
+    while 1 {
+        expect {
+            -re "\[eE]rror.*$HOST_KERNEL_PROMPT" {
+                send_user "make fail\n"
+                return 1
+            }
+            -re "OK.*Done.*$HOST_KERNEL_PROMPT" {
+                send_user "make pass\n"
+                return 2
+            }
+            timeout {
+                send_user "\nmake timeout\n"
+                return 1
+            }
+        }
+    }
+}
+
+proc update_uboot {} {
+    global uboot_test_loc
+    global uboot_test_image
+    global UBOOT_PROMPT
+    global TEST_PASS
+    global TEST_FAIL
+
+    set timeout 200
+    send -s "run update\r"
+    while 1 {
+        expect {
+            -re $UBOOT_PROMPT {
+                break
+            }
+            timeout {
+                send_user "ERROR: update timeout\n"
+                return 1
+            }
+        }
+    }
+
+    set timeout 120
+    send -s "saveenv\r"
+    expect -re $UBOOT_PROMPT
+
+    send -s "reset\r"
+    while 1 {
+        expect {
+            "Hit any key " {
+                sleep 2
+                send "\r"
+                return 2
+            }
+            timeout {
+                send_user "fail to reset after update\n"
+                return 1
+            }
+        }
+    }
+}
+
+
+#
+#  This attempts to recover from losing contact with uboot.
+#  Just send a Control-C and then wait briefly.
+#
+proc recover {} {
+    global UBOOT_PROMPT
+    global KERNEL_PROMPT
+    global AUTOBOOT_PROMPT
+    global uboot_scripts_dir
+    global kermit_spawn_id
+
+    send_user "Attempting to recover to u-boot prompt\n"
+    for {set i 0} {$i < 5} {incr i} {
+        send "\3"
+        set flag 0
+        set timeout 1
+        expect {
+            "<INTERRUPT>" {
+                send_user "got u-boot's attention\n"
+            }
+            $AUTOBOOT_PROMPT {
+                send_user "got autoboot prompt\n"
+                send "\r"
+            }
+            $UBOOT_PROMPT {
+                send_user "got u-boot prompt\n"
+                set flag 1
+            }
+        }
+
+        if { $flag == 0} {
+            set timeout 2
+            expect {
+                $UBOOT_PROMPT {
+                    send_user "got u-boot prompt\n"
+                    set flag 1
+                }
+                $AUTOBOOT_PROMPT {
+                    send_user "got autoboot prompt\n"
+                    send "\r"
+                }
+            }
+
+            if { $flag == 0} {
+                set timeout 2
+                expect $UBOOT_PROMPT
+            }
+        }
+
+        send -s "version\r"
+        set timeout 20
+        while 1 {
+            expect {
+                $AUTOBOOT_PROMPT {
+                    send "\r"
+                }
+                $UBOOT_PROMPT {
+                    send_user "Recovered\n"
+                    return 0
+                }
+                -re "\[Ll]inux" {
+                    send_user "We were in the kernel shell\n"
+                    send -s "reboot\r"
+                    break
+                }
+                timeout {
+                    source ./reset_board.exp
+                    set spawn_id $kermit_spawn_id
+                    sleep 1
+                    break
+                }
+            }
+        }
+
+        set timeout 20
+        while 1 {
+            expect {
+                $AUTOBOOT_PROMPT {
+                    send "\r"
+                }
+                $UBOOT_PROMPT {
+                    send_user "Recovered to the u-boot prompt\n"
+                    return 0
+                }
+                timeout {
+                    send_user "still timing out\n"
+                    break
+                }
+            }
+        }
+    }
+
+    # At this point, we can't recover.
+    send_user "ERROR: could not recover to u-boot prompt\n"
+    send_user "Need to add script to control the board through the JTAG interface\n"
+    return 1
+}
+
+
+#
+#  This waits for a uboot prompt and then continues on.
+#
+#
+proc wait_for_uboot {} {
+    global UBOOT_PROMPT
+    global board_type
+
+    set timeout 10
+    send_user "waiting for uboot prompt\n"
+    expect {
+        $UBOOT_PROMPT {
+            send_user "got u-boot prompt\n"
+            return 0
+        }
+        timeout {
+            if { [recover] == 0} {
+                send_user "recover got back to u-boot prompt\n"
+                return 0
+            } else {
+                send_user "ERROR: Not able to recover to u-boot prompt\n"
+            }
+        }
+    }
+
+    return 1
+}
+
+
+#
+#  Call this procedure to record the result of a test
+#    These two procedures are exactly the same, but can't
+#    be collapsed due to how params are passed (by value only).
+#
+#
+proc record_test_result { test_num result } {
+    global result_matrix
+    global log_dir
+
+    #Get the row associated with test_num.
+    set temp_2_element_matrix [lindex $result_matrix $test_num]
+
+    #Set the 2nd element to result.
+    set temp_2_element_matrix [lreplace $temp_2_element_matrix 1 1 $result]
+
+    #Write it back into the matrix.
+    set result_matrix [lreplace $result_matrix $test_num $test_num $temp_2_element_matrix]
+
+    set x [lindex $result_matrix $test_num]
+    set y [lindex $x 0]
+    set z [lindex $x 1]
+    send_user "\n===== Recording result: $y is $z\n"
+
+    if { $z == "fail" } {
+        if {[ catch { eval exec grep -nrl {"===== Recording result: $y is $z"} [glob $log_dir/\*/] } errmsg ]} {
+            send_user "Fail to find last passed $y result!\n\n"
+        } else {
+            set pass_files [ eval exec grep -nrl {"===== Recording result: $y is $z"} [glob $log_dir/\*/] ]
+            set last_pass_dir [exec echo $pass_files | awk -F/ {{print $9}} | sort -u | tail -n 1 ]
+
+            if {[ catch { exec grep -E "Revision: \[0-9]+" $log_dir/$last_pass_dir/summary } errmsg ]} {
+                send_user "\nLast passed time: $last_pass_dir.  Revision is not found!\n"
+            } else {
+                set last_pass_uboot [exec grep -E "Revision: \[0-9]+" $log_dir/$last_pass_dir/summary | awk {{print $2}} ]
+                send_user "\nLast passed time: $last_pass_dir, u-boot ver: $last_pass_uboot\n"
+            }
+        }
+    }
+}
+
+
+#
+#  Call this procedure instead of doing an exit so we can
+#  do any cleanup needed.  Note that we use a temporary
+#  logfile for bulk data and a summary logfile which is
+#  never overwritten.
+#
+proc all_done { } {
+    global result_matrix
+    global summary_logfile
+    global logfile
+    global TEST_PASS
+    global TEST_FAIL
+    global TEST_INFO
+    global ttydev
+    global target_ip_addr
+    global board_type
+    global HOST_IP_ADDR
+    global compare_file
+    global starting_dir
+
+# First, check if we need to compare with previous results.
+# Later, we will save the current result overwriting the old results.
+    if { $compare_file != "/dev/null" } {
+        set comparing 1
+        if [catch {set comp [open $compare_file "r"] } ] {
+            send_user "Can't open compare file, assuming no prior results\n"
+            set compare_matrix [list "null-command" "notrun"]
+        } else {
+            #New read in the previous results matrix.
+            set init_flag 0
+            while {[gets $comp line] != -1} {
+                if {$init_flag == 0 } {
+                    set compare_matrix [list $line]
+                    set init_flag 1
+                } else {
+                    lappend compare_matrix $line
+                }
+            }
+            close $comp
+        }
+    } else {
+        set comparing 0
+    }
+
+    #Assume the results are the same until we see something different.
+    set results_are_same 0
+
+    set total_tests 0
+    set passed_tests 0
+    set failed_tests 0
+    set tests_not_run 0
+
+    for {set i 0} { $i < [expr [llength $result_matrix]]} {incr i} {
+        incr total_tests
+        set x [lindex $result_matrix $i]
+        if {$TEST_PASS == [lindex $x 1]} {
+            incr passed_tests
+        }
+        if {$TEST_FAIL == [lindex $x 1]} {
+            incr failed_tests
+        }
+        if {$TEST_INFO == [lindex $x 1]} {
+            incr tests_not_run
+        }
+        if { $comparing != 0 } {
+            set flag 0
+            for {set j 0} {$j < [expr [llength $compare_matrix]]} {incr j} {
+                set y [lindex $compare_matrix $j]
+                if { [lindex $y 0] == [lindex $x 0] } {
+                    set flag 1
+                    send_user "found the match for [lindex $x 0]\n"
+                    if {[lindex $y 1] != [lindex $x 1] } {
+                        send_user "we found a difference: [lindex $x 1] to [lindex $y 1]\n"
+                        set results_are_same 1
+                    }
+                }
+            }
+            if { $flag == 0 } {
+                # The results are different if there were no prior results
+                send_user "did not find a match for [lindex $x 0]\n"
+                set results_are_same 1
+            }
+        }
+    }
+
+# Capture the information into a special logfile for an email
+    log_file
+    cd $starting_dir
+    log_file -noappend $summary_logfile
+    puts "\nsending summary results to $summary_logfile\n"
+    send_user "Test Results\n"
+    send_user "=====================================\n"
+
+    send_user "  Total Tests   :   $total_tests\n"
+    send_user "  Passed Tests  :   $passed_tests\n"
+    send_user "  Failed Tests  :   $failed_tests\n"
+    send_user "  Tests Not Run :   $tests_not_run\n"
+    send_user "\n"
+    send_user "Failed Tests\n"
+    send_user "=====================================\n"
+
+    for {set i [expr [llength $result_matrix]-1]} {$i>=0} {incr i -1} {
+        set x [lindex $result_matrix $i]
+        if {$TEST_FAIL == [lindex $x 1]} {
+            send_user "  -  [lindex $x 0]\n"
+            if { [lindex $result_matrix $i] != "tftp check for errors" } {
+                set results_worth_posting 1
+            }
+        }
+    }
+
+    send_user "\n"
+    send_user "Passing Tests\n"
+    send_user "=====================================\n"
+    for {set i [expr [llength $result_matrix]-1]} {$i>=0} {incr i -1} {
+        set x [lindex $result_matrix $i]
+        if {$TEST_PASS == [lindex $x 1]} {
+            send_user "  -  [lindex $x 0]\n"
+        }
+    }
+
+    send_user "\n"
+    send_user "Tests Not Run\n"
+    send_user "=====================================\n"
+    for {set i [expr [llength $result_matrix]-1]} {$i>=0} {incr i -1} {
+        set x [lindex $result_matrix $i]
+        if {$TEST_INFO == [lindex $x 1]} {
+            send_user "  -  [lindex $x 0]\n"
+            set results_worth_posting 1
+        }
+    }
+
+    send_user "\n"
+    send_user "Test Setup\n"
+    send_user "=====================================\n"
+    send_user "  board type    = $board_type\n"
+    send_user "  tty           = $ttydev\n"
+
+# End of results
+    log_file
+    exec /home/test/work/cruise/test_scripts/u-boot/summary.sh $summary_logfile
+
+    log_file $logfile
+
+    send_user "\n\nDone compiling summary logfile\n"
+    if {$comparing == 1 } {
+        if {$results_are_same == 0} {
+            send_user "NO CHANGE FROM PRIOR RESULTS\n"
+        } else {
+            send_user "THE RESULTS HAVE CHANGED\n"
+        }
+
+        send_user "writing the results to the compare file $compare_file\n"
+        set comp [open $compare_file "w"]
+        for {set i 0} {$i < [llength $result_matrix]} {incr i} {
+            set x [lindex $result_matrix $i]
+            puts $comp $x
+        }
+    }
+# We never return back to the main program.
+    exit
+}
+
+
+
+#
+#
+#   Main Program
+#
+#   uboot test script
+#
+#   This script has several requirements in order to run it.
+#     1)  You need a valid uImage, linux.dxe, autoscr file, and testfile.bin
+#         in the host /tftpboot.  You will need to add the details of these
+#         files into the definitions below for the tests to work.  autoscr
+#         must contain commands to echo text out to the console (and the
+#         text must be defined below).
+#     2)  The host must be set up to be a tftp server.
+#     3)  You need the autoscript test file uboot-autoscr-test.img on
+#         the host /tftpboot
+#     4)  You need a functional kermit application in your path.
+#     5)  uboot must already be loaded on your board.
+#     6)  The countdown timer in uboot must be set to at least 7.
+#
+#  The difference mode allows you to determine if the pass/fail results
+#  changed since the previous time the test was run (if the file doesn't
+#  exist, the results are assumed to be different and they are saved for
+#  next time).
+#
+
+
+set TEST_PASS               "pass"
+set TEST_FAIL               "fail"
+# The term "INFO" here means the test was not run or could not be run.
+# Note that the TEST_INFO value must match the tables below. Sorry.
+set TEST_INFO               "notrun"
+
+#
+#  This matrix contains all the tests which are run.  Note that
+#  The second column must match the value of TEST_INFO above.  Also,
+#  The indexes below must align with the location of the test.
+#  Don't thank me for that; nothing in curly brackets gets
+#  evaluated in expect so there appears to be no other way.
+#
+set build_spi_loc                       0
+set build_uart_loc                      1
+set build_nand_loc                      2
+set build_splash_loc                    3
+set cf_ide_loc                          4
+set hdd_ide_loc                         5
+
+set result_matrix { {{build spi uboot}                    notrun} \
+                    {{build uart uboot}                   notrun} \
+                    {{build nand uboot}                   notrun} \
+                    {{build splash uboot}                 notrun} \
+                    {{cf ide}                             notrun} \
+                    {{hdd ide}                            notrun}}
+
+set CFG_LOAD_ADDR           0x1000000
+set BAUD_RATE               57600
+set BDINFO_BAUDRATE         $BAUD_RATE
+
+# Various prompts
+set UBOOT_PROMPT            "bfin>"
+set KERNEL_PROMPT           "root:\[^>].*>"
+set HOST_KERNEL_PROMPT      "@.*:.*>"
+set AUTOBOOT_PROMPT         "Hit any key to stop"
+
+# Set up defaults
+set logfile                 "$log_dir/uboot-misc-test-detailed-log"
+set summary_logfile         "$log_dir/uboot-misc-test-summary-log"
+set compare_file            "/dev/null"
+set starting_dir            [exec pwd]
+
+
+log_file $logfile
+
+send_user "Running uboot_misc_test.exp\n\n"
+send_user "logfile=$logfile\nsummary_logfile=$summary_logfile\n\n"
+exec svn info /home/$user/checkouts/u-boot >> $logfile
+
+
+step "Spawn bash on host"
+spawn /bin/sh
+set host_spawn_id $spawn_id
+set timeout 5
+send "export PATH=/opt/uClinux/bfin-uclinux/bin:/opt/uClinux/bfin-elf/bin:/opt/uClinux/bfin-linux-uclibc/bin:\$PATH\n"
+expect -re $HOST_KERNEL_PROMPT
+
+
+step "Start up kermit on port $ttydev"
+# Now set up the kermit parameters.
+# I want these all contained in this file to make it easier for users.
+# This just builds up a list of commands which are sent to kermit.
+#
+set kparams     [list "set line $ttydev\r"]
+lappend kparams "set speed $BAUD_RATE\r"
+lappend kparams "set carrier-watch off\r"
+lappend kparams "set handshake none\r"
+lappend kparams "set flow-control none\r"
+lappend kparams "robust\r"
+lappend kparams "set file type bin\r"
+lappend kparams "set file name lit\r"
+lappend kparams "set rec pack 1000\r"
+lappend kparams "set send pack 1000\r"
+lappend kparams "set window 5\r"
+lappend kparams "set escape 255\r"
+set nkparams [llength $kparams]
+
+set timeout 5
+spawn kermit
+set kermit_spawn_id $spawn_id
+while 1 {
+    expect {
+        "Type ?" {}
+        "ermit>" {
+            break
+        }
+        "not found" {
+            send_error "ERROR: Failed to start up kermit\n"
+            all_done
+        }
+        timeout {
+            send_error "ERROR: Time out starting up kermit\n"
+            all_done
+        }
+    }
+}
+
+for {set i 0} {$i < $nkparams} {incr i} {
+    send [lindex $kparams $i]
+    while 1 {
+        expect {
+            "ermit>" {
+                break
+            }
+            "\\?\[A-Z]" {
+                send_error "ERROR: Failed to set up kermit parameters\n"
+                all_done
+            }
+            timeout {
+                send_error "ERROR: Time out setting up kermit parameters\n"
+                all_done
+            }
+        }
+    }
+}
+
+send "connect\r"
+while 1 {
+    expect {
+        "ype the escape character*" {
+            break
+        }
+        timeout {
+            send_error "ERROR: Can't connect to serial port\n"
+            exit
+        }
+    }
+}
+
+
+step "Try to figure out if we are in u-boot or the kernel"
+set where_are_we 0
+
+send "\r"
+sleep 2
+set timeout 50
+while 1 {
+    expect {
+        -re $UBOOT_PROMPT {
+            send -s "version\r"
+            break
+        }
+        -re $KERNEL_PROMPT {
+            send -s "version\r"
+            break
+        }
+        timeout {
+            send_user "failed version\n"
+            break
+        }
+    }
+}
+
+set timeout 2
+expect {
+    "U-Boot" {
+        send_user "We are in u-boot\n"
+        set where_are_we "uboot"
+    }
+    "Linux" {
+        send_user "We are in the kernel\n"
+        set where_are_we "kernel"
+    }
+    timeout {
+        send_user "Can't tell if we are in u-boot or the kernel\n"
+    }
+}
+
+if { $where_are_we == "uboot" } {
+    set timeout 15
+    expect $UBOOT_PROMPT
+    send_user "sending reset\n"
+    send -s "reset\r"
+} else {
+    if { $where_are_we == "kernel" } {
+	set timeout 16
+	expect -re $KERNEL_PROMPT
+	sleep 10
+	send_user "sending reboot\n"
+	send -s "reboot\r"
+    } else {
+	# If we don't know where we are, hit control-C and enter
+	set timeout 1
+	expect "*"
+	expect "*"
+	send_user "sending control-C\n"
+	send "\3"
+	sleep 1
+	send "\r"
+        recover
+    }
+}
+
+set timeout 25
+while 1 {
+    expect {
+	$AUTOBOOT_PROMPT {
+	    send_user "got autoboot prompt\n"
+	    break
+	}
+	$UBOOT_PROMPT {
+	    send_user "oops, gotta reset again\n"
+	    send -s "reset\r"
+	}
+	timeout {
+	    send_user "timeout waiting for autoboot prompt\n"
+	}
+    }
+}
+
+send "\r"
+wait_for_uboot
+
+###############################################################################################################################
+
+if { $TEST_BUILD_SPI } {
+
+    step "Test build spi uboot"
+
+    set build_spi_result $TEST_FAIL
+    set search_str "CONFIG_BFIN_BOOT_MODE"
+    set change_str "#define CONFIG_BFIN_BOOT_MODE  BFIN_BOOT_SPI_MASTER"
+
+    exec rm -f /tftpboot/u-boot.bin.spi /tftpboot/u-boot.ldr.spi
+
+    if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
+        send_user "\nfail to change configs for $make_board_type\n"
+        set build_spi_result $TEST_FAIL
+    } else {
+        set build_spi_result $TEST_PASS
+    }
+
+    if { $build_spi_result == $TEST_PASS } {
+        if { [make_uboot] == 2 } {
+            set build_spi_result $TEST_PASS
+        } else {
+            set build_spi_result $TEST_FAIL
+        }
+    }
+
+    if { $build_spi_result == $TEST_PASS } {
+        if { [catch {exec cp $uboot_test_loc/u-boot.bin /tftpboot/u-boot.bin.spi} ] } {
+            send_user "\nfail to copy u-boot.bin.spi\n"
+            set build_spi_result $TEST_FAIL
+        } else {
+            set build_spi_result $TEST_PASS
+        }
+
+        if { [catch {exec cp $uboot_test_loc/u-boot.ldr /tftpboot/u-boot.ldr.spi} ] } {
+            send_user "\nfail to copy u-boot.ldr.spi\n"
+            set build_spi_result $TEST_FAIL
+        } else {
+            set build_spi_result $TEST_PASS
+        }
+    }
+
+    set spawn_id $kermit_spawn_id
+
+    record_test_result $build_spi_loc $build_spi_result
+
+}
+
+###############################################################################################################################
+
+if { $TEST_BUILD_UART } {
+
+    step "Test build uart uboot"
+
+    set build_uart_result $TEST_FAIL
+    set search_str "CONFIG_BFIN_BOOT_MODE"
+    set change_str "#define CONFIG_BFIN_BOOT_MODE  BFIN_BOOT_UART"
+
+    exec rm -f /tftpboot/u-boot.bin.uart /tftpboot/u-boot.ldr.uart
+
+    if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
+        send_user "\nfail to change configs for $make_board_type\n"
+        set build_uart_result $TEST_FAIL
+    } else {
+        set build_uart_result $TEST_PASS
+    }
+
+    if { $build_uart_result == $TEST_PASS } {
+        if { [make_uboot] == 2 } {
+            set build_uart_result $TEST_PASS
+        } else {
+            set build_uart_result $TEST_FAIL
+        }
+    }
+
+    if { $build_uart_result == $TEST_PASS } {
+        if { [catch {exec cp $uboot_test_loc/u-boot.bin /tftpboot/u-boot.bin.uart} ] } {
+            send_user "\nfail to copy u-boot.bin.uart\n"
+            set build_uart_result $TEST_FAIL
+        } else {
+            set build_uart_result $TEST_PASS
+        }
+
+        if { [catch {exec cp $uboot_test_loc/u-boot.ldr /tftpboot/u-boot.ldr.uart} ] } {
+            send_user "\nfail to copy u-boot.ldr.uart\n"
+            set build_uart_result $TEST_FAIL
+        } else {
+            set build_uart_result $TEST_PASS
+        }
+    }
+
+    set spawn_id $kermit_spawn_id
+
+    record_test_result $build_uart_loc $build_uart_result
+
+}
+
+###############################################################################################################################
+
+if { $TEST_BUILD_NAND } {
+
+    step "Test build nand uboot"
+
+    set build_nand_result $TEST_FAIL
+    set search_str "CONFIG_BFIN_BOOT_MODE"
+    set change_str "#define CONFIG_BFIN_BOOT_MODE  BFIN_BOOT_NAND"
+
+    exec rm -f /tftpboot/u-boot.bin.nand /tftpboot/u-boot.ldr.nand
+
+    if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
+        send_user "\nfail to change configs for $make_board_type\n"
+        set build_nand_result $TEST_FAIL
+    } else {
+        set build_nand_result $TEST_PASS
+    }
+
+    if { $build_nand_result == $TEST_PASS } {
+        if { [make_uboot] == 2 } {
+            set build_nand_result $TEST_PASS
+        } else {
+            set build_nand_result $TEST_FAIL
+        }
+    }
+
+    if { $build_nand_result == $TEST_PASS } {
+        if { [catch {exec cp $uboot_test_loc/u-boot.bin /tftpboot/u-boot.bin.nand} ] } {
+            send_user "\nfail to copy u-boot.bin.nand\n"
+            set build_nand_result $TEST_FAIL
+        } else {
+            set build_nand_result $TEST_PASS
+        }
+
+        if { [catch {exec cp $uboot_test_loc/u-boot.ldr /tftpboot/u-boot.ldr.nand} ] } {
+            send_user "\nfail to copy u-boot.ldr.nand\n"
+            set build_nand_result $TEST_FAIL
+        } else {
+            set build_nand_result $TEST_PASS
+        }
+    }
+
+    set spawn_id $kermit_spawn_id
+
+    record_test_result $build_nand_loc $build_nand_result
+
+}
+
+###############################################################################################################################
+
+if { $TEST_BUILD_SPLASH } {
+
+    send " \r"
+    wait_for_uboot
+
+    step "Test build splash uboot"
+
+    set build_splash_result $TEST_FAIL
+    set search_str "CONFIG_VIDEO"
+    set change_str "#define CONFIG_VIDEO"
+
+    exec rm -f /tftpboot/u-boot.bin.splash /tftpboot/u-boot.ldr.splash
+
+    set spawn_id $host_spawn_id
+    send "cd $uboot_test_loc/tools/easylogo\n"
+    expect -re $HOST_KERNEL_PROMPT
+    send "chmod +x runme.sh\n"
+    expect -re $HOST_KERNEL_PROMPT
+
+    set timeout 20
+    send "./runme.sh\n"
+    while 1 {
+        expect {
+            -re "Doing.*LSCS.*$HOST_KERNEL_PROMPT" {
+                set build_splash_result $TEST_PASS
+                break
+            }
+            timeout {
+                send_user "run runme.sh timeout!"
+                set build_splash_result $TEST_FAIL
+                break
+            }
+        }
+    }
+
+    if { $build_splash_result == $TEST_PASS } {
+        if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
+            send_user "\nfail to change configs for $make_board_type\n"
+            set build_splash_result $TEST_FAIL
+        } else {
+            set build_splash_result $TEST_PASS
+        }
+    }
+
+    if { $build_splash_result == $TEST_PASS } {
+        if { [make_uboot] == 2 } {
+            set build_splash_result $TEST_PASS
+        } else {
+            set build_splash_result $TEST_FAIL
+        }
+    }
+
+    if { $build_splash_result == $TEST_PASS } {
+        if { [catch {exec cp $uboot_test_loc/u-boot.bin /tftpboot/u-boot.bin.splash} ] } {
+            send_user "\nfail to copy u-boot.bin.splash\n"
+            set build_splash_result $TEST_FAIL
+        } else {
+            set build_splash_result $TEST_PASS
+        }
+
+        if { [catch {exec cp $uboot_test_loc/u-boot.ldr /tftpboot/u-boot.ldr.splash} ] } {
+            send_user "\nfail to copy u-boot.ldr.splash\n"
+            set build_splash_result $TEST_FAIL
+        } else {
+            set build_splash_result $TEST_PASS
+        }
+    }
+
+    exec rm -f $uboot_test_loc/include/video_logo.h
+    exec svn up $uboot_test_loc/include/video_logo.h
+
+    set spawn_id $kermit_spawn_id
+
+    if { $build_splash_result == $TEST_PASS } {
+        exec cp $uboot_test_loc/$uboot_test_image /tftpboot/$uboot_test_image
+
+        send " \r"
+        expect $UBOOT_PROMPT
+
+        if { [update_uboot] == 2 } {
+            set build_splash_result $TEST_PASS
+        } else {
+            set build_splash_result $TEST_FAIL
+        }
+    }
+
+    record_test_result $build_splash_loc $build_splash_result
+
+}
+
+###############################################################################################################################
+
+if { $TEST_CF_IDE } {
+
+    send " \r"
+    wait_for_uboot
+
+    step "Test cf ide"
+
+    set cf_ide_result $TEST_FAIL
+    set search_str "CONFIG_BFIN_CF_IDE"
+    set change_str "#define CONFIG_BFIN_CF_IDE"
+
+    exec rm -f /tftpboot/u-boot.bin.cf_ide /tftpboot/u-boot.ldr.cf_ide
+
+    if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
+        send_user "\nfail to change configs for $make_board_type\n"
+        set cf_ide_result $TEST_FAIL
+    } else {
+        set cf_ide_result $TEST_PASS
+    }
+
+    if { $cf_ide_result == $TEST_PASS } {
+        if { [make_uboot] == 2 } {
+            set cf_ide_result $TEST_PASS
+        } else {
+            set cf_ide_result $TEST_FAIL
+        }
+    }
+
+    if { $cf_ide_result == $TEST_PASS } {
+        if { [catch {exec cp $uboot_test_loc/u-boot.bin /tftpboot/u-boot.bin.cf_ide} ] } {
+            send_user "\nfail to copy u-boot.bin.cf_ide\n"
+            set cf_ide_result $TEST_FAIL
+        } else {
+            set cf_ide_result $TEST_PASS
+        }
+
+        if { [catch {exec cp $uboot_test_loc/u-boot.ldr /tftpboot/u-boot.ldr.cf_ide} ] } {
+            send_user "\nfail to copy u-boot.ldr.cf_ide\n"
+            set cf_ide_result $TEST_FAIL
+        } else {
+            set cf_ide_result $TEST_PASS
+        }
+    }
+
+    set spawn_id $kermit_spawn_id
+
+    if { $cf_ide_result == $TEST_PASS } {
+        exec cp $uboot_test_loc/$uboot_test_image /tftpboot/$uboot_test_image
+
+        send " \r"
+        expect $UBOOT_PROMPT
+
+        if { [update_uboot] == 2 } {
+            set cf_ide_result $TEST_PASS
+        } else {
+            set cf_ide_result $TEST_FAIL
+        }
+    }
+
+    record_test_result $cf_ide_loc $cf_ide_result
+
+}
+
+###############################################################################################################################
+
+if { $TEST_HDD_IDE } {
+
+    send " \r"
+    wait_for_uboot
+
+    step "Test hdd ide"
+
+    set hdd_ide_result $TEST_FAIL
+    set search_str "CONFIG_BFIN_HDD_IDE"
+    set change_str "#define CONFIG_BFIN_HDD_IDE"
+
+    exec rm -f /tftpboot/u-boot.bin.hdd_ide /tftpboot/u-boot.ldr.hdd_ide
+
+    if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
+        send_user "\nfail to change configs for $make_board_type\n"
+        set hdd_ide_result $TEST_FAIL
+    } else {
+        set hdd_ide_result $TEST_PASS
+    }
+
+    if { $hdd_ide_result == $TEST_PASS } {
+        if { [make_uboot] == 2 } {
+            set hdd_ide_result $TEST_PASS
+        } else {
+            set hdd_ide_result $TEST_FAIL
+        }
+    }
+
+    if { $hdd_ide_result == $TEST_PASS } {
+        if { [catch {exec cp $uboot_test_loc/u-boot.bin /tftpboot/u-boot.bin.hdd_ide} ] } {
+            send_user "\nfail to copy u-boot.bin.hdd_ide\n"
+            set hdd_ide_result $TEST_FAIL
+        } else {
+            set hdd_ide_result $TEST_PASS
+        }
+
+        if { [catch {exec cp $uboot_test_loc/u-boot.ldr /tftpboot/u-boot.ldr.hdd_ide} ] } {
+            send_user "\nfail to copy u-boot.ldr.hdd_ide\n"
+            set hdd_ide_result $TEST_FAIL
+        } else {
+            set hdd_ide_result $TEST_PASS
+        }
+    }
+
+    set spawn_id $kermit_spawn_id
+
+    if { $hdd_ide_result == $TEST_PASS } {
+        exec cp $uboot_test_loc/$uboot_test_image /tftpboot/$uboot_test_image
+
+        send " \r"
+        expect $UBOOT_PROMPT
+
+        if { [update_uboot] == 2 } {
+            set hdd_ide_result $TEST_PASS
+        } else {
+            set hdd_ide_result $TEST_FAIL
+        }
+    }
+
+    record_test_result $hdd_ide_loc $hdd_ide_result
+
+}
+
+exec rm -f $uboot_test_loc/include/configs/$make_board_type.h
+exec svn up $uboot_test_loc/include/configs/$make_board_type.h
+
+all_done
