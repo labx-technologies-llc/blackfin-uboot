@@ -276,6 +276,7 @@ proc wait_for_uboot {} {
 proc record_test_result { test_num result } {
     global result_matrix
     global log_dir
+    global search_log
 
     #Get the row associated with test_num.
     set temp_2_element_matrix [lindex $result_matrix $test_num]
@@ -292,10 +293,10 @@ proc record_test_result { test_num result } {
     send_user "\n===== Recording result: $y is $z\n"
 
     if { $z == "fail" } {
-        if {[ catch { eval exec grep -nrl {"===== Recording result: $y is $z"} [glob $log_dir/\*/] } errmsg ]} {
+        if {[ catch { eval exec grep -nrl {"===== Recording result: $y is $z"} [glob $log_dir/\*/$search_log] } errmsg ]} {
             send_user "Fail to find last passed $y result!\n\n"
         } else {
-            set pass_files [ eval exec grep -nrl {"===== Recording result: $y is $z"} [glob $log_dir/\*/] ]
+            set pass_files [ eval exec grep -nrl {"===== Recording result: $y is $z"} [glob $log_dir/\*/$search_log] ]
             set last_pass_dir [exec echo $pass_files | awk -F/ {{print $9}} | sort -u | tail -n 1 ]
 
             if {[ catch { exec grep -E "Revision: \[0-9]+" $log_dir/$last_pass_dir/summary } errmsg ]} {
@@ -540,6 +541,7 @@ set AUTOBOOT_PROMPT         "Hit any key to stop"
 # Set up defaults
 set logfile                 "$log_dir/uboot-misc-test-detailed-log"
 set summary_logfile         "$log_dir/uboot-misc-test-summary-log"
+set search_log              "uboot-misc-test-detailed-log"
 set compare_file            "/dev/null"
 set starting_dir            [exec pwd]
 
