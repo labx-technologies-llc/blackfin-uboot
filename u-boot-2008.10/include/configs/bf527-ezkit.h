@@ -90,27 +90,31 @@
 /*
  * Flash Settings
  */
+#define CFG_FLASH_BASE		0x20000000
 #define CFG_FLASH_CFI		/* The flash is CFI compatible */
 #define CONFIG_FLASH_CFI_DRIVER	/* Use common CFI driver */
-#define CFG_FLASH_BASE		0x20000000
 #define CFG_FLASH_PROTECTION
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CFG_MAX_FLASH_SECT	259	/* max number of sectors on one chip */
+
 #define CONFIG_BFIN_SPI
 #define CONFIG_ENV_SPI_MAX_HZ	30000000
 #define CONFIG_SF_DEFAULT_HZ	30000000
 #define CONFIG_SPI_FLASH
 #define CONFIG_SPI_FLASH_STMICRO
+
 #if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
-#define CONFIG_ENV_IS_IN_EEPROM	1
+#define CONFIG_ENV_IS_IN_SPI_FLASH
 #define CONFIG_ENV_OFFSET	0x4000
+#define CONFIG_ENV_SIZE		0x2000
+#define CONFIG_ENV_SECT_SIZE	0x2000
 #else
-#define CONFIG_ENV_IS_IN_FLASH	1
-#define CONFIG_ENV_ADDR		0x20004000
+#define CONFIG_ENV_IS_IN_FLASH
 #define CONFIG_ENV_OFFSET	0x4000
-#endif
+#define CONFIG_ENV_ADDR		(CFG_FLASH_BASE + CONFIG_ENV_OFFSET)
 #define CONFIG_ENV_SIZE		0x2000
 #define CONFIG_ENV_SECT_SIZE	0x2000	/* Total Size of Environment Sector */
+#endif
 #define ENV_IS_EMBEDDED_CUSTOM
 
 
