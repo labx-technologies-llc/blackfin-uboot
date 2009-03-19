@@ -84,16 +84,24 @@
 #define CONFIG_SYS_MAX_FLASH_BANKS	1
 #define CONFIG_SYS_MAX_FLASH_SECT	67
 
+#define CONFIG_BFIN_SPI
+#define CONFIG_ENV_SPI_MAX_HZ   30000000
+#define CONFIG_SF_DEFAULT_HZ    30000000
+#define CONFIG_SPI_FLASH
+#define CONFIG_SPI_FLASH_STMICRO
+
 #if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
-#define CONFIG_ENV_IS_IN_EEPROM	1
+#define CONFIG_ENV_IS_IN_SPI_FLASH
 #define CONFIG_ENV_OFFSET	0x4000
-#else
-#define CONFIG_ENV_IS_IN_FLASH	1
-#define CONFIG_ENV_ADDR		0x20004000
-#define CONFIG_ENV_OFFSET	(CONFIG_ENV_ADDR - CONFIG_SYS_FLASH_BASE)
-#endif
 #define CONFIG_ENV_SIZE		0x2000
 #define CONFIG_ENV_SECT_SIZE	0x2000
+#else
+#define	CONFIG_ENV_IS_IN_FLASH
+#define CONFIG_ENV_OFFSET	0x4000
+#define CONFIG_ENV_ADDR		(CFG_FLASH_BASE + CONFIG_ENV_OFFSET)
+#define CONFIG_ENV_SIZE		0x2000
+#define	CONFIG_ENV_SECT_SIZE	0x2000	/* Total Size of Environment Sector */
+#endif
 #if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #define ENV_IS_EMBEDDED
 #else
@@ -103,10 +111,10 @@
 /* CONFIG_SPI_BAUD controls the SPI peripheral clock divider		*/
 /* Values can range from 2-65535					*/
 /* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)				*/
-#define CONFIG_SPI
+/*#define CONFIG_SPI
 #define CONFIG_SPI_BAUD			2
 #define CONFIG_SYS_I2C_FRAM
-
+*/
 
 /*
  * I2C Settings

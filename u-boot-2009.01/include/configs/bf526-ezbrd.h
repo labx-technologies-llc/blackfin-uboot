@@ -53,8 +53,8 @@
 #define CONFIG_EBIU_AMBCTL0_VAL	(B1WAT_15 | B1RAT_15 | B1HT_3 | B1RDYPOL | B0WAT_15 | B0RAT_15 | B0HT_3 | B0RDYPOL)
 #define CONFIG_EBIU_AMBCTL1_VAL	(B3WAT_15 | B3RAT_15 | B3HT_3 | B3RDYPOL | B2WAT_15 | B2RAT_15 | B2HT_3 | B2RDYPOL)
 
-#define CONFIG_SYS_MONITOR_LEN	(384 * 1024)
-#define CONFIG_SYS_MALLOC_LEN	(384 * 1024)
+#define CONFIG_SYS_MONITOR_LEN	(512 * 1024)
+#define CONFIG_SYS_MALLOC_LEN	(512 * 1024)
 
 
 /*
@@ -98,24 +98,25 @@
 #define CONFIG_SYS_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #define CONFIG_SYS_MAX_FLASH_SECT	259	/* max number of sectors on one chip */
 
+#define CONFIG_BFIN_SPI
+#define CONFIG_ENV_SPI_MAX_HZ	30000000
+#define CONFIG_SF_DEFAULT_HZ	30000000
+#define CONFIG_SPI_FLASH
+#define CONFIG_SPI_FLASH_STMICRO
+
 #if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
-#define CONFIG_ENV_IS_IN_EEPROM	1
+#define CONFIG_ENV_IS_IN_SPI_FLASH
 #define CONFIG_ENV_OFFSET	0x4000
+#define CONFIG_ENV_SIZE		0x2000
+#define CONFIG_ENV_SECT_SIZE	0x2000
 #else
-#define CONFIG_ENV_IS_IN_FLASH	1
-#define CONFIG_ENV_ADDR		0x20004000
+#define CONFIG_ENV_IS_IN_FLASH
 #define CONFIG_ENV_OFFSET	0x4000
-#endif
+#define CONFIG_ENV_ADDR		(CFG_FLASH_BASE + CONFIG_ENV_OFFSET)
 #define CONFIG_ENV_SIZE		0x2000
 #define CONFIG_ENV_SECT_SIZE	0x2000	/* Total Size of Environment Sector */
+#endif
 #define ENV_IS_EMBEDDED_CUSTOM
-
-/* CONFIG_SPI_BAUD controls the SPI peripheral clock divider		*/
-/* Values can range from 2-65535					*/
-/* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)				*/
-#define CONFIG_SPI
-#define CONFIG_SPI_BAUD			2
-#define CONFIG_SYS_I2C_FRAM
 
 
 /*
@@ -125,6 +126,18 @@
 #define CONFIG_HARD_I2C		1
 #define CONFIG_SYS_I2C_SPEED	50000
 #define CONFIG_SYS_I2C_SLAVE	0
+
+
+/*
+ * USB Setting
+ */
+#if !defined(__ADSPBF522__) && !defined(__ADSPBF523__)
+#define CONFIG_USB
+#define CONFIG_MUSB_HCD
+#define CONFIG_USB_BLACKFIN
+#define CONFIG_USB_STORAGE
+#define CONFIG_MUSB_TIMEOUT 100000
+#endif
 
 
 /*
