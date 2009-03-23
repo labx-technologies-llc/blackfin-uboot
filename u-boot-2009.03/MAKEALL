@@ -808,6 +808,7 @@ LIST_blackfin="		\
 "
 
 procs() {
+	${no_cpu} && set -- default
 	case ${@:-${target}} in
 		*bf51[2468]*)   procs=bf51{2,4,6,8};;
 		*bf52[234567]*) procs=bf52{2,3,4,5,6,7};;
@@ -816,9 +817,23 @@ procs() {
 		*bf53[89]*)     procs=bf53{8,9};;
 		*bf54[24789]*)  procs=bf54{2,4,7,9,8};;
 		*bf561*)        procs=bf561;;
-		*)              procs=$(procs $(echo CONFIG_BFIN_CPU | ${CPP:-cpp} -P -include include/configs/${target}.h -I include -)) ;;
+		*)              proc=$(echo CPU=CONFIG_BFIN_CPU | \
+		                       ${CPP:-cpp} -P -include include/configs/${target}.h -I include - 2>/dev/null | \
+		                       sed -n 's:CPU=::p')
+		                ${no_cpu} && echo ${proc%-*} && return
+		                procs=$(procs ${proc}) ;;
 	esac
 	bash -c "echo ${procs}"
+}
+bmodes() {
+	${no_board} && echo default && return
+	echo para spi_master
+	case $1 in
+		bf5[36]*) echo bypass;;
+	esac
+	case $1 in
+		bf5[24]*) echo nand;;
+	esac
 }
 
 #########################################################################
@@ -858,18 +873,35 @@ LIST_sparc="gr_xc3s_1500	gr_cpci_ax2000	gr_ep2s60	grsim	grsim_leon2"
 
 #-----------------------------------------------------------------------
 
+no_cpu=false
+no_board=false
+while [ -n "$1" ] ; do
+	case $1 in
+		-C) no_cpu=true;;
+		-B) no_board=true;;
+		-q) no_cpu=true no_board=true;;
+		*)  break;;
+	esac
+	shift
+done
+
 #----- for now, just run PPC by default -----
-[ $# = 0 ] && set $LIST_ppc
+[ $# = 0 ] && set -- blackfin
 
 #-----------------------------------------------------------------------
 
 build_target() {
 	target=$1
+	bmode=$2
+	bmodeU=$(echo ${bmode} | LC_ALL=C tr '[:lower:]' '[:upper:]')
 
-	echo "Testing build for $target (CPU: $cpu) ..."
+	echo "Testing build for $target ($cpu/$bmode) ..."
 
 	${MAKE} distclean >/dev/null
+	${no_cpu} || \
 	sed -i "/CONFIG_BFIN_CPU/s:\([[:space:]]\)bf[0-9]*-:\1${cpu}-:" include/configs/$target.h
+	${no_board} || \
+	sed -i "/^#define[[:space:]]*CONFIG_BFIN_BOOT_MODE/s:BFIN_BOOT_[^[:space:]]*$:BFIN_BOOT_${bmodeU}:" include/configs/$target.h
 	${MAKE} ${target}_config >/dev/null
 
 	${MAKE} ${JOBS} all 2>&1 >${LOG_DIR}/$target.$cpu.MAKELOG \
@@ -900,7 +932,9 @@ do
 			for target in `eval echo '$LIST_'${arg}`
 			do
 				for cpu in $(procs) ; do
-					build_target ${target}
+					for bmode in $(bmodes $cpu) ; do
+						build_target ${target} ${bmode}
+					done
 				done
 			done
 			;;
