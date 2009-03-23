@@ -24,19 +24,25 @@
 # ifdef CONFIG_LIBATA
 #  define CONFIG_CMD_FAT
 #  define CONFIG_CMD_SATA
-#  define CONFIG_DOS_PARTITION
+#  ifndef CONFIG_DOS_PARTITION
+#   define CONFIG_DOS_PARTITION
+#  endif
 # endif
 # ifdef CONFIG_MMC
 #  define CONFIG_CMD_FAT
 #  define CONFIG_CMD_MMC
-#  define CONFIG_DOS_PARTITION
+#  ifndef CONFIG_DOS_PARTITION
+#   define CONFIG_DOS_PARTITION
+#  endif
 # endif
 # ifdef CONFIG_USB
 #  define CONFIG_CMD_EXT2
 #  define CONFIG_CMD_FAT
 #  define CONFIG_CMD_USB
 #  define CONFIG_CMD_USB_STORAGE
-#  define CONFIG_DOS_PARTITION
+#  ifndef CONFIG_DOS_PARTITION
+#   define CONFIG_DOS_PARTITION
+#  endif
 # endif
 # ifdef CONFIG_POST
 #  define CONFIG_CMD_DIAG

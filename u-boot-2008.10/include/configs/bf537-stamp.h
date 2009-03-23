@@ -179,6 +179,7 @@
 
 #if defined(CONFIG_BFIN_IDE)
 
+#define CONFIG_DOS_PARTITION	1
 /*
  * IDE/ATA stuff
  */
