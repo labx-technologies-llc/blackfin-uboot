@@ -95,7 +95,7 @@
 #define CONFIG_FLASH_CFI_DRIVER	/* Use common CFI driver */
 #define CFG_FLASH_PROTECTION
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
-#define CFG_MAX_FLASH_SECT	67	/* max number of sectors on one chip */
+#define CFG_MAX_FLASH_SECT	71	/* max number of sectors on one chip */
 
 #define CONFIG_BFIN_SPI
 #define CONFIG_ENV_SPI_MAX_HZ	30000000
