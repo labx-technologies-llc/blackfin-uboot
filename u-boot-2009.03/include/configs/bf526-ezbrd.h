@@ -61,7 +61,9 @@
  * NAND Settings
  * (can't be used same time as ethernet)
  */
-/* #define CONFIG_BFIN_NFC */
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_NAND)
+#define CONFIG_BFIN_NFC
+#endif
 #ifdef CONFIG_BFIN_NFC
 #define CONFIG_BFIN_NFC_CTL_VAL	0x0033
 #define CONFIG_DRIVER_NAND_BFIN
