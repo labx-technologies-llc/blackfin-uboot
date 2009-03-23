@@ -74,29 +74,26 @@
  * Flash Settings
  */
 #define CONFIG_SYS_FLASH_BASE		0x20000000
+#define CONFIG_SYS_HAS_FLASHSWITCH	1
+#define CONFIG_SYS_MAX_FLASH_BANKS	1
+#define CONFIG_SYS_MAX_FLASH_SECT	32
+#define FLASH_TOT_SECT			32
+#define CONFIG_SYS_FLASH_SIZE		0x400000
 
-#define CONFIG_SYS_HAS_FLASHSWITCH     1
-#define CONFIG_SYS_MAX_FLASH_BANKS	1	/* max number of memory banks */
-#define CONFIG_SYS_MAX_FLASH_SECT	32	/* max number of sectors on one chip */
 
-#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
-#define CONFIG_ENV_IS_IN_EEPROM	1
-#define CONFIG_ENV_OFFSET	0x4000
-#else
+/*
+ * Env Settings
+ */
 #define CONFIG_ENV_IS_IN_FLASH	1
 #define CONFIG_ENV_ADDR		0x20004000
 #define CONFIG_ENV_OFFSET	0x4000
-#endif
 #define CONFIG_ENV_SIZE		0x2000
-#define CONFIG_ENV_SECT_SIZE	0x20000	/* Total Size of Environment Sector */
+#define CONFIG_ENV_SECT_SIZE	0x20000
 #if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #define ENV_IS_EMBEDDED
 #else
 #define ENV_IS_EMBEDDED_CUSTOM
 #endif
-
-#define FLASH_TOT_SECT		32
-#define CONFIG_SYS_FLASH_SIZE		0x400000
 
 
 /*
