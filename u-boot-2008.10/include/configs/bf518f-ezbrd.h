@@ -12,7 +12,7 @@
  * Processor Settings
  */
 #define CONFIG_BFIN_CPU             bf518-0.0
-#define CONFIG_BFIN_BOOT_MODE       BFIN_BOOT_SPI_MASTER
+#define CONFIG_BFIN_BOOT_MODE       BFIN_BOOT_PARA
 
 
 /*
