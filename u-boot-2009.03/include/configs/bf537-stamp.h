@@ -133,14 +133,6 @@
 #define CONFIG_BFIN_SPI_MMC
 
 
-
-/*
- * SPI_MMC Settings
- */
-#define CONFIG_MMC
-#define CONFIG_BFIN_SPI_MMC
-
-
 /*
  * NAND Settings
  */
