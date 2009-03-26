@@ -929,16 +929,15 @@ do
 	|sparc \
 	|x86|I486 \
 	)
-			for target in `eval echo '$LIST_'${arg}`
-			do
-				for cpu in $(procs) ; do
-					for bmode in $(bmodes $cpu) ; do
-						build_target ${target} ${bmode}
-					done
-				done
-			done
-			;;
-	*)		build_target ${arg}
-			;;
+		targets=`eval echo '$LIST_'${arg}` ;;
+	*)	targets=${arg} ;;
 	esac
+
+	for target in ${targets} ; do
+		for cpu in $(procs) ; do
+			for bmode in $(bmodes $cpu) ; do
+				build_target ${target} ${bmode}
+			done
+		done
+	done
 done
