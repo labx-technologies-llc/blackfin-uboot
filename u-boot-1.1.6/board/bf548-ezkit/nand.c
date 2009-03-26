@@ -131,6 +131,7 @@ static void bfin_nfc_read_buf(struct mtd_info *mtd, uint8_t *buf, int len)
 
 		/* Contents do not matter */
 		bfin_write_NFC_DATA_RD(0x0000);
+		SSYNC();
 
 		while (!(bfin_read_NFC_IRQSTAT() & RD_RDY))
 			if (ctrlc())
@@ -287,7 +288,7 @@ static int bfin_nfc_calculate_ecc(struct mtd_info *mtd,
 	p = (u8 *) code;
 	memcpy(ecc_code, p, 3);
 
-	/* second 4 bytes ECC code for 512 page size */
+	/* second 3 bytes ECC code for 512 page size */
 	if (NAND_IS_512()) {
 		ecc0 = bfin_read_NFC_ECC2();
 		ecc1 = bfin_read_NFC_ECC3();
