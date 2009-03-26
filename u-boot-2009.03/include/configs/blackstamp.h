@@ -82,17 +82,11 @@
 /* #define CONFIG_ETHADDR		02:80:ad:20:31:b8 */
 #endif
 
-#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
 #define CONFIG_ENV_IS_IN_EEPROM	1
 #define CONFIG_ENV_OFFSET	0x4000
-#endif
 #define CONFIG_ENV_SIZE		0x2000
 #define CONFIG_ENV_SECT_SIZE	0x2000	/* Total Size of Environment Sector */
-#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
-#define ENV_IS_EMBEDDED
-#else
 #define ENV_IS_EMBEDDED_CUSTOM
-#endif
 
 /*
  * SDRAM settings & memory map
