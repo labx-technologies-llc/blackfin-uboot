@@ -268,6 +268,16 @@ static struct nand_oobinfo yaffs_oobinfo = {
 	.eccpos = { 8, 9, 10, 13, 14, 15}
 };
 
+static struct nand_oobinfo yaffs2_oobinfo = {
+	.useecc = MTD_NANDECC_AUTOPLACE,
+	.eccbytes = 24,
+	.eccpos = {
+		40, 41, 42, 43, 44, 45, 46, 47,
+		48, 49, 50, 51, 52, 53, 54, 55,
+		56, 57, 58, 59, 60, 61, 62, 63},
+	.oobfree = { {2, 38} }
+};
+
 static struct nand_oobinfo autoplace_oobinfo = {
 	.useecc = MTD_NANDECC_AUTOPLACE
 };
@@ -341,7 +351,7 @@ int nand_write_opts(nand_info_t *meminfo, const nand_write_options_t *opts)
 	/* force OOB layout for jffs2 or yaffs? */
 	if (opts->forcejffs2 || opts->forceyaffs) {
 		struct nand_oobinfo *oobsel =
-			opts->forcejffs2 ? &jffs2_oobinfo : &yaffs_oobinfo;
+			opts->forcejffs2 ? &jffs2_oobinfo : &yaffs2_oobinfo;
 
 		if (meminfo->oobsize == 8) {
 			if (opts->forceyaffs) {
@@ -442,6 +452,24 @@ int nand_write_opts(nand_info_t *meminfo, const nand_write_options_t *opts)
 			 * on failure */
 			memcpy(oob_buf, buffer, meminfo->oobsize);
 			buffer += meminfo->oobsize;
+
+			/* making oob transfer */
+			if (opts->forceyaffs) {
+				int i, off, len;
+				off = meminfo->oobinfo.oobfree[0][0];
+				len = meminfo->oobinfo.oobfree[0][1];
+				memcpy(oob_buf + off, oob_buf, len);
+
+				/* marking bbt */
+				for (i = 0; i < off; i++)
+					oob_buf[i] = 0xff;
+				/*
+				 * set the ECC bytes to 0xff so MTD will
+				 * calculate it
+				 */
+				for (i = 0; i < meminfo->oobinfo.eccbytes; i++)
+					oob_buf[meminfo->oobinfo.eccpos[i]] = 0xff;
+			}
 
 			/* write OOB data first, as ecc will be placed
 			 * in there*/
