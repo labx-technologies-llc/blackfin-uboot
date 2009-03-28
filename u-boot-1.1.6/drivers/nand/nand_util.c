@@ -262,11 +262,13 @@ static struct nand_oobinfo jffs2_oobinfo = {
 	.eccpos = { 0, 1, 2, 3, 6, 7 }
 };
 
+/* unused ...
 static struct nand_oobinfo yaffs_oobinfo = {
 	.useecc = MTD_NANDECC_PLACE,
 	.eccbytes = 6,
 	.eccpos = { 8, 9, 10, 13, 14, 15}
 };
+*/
 
 static struct nand_oobinfo yaffs2_oobinfo = {
 	.useecc = MTD_NANDECC_AUTOPLACE,
