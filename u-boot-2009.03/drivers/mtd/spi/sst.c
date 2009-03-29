@@ -142,6 +142,7 @@ sst_read_fast(struct spi_flash *flash, u32 offset, size_t len, void *buf)
 static int
 sst_byte_write(struct spi_flash *flash, u32 offset, const void *buf)
 {
+	int ret;
 	u8 cmd[4] = {
 		CMD_SST_BP,
 		offset >> 16,
@@ -149,12 +150,18 @@ sst_byte_write(struct spi_flash *flash, u32 offset, const void *buf)
 		offset,
 	};
 
-	debug("BP: 0x%p => cmd = { 0x%02x 0x%06x }\n", buf, cmd[0], offset);
+	debug("BP[%02x]: 0x%p => cmd = { 0x%02x 0x%06x }\n",
+		spi_w8r8(flash->spi, CMD_SST_RDSR), buf, cmd[0], offset);
 
-	if (sst_enable_writing(flash))
-		return -1;
+	ret = sst_enable_writing(flash);
+	if (ret)
+		return ret;
 
-	return spi_flash_cmd_write(flash->spi, cmd, sizeof(cmd), buf, 1);
+	ret = spi_flash_cmd_write(flash->spi, cmd, sizeof(cmd), buf, 1);
+	if (ret)
+		return ret;
+
+	return sst_wait_ready(flash);
 }
 
 static int
@@ -189,9 +196,10 @@ sst_write(struct spi_flash *flash, u32 offset, size_t len, const void *buf)
 	cmd[2] = offset >> 8;
 	cmd[3] = offset;
 
-	for (; actual < len; actual += 2) {
-		debug("WP: 0x%p => cmd = { 0x%02x 0x%06x }\n",
-		     buf + actual, cmd[0], offset);
+	for (; actual < len - 1; actual += 2) {
+		debug("WP[%02x]: 0x%p => cmd = { 0x%02x 0x%06x }\n",
+		     spi_w8r8(flash->spi, CMD_SST_RDSR), buf + actual, cmd[0],
+		     offset);
 
 		ret = spi_flash_cmd_write(flash->spi, cmd, cmd_len,
 		                          buf + actual, 2);
@@ -213,11 +221,11 @@ sst_write(struct spi_flash *flash, u32 offset, size_t len, const void *buf)
 
 	/* If there is a single trailing byte, write it out */
 	if (!ret && actual != len)
-		ret = sst_byte_write(flash, offset, buf);
+		ret = sst_byte_write(flash, offset, buf + actual);
 
  done:
-	debug("SF: sst: program %s %zu bytes @ 0x%x\n",
-	      ret ? "failure" : "success", len, offset);
+	debug("SF: sst: program %s %zu bytes @ 0x%zx\n",
+	      ret ? "failure" : "success", len, offset - actual);
 
 	spi_release_bus(flash->spi);
 	return ret;
@@ -302,7 +310,7 @@ sst_unlock(struct spi_flash *flash)
 	if (ret)
 		debug("SF: Unable to set status byte\n");
 
-	debug("SF: sst: status = %x\n", spi_w8r8(spi, CMD_SST_RDSR));
+	debug("SF: sst: status = %x\n", spi_w8r8(flash->spi, CMD_SST_RDSR));
 
 	return ret;
 }
