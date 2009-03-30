@@ -497,7 +497,7 @@ void nand_wait_ready(struct mtd_info *mtd)
 	reset_timer();
 
 	/* wait until command is processed or timeout occures */
-	while (get_timer(0) < timeo) {
+	while (get_timer(0) / 1000 < timeo) {
 		if (chip->dev_ready)
 			if (chip->dev_ready(mtd))
 				break;
@@ -843,7 +843,7 @@ static int nand_wait(struct mtd_info *mtd, struct nand_chip *this)
 	reset_timer();
 
 	while (1) {
-		if (get_timer(0) > timeo) {
+		if (get_timer(0) / 1000 > timeo) {
 			printf("Timeout!");
 			return 0x01;
 		}
@@ -858,7 +858,7 @@ static int nand_wait(struct mtd_info *mtd, struct nand_chip *this)
 	}
 #ifdef PPCHAMELON_NAND_TIMER_HACK
 	reset_timer();
-	while (get_timer(0) < 10);
+	while (get_timer(0) / 1000 < 10);
 #endif /*  PPCHAMELON_NAND_TIMER_HACK */
 
 	return this->read_byte(mtd);
