@@ -74,7 +74,7 @@ static const struct sst_spi_flash_params sst_spi_flash_table[] = {
 };
 
 static int
-sst_wait_ready(struct spi_flash *flash)
+sst_wait_ready(struct spi_flash *flash, unsigned long timeout)
 {
 	struct spi_slave *spi = flash->spi;
 	unsigned long timebase;
@@ -96,7 +96,7 @@ sst_wait_ready(struct spi_flash *flash)
 		if ((byte & SST_SR_WIP) == 0)
 			break;
 
-	} while (get_timer(timebase) < 2 * CFG_HZ);
+	} while (get_timer(timebase) < timeout);
 
 	spi_xfer(spi, 0, NULL, NULL, SPI_XFER_END);
 
@@ -161,7 +161,7 @@ sst_byte_write(struct spi_flash *flash, u32 offset, const void *buf)
 	if (ret)
 		return ret;
 
-	return sst_wait_ready(flash);
+	return sst_wait_ready(flash, SPI_FLASH_PROG_TIMEOUT);
 }
 
 static int
@@ -208,7 +208,7 @@ sst_write(struct spi_flash *flash, u32 offset, size_t len, const void *buf)
 			break;
 		}
 
-		ret = sst_wait_ready(flash);
+		ret = sst_wait_ready(flash, SPI_FLASH_PROG_TIMEOUT);
 		if (ret)
 			break;
 
@@ -282,7 +282,7 @@ sst_erase(struct spi_flash *flash, u32 offset, size_t len)
 			break;
 		}
 
-		ret = sst_wait_ready(flash);
+		ret = sst_wait_ready(flash, SPI_FLASH_PAGE_ERASE_TIMEOUT);
 		if (ret)
 			break;
 	}
