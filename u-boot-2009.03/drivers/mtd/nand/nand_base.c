@@ -2224,8 +2224,12 @@ int nand_erase_nand(struct mtd_info *mtd, struct erase_info *instr,
 
 	while (len) {
 		/*
-		 * heck if we have a bad block, we do not erase bad blocks !
+		 * check if we have a bad block, we do not erase bad blocks !
+		 *
+		 * Because the check have been handled in nand_erase_opts(),
+		 * so mark it out. This make the scrub operation happier.
 		 */
+		/*
 		if (nand_block_checkbad(mtd, ((loff_t) page) <<
 					chip->page_shift, 0, allowbbt)) {
 			printk(KERN_WARNING "nand_erase: attempt to erase a "
@@ -2233,6 +2237,7 @@ int nand_erase_nand(struct mtd_info *mtd, struct erase_info *instr,
 			instr->state = MTD_ERASE_FAILED;
 			goto erase_exit;
 		}
+		*/
 
 		/*
 		 * Invalidate the page cache, if we erase the block which
