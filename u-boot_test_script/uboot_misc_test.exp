@@ -45,6 +45,7 @@ if { $board_type == "BF533-STAMP" } {
     send_user "\n Unknown target board type.\n"
     exit
 }
+set config_file        $make_board_type.h
 
 
 proc make_uboot {} {
@@ -728,6 +729,20 @@ if { $TEST_BUILD_SPI } {
 
     exec rm -f /tftpboot/u-boot.bin.spi /tftpboot/u-boot.ldr.spi
 
+    #clean modified config file
+    cd $uboot_test_loc
+    sleep 3
+    set timeout 2
+    if [ catch {exec rm include/configs/$config_file} ] {
+        send_user "\nfail delete include/configs/$config_file\n"
+        set build_spi_result $TEST_FAIL
+    }
+
+    if [ catch {exec svn up include/configs/$config_file} ] {
+        send_user "\nfail to update include/configs/$config_file\n"
+        set build_spi_result $TEST_FAIL
+    }
+
     if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
         send_user "\nfail to change configs for $make_board_type\n"
         set build_spi_result $TEST_FAIL
@@ -777,6 +792,20 @@ if { $TEST_BUILD_UART } {
 
     exec rm -f /tftpboot/u-boot.bin.uart /tftpboot/u-boot.ldr.uart
 
+    #clean modified config file
+    cd $uboot_test_loc
+    sleep 3
+    set timeout 2
+    if [ catch {exec rm include/configs/$config_file} ] {
+        send_user "\nfail delete include/configs/$config_file\n"
+        set build_uart_result $TEST_FAIL
+    }
+
+    if [ catch {exec svn up include/configs/$config_file} ] {
+        send_user "\nfail to update include/configs/$config_file\n"
+        set build_uart_result $TEST_FAIL
+    }
+
     if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
         send_user "\nfail to change configs for $make_board_type\n"
         set build_uart_result $TEST_FAIL
@@ -825,6 +854,20 @@ if { $TEST_BUILD_NAND } {
     set change_str "#define CONFIG_BFIN_BOOT_MODE  BFIN_BOOT_NAND"
 
     exec rm -f /tftpboot/u-boot.bin.nand /tftpboot/u-boot.ldr.nand
+
+    #clean modified config file
+    cd $uboot_test_loc
+    sleep 3
+    set timeout 2
+    if [ catch {exec rm include/configs/$config_file} ] {
+        send_user "\nfail delete include/configs/$config_file\n"
+        set build_nand_result $TEST_FAIL
+    }
+
+    if [ catch {exec svn up include/configs/$config_file} ] {
+        send_user "\nfail to update include/configs/$config_file\n"
+        set build_nand_result $TEST_FAIL
+    }
 
     if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
         send_user "\nfail to change configs for $make_board_type\n"
@@ -900,6 +943,20 @@ if { $TEST_BUILD_SPLASH } {
         }
     }
 
+    #clean modified config file
+    cd $uboot_test_loc
+    sleep 3
+    set timeout 2
+    if [ catch {exec rm include/configs/$config_file} ] {
+        send_user "\nfail delete include/configs/$config_file\n"
+        set build_splash_result $TEST_FAIL
+    }
+
+    if [ catch {exec svn up include/configs/$config_file} ] {
+        send_user "\nfail to update include/configs/$config_file\n"
+        set build_splash_result $TEST_FAIL
+    }
+
     if { $build_splash_result == $TEST_PASS } {
         if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
             send_user "\nfail to change configs for $make_board_type\n"
@@ -965,11 +1022,43 @@ if { $TEST_CF_IDE } {
     step "Test cf ide"
 
     set cf_ide_result $TEST_FAIL
-    set search_str "CONFIG_BFIN_CF_IDE"
-    set change_str "#define CONFIG_BFIN_CF_IDE"
 
     exec rm -f /tftpboot/u-boot.bin.cf_ide /tftpboot/u-boot.ldr.cf_ide
 
+    #clean modified config file
+    cd $uboot_test_loc
+    sleep 3
+    set timeout 2
+    if [ catch {exec rm include/configs/$config_file} ] {
+        send_user "\nfail delete include/configs/$config_file\n"
+        set cf_ide_result $TEST_FAIL
+    }
+
+    if [ catch {exec svn up include/configs/$config_file} ] {
+        send_user "\nfail to update include/configs/$config_file\n"
+        set cf_ide_result $TEST_FAIL
+    }
+
+    set search_str "CONFIG_BFIN_CF_IDE"
+    set change_str "#define CONFIG_BFIN_CF_IDE"
+    if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
+        send_user "\nfail to change configs for $make_board_type\n"
+        set cf_ide_result $TEST_FAIL
+    } else {
+        set cf_ide_result $TEST_PASS
+    }
+
+    set search_str "CFG_MONITOR_LEN"
+    set change_str "#define CFG_MONITOR_LEN         (512 * 1024)"
+    if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
+        send_user "\nfail to change configs for $make_board_type\n"
+        set cf_ide_result $TEST_FAIL
+    } else {
+        set cf_ide_result $TEST_PASS
+    }
+
+    set search_str "CFG_MALLOC_LEN"
+    set change_str "#define CFG_MALLOC_LEN          (512 * 1024)"
     if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
         send_user "\nfail to change configs for $make_board_type\n"
         set cf_ide_result $TEST_FAIL
@@ -1030,11 +1119,43 @@ if { $TEST_HDD_IDE } {
     step "Test hdd ide"
 
     set hdd_ide_result $TEST_FAIL
-    set search_str "CONFIG_BFIN_HDD_IDE"
-    set change_str "#define CONFIG_BFIN_HDD_IDE"
 
     exec rm -f /tftpboot/u-boot.bin.hdd_ide /tftpboot/u-boot.ldr.hdd_ide
 
+    #clean modified config file
+    cd $uboot_test_loc
+    sleep 3
+    set timeout 2
+    if [ catch {exec rm include/configs/$config_file} ] {
+        send_user "\nfail delete include/configs/$config_file\n"
+        set hdd_ide_result $TEST_FAIL
+    }
+
+    if [ catch {exec svn up include/configs/$config_file} ] {
+        send_user "\nfail to update include/configs/$config_file\n"
+        set hdd_ide_result $TEST_FAIL
+    }
+
+    set search_str "CONFIG_BFIN_HDD_IDE"
+    set change_str "#define CONFIG_BFIN_HDD_IDE"
+    if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
+        send_user "\nfail to change configs for $make_board_type\n"
+        set hdd_ide_result $TEST_FAIL
+    } else {
+        set hdd_ide_result $TEST_PASS
+    }
+
+    set search_str "CFG_MONITOR_LEN"
+    set change_str "#define CFG_MONITOR_LEN         (512 * 1024)"
+    if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
+        send_user "\nfail to change configs for $make_board_type\n"
+        set hdd_ide_result $TEST_FAIL
+    } else {
+        set hdd_ide_result $TEST_PASS
+    }
+
+    set search_str "CFG_MALLOC_LEN"
+    set change_str "#define CFG_MALLOC_LEN          (512 * 1024)"
     if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
         send_user "\nfail to change configs for $make_board_type\n"
         set hdd_ide_result $TEST_FAIL

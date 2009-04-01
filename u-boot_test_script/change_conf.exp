@@ -42,18 +42,6 @@ if { $board_type == "BF533-STAMP" } {
 
 
 cd $uboot_test_loc
-sleep 3
-set timeout 2
-if [ catch {exec rm include/configs/$config_file} ] {
-    send_user "\nfail delete include/configs/$config_file\n"
-    exit 1
-}
-
-if [ catch {exec svn up include/configs/$config_file} ] {
-    send_user "\nfail to update include/configs/$config_file\n"
-    exit 1
-}
-
 
 spawn ex include/configs/$config_file
 expect {
