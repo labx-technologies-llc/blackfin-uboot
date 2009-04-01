@@ -496,7 +496,7 @@ EXPORT_SYMBOL_GPL(nand_wait_ready);
 void nand_wait_ready(struct mtd_info *mtd)
 {
 	struct nand_chip *chip = mtd->priv;
-	u32 timeo = CONFIG_SYS_HZ * 20;
+	u32 timeo = (CONFIG_SYS_HZ * 20) / 1000;
 
 	reset_timer();
 
@@ -835,9 +835,9 @@ static int nand_wait(struct mtd_info *mtd, struct nand_chip *this)
 	int state = this->state;
 
 	if (state == FL_ERASING)
-		timeo = CONFIG_SYS_HZ * 400;
+		timeo = (CONFIG_SYS_HZ * 400) / 1000;
 	else
-		timeo = CONFIG_SYS_HZ * 20;
+		timeo = (CONFIG_SYS_HZ * 20) / 1000;
 
 	if ((state == FL_ERASING) && (this->options & NAND_IS_AND))
 		this->cmdfunc(mtd, NAND_CMD_STATUS_MULTI, -1, -1);
