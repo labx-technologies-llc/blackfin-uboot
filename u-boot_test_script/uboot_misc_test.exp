@@ -15,7 +15,7 @@ if { $board_type == "BF533-STAMP" } {
     set make_board_type    bf533-stamp
     set TEST_BUILD_UART              0
     set TEST_BUILD_NAND              0
-    set TEST_BUILD_SPLASH            1
+    set TEST_BUILD_SPLASH            0
 } elseif { $board_type == "BF537-STAMP" } {
     set make_board_type    bf537-stamp
     set TEST_CF_IDE                  1
@@ -710,6 +710,7 @@ while 1 {
 	}
 	timeout {
 	    send_user "timeout waiting for autoboot prompt\n"
+	    break
 	}
     }
 }
