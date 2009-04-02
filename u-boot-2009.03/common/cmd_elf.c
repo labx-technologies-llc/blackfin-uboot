@@ -276,7 +276,10 @@ unsigned long load_elf_image (unsigned long addr)
 		void *src = (void *) addr + phdr->p_offset;
 		printf ("Loading phdr %i to 0x%p (%i bytes)\n",
 		        i, dst, phdr->p_filesz);
-		memcpy (dst, src, phdr->p_filesz);
+		if (phdr->p_filesz)
+			memcpy (dst, src, phdr->p_filesz);
+		if (phdr->p_filesz != phdr->p_memsz)
+			memset (dst + phdr->p_filesz, 0x00, phdr->p_memsz - phdr->p_filesz);
 		flush_cache ((unsigned long)dst, phdr->p_filesz);
 		++phdr;
 	}
