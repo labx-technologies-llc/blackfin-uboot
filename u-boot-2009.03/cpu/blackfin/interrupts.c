@@ -130,7 +130,7 @@ ulong get_timer(ulong base)
 	last_time = clocks;
 
 	return clocks / CLOCKS_PER_TICK
-			+ TICKS_PER_LOAD * timestamp;
+			+ TICKS_PER_LOAD * timestamp - base;
 }
 
 void reset_timer(void)
