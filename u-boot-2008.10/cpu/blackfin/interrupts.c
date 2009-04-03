@@ -131,7 +131,7 @@ ulong get_timer(ulong base)
 
 	/* Calculate the elapsed ticks */
 	return clocks / CLOCKS_PER_TICK
-			+ TICKS_PER_LOAD * timestamp;
+			+ TICKS_PER_LOAD * timestamp - base;
 }
 
 void reset_timer(void)
