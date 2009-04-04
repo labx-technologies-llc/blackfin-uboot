@@ -270,7 +270,7 @@ int winbond_erase(struct spi_flash *flash, u32 offset, size_t len)
 			goto out;
 		}
 
-		ret = winbond_wait_ready(flash, 2 * CFG_HZ);	/* Up to 2 seconds */
+		ret = winbond_wait_ready(flash, SPI_FLASH_PAGE_ERASE_TIMEOUT);
 		if (ret < 0) {
 			debug("SF: Winbond sector erase timed out\n");
 			goto out;
