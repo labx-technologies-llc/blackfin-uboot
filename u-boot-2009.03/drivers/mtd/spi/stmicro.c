@@ -133,12 +133,12 @@ static int stmicro_wait_ready(struct spi_flash *flash, unsigned long timeout)
 	struct spi_slave *spi = flash->spi;
 	unsigned long timebase;
 	int ret;
+	u8 cmd = CMD_M25PXX_RDSR;
 	u8 status;
-	u8 cmd[4] = { CMD_M25PXX_RDSR, 0xff, 0xff, 0xff };
 
-	ret = spi_xfer(spi, 32, &cmd[0], NULL, SPI_XFER_BEGIN);
+	ret = spi_xfer(spi, 8, &cmd, NULL, SPI_XFER_BEGIN);
 	if (ret) {
-		debug("SF: Failed to send command %02x: %d\n", cmd[0], ret);
+		debug("SF: Failed to send command %02x: %d\n", cmd, ret);
 		return ret;
 	}
 
@@ -295,8 +295,7 @@ int stmicro_erase(struct spi_flash *flash, u32 offset, size_t len)
 			break;
 		}
 
-		/* Up to 2 seconds */
-		ret = stmicro_wait_ready(flash, 2 * CONFIG_SYS_HZ);
+		ret = stmicro_wait_ready(flash, SPI_FLASH_PAGE_ERASE_TIMEOUT);
 		if (ret < 0) {
 			debug("SF: STMicro page erase timed out\n");
 			break;
