@@ -4,9 +4,12 @@
  * Copyright (C) 2008 Atmel Corporation
  */
 
-/* Common parameters */
-#define SPI_FLASH_PROG_TIMEOUT		((10 * CFG_HZ) / 1000)
-#define SPI_FLASH_PAGE_ERASE_TIMEOUT	((50 * CFG_HZ) / 1000)
+/* Common parameters -- kind of high, but they should only occur when there
+ * is a problem (and well your system already is broken), so err on the side
+ * of caution in case we're dealing with slower SPI buses and/or processors.
+ */
+#define SPI_FLASH_PROG_TIMEOUT		(2 * CFG_HZ)
+#define SPI_FLASH_PAGE_ERASE_TIMEOUT	(5 * CFG_HZ)
 #define SPI_FLASH_SECTOR_ERASE_TIMEOUT	(10 * CFG_HZ)
 
 /* Common commands */
