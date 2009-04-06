@@ -1,8 +1,8 @@
 /*
- * Copyright (C) Marvell International Ltd. and its affiliates
+ * Copyright 2009(C) Marvell International Ltd. and its affiliates
  * Prafulla Wadaskar <prafulla@marvell.com>
  *
- * Based on drivers/mtd/spi//stmicor.c
+ * Based on drivers/mtd/spi/stmicro.c
  *
  * Copyright 2008, Network Appliance Inc.
  * Jason McMullan <mcmullan@netapp.com>
@@ -25,36 +25,37 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301 USA
  */
+
 #include <common.h>
 #include <malloc.h>
 #include <spi_flash.h>
 
 #include "spi_flash_internal.h"
 
-/* MX25Pxx-specific commands */
-#define CMD_MX25PXX_WREN	0x06	/* Write Enable */
-#define CMD_MX25PXX_WRDI	0x04	/* Write Disable */
-#define CMD_MX25PXX_RDSR	0x05	/* Read Status Register */
-#define CMD_MX25PXX_WRSR	0x01	/* Write Status Register */
-#define CMD_MX25PXX_READ	0x03	/* Read Data Bytes */
-#define CMD_MX25PXX_FAST_READ	0x0b	/* Read Data Bytes at Higher Speed */
-#define CMD_MX25PXX_PP		0x02	/* Page Program */
-#define CMD_MX25PXX_SE		0x20	/* Sector Erase */
-#define CMD_MX25PXX_BE		0xD8	/* Block Erase */
-#define CMD_MX25PXX_CE		0xc7	/* Chip Erase */
-#define CMD_MX25PXX_DP		0xb9	/* Deep Power-down */
-#define CMD_MX25PXX_RES		0xab	/* Release from DP, and Read Signature */
+/* MX25xx-specific commands */
+#define CMD_MX25XX_WREN		0x06	/* Write Enable */
+#define CMD_MX25XX_WRDI		0x04	/* Write Disable */
+#define CMD_MX25XX_RDSR		0x05	/* Read Status Register */
+#define CMD_MX25XX_WRSR		0x01	/* Write Status Register */
+#define CMD_MX25XX_READ		0x03	/* Read Data Bytes */
+#define CMD_MX25XX_FAST_READ	0x0b	/* Read Data Bytes at Higher Speed */
+#define CMD_MX25XX_PP		0x02	/* Page Program */
+#define CMD_MX25XX_SE		0x20	/* Sector Erase */
+#define CMD_MX25XX_BE		0xD8	/* Block Erase */
+#define CMD_MX25XX_CE		0xc7	/* Chip Erase */
+#define CMD_MX25XX_DP		0xb9	/* Deep Power-down */
+#define CMD_MX25XX_RES		0xab	/* Release from DP, and Read Signature */
 
-#define MXIC_ID_MX25P16		0x15
-#define MXIC_ID_MX25P20		0x12
-#define MXIC_ID_MX25P32		0x16
-#define MXIC_ID_MX25P40		0x13
-#define MXIC_ID_MX25P64		0x17
-#define MXIC_ID_MX25P80		0x14
-#define MXIC_ID_MX25P128	0x18
+#define MXIC_ID_MX2516		0x15
+#define MXIC_ID_MX2520		0x12
+#define MXIC_ID_MX2532		0x16
+#define MXIC_ID_MX2540		0x13
+#define MXIC_ID_MX2564		0x17
+#define MXIC_ID_MX2580		0x14
+#define MXIC_ID_MX25128		0x18
 
 #define MACRONIX_SR_WIP		(1 << 0)	/* Write-in-Progress */
 
@@ -68,19 +69,19 @@ struct macronix_spi_flash_params {
 };
 
 struct macronix_spi_flash {
-	const struct macronix_spi_flash_params *params;
 	struct spi_flash flash;
+	const struct macronix_spi_flash_params *params;
 };
 
 static inline struct macronix_spi_flash *to_macronix_spi_flash(struct spi_flash
-							     *flash)
+							       *flash)
 {
 	return container_of(flash, struct macronix_spi_flash, flash);
 }
 
 static const struct macronix_spi_flash_params macronix_spi_flash_table[] = {
 	{
-		.idcode1 = MXIC_ID_MX25P128,
+		.idcode1 = MXIC_ID_MX25128,
 		.page_size = 256,
 		.pages_per_sector = 16,
 		.sectors_per_block = 16,
@@ -95,11 +96,11 @@ static int macronix_wait_ready(struct spi_flash *flash, unsigned long timeout)
 	unsigned long timebase;
 	int ret;
 	u8 status;
-	u8 cmd[4] = { CMD_MX25PXX_RDSR, 0xff, 0xff, 0xff };
+	u8 cmd = CMD_MX25XX_RDSR;
 
-	ret = spi_xfer(spi, 32, &cmd[0], NULL, SPI_XFER_BEGIN);
+	ret = spi_xfer(spi, 8, &cmd, NULL, SPI_XFER_BEGIN);
 	if (ret) {
-		debug("SF: Failed to send command %02x: %d\n", cmd[0], ret);
+		debug("SF: Failed to send command %02x: %d\n", cmd, ret);
 		return ret;
 	}
 
@@ -169,7 +170,7 @@ static int macronix_write(struct spi_flash *flash,
 	for (actual = 0; actual < len; actual += chunk_len) {
 		chunk_len = min(len - actual, page_size - byte_addr);
 
-		cmd[0] = CMD_MX25PXX_PP;
+		cmd[0] = CMD_MX25XX_PP;
 		cmd[1] = page_addr >> 8;
 		cmd[2] = page_addr;
 		cmd[3] = byte_addr;
@@ -178,7 +179,7 @@ static int macronix_write(struct spi_flash *flash,
 		    ("PP: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x } chunk_len = %d\n",
 		     buf + actual, cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
 
-		ret = spi_flash_cmd(flash->spi, CMD_MX25PXX_WREN, NULL, 0);
+		ret = spi_flash_cmd(flash->spi, CMD_MX25XX_WREN, NULL, 0);
 		if (ret < 0) {
 			debug("SF: Enabling Write failed\n");
 			break;
@@ -187,13 +188,13 @@ static int macronix_write(struct spi_flash *flash,
 		ret = spi_flash_cmd_write(flash->spi, cmd, 4,
 					  buf + actual, chunk_len);
 		if (ret < 0) {
-			debug("SF: STMicro Page Program failed\n");
+			debug("SF: Macronix Page Program failed\n");
 			break;
 		}
 
 		ret = macronix_wait_ready(flash, SPI_FLASH_PROG_TIMEOUT);
 		if (ret < 0) {
-			debug("SF: STMicro page programming timed out\n");
+			debug("SF: Macronix page programming timed out\n");
 			break;
 		}
 
@@ -201,7 +202,7 @@ static int macronix_write(struct spi_flash *flash,
 		byte_addr = 0;
 	}
 
-	debug("SF: STMicro: Successfully programmed %u bytes @ 0x%x\n",
+	debug("SF: Macronix: Successfully programmed %u bytes @ 0x%x\n",
 	      len, offset);
 
 	spi_release_bus(flash->spi);
@@ -231,7 +232,7 @@ int macronix_erase(struct spi_flash *flash, u32 offset, size_t len)
 	}
 
 	len /= sector_size;
-	cmd[0] = CMD_MX25PXX_BE;
+	cmd[0] = CMD_MX25XX_BE;
 	cmd[2] = 0x00;
 	cmd[3] = 0x00;
 
@@ -245,7 +246,7 @@ int macronix_erase(struct spi_flash *flash, u32 offset, size_t len)
 	for (actual = 0; actual < len; actual++) {
 		cmd[1] = (offset / sector_size) + actual;
 
-		ret = spi_flash_cmd(flash->spi, CMD_MX25PXX_WREN, NULL, 0);
+		ret = spi_flash_cmd(flash->spi, CMD_MX25XX_WREN, NULL, 0);
 		if (ret < 0) {
 			debug("SF: Enabling Write failed\n");
 			break;
@@ -253,50 +254,42 @@ int macronix_erase(struct spi_flash *flash, u32 offset, size_t len)
 
 		ret = spi_flash_cmd_write(flash->spi, cmd, 4, NULL, 0);
 		if (ret < 0) {
-			debug("SF: STMicro page erase failed\n");
+			debug("SF: Macronix page erase failed\n");
 			break;
 		}
 
-		/* Up to 2 seconds */
-		ret = macronix_wait_ready(flash, 2 * CONFIG_SYS_HZ);
+		ret = macronix_wait_ready(flash, SPI_FLASH_PAGE_ERASE_TIMEOUT);
 		if (ret < 0) {
-			debug("SF: STMicro page erase timed out\n");
+			debug("SF: Macronix page erase timed out\n");
 			break;
 		}
 	}
 
-	debug("SF: STMicro: Successfully erased %u bytes @ 0x%x\n",
+	debug("SF: Macronix: Successfully erased %u bytes @ 0x%x\n",
 	      len * sector_size, offset);
 
 	spi_release_bus(flash->spi);
 	return ret;
 }
 
-struct spi_flash *spi_flash_probe_macronix(struct spi_slave *spi, u8 * idcode)
+struct spi_flash *spi_flash_probe_macronix(struct spi_slave *spi, u8 *idcode)
 {
 	const struct macronix_spi_flash_params *params;
 	struct macronix_spi_flash *stm;
 	unsigned int i;
-	int ret;
-	u8 id[3];
-
-	ret = spi_flash_cmd(spi, CMD_READ_ID, id, sizeof(id));
-	if (ret)
-		return NULL;
 
 	for (i = 0; i < ARRAY_SIZE(macronix_spi_flash_table); i++) {
 		params = &macronix_spi_flash_table[i];
-		if (params->idcode1 == idcode[2]) {
+		if (params->idcode1 == idcode[2])
 			break;
-		}
 	}
 
 	if (i == ARRAY_SIZE(macronix_spi_flash_table)) {
-		debug("SF: Unsupported STMicro ID %02x\n", id[1]);
+		debug("SF: Unsupported Macronix ID %02x\n", idcode[1]);
 		return NULL;
 	}
 
-	stm = malloc(sizeof(struct macronix_spi_flash));
+	stm = malloc(sizeof(*stm));
 	if (!stm) {
 		debug("SF: Failed to allocate memory\n");
 		return NULL;
