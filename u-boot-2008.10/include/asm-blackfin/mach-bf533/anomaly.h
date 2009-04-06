@@ -206,7 +206,7 @@
  */
 
 /* Internal voltage regulator can't be modified via register writes */
-#define ANOMALY_05000061 (__SILICON_REVISION__ < 2)
+#define ANOMALY_05000066 (__SILICON_REVISION__ < 2)
 /* Watchpoints (Hardware Breakpoints) are not supported */
 #define ANOMALY_05000067 (__SILICON_REVISION__ < 3)
 /* SDRAM PSSE bit cannot be set again after SDRAM Powerup */
