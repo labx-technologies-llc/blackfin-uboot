@@ -745,7 +745,7 @@ if { $TEST_BUILD_SPI } {
     }
 
     if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
-        send_user "\nfail to change configs for $make_board_type\n"
+        send_user "\nfail to change $search_str for $make_board_type\n"
         set build_spi_result $TEST_FAIL
     } else {
         set build_spi_result $TEST_PASS
@@ -808,7 +808,7 @@ if { $TEST_BUILD_UART } {
     }
 
     if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
-        send_user "\nfail to change configs for $make_board_type\n"
+        send_user "\nfail to change $search_str for $make_board_type\n"
         set build_uart_result $TEST_FAIL
     } else {
         set build_uart_result $TEST_PASS
@@ -851,9 +851,6 @@ if { $TEST_BUILD_NAND } {
     step "Test build nand uboot"
 
     set build_nand_result $TEST_FAIL
-    set search_str "CONFIG_BFIN_BOOT_MODE"
-    set change_str "#define CONFIG_BFIN_BOOT_MODE  BFIN_BOOT_NAND"
-
     exec rm -f /tftpboot/u-boot.bin.nand /tftpboot/u-boot.ldr.nand
 
     #clean modified config file
@@ -870,8 +867,34 @@ if { $TEST_BUILD_NAND } {
         set build_nand_result $TEST_FAIL
     }
 
+    if { $board_type == "BF537-STAMP" } {
+        set search_str "CFG_MONITOR_LEN"
+        set change_str "#define CFG_MONITOR_LEN         (512 * 1024)"
+        if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
+            send_user "\nfail to change $search_str for $make_board_type\n"
+            set build_nand_result $TEST_FAIL
+        } else {
+            set build_nand_result $TEST_PASS
+        }
+
+        set search_str "CFG_MALLOC_LEN"
+        set change_str "#define CFG_MALLOC_LEN          (512 * 1024)"
+        if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
+            send_user "\nfail to change $search_str for $make_board_type\n"
+            set build_nand_result $TEST_FAIL
+        } else {
+            set build_nand_result $TEST_PASS
+        }
+
+        set search_str "CONFIG_BF537_NAND"
+        set change_str "#define CONFIG_BF537_NAND"
+    } else {
+        set search_str "CONFIG_BFIN_BOOT_MODE"
+        set change_str "#define CONFIG_BFIN_BOOT_MODE  BFIN_BOOT_NAND"
+    }
+
     if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
-        send_user "\nfail to change configs for $make_board_type\n"
+        send_user "\nfail to change $search_str for $make_board_type\n"
         set build_nand_result $TEST_FAIL
     } else {
         set build_nand_result $TEST_PASS
@@ -960,7 +983,7 @@ if { $TEST_BUILD_SPLASH } {
 
     if { $build_splash_result == $TEST_PASS } {
         if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
-            send_user "\nfail to change configs for $make_board_type\n"
+            send_user "\nfail to change $search_str for $make_board_type\n"
             set build_splash_result $TEST_FAIL
         } else {
             set build_splash_result $TEST_PASS
@@ -1043,7 +1066,7 @@ if { $TEST_CF_IDE } {
     set search_str "CONFIG_BFIN_CF_IDE"
     set change_str "#define CONFIG_BFIN_CF_IDE"
     if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
-        send_user "\nfail to change configs for $make_board_type\n"
+        send_user "\nfail to change $search_str for $make_board_type\n"
         set cf_ide_result $TEST_FAIL
     } else {
         set cf_ide_result $TEST_PASS
@@ -1052,7 +1075,7 @@ if { $TEST_CF_IDE } {
     set search_str "CFG_MONITOR_LEN"
     set change_str "#define CFG_MONITOR_LEN         (512 * 1024)"
     if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
-        send_user "\nfail to change configs for $make_board_type\n"
+        send_user "\nfail to change $search_str for $make_board_type\n"
         set cf_ide_result $TEST_FAIL
     } else {
         set cf_ide_result $TEST_PASS
@@ -1061,7 +1084,7 @@ if { $TEST_CF_IDE } {
     set search_str "CFG_MALLOC_LEN"
     set change_str "#define CFG_MALLOC_LEN          (512 * 1024)"
     if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
-        send_user "\nfail to change configs for $make_board_type\n"
+        send_user "\nfail to change $search_str for $make_board_type\n"
         set cf_ide_result $TEST_FAIL
     } else {
         set cf_ide_result $TEST_PASS
@@ -1140,7 +1163,7 @@ if { $TEST_HDD_IDE } {
     set search_str "CONFIG_BFIN_HDD_IDE"
     set change_str "#define CONFIG_BFIN_HDD_IDE"
     if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
-        send_user "\nfail to change configs for $make_board_type\n"
+        send_user "\nfail to change $search_str for $make_board_type\n"
         set hdd_ide_result $TEST_FAIL
     } else {
         set hdd_ide_result $TEST_PASS
@@ -1149,7 +1172,7 @@ if { $TEST_HDD_IDE } {
     set search_str "CFG_MONITOR_LEN"
     set change_str "#define CFG_MONITOR_LEN         (512 * 1024)"
     if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
-        send_user "\nfail to change configs for $make_board_type\n"
+        send_user "\nfail to change $search_str for $make_board_type\n"
         set hdd_ide_result $TEST_FAIL
     } else {
         set hdd_ide_result $TEST_PASS
@@ -1158,7 +1181,7 @@ if { $TEST_HDD_IDE } {
     set search_str "CFG_MALLOC_LEN"
     set change_str "#define CFG_MALLOC_LEN          (512 * 1024)"
     if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
-        send_user "\nfail to change configs for $make_board_type\n"
+        send_user "\nfail to change $search_str for $make_board_type\n"
         set hdd_ide_result $TEST_FAIL
     } else {
         set hdd_ide_result $TEST_PASS
