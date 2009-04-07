@@ -146,10 +146,10 @@ ulong get_timer(ulong base)
 	 */
 	milisec += timestamp * (MAX_TIM_LOAD / (CONFIG_CCLK_HZ / 1000));
 
-	return milisec - base;
+	return (milisec - base);
 }
 
 void reset_timer(void)
 {
-	timer_init();
+	timestamp = 0;
 }
