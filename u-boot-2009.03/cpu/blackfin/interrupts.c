@@ -92,8 +92,6 @@ void udelay(unsigned long usec)
 }
 
 #define MAX_TIM_LOAD	0xFFFFFFFF
-#define CLOCKS_PER_TICK	(CONFIG_CCLK_HZ / CONFIG_SYS_HZ)
-#define TICKS_PER_LOAD	(MAX_TIM_LOAD / CLOCKS_PER_TICK)
 int timer_init(void)
 {
 	*pTCNTL = 0x1;
@@ -110,8 +108,18 @@ int timer_init(void)
 }
 
 /*
- * Return the ticks since the last reset of the timer.
- * We may lose ticks, it is safe for timeout usage.
+ * Any network command or flash
+ * command is started get_timer shall
+ * be called before TCOUNT gets reset,
+ * to implement the accurate timeouts.
+ *
+ * How ever milliconds doesn't return
+ * the number that has been elapsed from
+ * the last reset.
+ *
+ * As get_timer is used in the u-boot
+ * only for timeouts this should be
+ * sufficient
  */
 ulong get_timer(ulong base)
 {
@@ -129,8 +137,16 @@ ulong get_timer(ulong base)
 		timestamp++;
 	last_time = clocks;
 
-	return clocks / CLOCKS_PER_TICK
-			+ TICKS_PER_LOAD * timestamp - base;
+	/* Get the number of milliseconds */
+	milisec = clocks / (CONFIG_CCLK_HZ / 1000);
+
+	/*
+	 * Find the number of millisonds that
+	 * got elapsed before this TCOUNT cycle
+	 */
+	milisec += timestamp * (MAX_TIM_LOAD / (CONFIG_CCLK_HZ / 1000));
+
+	return milisec - base;
 }
 
 void reset_timer(void)
