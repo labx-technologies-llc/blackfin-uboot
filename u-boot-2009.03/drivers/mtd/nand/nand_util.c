@@ -583,7 +583,6 @@ int nand_write_opts(nand_info_t *meminfo, const nand_write_options_t *opts)
 		erasesize_blockalign = meminfo->erasesize;
 	else
 		erasesize_blockalign = meminfo->erasesize * opts->blockalign;
-	}
 
 	/* make sure device page sizes are valid */
 	if (!(meminfo->oobsize == 16 && meminfo->writesize == 512)
