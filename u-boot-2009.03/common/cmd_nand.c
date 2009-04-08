@@ -391,6 +391,7 @@ int do_nand(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 				ret = nand_write_skip_bad(nand, off, &size,
 							  (u_char *)addr);
 		} else if (s != NULL && !strcmp(s, ".yaffs")) {
+			extern int nand_write_opts(nand_info_t *meminfo, const nand_write_options_t *opts);
 			nand_write_options_t opts;
 			memset(&opts, 0, sizeof(opts));
 			opts.buffer	= (u_char *) addr;

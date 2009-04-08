@@ -234,12 +234,14 @@ static struct nand_ecclayout jffs2_ecclayout = {
 	.oobavail = 8,
 };
 
+/* unused
 static struct nand_ecclayout yaffs_ecclayout = {
 	.eccbytes = 6,
 	.eccpos = { 8, 9, 10, 13, 14, 15},
 	.oobfree = { {0, 4}, {6, 2}, {11, 2} },
 	.oobavail = 8,
 };
+*/
 
 /* ecclayout on chips that page_size = 2K, byte 0,1 is bad block marker */
 static struct nand_ecclayout yaffs2_ecclayout = {
@@ -757,7 +759,7 @@ int nand_write_opts(nand_info_t *meminfo, const nand_write_options_t *opts)
 			 * on (slow) serial consoles
 			 */
 			if (percent != percent_complete) {
-				printf("\rWriting data at 0x%x "
+				printf("\rWriting data at 0x%lx "
 				       "-- %3d%% complete.",
 				       mtdoffset, percent);
 				percent_complete = percent;
