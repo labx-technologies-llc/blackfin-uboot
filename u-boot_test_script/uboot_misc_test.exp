@@ -40,6 +40,7 @@ if { $board_type == "BF533-STAMP" } {
     set uboot_test_image    u-boot.ldr
 } elseif { $board_type == "BF518F-EZBRD" } {
     set make_board_type    bf518f-ezkit
+    set TEST_BUILD_NAND              0
     set uboot_test_image    u-boot.ldr
 } else {
     send_user "\n Unknown target board type.\n"
@@ -888,6 +889,9 @@ if { $TEST_BUILD_NAND } {
 
         set search_str "CONFIG_BF537_NAND"
         set change_str "#define CONFIG_BF537_NAND"
+    } elseif { $board_type == "BF527-EZKIT" || $board_type == "BF526-EZBRD" } {
+        set search_str "CONFIG_BFIN_NFC"
+        set change_str "#define CONFIG_BFIN_NFC"
     } else {
         set search_str "CONFIG_BFIN_BOOT_MODE"
         set change_str "#define CONFIG_BFIN_BOOT_MODE  BFIN_BOOT_NAND"
