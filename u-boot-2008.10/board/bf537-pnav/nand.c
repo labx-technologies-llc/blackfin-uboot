@@ -37,27 +37,18 @@
  */
 static void bfin_hwcontrol(struct mtd_info *mtd, int cmd, unsigned int ctrl)
 {
-	register struct nand_chip *this = mtd->priv;
-	u32 IO_ADDR_W = (u32) this->IO_ADDR_W;
+	struct nand_chip *this = mtd->priv;
 
-	if (ctrl & NAND_CTRL_CHANGE) {
-		if (ctrl & NAND_CLE)
-			IO_ADDR_W = CFG_NAND_BASE + BFIN_NAND_CLE;
-		else
-			IO_ADDR_W = CFG_NAND_BASE;
-		if (ctrl & NAND_ALE)
-			IO_ADDR_W = CFG_NAND_BASE + BFIN_NAND_ALE;
-		else
-			IO_ADDR_W = CFG_NAND_BASE;
-		this->IO_ADDR_W = (void __iomem *) IO_ADDR_W;
-	}
-	this->IO_ADDR_R = this->IO_ADDR_W;
+	if (cmd == NAND_CMD_NONE)
+		return;
+
+	if (ctrl & NAND_CLE)
+		WRITE_NAND_COMMAND(cmd, this->IO_ADDR_W);
+	else
+		WRITE_NAND_ADDRESS(cmd, this->IO_ADDR_W);
 
 	/* Drain the writebuffer */
 	SSYNC();
-
-	if (cmd != NAND_CMD_NONE)
-		writeb(cmd, this->IO_ADDR_W);
 }
 
 int bfin_device_ready(struct mtd_info *mtd)
