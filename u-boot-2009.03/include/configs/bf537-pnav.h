@@ -87,7 +87,7 @@
 #define CONFIG_BOOT_RETRY_TIME		-1	/* Enable this if bootretry required, currently its disabled */
 #define CONFIG_BOOTCOMMAND 		"run ramboot"
 
-#define CONFIG_BF537_NAND 		/* Add nand flash support */
+#define CONFIG_NAND_PLAT
 
 #include <config_cmd_default.h>
 #define CONFIG_CMD_CACHE
@@ -216,35 +216,21 @@
  * Board NAND Infomation
  */
 
-#define CONFIG_SYS_NAND_ADDR          0x20100000
-#define CONFIG_SYS_NAND_BASE          CONFIG_SYS_NAND_ADDR
-#define CONFIG_SYS_MAX_NAND_DEVICE    1
-#define SECTORSIZE             512
-#define ADDR_COLUMN             1
-#define ADDR_PAGE               2
-#define ADDR_COLUMN_PAGE        3
-#define NAND_ChipID_UNKNOWN    0x00
-#define NAND_MAX_FLOORS        1
-#define NAND_MAX_CHIPS         1
-#define BFIN_NAND_READY		PF12
+#define CONFIG_SYS_NAND_BASE	0x20100000
+#define CONFIG_SYS_MAX_NAND_DEVICE	1
 
-#define CONFIG_NAND_GPIO_PORT H
+#define BFIN_NAND_CLE(chip) ((unsigned long)chip->IO_ADDR_W | (1 << 2))
+#define BFIN_NAND_ALE(chip) ((unsigned long)chip->IO_ADDR_W | (1 << 1))
+#define BFIN_NAND_READY     PF12
 
-#define NAND_WAIT_READY(nand)  			\
-	do { 					\
-		int timeout = 0; 		\
-		while(!(*pPORTHIO & BFIN_NAND_READY)) 	\
-			if (timeout++ > 100000)	\
-				break;		\
-	} while (0)
+#define NAND_PLAT_WRITE_CMD(cmd, chip) bfin_write8(BFIN_NAND_CLE(chip), cmd)
+#define NAND_PLAT_WRITE_ADR(cmd, chip) bfin_write8(BFIN_NAND_ALE(chip), cmd)
+#define NAND_PLAT_DEV_READY(chip)      ((*pPORTHIO & BFIN_NAND_READY) ? 1 : 0)
+#define NAND_PLAT_INIT() \
+	*pPORTH_FER &= ~BFIN_NAND_READY; \
+	*pPORTHIO_DIR &= ~BFIN_NAND_READY; \
+	*pPORTHIO_INEN |= BFIN_NAND_READY;
 
-#define BFIN_NAND_CLE          (1<<2)                  /* A2 -> Command Enable */
-#define BFIN_NAND_ALE          (1<<1)                  /* A1 -> Address Enable */
-
-#define WRITE_NAND_COMMAND(d, adr) do{ *(volatile __u8 *)((unsigned long)adr | BFIN_NAND_CLE) = (__u8)(d); } while(0)
-#define WRITE_NAND_ADDRESS(d, adr) do{ *(volatile __u8 *)((unsigned long)adr | BFIN_NAND_ALE) = (__u8)(d); } while(0)
-#define WRITE_NAND(d, adr) do{ *(volatile __u8 *)((unsigned long)adr) = (__u8)d; } while(0)
-#define READ_NAND(adr) ((volatile unsigned char)(*(volatile __u8 *)(unsigned long)adr))
 
 /*
  * Initialize PSD4256 registers for using I2C
