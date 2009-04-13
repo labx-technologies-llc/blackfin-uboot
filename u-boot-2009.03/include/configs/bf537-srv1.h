@@ -56,10 +56,10 @@
  * Memory Settings
  */
 #define CONFIG_MEM_SIZE			32
+#define CONFIG_MEM_ADD_WDTH		9
 
-#define CONFIG_EBIU_SDRRC_VAL  0x2ac
-#define CONFIG_EBIU_SDGCTL_VAL 0x91110d
-#define CONFIG_EBIU_SDBCTL_VAL 0x13
+#define CONFIG_EBIU_SDRRC_VAL		0x2ac
+#define CONFIG_EBIU_SDGCTL_VAL		0x91110d
 
 #define CONFIG_EBIU_AMGCTL_VAL		0xFF
 #define CONFIG_EBIU_AMBCTL0_VAL		0x7BB07BB0
@@ -67,7 +67,6 @@
 
 #define CONFIG_SYS_MONITOR_LEN		(256 << 10)
 #define CONFIG_SYS_MALLOC_LEN		(384 << 10)
-
 
 
 /*
@@ -86,7 +85,7 @@
 #define CONFIG_HOSTNAME		bf537-srv1
 #endif
 
-#define CONFIG_SYS_AUTOLOAD			"no"
+#define CONFIG_SYS_AUTOLOAD	"no"
 #define CONFIG_ROOTPATH		/romfs
 /* Use a fixed MAC address for booting up. Firstboot linux
  * must fetch a valid MAC from the production server. */
@@ -140,9 +139,6 @@
 #define CONFIG_BAUDRATE		115200
 #define CONFIG_UART_CONSOLE	0
 
-/* define CONFIG_BF537_SRV1_LEDCMD to enable LED command*/
-/*#define CONFIG_BF537_SRV1_LEDCMD	1*/
-
 #define CONFIG_PANIC_HANG	1
 #define CONFIG_RTC_BFIN		1
 #define CONFIG_BOOT_RETRY_TIME	-1
@@ -172,7 +168,7 @@
 #undef CONFIG_CMD_IMLS
 #define CONFIG_CMD_SF
 
-#define CONFIG_BOOTCOMMAND 	"run flashboot"
+#define CONFIG_BOOTCOMMAND	"run flashboot"
 #define CONFIG_BOOTARGS	"root=/dev/mtdblock0 rw"
 #define CONFIG_SYS_PROMPT	"srv1> "
 
@@ -180,7 +176,7 @@
 	"update=tftpboot $(loadaddr) u-boot.ldr;" \
 		"sf probe " MK_STR(BFIN_BOOT_SPI_SSEL) ";" \
 		"sf erase 0 0x30000;" \
-		"sf write $(loadaddr) 0 $(filesize)"
+		"sf write $(loadaddr) 0 $(filesize)" \
 	"flashboot=sf read 0x1000000 0x30000 0x320000;" \
 		"bootm 0x1000000\0"
 #ifdef CONFIG_BFIN_MAC
