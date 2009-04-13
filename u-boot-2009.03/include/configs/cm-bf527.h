@@ -99,7 +99,7 @@
 
 
 /*
- * Env Settings
+ * Env Storage Settings
  */
 #define CONFIG_ENV_IS_IN_FLASH	1
 #define CONFIG_ENV_ADDR		0x20008000

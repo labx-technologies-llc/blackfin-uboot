@@ -47,7 +47,7 @@
 #define CONFIG_PANIC_HANG 1
 
 #define CONFIG_RTC_BFIN		1
-#define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
+#define CONFIG_BOOT_RETRY_TIME	-1
 
 /* CONFIG_CLKIN_HZ is any value in Hz				*/
 #define CONFIG_CLKIN_HZ          22118400
@@ -104,7 +104,6 @@
 # define CONFIG_BOOTDELAY	5
 #endif
 
-#define CONFIG_BOOT_RETRY_TIME	-1	/* Enable this if bootretry required, currently its disabled */
 #define CONFIG_BOOTCOMMAND 	"run flashboot"
 
 #include <config_cmd_default.h>
@@ -186,7 +185,7 @@
 #define CONFIG_ENV_IS_IN_EEPROM	1
 #define CONFIG_ENV_OFFSET	0x10000
 #define CONFIG_ENV_SIZE		0x10000
-#define CONFIG_ENV_SECT_SIZE	0x10000	/* Total Size of Environment Sector */
+#define CONFIG_ENV_SECT_SIZE	0x10000
 #define ENV_IS_EMBEDDED_CUSTOM
 
 /*
