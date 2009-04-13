@@ -20,70 +20,64 @@
 
 #include <asm/blackfin-config-pre.h>
 
+
+/*
+ * Processor Settings
+ */
 #define CONFIG_BFIN_CPU             bf537-0.2
 #define CONFIG_BFIN_BOOT_MODE       BFIN_BOOT_SPI_MASTER
 
-#define CONFIG_SYS_LONGHELP		1
-#define CONFIG_CMDLINE_EDITING	1
-#define CONFIG_ENV_OVERWRITE	1
-#define CONFIG_BAUDRATE		57600
 
-#define CONFIG_MISC_INIT_R
+/*
+ * Clock Settings
+ *	CCLK = (CLKIN * VCO_MULT) / CCLK_DIV
+ *	SCLK = (CLKIN * VCO_MULT) / SCLK_DIV
+ */
+/* CONFIG_CLKIN_HZ is any value in Hz					*/
+#define CONFIG_CLKIN_HZ			22118400
+/* CLKIN_HALF controls the DF bit in PLL_CTL      0 = CLKIN		*/
+/*                                                1 = CLKIN / 2		*/
+#define CONFIG_CLKIN_HALF		0
+/* PLL_BYPASS controls the BYPASS bit in PLL_CTL  0 = do not bypass	*/
+/*                                                1 = bypass PLL	*/
+#define CONFIG_PLL_BYPASS		0
+/* VCO_MULT controls the MSEL (multiplier) bits in PLL_CTL		*/
+/* Values can range from 0-63 (where 0 means 64)			*/
+#define CONFIG_VCO_MULT			20
+/* CCLK_DIV controls the core clock divider				*/
+/* Values can be 1, 2, 4, or 8 ONLY					*/
+#define CONFIG_CCLK_DIV			1
+/* SCLK_DIV controls the system clock divider				*/
+/* Values can range from 1-15						*/
+#define CONFIG_SCLK_DIV			5
 
-/* We don't have a parallel flash chip there */
-#define CONFIG_SYS_NO_FLASH
 
+/*
+ * Memory Settings
+ */
+#define CONFIG_MEM_SIZE			32
+
+#define CONFIG_EBIU_SDRRC_VAL  0x2ac
+#define CONFIG_EBIU_SDGCTL_VAL 0x91110d
+#define CONFIG_EBIU_SDBCTL_VAL 0x13
+
+#define CONFIG_EBIU_AMGCTL_VAL		0xFF
+#define CONFIG_EBIU_AMBCTL0_VAL		0x7BB07BB0
+#define CONFIG_EBIU_AMBCTL1_VAL		0xFFC27BB0
+
+#define CONFIG_SYS_MONITOR_LEN		(256 << 10)
+#define CONFIG_SYS_MALLOC_LEN		(384 << 10)
+
+
+
+/*
+ * Network Settings
+ */
 #ifndef __ADSPBF534__
 #define CONFIG_BFIN_MAC
 #define CONFIG_NETCONSOLE	1
 #define CONFIG_NET_MULTI	1
 #endif
-
-/* Set default serial console for bf537 */
-#define CONFIG_UART_CONSOLE	0
-/* define CONFIG_BF537_SRV1_LEDCMD to enable LED command*/
-/*#define CONFIG_BF537_SRV1_LEDCMD	1*/
-
-#define CONFIG_PANIC_HANG 1
-
-#define CONFIG_RTC_BFIN		1
-#define CONFIG_BOOT_RETRY_TIME	-1
-
-/* CONFIG_CLKIN_HZ is any value in Hz				*/
-#define CONFIG_CLKIN_HZ          22118400
-/* CONFIG_CLKIN_HALF controls what is passed to PLL 0=CLKIN	*/
-/*						    1=CLKIN/2	*/
-#define CONFIG_CLKIN_HALF	0
-/* CONFIG_PLL_BYPASS controls if the PLL is used 0=don't bypass */
-/*						    1=bypass PLL*/
-#define CONFIG_PLL_BYPASS	0
-/* CONFIG_VCO_MULT controls what the multiplier of the PLL is.	*/
-/* Values can range from 1-64					*/
-#define CONFIG_VCO_MULT			20
-/* CONFIG_CCLK_DIV controls what the core clock divider is	*/
-/* Values can be 1, 2, 4, or 8 ONLY				*/
-#define CONFIG_CCLK_DIV			1
-/* CONFIG_SCLK_DIV controls what the peripheral clock divider is*/
-/* Values can range from 1-15					*/
-#define CONFIG_SCLK_DIV			5
-/* CONFIG_SPI_BAUD controls the SPI peripheral clock divider	*/
-/* Values can range from 2-65535				*/
-/* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)			*/
-#define CONFIG_SPI_BAUD			2
-
-#define CONFIG_LOADS_ECHO		1
-
-/*
- * rarpb, bootp or dhcp commands will perform only a
- * configuration lookup from the BOOTP/DHCP server
- * but not try to load any image using TFTP
- */
-#define CONFIG_SYS_AUTOLOAD			"no"
-
-/*
- * Network Settings
- */
-/* network support */
 #ifdef CONFIG_BFIN_MAC
 #define CONFIG_IPADDR		192.168.0.15
 #define CONFIG_NETMASK		255.255.255.0
@@ -92,19 +86,73 @@
 #define CONFIG_HOSTNAME		bf537-srv1
 #endif
 
+#define CONFIG_SYS_AUTOLOAD			"no"
 #define CONFIG_ROOTPATH		/romfs
 /* Use a fixed MAC address for booting up. Firstboot linux
  * must fetch a valid MAC from the production server. */
 #define CONFIG_ETHADDR	02:80:ad:20:31:42
-/* This is the routine that copies the MAC in Flash to the 'ethaddr' setting */
+
+
+/*
+ * Flash Settings
+ */
+/* We don't have a parallel flash chip there */
+#define CONFIG_SYS_NO_FLASH
+
+
+/*
+ * SPI Settings
+ */
+#define CONFIG_BFIN_SPI
+#define CONFIG_ENV_SPI_MAX_HZ	30000000
+#define CONFIG_SF_DEFAULT_HZ	30000000
+#define CONFIG_SPI_FLASH
+#define CONFIG_SPI_FLASH_STMICRO
+
+
+/*
+ * Env Storage Settings
+ */
+#define CONFIG_ENV_IS_IN_SPI_FLASH
+#define CONFIG_ENV_OFFSET	0x10000
+#define CONFIG_ENV_SIZE		0x10000
+#define CONFIG_ENV_SECT_SIZE	0x10000
+#define ENV_IS_EMBEDDED_CUSTOM
+
+
+/*
+ * I2C settings
+ */
+#define CONFIG_BFIN_TWI_I2C	1
+#define CONFIG_HARD_I2C		1
+#define CONFIG_SYS_I2C_SPEED		50000
+#define CONFIG_SYS_I2C_SLAVE		0
+
+
+/*
+ * Misc Settings
+ */
+#define CONFIG_SYS_LONGHELP		1
+#define CONFIG_CMDLINE_EDITING	1
+#define CONFIG_ENV_OVERWRITE	1
+#define CONFIG_MISC_INIT_R
+
+#define CONFIG_BAUDRATE		115200
+#define CONFIG_UART_CONSOLE	0
+
+/* define CONFIG_BF537_SRV1_LEDCMD to enable LED command*/
+/*#define CONFIG_BF537_SRV1_LEDCMD	1*/
+
+#define CONFIG_PANIC_HANG	1
+#define CONFIG_RTC_BFIN		1
+#define CONFIG_BOOT_RETRY_TIME	-1
+#define CONFIG_LOADS_ECHO		1
 
 #if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART)
 # define CONFIG_BOOTDELAY	-1
 #else
 # define CONFIG_BOOTDELAY	5
 #endif
-
-#define CONFIG_BOOTCOMMAND 	"run flashboot"
 
 #include <config_cmd_default.h>
 
@@ -118,20 +166,23 @@
 #define CONFIG_CMD_BOOTLDR
 #define CONFIG_CMD_CACHE
 #define CONFIG_CMD_DATE
-#define CONFIG_CMD_EEPROM
 #define CONFIG_CMD_ELF
 #undef CONFIG_CMD_FLASH
 #define CONFIG_CMD_I2C
 #undef CONFIG_CMD_IMLS
+#define CONFIG_CMD_SF
 
-#define CONFIG_BOOTARGS "root=/dev/mtdblock0 rw"
-#define CONFIG_LOADADDR	0x1000000
+#define CONFIG_BOOTCOMMAND 	"run flashboot"
+#define CONFIG_BOOTARGS	"root=/dev/mtdblock0 rw"
+#define CONFIG_SYS_PROMPT	"srv1> "
 
 #define BOOT_ENV_SETTINGS \
 	"update=tftpboot $(loadaddr) u-boot.ldr;" \
-		"eeprom write $(loadaddr) 0x0 $(filesize);\0" \
-	"flashboot= eeprom read 0x1000000 0x30000 0x320000;" \
-			"bootm 0x1000000\0"
+		"sf probe " MK_STR(BFIN_BOOT_SPI_SSEL) ";" \
+		"sf erase 0 0x30000;" \
+		"sf write $(loadaddr) 0 $(filesize)"
+	"flashboot=sf read 0x1000000 0x30000 0x320000;" \
+		"bootm 0x1000000\0"
 #ifdef CONFIG_BFIN_MAC
 # define NETWORK_ENV_SETTINGS \
 	"nfsargs=setenv bootargs root=/dev/nfs rw " \
@@ -148,67 +199,9 @@
 #endif
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	NETWORK_ENV_SETTINGS \
-	"ramargs=setenv bootargs root=/dev/mtdblock0 rw\0" \
+	"ramargs=setenv bootargs " CONFIG_BOOTARGS "\0" \
 	BOOT_ENV_SETTINGS
 
-#define CONFIG_SYS_PROMPT "srv1> "
-
-#ifdef CONFIG_CMD_KGDB
-#define CONFIG_SYS_CBSIZE		1024	/* Console I/O Buffer Size */
-#else
-#define CONFIG_SYS_CBSIZE		256	/* Console I/O Buffer Size */
-#endif
-#define CONFIG_MEM_SIZE			32	/* 128, 64, 32, 16 */
-#define CONFIG_SYS_MAX_RAM_SIZE       	(CONFIG_MEM_SIZE * 1024*1024)
-#define CONFIG_SYS_PBSIZE		(CONFIG_SYS_CBSIZE+sizeof(CONFIG_SYS_PROMPT)+16)	/* Print Buffer Size */
-#define CONFIG_SYS_MAXARGS		16	/* max number of command args */
-#define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE	/* Boot Argument Buffer Size */
-#define CONFIG_SYS_MEMTEST_START	0x0	/* memtest works on */
-#define CONFIG_SYS_MEMTEST_END		( (CONFIG_MEM_SIZE - 1) * 1024*1024)	/* 1 ... 63 MB in DRAM */
-#define CONFIG_SYS_LOAD_ADDR		CONFIG_LOADADDR	/* default load address */
-#define CONFIG_SYS_HZ			1000	/* decrementer freq: 10 ms ticks */
-#define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
-#define CONFIG_SYS_SDRAM_BASE		0x00000000
-
-#define CONFIG_SYS_BOOTM_LEN		0x4000000	/* Large Image Length, set to 64 Meg */
-
-#define CONFIG_SYS_FLASH_BASE		0x20000000
-
-#define CONFIG_SYS_MONITOR_LEN		(256 << 10)	/* Reserve 256 kB for Monitor	*/
-#define CONFIG_SYS_MONITOR_BASE	(CONFIG_SYS_MAX_RAM_SIZE - CONFIG_SYS_MONITOR_LEN)
-#define CONFIG_SYS_MALLOC_LEN		(384 << 10)	/* Reserve 128 kB for malloc()	*/
-#define CONFIG_SYS_MALLOC_BASE		(CONFIG_SYS_MONITOR_BASE - CONFIG_SYS_MALLOC_LEN)
-#define CONFIG_SYS_GBL_DATA_ADDR	(CONFIG_SYS_MALLOC_BASE - CONFIG_SYS_GBL_DATA_SIZE)
-#define CONFIG_STACKBASE	(CONFIG_SYS_GBL_DATA_ADDR  - 4)
-
-
-#define CONFIG_ENV_IS_IN_EEPROM	1
-#define CONFIG_ENV_OFFSET	0x10000
-#define CONFIG_ENV_SIZE		0x10000
-#define CONFIG_ENV_SECT_SIZE	0x10000
-#define ENV_IS_EMBEDDED_CUSTOM
-
-/*
- * Serial Flash Infomation
- */
-#define CONFIG_SPI
-#define CONFIG_SYS_I2C_FRAM
-
-/*
- * I2C settings
- */
-#define CONFIG_BFIN_TWI_I2C	1
-#define CONFIG_HARD_I2C		1
-#define CONFIG_SYS_I2C_SPEED		50000
-#define CONFIG_SYS_I2C_SLAVE		0
-
-#define CONFIG_EBIU_SDRRC_VAL  0x2ac
-#define CONFIG_EBIU_SDGCTL_VAL 0x91110d
-#define CONFIG_EBIU_SDBCTL_VAL 0x13
-
-#define CONFIG_EBIU_AMGCTL_VAL		0xFF
-#define CONFIG_EBIU_AMBCTL0_VAL		0x7BB07BB0
-#define CONFIG_EBIU_AMBCTL1_VAL		0xFFC27BB0
 
 #include <asm/blackfin-config-post.h>
 
