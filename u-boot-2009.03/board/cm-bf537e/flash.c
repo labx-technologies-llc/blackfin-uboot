@@ -11,7 +11,7 @@
 #include <asm/blackfin.h>
 #include "gpio_cfi_flash.h"
 
-int do_pf4(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
+int do_pf(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 {
 	ulong faddr = CONFIG_SYS_FLASH_BASE;
 	ushort data;
@@ -23,13 +23,12 @@ int do_pf4(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		gpio_cfi_flash_swizzle((void *)faddr);
 	} else {
 		data = bfin_read_PORTFIO();
-		printf("PF4 data %04x\n", data);
+		printf("Port F data %04x (PF4:%i)\n", data, !!(data & PF4));
 	}
 
 	return 0;
 }
 
-U_BOOT_CMD(pf4, 2, 0, do_pf4,
+U_BOOT_CMD(pf, 3, 0, do_pf,
 	"set/clear PF4 GPIO flash bank switch\n",
-	"1 - set GPIO pins\n"
-	"pf4 0 - clear GPIO pin\n");
+	"<pf4> - set PF4 GPIO pin state\n");
