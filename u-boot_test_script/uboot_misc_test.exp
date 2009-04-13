@@ -4,6 +4,7 @@ source ./uboot-config.exp
 
 set board_type        [lindex $argv 0]
 set uboot_test_image            u-boot.bin
+set img_load_addr                0x1000000
 
 set TEST_BUILD_SPI                       1
 set TEST_BUILD_UART                      1
@@ -869,24 +870,6 @@ if { $TEST_BUILD_NAND } {
     }
 
     if { $board_type == "BF537-STAMP" } {
-        set search_str "CFG_MONITOR_LEN"
-        set change_str "#define CFG_MONITOR_LEN         (512 * 1024)"
-        if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
-            send_user "\nfail to change $search_str for $make_board_type\n"
-            set build_nand_result $TEST_FAIL
-        } else {
-            set build_nand_result $TEST_PASS
-        }
-
-        set search_str "CFG_MALLOC_LEN"
-        set change_str "#define CFG_MALLOC_LEN          (512 * 1024)"
-        if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
-            send_user "\nfail to change $search_str for $make_board_type\n"
-            set build_nand_result $TEST_FAIL
-        } else {
-            set build_nand_result $TEST_PASS
-        }
-
         set search_str "CONFIG_BF537_NAND"
         set change_str "#define CONFIG_BF537_NAND"
     } elseif { $board_type == "BF527-EZKIT" || $board_type == "BF526-EZBRD" } {
@@ -930,6 +913,40 @@ if { $TEST_BUILD_NAND } {
 
     set spawn_id $kermit_spawn_id
 
+    if { $board_type == "BF537-STAMP" && $build_nand_result == $TEST_PASS } {
+        exec cp /tftpboot/$uboot_test_image.nand /tftpboot/$uboot_test_image
+
+        send " \r"
+        expect $UBOOT_PROMPT
+
+        if { [update_uboot] == 2 } {
+            set build_nand_result $TEST_PASS
+        } else {
+            set build_nand_result $TEST_FAIL
+        }
+
+        if { $build_nand_result == $TEST_PASS } {
+            set timeout 30
+            send "\r"
+            expect -re $UBOOT_PROMPT
+
+            send "nand info\r"
+            while 1 {
+                expect {
+                    -re "Device 0: NAND 128MiB.*sector size 128 KiB.*$UBOOT_PROMPT" {
+                        set build_nand_result $TEST_PASS
+                        break
+                    }
+                    timeout {
+                        send_user "FAIL to get nand info!\n"
+                        set build_nand_result $TEST_FAIL
+                        break
+                    }
+                }
+            }
+        }
+    }
+
     record_test_result $build_nand_loc $build_nand_result
 
 }
@@ -964,7 +981,7 @@ if { $TEST_BUILD_SPLASH } {
                 break
             }
             timeout {
-                send_user "run runme.sh timeout!"
+                send_user "run runme.sh timeout!\n"
                 set build_splash_result $TEST_FAIL
                 break
             }
@@ -1076,24 +1093,6 @@ if { $TEST_CF_IDE } {
         set cf_ide_result $TEST_PASS
     }
 
-    set search_str "CFG_MONITOR_LEN"
-    set change_str "#define CFG_MONITOR_LEN         (512 * 1024)"
-    if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
-        send_user "\nfail to change $search_str for $make_board_type\n"
-        set cf_ide_result $TEST_FAIL
-    } else {
-        set cf_ide_result $TEST_PASS
-    }
-
-    set search_str "CFG_MALLOC_LEN"
-    set change_str "#define CFG_MALLOC_LEN          (512 * 1024)"
-    if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
-        send_user "\nfail to change $search_str for $make_board_type\n"
-        set cf_ide_result $TEST_FAIL
-    } else {
-        set cf_ide_result $TEST_PASS
-    }
-
     if { $cf_ide_result == $TEST_PASS } {
         if { [make_uboot] == 2 } {
             set cf_ide_result $TEST_PASS
@@ -1109,19 +1108,12 @@ if { $TEST_CF_IDE } {
         } else {
             set cf_ide_result $TEST_PASS
         }
-
-        if { [catch {exec cp $uboot_test_loc/u-boot.ldr /tftpboot/u-boot.ldr.cf_ide} ] } {
-            send_user "\nfail to copy u-boot.ldr.cf_ide\n"
-            set cf_ide_result $TEST_FAIL
-        } else {
-            set cf_ide_result $TEST_PASS
-        }
     }
 
     set spawn_id $kermit_spawn_id
 
     if { $cf_ide_result == $TEST_PASS } {
-        exec cp $uboot_test_loc/$uboot_test_image /tftpboot/$uboot_test_image
+        exec cp /tftpboot/$uboot_test_image.cf_ide /tftpboot/$uboot_test_image
 
         send " \r"
         expect $UBOOT_PROMPT
@@ -1130,6 +1122,27 @@ if { $TEST_CF_IDE } {
             set cf_ide_result $TEST_PASS
         } else {
             set cf_ide_result $TEST_FAIL
+        }
+
+        if { $cf_ide_result == $TEST_PASS } {
+            set timeout 30
+            send "\r"
+            expect -re $UBOOT_PROMPT
+
+            send "ide info\r"
+            while 1 {
+                expect {
+                    -re "Model.*Type: Removable Hard Disk.*Capacity.*$UBOOT_PROMPT" {
+                        set cf_ide_result $TEST_PASS
+                        break
+                    }
+                    timeout {
+                        send_user "FAIL to get cf info!\n"
+                        set cf_ide_result $TEST_FAIL
+                        break
+                    }
+                }
+            }
         }
     }
 
@@ -1173,24 +1186,6 @@ if { $TEST_HDD_IDE } {
         set hdd_ide_result $TEST_PASS
     }
 
-    set search_str "CFG_MONITOR_LEN"
-    set change_str "#define CFG_MONITOR_LEN         (512 * 1024)"
-    if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
-        send_user "\nfail to change $search_str for $make_board_type\n"
-        set hdd_ide_result $TEST_FAIL
-    } else {
-        set hdd_ide_result $TEST_PASS
-    }
-
-    set search_str "CFG_MALLOC_LEN"
-    set change_str "#define CFG_MALLOC_LEN          (512 * 1024)"
-    if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type $search_str $change_str} ] } {
-        send_user "\nfail to change $search_str for $make_board_type\n"
-        set hdd_ide_result $TEST_FAIL
-    } else {
-        set hdd_ide_result $TEST_PASS
-    }
-
     if { $hdd_ide_result == $TEST_PASS } {
         if { [make_uboot] == 2 } {
             set hdd_ide_result $TEST_PASS
@@ -1206,19 +1201,12 @@ if { $TEST_HDD_IDE } {
         } else {
             set hdd_ide_result $TEST_PASS
         }
-
-        if { [catch {exec cp $uboot_test_loc/u-boot.ldr /tftpboot/u-boot.ldr.hdd_ide} ] } {
-            send_user "\nfail to copy u-boot.ldr.hdd_ide\n"
-            set hdd_ide_result $TEST_FAIL
-        } else {
-            set hdd_ide_result $TEST_PASS
-        }
     }
 
     set spawn_id $kermit_spawn_id
 
     if { $hdd_ide_result == $TEST_PASS } {
-        exec cp $uboot_test_loc/$uboot_test_image /tftpboot/$uboot_test_image
+        exec cp /tftpboot/$uboot_test_image.hdd_ide /tftpboot/$uboot_test_image
 
         send " \r"
         expect $UBOOT_PROMPT
@@ -1227,6 +1215,27 @@ if { $TEST_HDD_IDE } {
             set hdd_ide_result $TEST_PASS
         } else {
             set hdd_ide_result $TEST_FAIL
+        }
+
+        if { $hdd_ide_result == $TEST_PASS } {
+            set timeout 30
+            send "\r"
+            expect -re $UBOOT_PROMPT
+
+            send "ide info\r"
+            while 1 {
+                expect {
+                    -re "Model.*Type: Hard Disk.*Capacity.*$UBOOT_PROMPT" {
+                        set hdd_ide_result $TEST_PASS
+                        break
+                    }
+                    timeout {
+                        send_user "FAIL to get hdd info!\n"
+                        set hdd_ide_result $TEST_FAIL
+                        break
+                    }
+                }
+            }
         }
     }
 
