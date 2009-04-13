@@ -115,8 +115,8 @@
 #define CONFIG_SYS_NAND_BASE	0x20100000
 #define CONFIG_SYS_MAX_NAND_DEVICE	1
 
-#define BFIN_NAND_CLE(chip) ((unsigned long)chip->IO_ADDR_W | (1 << 2))
-#define BFIN_NAND_ALE(chip) ((unsigned long)chip->IO_ADDR_W | (1 << 1))
+#define BFIN_NAND_CLE(chip) ((unsigned long)(chip)->IO_ADDR_W | (1 << 2))
+#define BFIN_NAND_ALE(chip) ((unsigned long)(chip)->IO_ADDR_W | (1 << 1))
 #define BFIN_NAND_READY     PF12
 
 #define NAND_PLAT_WRITE_CMD(cmd, chip) bfin_write8(BFIN_NAND_CLE(chip), cmd)
