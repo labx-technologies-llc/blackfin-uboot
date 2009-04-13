@@ -3,7 +3,7 @@
  * Most code stolen from boards/bf533-stamp/bf533-stamp.c
  * Edited to the BlackStamp by Ben Matthews for UR LLE
  *
- * Copyright (c) 2005-2008 Analog Devices Inc.
+ * Copyright (c) 2005-2009 Analog Devices Inc.
  *
  * (C) Copyright 2000-2004
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
@@ -42,12 +42,5 @@ void swap_to(int device_id)
 	else
 		printf("Unknown device to switch\n");
 	SSYNC();
-}
-#endif
-
-#if defined(CONFIG_MISC_INIT_R)
-/* miscellaneous platform dependent initialisations */
-int misc_init_r(void)
-{
 }
 #endif

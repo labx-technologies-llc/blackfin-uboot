@@ -82,10 +82,10 @@
 /* #define CONFIG_ETHADDR		02:80:ad:20:31:b8 */
 #endif
 
-#define CONFIG_ENV_IS_IN_EEPROM	1
+#define CONFIG_ENV_IS_IN_SPI_FLASH
 #define CONFIG_ENV_OFFSET	0x4000
 #define CONFIG_ENV_SIZE		0x2000
-#define CONFIG_ENV_SECT_SIZE	0x2000	/* Total Size of Environment Sector */
+#define CONFIG_ENV_SECT_SIZE	0x40000
 #define ENV_IS_EMBEDDED_CUSTOM
 
 /*
@@ -124,26 +124,36 @@
 #define CONFIG_CMD_CACHE
 #define CONFIG_CMD_CPLBINFO
 #define CONFIG_CMD_DATE
-#define CONFIG_CMD_EEPROM
+#define CONFIG_CMD_SF
 #define CONFIG_CMD_ELF
 
 #define CONFIG_BOOTDELAY     5
 #define CONFIG_BOOTCOMMAND   "run ramboot"
 #define CONFIG_BOOTARGS \
 	"root=/dev/mtdblock0 rw " \
-	"earlyprintk=serial,uart" \
-	MK_STR(CONFIG_UART_CONSOLE) "," MK_STR(CONFIG_BAUDRATE) " " \
+	"clkin_hz=" MK_STR(CONFIG_CLKIN_HZ) " " \
+	"earlyprintk=" \
+		"serial," \
+		"uart" MK_STR(CONFIG_UART_CONSOLE) "," \
+		MK_STR(CONFIG_BAUDRATE) " " \
 	"console=ttyBF0," MK_STR(CONFIG_BAUDRATE)
 
-#ifdef CONFIG_CMD_KGDB
+#if defined(CONFIG_CMD_NET)
 # if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_BYPASS)
 #  define UBOOT_ENV_FILE "u-boot.bin"
 # else
 #  define UBOOT_ENV_FILE "u-boot.ldr"
 # endif
 # if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
-#  define UBOOT_ENV_UPDATE \
+#  ifdef CONFIG_SPI
+#   define UBOOT_ENV_UPDATE \
 		"eeprom write $(loadaddr) 0x0 $(filesize)"
+#  else
+#   define UBOOT_ENV_UPDATE \
+		"sf probe " MK_STR(BFIN_BOOT_SPI_SSEL) ";" \
+		"sf erase 0 0x40000;" \
+		"sf write $(loadaddr) 0 $(filesize)"
+#  endif
 # else
 #  define UBOOT_ENV_UPDATE \
 		"protect off 0x20000000 0x2003FFFF;" \
@@ -156,7 +166,10 @@
 		"tftp $(loadaddr) $(ubootfile);" \
 		UBOOT_ENV_UPDATE \
 		"\0" \
-	"addip=set bootargs $(bootargs) ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask):$(hostname):eth0:off\0" \
+	"addip=set bootargs $(bootargs) " \
+		"ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask):" \
+		   "$(hostname):eth0:off" \
+		"\0" \
 	"ramargs=set bootargs " CONFIG_BOOTARGS "\0" \
 	"ramboot=" \
 		"tftp $(loadaddr) uImage;" \
@@ -164,7 +177,10 @@
 		"run addip;" \
 		"bootm" \
 		"\0" \
-	"nfsargs=set bootargs root=/dev/nfs rw nfsroot=$(serverip):$(rootpath),tcp,nfsvers=3\0" \
+	"nfsargs=set bootargs " \
+		"root=/dev/nfs rw " \
+		"nfsroot=$(serverip):$(rootpath),tcp,nfsvers=3" \
+		"\0" \
 	"nfsboot=" \
 		"tftp $(loadaddr) vmImage;" \
 		"run nfsargs;" \
@@ -228,13 +244,12 @@
 /*
  * Serial Flash Infomation
  */
-#define CONFIG_SPI
-#define CONFIG_SYS_I2C_FRAM
-/* CONFIG_SPI_BAUD controls the SPI peripheral clock divider	*/
-/* Values can range from 2-65535				*/
-/* SCK Frequency = SCLK / (2 * CONFIG_SPI_BAUD)			*/
-#define CONFIG_SPI_BAUD		5
+#define CONFIG_BFIN_SPI
 /* For the M25P64 SCK Should be Kept < 20Mhz */
+#define CONFIG_ENV_SPI_MAX_HZ	20000000
+#define CONFIG_SF_DEFAULT_HZ	20000000
+#define CONFIG_SPI_FLASH
+#define CONFIG_SPI_FLASH_STMICRO
 
 /*
  * FLASH organization and environment definitions
