@@ -70,16 +70,20 @@
 /*
  * Flash Settings
  */
+#define CONFIG_FLASH_CFI_DRIVER
 #define CONFIG_SYS_FLASH_BASE		0x20000000
-#define CONFIG_SYS_MAX_FLASH_BANKS	1	/* max number of memory banks */
-#define CONFIG_SYS_MAX_FLASH_SECT	16	/* max number of sectors on one chip */
+#define CONFIG_SYS_FLASH_CFI
+#define CONFIG_SYS_FLASH_PROTECTION
+#define CONFIG_SYS_MAX_FLASH_BANKS	1
+#define CONFIG_SYS_MAX_FLASH_SECT	16
 
-#define FLASH_TOT_SECT		16
-#define CONFIG_SYS_FLASH_SIZE		0x200000
 
+/*
+ * Env Settings
+ */
 #define CONFIG_ENV_IS_IN_FLASH	1
 #define CONFIG_ENV_OFFSET	0x20000
-#define CONFIG_ENV_SECT_SIZE	0x20000	/* Total Size of Environment Sector */
+#define CONFIG_ENV_SECT_SIZE	0x20000
 #define CONFIG_ENV_SIZE		0x10000
 
 
