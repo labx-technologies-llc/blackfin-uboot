@@ -13,6 +13,7 @@
 #include <asm/blackfin.h>
 #include <asm/net.h>
 #include <asm/mach-common/bits/otp.h>
+#include "gpio_cfi_flash.h"
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -71,6 +72,8 @@ int misc_init_r(void)
 	if (!eth_getenv_enetaddr("ethaddr", enetaddr))
 		board_init_enetaddr(enetaddr);
 #endif
+
+	gpio_cfi_flash_init();
 
 	return 0;
 }
