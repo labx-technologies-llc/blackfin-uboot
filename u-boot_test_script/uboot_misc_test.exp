@@ -37,7 +37,7 @@ if { $board_type == "BF533-STAMP" } {
     set make_board_type    bf527-ezkit
     set uboot_test_image    u-boot.ldr
 } elseif { $board_type == "BF518F-EZBRD" } {
-    set make_board_type    bf518f-ezkit
+    set make_board_type    bf518f-ezbrd
     set TEST_BUILD_NAND              0
     set uboot_test_image    u-boot.ldr
 } else {
@@ -63,7 +63,7 @@ proc make_uboot {} {
     expect -re $HOST_KERNEL_PROMPT
 
     set timeout 120
-    send "make mrproper\n"
+    send "make mrproper\r"
     while 1 {
         expect {
             -re "\r\n.*$HOST_KERNEL_PROMPT" {
@@ -535,7 +535,7 @@ set BDINFO_BAUDRATE         $BAUD_RATE
 # Various prompts
 set UBOOT_PROMPT            "bfin>"
 set KERNEL_PROMPT           "root:\[^>].*>"
-set HOST_KERNEL_PROMPT      "@.*:.*>"
+set HOST_KERNEL_PROMPT      ":~.*>"
 set AUTOBOOT_PROMPT         "Hit any key to stop"
 
 # Set up defaults
