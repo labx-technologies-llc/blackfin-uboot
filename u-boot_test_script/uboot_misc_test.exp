@@ -16,7 +16,6 @@ if { $board_type == "BF533-STAMP" } {
     set make_board_type    bf533-stamp
     set TEST_BUILD_UART              0
     set TEST_BUILD_NAND              0
-    set TEST_BUILD_SPLASH            0
 } elseif { $board_type == "BF537-STAMP" } {
     set make_board_type    bf537-stamp
     set TEST_CF_IDE                  1
@@ -33,11 +32,9 @@ if { $board_type == "BF533-STAMP" } {
     set TEST_BUILD_NAND              0
 } elseif { $board_type == "BF548-EZKIT" } {
     set make_board_type    bf548-ezkit
-    set TEST_BUILD_SPLASH            0 #BF548-EZKIT enable splash by default
     set uboot_test_image    u-boot.ldr
 } elseif { $board_type == "BF527-EZKIT" } {
     set make_board_type    bf527-ezkit
-    set TEST_BUILD_SPLASH            0 #BF527-EZKIT enable splash by default
     set uboot_test_image    u-boot.ldr
 } elseif { $board_type == "BF518F-EZBRD" } {
     set make_board_type    bf518f-ezkit

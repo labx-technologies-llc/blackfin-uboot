@@ -3082,8 +3082,9 @@ wait_for_uboot
 step "iminfo"
 set iminfo_result $TEST_FAIL
 set timeout 30
+sleep 3
 send -s "tftp $CFG_LOAD_ADDR $KERNEL_GZ_FILENAME\r"
-sleep 1
+sleep 3
 set temp_status_flag $TEST_FAIL
 while 1 {
    expect {
@@ -4517,7 +4518,7 @@ if { $TEST_SDIO } {
     }
 
     if {$sdio_result == $TEST_PASS} {
-        set timeout 60
+        set timeout 150
         send "bootm $sdio_imgload_addr\r"
         while 1 {
             expect {
@@ -4639,7 +4640,7 @@ if { $TEST_ATAPI } {
     }
 
     if {$atapi_result == $TEST_PASS} {
-        set timeout 60
+        set timeout 150
         send "bootm $atapi_imgload_addr\r"
         while 1 {
             expect {
@@ -4761,7 +4762,7 @@ if { $TEST_USB } {
     }
 
     if {$usb_result == $TEST_PASS} {
-        set timeout 60
+        set timeout 150
         send "bootm $usb_imgload_addr\r"
         while 1 {
             expect {
