@@ -924,27 +924,6 @@ if { $TEST_BUILD_NAND } {
         } else {
             set build_nand_result $TEST_FAIL
         }
-
-        if { $build_nand_result == $TEST_PASS } {
-            set timeout 30
-            send "\r"
-            expect -re $UBOOT_PROMPT
-
-            send "nand info\r"
-            while 1 {
-                expect {
-                    -re "Device 0: NAND 128MiB.*sector size 128 KiB.*$UBOOT_PROMPT" {
-                        set build_nand_result $TEST_PASS
-                        break
-                    }
-                    timeout {
-                        send_user "FAIL to get nand info!\n"
-                        set build_nand_result $TEST_FAIL
-                        break
-                    }
-                }
-            }
-        }
     }
 
     record_test_result $build_nand_loc $build_nand_result
