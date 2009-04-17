@@ -3057,10 +3057,10 @@ while 1 {
         -re "(Data Size: +)(.*)Bytes.*kB.*MB" {
             set KERNEL_GZ_SIZE "$expect_out(2,string)"
         }
-        -re "(Load Address: +)(\[0-9]+)" {
+        -re "(Load Address: +)0\[xX](\[0-9]+)" {
             set KERNEL_GZ_ADDR "$expect_out(2,string)"
         }
-        -re "(Entry Point: +)(\[0-9a-fA-F]+)" {
+        -re "(Entry Point: +)0\[xX](\[0-9a-fA-F]+)" {
             set KERNEL_GZ_ENTRY "$expect_out(2,string)"
         }
         eof {
