@@ -1088,6 +1088,7 @@ if { $TEST_CF_IDE } {
 
     set spawn_id $kermit_spawn_id
 
+if 0 {
     if { $cf_ide_result == $TEST_PASS } {
         exec cp /tftpboot/$uboot_test_image.cf_ide /tftpboot/$uboot_test_image
 
@@ -1121,6 +1122,7 @@ if { $TEST_CF_IDE } {
             }
         }
     }
+}
 
     record_test_result $cf_ide_loc $cf_ide_result
 
@@ -1181,6 +1183,7 @@ if { $TEST_HDD_IDE } {
 
     set spawn_id $kermit_spawn_id
 
+if 0 {
     if { $hdd_ide_result == $TEST_PASS } {
         exec cp /tftpboot/$uboot_test_image.hdd_ide /tftpboot/$uboot_test_image
 
@@ -1214,6 +1217,7 @@ if { $TEST_HDD_IDE } {
             }
         }
     }
+}
 
     record_test_result $hdd_ide_loc $hdd_ide_result
 
