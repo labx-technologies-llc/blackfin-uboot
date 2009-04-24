@@ -20,7 +20,7 @@ static int check_limit(const char *type, size_t start_limit, size_t end_limit, s
 	    start <= end)
 		return 0;
 
-	printf("%s limit violation: %i <= (user:%i) <= (user:%i) <= %i\n",
+	printf("%s limit violation: %zu <= (user:%zu) <= (user:%zu) <= %zu\n",
 		type, start_limit, start, end, end_limit);
 	return 1;
 }
@@ -58,7 +58,7 @@ int do_icache_dump(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	for (way = way_start; way <= way_end; ++way) {
 		for (sbnk = sbnk_start; sbnk <= sbnk_end; ++sbnk) {
 			for (set = set_start; set <= set_end; ++set) {
-				printf("%i:%i:%2i: ", way, sbnk, set);
+				printf("%zu:%zu:%2zu: ", way, sbnk, set);
 				for (dw = 0; dw < 4; ++dw) {
 					if (ctrlc())
 						return 1;
