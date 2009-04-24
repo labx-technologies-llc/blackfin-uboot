@@ -26,6 +26,8 @@
 
 include $(TOPDIR)/config.mk
 
+CFLAGS := $(CFLAGS:-Os=-O2)
+
 LIB	= $(obj)liblzma.a
 
 SOBJS	=
