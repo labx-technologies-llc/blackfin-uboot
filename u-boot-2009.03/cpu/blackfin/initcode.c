@@ -92,7 +92,7 @@ static inline void serial_putc(char c)
 		return;
 
 	if (c == '\n')
-		*pUART_THR = '\r';
+		serial_putc('\r');
 
 	*pUART_THR = c;
 
@@ -543,9 +543,11 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 
 	serial_putc('T');
 
+#ifdef CONFIG_BFIN_BOOTROM_USES_EVT1
 	/* tell the bootrom where our entry point is */
 	if (CONFIG_BFIN_BOOT_MODE != BFIN_BOOT_BYPASS)
 		bfin_write_EVT1(CONFIG_SYS_MONITOR_BASE);
+#endif
 
 	serial_putc('>');
 	serial_putc('\n');
