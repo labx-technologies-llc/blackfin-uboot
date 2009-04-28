@@ -62,6 +62,46 @@ static void board_init_enetaddr(uchar *mac_addr)
 	eth_setenv_enetaddr("ethaddr", mac_addr);
 }
 
+static int ksz8893m_reset(struct spi_slave *slave)
+{
+	int ret = -1;
+	unsigned char dout[3] = { 2, 1, 1, };
+	unsigned char din[3];
+
+	dout[0] = 3; dout[1] = 11; dout[2] = 0;
+	ret = spi_xfer(slave, 24, dout, din, SPI_XFER_BEGIN | SPI_XFER_END);
+	if (ret)
+		return ret;
+	udelay(10);
+
+	/* Disable STPID mode */
+	dout[0] = 2; dout[1] = 11; dout[2] = din[2] & ~0x1;
+	ret = spi_xfer(slave, 24, dout, din, SPI_XFER_BEGIN | SPI_XFER_END);
+	if (ret)
+		return ret;
+	udelay(10);
+
+	dout[0] = 3; dout[1] = 48; dout[2] = 0;
+	ret = spi_xfer(slave, 24, dout, din, SPI_XFER_BEGIN | SPI_XFER_END);
+	if (ret)
+		return ret;
+	udelay(10);
+
+	/* Disable VLAN tag insert on Port3 */
+	dout[0] = 2; dout[1] = 48; dout[2] = din[2] & ~0x4;
+	ret = spi_xfer(slave, 24, dout, din, SPI_XFER_BEGIN | SPI_XFER_END);
+	if (ret)
+		return ret;
+	udelay(10);
+
+	/* Start switch */
+	dout[0] = 2; dout[1] = 1; dout[2] = 1;
+	ret = spi_xfer(slave, 24, dout, din, SPI_XFER_BEGIN | SPI_XFER_END);
+	udelay(10);
+
+	return ret;
+}
+
 int board_eth_init(bd_t *bis)
 {
 	static bool switch_is_alive = false;
@@ -71,9 +111,7 @@ int board_eth_init(bd_t *bis)
 		struct spi_slave *slave = spi_setup_slave(0, 1, 5000000, SPI_MODE_3);
 		if (slave) {
 			if (!spi_claim_bus(slave)) {
-				unsigned char dout[3] = { 2, 1, 1, };
-				unsigned char din[3];
-				ret = spi_xfer(slave, sizeof(dout) * 8, dout, din, SPI_XFER_BEGIN | SPI_XFER_END);
+				ret = ksz8893m_reset(slave);
 				if (!ret)
 					switch_is_alive = true;
 				spi_release_bus(slave);
