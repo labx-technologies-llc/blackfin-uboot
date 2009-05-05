@@ -72,32 +72,27 @@ static int ksz8893m_reset(struct spi_slave *slave)
 	ret = spi_xfer(slave, 24, dout, din, SPI_XFER_BEGIN | SPI_XFER_END);
 	if (ret)
 		return ret;
-	udelay(10);
 
 	/* Disable STPID mode */
 	dout[0] = 2; dout[1] = 11; dout[2] = din[2] & ~0x1;
 	ret = spi_xfer(slave, 24, dout, din, SPI_XFER_BEGIN | SPI_XFER_END);
 	if (ret)
 		return ret;
-	udelay(10);
 
 	dout[0] = 3; dout[1] = 48; dout[2] = 0;
 	ret = spi_xfer(slave, 24, dout, din, SPI_XFER_BEGIN | SPI_XFER_END);
 	if (ret)
 		return ret;
-	udelay(10);
 
 	/* Disable VLAN tag insert on Port3 */
 	dout[0] = 2; dout[1] = 48; dout[2] = din[2] & ~0x4;
 	ret = spi_xfer(slave, 24, dout, din, SPI_XFER_BEGIN | SPI_XFER_END);
 	if (ret)
 		return ret;
-	udelay(10);
 
 	/* Start switch */
 	dout[0] = 2; dout[1] = 1; dout[2] = 1;
 	ret = spi_xfer(slave, 24, dout, din, SPI_XFER_BEGIN | SPI_XFER_END);
-	udelay(10);
 
 	return ret;
 }
