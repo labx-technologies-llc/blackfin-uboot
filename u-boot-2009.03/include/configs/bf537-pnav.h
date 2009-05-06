@@ -112,20 +112,27 @@
  */
 #define CONFIG_NAND_PLAT
 
-#define CONFIG_SYS_NAND_BASE	0x20100000
+#define CONFIG_SYS_NAND_BASE		0x20100000
 #define CONFIG_SYS_MAX_NAND_DEVICE	1
 
 #define BFIN_NAND_CLE(chip) ((unsigned long)(chip)->IO_ADDR_W | (1 << 2))
 #define BFIN_NAND_ALE(chip) ((unsigned long)(chip)->IO_ADDR_W | (1 << 1))
 #define BFIN_NAND_READY     PF12
+#define BFIN_NAND_WRITE(addr, cmd) \
+	do { \
+		bfin_write8(addr, cmd); \
+		SSYNC(); \
+	} while (0)
 
-#define NAND_PLAT_WRITE_CMD(cmd, chip) bfin_write8(BFIN_NAND_CLE(chip), cmd)
-#define NAND_PLAT_WRITE_ADR(cmd, chip) bfin_write8(BFIN_NAND_ALE(chip), cmd)
+#define NAND_PLAT_WRITE_CMD(cmd, chip) BFIN_NAND_WRITE(BFIN_NAND_CLE(chip), cmd)
+#define NAND_PLAT_WRITE_ADR(cmd, chip) BFIN_NAND_WRITE(BFIN_NAND_ALE(chip), cmd)
 #define NAND_PLAT_DEV_READY(chip)      ((*pPORTHIO & BFIN_NAND_READY) ? 1 : 0)
 #define NAND_PLAT_INIT() \
-	*pPORTH_FER &= ~BFIN_NAND_READY; \
-	*pPORTHIO_DIR &= ~BFIN_NAND_READY; \
-	*pPORTHIO_INEN |= BFIN_NAND_READY;
+	do { \
+		*pPORTH_FER &= ~BFIN_NAND_READY; \
+		*pPORTHIO_DIR &= ~BFIN_NAND_READY; \
+		*pPORTHIO_INEN |= BFIN_NAND_READY; \
+	} while (0)
 
 
 /*
