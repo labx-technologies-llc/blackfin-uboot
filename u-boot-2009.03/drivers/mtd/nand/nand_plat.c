@@ -6,8 +6,8 @@
  */
 
 /* Your board must implement the following macros:
- *  NAND_PLAT_WRITE_CMD(cmd, chip)
- *  NAND_PLAT_WRITE_ADR(cmd, chip)
+ *  NAND_PLAT_WRITE_CMD(chip, cmd)
+ *  NAND_PLAT_WRITE_ADR(chip, cmd)
  *  NAND_PLAT_INIT()
  *
  * It may also implement the following:
@@ -27,9 +27,9 @@ static void cmd_ctrl(struct mtd_info *mtd, int cmd, unsigned int ctrl)
 		return;
 
 	if (ctrl & NAND_CLE)
-		NAND_PLAT_WRITE_CMD(cmd, this);
+		NAND_PLAT_WRITE_CMD(this, cmd);
 	else
-		NAND_PLAT_WRITE_ADR(cmd, this);
+		NAND_PLAT_WRITE_ADR(this, cmd);
 }
 
 #ifdef NAND_PLAT_DEV_READY

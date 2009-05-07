@@ -149,14 +149,14 @@
 		SSYNC(); \
 	} while (0)
 
-#define NAND_PLAT_WRITE_CMD(cmd, chip) BFIN_NAND_WRITE(BFIN_NAND_CLE(chip), cmd)
-#define NAND_PLAT_WRITE_ADR(cmd, chip) BFIN_NAND_WRITE(BFIN_NAND_ALE(chip), cmd)
-#define NAND_PLAT_DEV_READY(chip)      ((*pPORTFIO & BFIN_NAND_READY) ? 1 : 0)
+#define NAND_PLAT_WRITE_CMD(chip, cmd) BFIN_NAND_WRITE(BFIN_NAND_CLE(chip), cmd)
+#define NAND_PLAT_WRITE_ADR(chip, cmd) BFIN_NAND_WRITE(BFIN_NAND_ALE(chip), cmd)
+#define NAND_PLAT_DEV_READY(chip)      (*pPORTFIO & BFIN_NAND_READY)
 #define NAND_PLAT_INIT() \
 	do { \
-		*pPORTF_FER &= ~BFIN_NAND_READY; \
-		*pPORTFIO_DIR &= ~BFIN_NAND_READY; \
-		*pPORTFIO_INEN |= BFIN_NAND_READY; \
+		bfin_write_PORTF_FER(bfin_read_PORTF_FER() & ~BFIN_NAND_READY); \
+		bfin_write_PORTFIO_DIR(bfin_read_PORTFIO_DIR() & ~BFIN_NAND_READY); \
+		bfin_write_PORTFIO_INEN(bfin_read_PORTFIO_INEN() | BFIN_NAND_READY); \
 	} while (0)
 
 

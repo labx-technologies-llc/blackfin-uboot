@@ -124,14 +124,14 @@
 		SSYNC(); \
 	} while (0)
 
-#define NAND_PLAT_WRITE_CMD(cmd, chip) BFIN_NAND_WRITE(BFIN_NAND_CLE(chip), cmd)
-#define NAND_PLAT_WRITE_ADR(cmd, chip) BFIN_NAND_WRITE(BFIN_NAND_ALE(chip), cmd)
-#define NAND_PLAT_DEV_READY(chip)      ((*pPORTHIO & BFIN_NAND_READY) ? 1 : 0)
+#define NAND_PLAT_WRITE_CMD(chip, cmd) BFIN_NAND_WRITE(BFIN_NAND_CLE(chip), cmd)
+#define NAND_PLAT_WRITE_ADR(chip, cmd) BFIN_NAND_WRITE(BFIN_NAND_ALE(chip), cmd)
+#define NAND_PLAT_DEV_READY(chip)      (*pPORTHIO & BFIN_NAND_READY)
 #define NAND_PLAT_INIT() \
 	do { \
-		*pPORTH_FER &= ~BFIN_NAND_READY; \
-		*pPORTHIO_DIR &= ~BFIN_NAND_READY; \
-		*pPORTHIO_INEN |= BFIN_NAND_READY; \
+		bfin_write_PORTH_FER(bfin_read_PORTH_FER() & ~BFIN_NAND_READY); \
+		bfin_write_PORTHIO_DIR(bfin_read_PORTHIO_DIR() & ~BFIN_NAND_READY); \
+		bfin_write_PORTHIO_INEN(bfin_read_PORTHIO_INEN() | BFIN_NAND_READY); \
 	} while (0)
 
 
