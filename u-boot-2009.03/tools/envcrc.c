@@ -188,21 +188,26 @@ bool read_env_from_elf(const char *elf_file)
 int main (int argc, char **argv)
 {
 #if defined(ENV_IS_EMBEDDED) || defined(ENV_IS_EMBEDDED_CUSTOM)
+	unsigned char pad = 0x00;
 	uint32_t crc;
 	unsigned char *envptr = environment,
 		*dataptr = envptr + ENV_HEADER_SIZE;
 	unsigned int datasize = ENV_SIZE;
 	const char *env_file;
 
-#if defined(ENV_IS_EMBEDDED_CUSTOM)
-	memset(dataptr, 0xff, datasize);
-#endif
-
 	if (argc < 2) {
 		puts("Usage: envcrc <environment object> [--binary [le]]");
 		return 1;
 	}
 	env_file = argv[1];
+
+	if (argv[2] && !strncmp(argv[2], "--binary", 8)) {
+		int ipad = 0xff;
+		if (argv[2][8] == '=')
+			sscanf(argv[2] + 9, "%i", &ipad);
+		pad = ipad;
+	}
+	memset(dataptr, pad, datasize);
 
 	if (!read_env_from_elf(env_file)) {
 		fprintf(stderr, "unable to read environment from %s: %s\n",
@@ -214,7 +219,7 @@ int main (int argc, char **argv)
 
 	/* Check if verbose mode is activated passing a parameter to the program */
 	if (argc > 2) {
-		if (!strcmp(argv[2], "--binary")) {
+		if (!strncmp(argv[2], "--binary", 8)) {
 			int le = (argc > 3 ? !strcmp(argv[3], "le") : 1);
 			size_t i, start, end, step;
 			if (le) {
@@ -227,10 +232,10 @@ int main (int argc, char **argv)
 				step = -1;
 			}
 			for (i = start; i != end; i += step)
-				printf ("%c", (crc & (0xFF << (i * 8))) >> (i * 8));
-			fwrite (dataptr, 1, datasize, stdout);
+				printf("%c", (crc & (0xFF << (i * 8))) >> (i * 8));
+			fwrite(dataptr, 1, datasize, stdout);
 		} else {
-			printf ("CRC32 from offset %08X to %08X of environment = %08X\n",
+			printf("CRC32 from offset %08X to %08X of environment = %08X\n",
 				(unsigned int) (dataptr - envptr),
 				(unsigned int) (dataptr - envptr) + datasize,
 				crc);
