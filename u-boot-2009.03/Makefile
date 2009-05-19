@@ -349,11 +349,11 @@ GEN_UBOOT = \
 			-Map u-boot.map -o u-boot
 $(obj)u-boot:		depend $(SUBDIRS) $(OBJS) $(LIBBOARD) $(LIBS) $(LDSCRIPT)
 		$(GEN_UBOOT)
-		$(call SYSTEM_MAP,u-boot) \
-			| awk '$$2 ~ /[tTwW]/ {print $$1 $$3}' \
-			| sed -e 's:^\(.*\):.asciz "\1":' > $(obj).syms.u-boot.S
-		$(CC) $(AFLAGS) -I. -DSYM_FILE='"$(obj).syms.u-boot.S"' -c cpu/blackfin/system_map.S -o $(obj)cpu/blackfin/system_map.o
-		$(GEN_UBOOT) $(obj)cpu/blackfin/system_map.o
+ifeq ($(CONFIG_KALLSYMS),y)
+		smap=`$(call SYSTEM_MAP,u-boot) | awk '$$2 ~ /[tTwW]/ {printf $$1 $$3 "\\0"}'` ; \
+		$(CC) $(CFLAGS) -DSYSTEM_MAP="\"$${smap}\"" -c common/system_map.c -o $(obj)common/system_map.o
+		$(GEN_UBOOT) $(obj)common/system_map.o
+endif
 
 $(OBJS):	depend $(obj)include/autoconf.mk
 		$(MAKE) -C cpu/$(CPU) $(if $(REMOTE_BUILD),$@,$(notdir $@))
@@ -455,7 +455,7 @@ cscope:
 SYSTEM_MAP = \
 		$(NM) $1 | \
 		grep -v '\(compiled\)\|\(\.o$$\)\|\( [aUw] \)\|\(\.\.ng$$\)\|\(LASH[RL]DI\)' | \
-		sort
+		LC_ALL=C sort
 $(obj)System.map:	$(obj)u-boot
 		@$(call SYSTEM_MAP,$<) > $(obj)System.map
 
@@ -3504,7 +3504,6 @@ grsim_leon2_config : unconfig
 #########################################################################
 
 clean:
-	@rm -f $(obj).syms.u-boot.S
 	@rm -f $(obj)examples/82559_eeprom $(obj)examples/eepro100_eeprom \
 	       $(obj)examples/hello_world  $(obj)examples/interrupt	  \
 	       $(obj)examples/mem_to_mem_idma2intr			  \

@@ -18,7 +18,6 @@
 # Top-level generic files
 #
 
-/.syms.u-boot.S
 /System.map
 /u-boot
 /u-boot.hex
