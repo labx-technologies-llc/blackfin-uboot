@@ -172,7 +172,7 @@ void trap_c(struct pt_regs *regs)
 #endif
 
 #ifndef CONFIG_KALLSYMS
-const char *symbol_lookup(unsigned long addr, unsigned long *caddr);
+const char *symbol_lookup(unsigned long addr, unsigned long *caddr)
 {
 	*caddr = addr;
 	return "N/A";
