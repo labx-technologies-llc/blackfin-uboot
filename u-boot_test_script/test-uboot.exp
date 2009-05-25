@@ -3816,11 +3816,11 @@ while 1 {
 
    expect {
 
-      "Pattern 000*Writing*Reading" {
+      -re "Pattern 000.{7}Writing.{25}Reading" {
          incr counter_1
       }
 
-      "Pattern FFF*Writing*Reading" {
+      -re "Pattern FFF.{7}Writing.{25}Reading" {
          incr counter_2
       }
 
