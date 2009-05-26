@@ -91,8 +91,17 @@ static inline void serial_putc(char c)
 	if (!BFIN_DEBUG_EARLY_SERIAL)
 		return;
 
-	if (c == '\n')
+	if (c == '\n') {
+#if (__GNUC__ < 4) || (__GNUC__ == 4 && __GNUC_MINOR__ <= 1)
+		/* gcc-4.1 sucks and cant inline this */
+		*pUART_THR = '\r';
+
+		while (!(*pUART_LSR & TEMT))
+			continue;
+#else
 		serial_putc('\r');
+#endif
+	}
 
 	*pUART_THR = c;
 
