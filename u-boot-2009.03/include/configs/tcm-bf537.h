@@ -59,7 +59,7 @@
 /*
  * Network Settings
  */
-/* TCM-BF537E has no PHY on it
+/* TCM-BF537E has no PHY on it, but EXT-BF5xx-USB/Ethernet board has */
 #ifndef __ADSPBF534__
 #define ADI_CMDS_NETWORK	1
 #define CONFIG_BFIN_MAC
@@ -67,7 +67,6 @@
 #define CONFIG_NET_MULTI	1
 #endif
 #define CONFIG_HOSTNAME		tcm-bf537
-*/
 /* Uncomment next line to use fixed MAC address */
 /* #define CONFIG_ETHADDR	02:80:ad:20:31:e8 */
 
