@@ -9,63 +9,63 @@ proc usage {} {
     send_user "\nFor BF533-STAMP (ExtClock=11.0592Mhz, CPU_MaxClock=500Mhz)  :\n"
     send_user "\n NUM CCLK(Mhz)  SCLK (Mhz)   VCO_MULT  CCLK_DIV  SCLK_DIV  \n"
     send_user "\n 0   497         99         45          1         5        \n"
-    send_user "\n 1   398        199         36          1         2        \n"
-    send_user "\n 2   199         66         36          2         6        \n"
-    send_user "\n 3   497         71         45          1         7        \n"
+    send_user "\n 1    99         49         36          4         8        \n"
+    send_user "\n 2   497         33         45          1         15       \n"
+    send_user "\n 3   398         79         36          1         5        \n"
     send_user "\n********************************************************************\n"
 
     send_user "\n********************************************************************\n"
     send_user "\nFor BF537-STAMP (ExtClock=25Mhz, CPU-MaxClock=500Mhz) :\n"
     send_user "\n NUM CCLK(Mhz)  SCLK (Mhz)   VCO_MULT  CCLK_DIV  SCLK_DIV  \n"
     send_user "\n 0   500        125         20          1         4        \n"
-    send_user "\n 1   400        200         16          1         2        \n"
-    send_user "\n 2   200         66         16          2         6        \n"
-    send_user "\n 3   500         71         20          1         7        \n"
+    send_user "\n 1   100         50         16          4         8        \n"
+    send_user "\n 2   500         50         20          1         10       \n"
+    send_user "\n 3   200        100         16          2         4        \n"
     send_user "\n********************************************************************\n"
 
     send_user "\n********************************************************************\n"
     send_user "\nFor BF533-EZKIT (ExtClock=27Mhz, CPU_MaxClock=600Mhz) :\n"
     send_user "\n NUM CCLK(Mhz)  SCLK (Mhz)   VCO_MULT  CCLK_DIV  SCLK_DIV  \n"
     send_user "\n 0   594        118         22          1         5        \n"
-    send_user "\n 1   486        243         18          1         2        \n"
-    send_user "\n 2   202         67         15          2         6        \n"
-    send_user "\n 3   594         66         22          1         9        \n"
+    send_user "\n 1   101         50         15          4         8        \n"
+    send_user "\n 2   594         49         22          1        12        \n"
+    send_user "\n 3   202        101         15          2         4        \n"
     send_user "\n********************************************************************\n"
 
     send_user "\n********************************************************************\n"
     send_user "\nFor BF561-EZKIT (ExtClock=30Mhz, CPU_MaxClock=600Mhz) :\n"
     send_user "\n NUM CCLK(Mhz)  SCLK (Mhz)   VCO_MULT  CCLK_DIV  SCLK_DIV  \n"
     send_user "\n 0   600        100         20          1         6        \n"
-    send_user "\n 1   480        240         16          1         2        \n"
-    send_user "\n 2   210         70         14          2         6        \n"
-    send_user "\n 3   600         66         20          1         9        \n"
+    send_user "\n 1    97         48         13          4         8        \n"
+    send_user "\n 2   600         50         20          1        12        \n"
+    send_user "\n 3   195         97         13          2         4        \n"
     send_user "\n********************************************************************\n"
 
     send_user "\n********************************************************************\n"
-    send_user "\nFor BF548-EZKIT (ExtClock=25Mhz, CPU_MaxClock=600Mhz) :\n"
+    send_user "\nFor BF548-EZKIT (ExtClock=30Mhz, CPU_MaxClock=600Mhz) :\n"
     send_user "\n NUM CCLK(Mhz)  SCLK (Mhz)   VCO_MULT  CCLK_DIV  SCLK_DIV  \n"
     send_user "\n 0   525        131         21          1         4        \n"
-    send_user "\n 1   500        250         20          1         2        \n"
-    send_user "\n 2   250         83         20          2         6        \n"
-    send_user "\n 3   525         87         21          1         6        \n"
+    send_user "\n 1    93         46         15          4         8        \n"
+    send_user "\n 2   525         87         21          1         6        \n"
+    send_user "\n 3   187         93         15          2         4        \n"
     send_user "\n********************************************************************\n"
 
     send_user "\n********************************************************************\n"
     send_user "\nFor BF527-EZKIT (ExtClock=25Mhz, CPU_MaxClock=600Mhz) :\n"
     send_user "\n NUM CCLK(Mhz)  SCLK (Mhz)   VCO_MULT  CCLK_DIV  SCLK_DIV  \n"
     send_user "\n 0   525        131         21          1         4        \n"
-    send_user "\n 1   500        250         20          1         2        \n"
-    send_user "\n 2   250         83         20          2         6        \n"
-    send_user "\n 3   525         87         21          1         6        \n"
+    send_user "\n 1   100         50         16          4         8        \n"
+    send_user "\n 2   600         50         24          1        12        \n"
+    send_user "\n 3   200        100         16          2         4        \n"
     send_user "\n********************************************************************\n"
 
     send_user "\n********************************************************************\n"
     send_user "\nFor BF518F-EZBRD (ExtClock=25Mhz, CPU_MaxClock=600Mhz) :\n"
     send_user "\n NUM CCLK(Mhz)  SCLK (Mhz)   VCO_MULT  CCLK_DIV  SCLK_DIV  \n"
     send_user "\n 0   400         80         16          1         5        \n"
-    send_user "\n 1   500        250         20          1         2        \n"
-    send_user "\n 2   200         66         16          2         6        \n"
-    send_user "\n 3   550         68         22          1         8        \n"
+    send_user "\n 2   100         50          8          2         4        \n"
+    send_user "\n 3   400         50         16          1         8        \n"
+    send_user "\n 1   200        100         16          2         4        \n"
     send_user "\n********************************************************************\n"
     exit
 }
@@ -95,16 +95,16 @@ if { $board_type == "BF533-STAMP" } {
             set sclk_div  5
         } elseif { $num == "1" } {
             set vco_mult  36
-            set cclk_div  1
-            set sclk_div  2
+            set cclk_div  4
+            set sclk_div  8
         } elseif { $num == "2" } {
-            set vco_mult  36
-            set cclk_div  2
-            set sclk_div  6
-        } elseif { $num == "3" } {
             set vco_mult  45
             set cclk_div  1
-            set sclk_div  7
+            set sclk_div  15
+        } elseif { $num == "3" } {
+            set vco_mult  36
+            set cclk_div  1
+            set sclk_div  5
         }
 } elseif { $board_type == "BF537-STAMP" } {
     set config_file bf537-stamp.h
@@ -114,16 +114,16 @@ if { $board_type == "BF533-STAMP" } {
             set sclk_div  4
         } elseif { $num == "1" } {
             set vco_mult  16
-            set cclk_div  1
-            set sclk_div  2
+            set cclk_div  4
+            set sclk_div  8
         } elseif { $num == "2" } {
-            set vco_mult  16
-            set cclk_div  2
-            set sclk_div  6
-        } elseif { $num == "3" } {
             set vco_mult  20
             set cclk_div  1
-            set sclk_div  7
+            set sclk_div  10
+        } elseif { $num == "3" } {
+            set vco_mult  16
+            set cclk_div  2
+            set sclk_div  4
         }
 } elseif { $board_type == "BF537-EZKIT" } {
     set config_file bf537-ezkit.h
@@ -152,17 +152,17 @@ if { $board_type == "BF533-STAMP" } {
             set cclk_div  1
             set sclk_div  5
         } elseif { $num == "1" } {
-            set vco_mult  18
-            set cclk_div  1
-            set sclk_div  2
-        } elseif { $num == "2" } {
             set vco_mult  15
-            set cclk_div  2
-            set sclk_div  6
-        } elseif { $num == "3" } {
+            set cclk_div  4
+            set sclk_div  8
+        } elseif { $num == "2" } {
             set vco_mult  22
             set cclk_div  1
-            set sclk_div  9
+            set sclk_div  12
+        } elseif { $num == "3" } {
+            set vco_mult  15
+            set cclk_div  2
+            set sclk_div  4
         }
 } elseif { $board_type == "BF561-EZKIT" } {
     set config_file bf561-ezkit.h
@@ -171,17 +171,17 @@ if { $board_type == "BF533-STAMP" } {
             set cclk_div  1
             set sclk_div  6
         } elseif { $num == "1" } {
-            set vco_mult  16
-            set cclk_div  1
-            set sclk_div  2
+            set vco_mult  13
+            set cclk_div  4
+            set sclk_div  8
         } elseif { $num == "2" } {
-            set vco_mult  14
-            set cclk_div  2
-            set sclk_div  6
-        } elseif { $num == "3" } {
             set vco_mult  20
             set cclk_div  1
-            set sclk_div  9
+            set sclk_div  12
+        } elseif { $num == "3" } {
+            set vco_mult  13
+            set cclk_div  2
+            set sclk_div  4
         }
 } elseif { $board_type == "BF548-EZKIT" } {
     set config_file bf548-ezkit.h
@@ -190,17 +190,17 @@ if { $board_type == "BF533-STAMP" } {
             set cclk_div  1
             set sclk_div  4
         } elseif { $num == "1" } {
-            set vco_mult  20
-            set cclk_div  1
-            set sclk_div  2
+            set vco_mult  15
+            set cclk_div  4
+            set sclk_div  8
         } elseif { $num == "2" } {
-            set vco_mult  20
-            set cclk_div  2
-            set sclk_div  6
-        } elseif { $num == "3" } {
             set vco_mult  21
             set cclk_div  1
             set sclk_div  6
+        } elseif { $num == "3" } {
+            set vco_mult  15
+            set cclk_div  2
+            set sclk_div  4
         }
 } elseif { $board_type == "BF527-EZKIT" } {
     set config_file bf527-ezkit.h
@@ -209,17 +209,17 @@ if { $board_type == "BF533-STAMP" } {
             set cclk_div  1
             set sclk_div  4
         } elseif { $num == "1" } {
-            set vco_mult  20
-            set cclk_div  1
-            set sclk_div  2
+            set vco_mult  16
+            set cclk_div  4
+            set sclk_div  8
         } elseif { $num == "2" } {
-            set vco_mult  20
-            set cclk_div  2
-            set sclk_div  6
-        } elseif { $num == "3" } {
-            set vco_mult  21
+            set vco_mult  24
             set cclk_div  1
-            set sclk_div  6
+            set sclk_div  12
+        } elseif { $num == "3" } {
+            set vco_mult  16
+            set cclk_div  2
+            set sclk_div  4
         }
 } elseif { $board_type == "BF518F-EZBRD" } {
     set config_file bf518f-ezbrd.h
@@ -228,17 +228,17 @@ if { $board_type == "BF533-STAMP" } {
             set cclk_div  1
             set sclk_div  5
         } elseif { $num == "1" } {
-            set vco_mult  20
-            set cclk_div  1
-            set sclk_div  2
+            set vco_mult  8
+            set cclk_div  2
+            set sclk_div  4
         } elseif { $num == "2" } {
             set vco_mult  16
-            set cclk_div  2
-            set sclk_div  6
-        } elseif { $num == "3" } {
-            set vco_mult  22
             set cclk_div  1
             set sclk_div  8
+        } elseif { $num == "3" } {
+            set vco_mult  16
+            set cclk_div  2
+            set sclk_div  4
         }
 } else {
     send_user "\n Unknown target board type.\n"
