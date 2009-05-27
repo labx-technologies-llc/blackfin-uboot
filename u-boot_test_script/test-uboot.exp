@@ -3965,7 +3965,7 @@ if { $jffs2_temp_result == $TEST_PASS} {
 set timeout 1500
 if { $jffs2_temp_result == $TEST_PASS } {
  	set jffs2_temp_result $TEST_FAIL
-	send -s "cp.b 0x1000000 0x20080000 $(filesize)\r"
+	send -s "cp.b 0x1000000 0x20080000 \$(filesize)\r"
 	while 1 {
 	    expect {
 
