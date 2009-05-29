@@ -113,6 +113,44 @@ int bfin_EMAC_initialize(bd_t *bis)
 	miiphy_register(dev->name, bfin_miiphy_read, bfin_miiphy_write);
 #endif
 
+	/* Set all the pins to peripheral mode */
+#ifdef CONFIG_RMII
+	/* grab RMII pins */
+# if defined(__ADSPBF51x__)
+	*pPORTF_MUX = (*pPORTF_MUX & \
+		~(PORT_x_MUX_3_MASK | PORT_x_MUX_4_MASK | PORT_x_MUX_5_MASK)) | \
+		PORT_x_MUX_3_FUNC_1 | PORT_x_MUX_4_FUNC_1 | PORT_x_MUX_5_FUNC_1;
+	*pPORTF_FER |= PF8 | PF9 | PF10 | PF11 | PF12 | PF13 | PF14 | PF15;
+	*pPORTG_MUX = (*pPORTG_MUX & ~PORT_x_MUX_0_MASK) | PORT_x_MUX_0_FUNC_1;
+	*pPORTG_FER |= PG0 | PG1 | PG2;
+# elif defined(__ADSPBF52x__)
+	*pPORTG_MUX = (*pPORTG_MUX & ~PORT_x_MUX_6_MASK) | PORT_x_MUX_6_FUNC_2;
+	*pPORTG_FER |= PG14 | PG15;
+	*pPORTH_MUX = (*pPORTH_MUX & ~(PORT_x_MUX_0_MASK | PORT_x_MUX_1_MASK)) | \
+		PORT_x_MUX_0_FUNC_2 | PORT_x_MUX_1_FUNC_2;
+	*pPORTH_FER |= PH0 | PH1 | PH2 | PH3 | PH4 | PH5 | PH6 | PH7 | PH8;
+# else
+	*pPORTH_FER |= PH0 | PH1 | PH4 | PH5 | PH6 | PH8 | PH9 | PH14 | PH15;
+# endif
+#else
+	/* grab MII & RMII pins */
+# if defined(__ADSPBF51x__)
+	*pPORTF_MUX = (*pPORTF_MUX & \
+		~(PORT_x_MUX_0_MASK | PORT_x_MUX_1_MASK | PORT_x_MUX_3_MASK | PORT_x_MUX_4_MASK | PORT_x_MUX_5_MASK)) | \
+		PORT_x_MUX_0_FUNC_1 | PORT_x_MUX_1_FUNC_1 | PORT_x_MUX_3_FUNC_1 | PORT_x_MUX_4_FUNC_1 | PORT_x_MUX_5_FUNC_1;
+	*pPORTF_FER |= PF0 | PF1 | PF2 | PF3 | PF4 | PF5 | PF6 | PF8 | PF9 | PF10 | PF11 | PF12 | PF13 | PF14 | PF15;
+	*pPORTG_MUX = (*pPORTG_MUX & ~PORT_x_MUX_0_MASK) | PORT_x_MUX_0_FUNC_1;
+	*pPORTG_FER |= PG0 | PG1 | PG2;
+# elif defined(__ADSPBF52x__)
+	*pPORTG_MUX = (*pPORTG_MUX & ~PORT_x_MUX_6_MASK) | PORT_x_MUX_6_FUNC_2;
+	*pPORTG_FER |= PG14 | PG15;
+	*pPORTH_MUX = PORT_x_MUX_0_FUNC_2 | PORT_x_MUX_1_FUNC_2 | PORT_x_MUX_2_FUNC_2;
+	*pPORTH_FER = -1; /* all pins */
+# else
+	*pPORTH_FER = -1; /* all pins */
+# endif
+#endif
+
 	return 0;
 }
 
@@ -216,44 +254,6 @@ static int bfin_miiphy_init(struct eth_device *dev, int *opmode)
 
 	/* Enable PHY output */
 	*pVR_CTL |= CLKBUFOE;
-
-	/* Set all the pins to peripheral mode */
-#ifdef CONFIG_RMII
-	/* grab RMII pins */
-# if defined(__ADSPBF51x__)
-	*pPORTF_MUX = (*pPORTF_MUX & \
-		~(PORT_x_MUX_3_MASK | PORT_x_MUX_4_MASK | PORT_x_MUX_5_MASK)) | \
-		PORT_x_MUX_3_FUNC_1 | PORT_x_MUX_4_FUNC_1 | PORT_x_MUX_5_FUNC_1;
-	*pPORTF_FER |= PF8 | PF9 | PF10 | PF11 | PF12 | PF13 | PF14 | PF15;
-	*pPORTG_MUX = (*pPORTG_MUX & ~PORT_x_MUX_0_MASK) | PORT_x_MUX_0_FUNC_1;
-	*pPORTG_FER |= PG0 | PG1 | PG2;
-# elif defined(__ADSPBF52x__)
-	*pPORTG_MUX = (*pPORTG_MUX & ~PORT_x_MUX_6_MASK) | PORT_x_MUX_6_FUNC_2;
-	*pPORTG_FER |= PG14 | PG15;
-	*pPORTH_MUX = (*pPORTH_MUX & ~(PORT_x_MUX_0_MASK | PORT_x_MUX_1_MASK)) | \
-		PORT_x_MUX_0_FUNC_2 | PORT_x_MUX_1_FUNC_2;
-	*pPORTH_FER |= PH0 | PH1 | PH2 | PH3 | PH4 | PH5 | PH6 | PH7 | PH8;
-# else
-	*pPORTH_FER |= PH0 | PH1 | PH4 | PH5 | PH6 | PH8 | PH9 | PH14 | PH15;
-# endif
-#else
-	/* grab MII & RMII pins */
-# if defined(__ADSPBF51x__)
-	*pPORTF_MUX = (*pPORTF_MUX & \
-		~(PORT_x_MUX_0_MASK | PORT_x_MUX_1_MASK | PORT_x_MUX_3_MASK | PORT_x_MUX_4_MASK | PORT_x_MUX_5_MASK)) | \
-		PORT_x_MUX_0_FUNC_1 | PORT_x_MUX_1_FUNC_1 | PORT_x_MUX_3_FUNC_1 | PORT_x_MUX_4_FUNC_1 | PORT_x_MUX_5_FUNC_1;
-	*pPORTF_FER |= PF0 | PF1 | PF2 | PF3 | PF4 | PF5 | PF6 | PF8 | PF9 | PF10 | PF11 | PF12 | PF13 | PF14 | PF15;
-	*pPORTG_MUX = (*pPORTG_MUX & ~PORT_x_MUX_0_MASK) | PORT_x_MUX_0_FUNC_1;
-	*pPORTG_FER |= PG0 | PG1 | PG2;
-# elif defined(__ADSPBF52x__)
-	*pPORTG_MUX = (*pPORTG_MUX & ~PORT_x_MUX_6_MASK) | PORT_x_MUX_6_FUNC_2;
-	*pPORTG_FER |= PG14 | PG15;
-	*pPORTH_MUX = PORT_x_MUX_0_FUNC_2 | PORT_x_MUX_1_FUNC_2 | PORT_x_MUX_2_FUNC_2;
-	*pPORTH_FER = -1; /* all pins */
-# else
-	*pPORTH_FER = -1; /* all pins */
-# endif
-#endif
 
 	/* Odd word alignment for Receive Frame DMA word */
 	/* Configure checksum support and rcve frame word alignment */
