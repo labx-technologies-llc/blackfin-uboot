@@ -10,9 +10,20 @@ fi
 
 set -e
 
-jobs=$(grep -cs processor /proc/cpuinfo)
-jobs=$((${jobs:-1} * 2))
-make="make -j${jobs} -s"
+# Determine number of CPU cores if no default was set
+: ${BUILD_NCPUS:="`getconf _NPROCESSORS_ONLN`"}
+if [ "$BUILD_NCPUS" -gt 1 ]
+then
+	JOBS=-j`expr "$BUILD_NCPUS" + 1`
+else
+	JOBS=""
+fi
+
+MAKE="make -j${jobs} -s"
+
+if [ "${CROSS_COMPILE}" ] ; then
+	MAKE="${MAKE} CROSS_COMPILE=${CROSS_COMPILE}"
+fi
 
 buildit() {
 	local bmode bmodeU suffix
@@ -23,12 +34,12 @@ buildit() {
 		bmodeU=$(echo ${bmode} | tr '[:lower:]' '[:upper:]')
 		printf "${board}: ${bmode}: "
 
-		${make} distclean
+		${MAKE} distclean
 
 		sed -i \
 			-e '/define[[:space:]]*CONFIG_BFIN_BOOT_MODE/s:[[:space:]][^[:space:]]*$: BFIN_BOOT_'${bmodeU}':' \
 			include/configs/${board}.h
-		${make} ${board}
+		${MAKE} ${board}
 
 		case ${bmode} in
 			bypass) suffix=".bin";;
@@ -36,7 +47,7 @@ buildit() {
 		esac
 		mv u-boot${suffix} ../RELEASE/u-boot-${board}-${bmode}-${ver}${suffix}
 
-		${make} distclean
+		${MAKE} distclean
 	done
 
 	[ -d .git ] \
