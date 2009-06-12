@@ -12,6 +12,7 @@ set TEST_BUILD_NAND                      1
 set TEST_BUILD_SPLASH                    0
 set TEST_CF_IDE                          0
 set TEST_HDD_IDE                         0
+set TEST_JTAG_CONSOLE                    0
 if { $board_type == "BF533-STAMP" } {
     set make_board_type    bf533-stamp
     set TEST_BUILD_UART              0
@@ -20,11 +21,13 @@ if { $board_type == "BF533-STAMP" } {
     set make_board_type    bf537-stamp
     set TEST_CF_IDE                  1
     set TEST_HDD_IDE                 1
+    set TEST_JTAG_CONSOLE            1
 } elseif { $board_type == "BF561-EZKIT" } {
     set make_board_type    bf561-ezkit
     set TEST_BUILD_SPI               0
     set TEST_BUILD_UART              0
     set TEST_BUILD_NAND              0
+    set TEST_JTAG_CONSOLE            1
 } elseif { $board_type == "BF533-EZKIT" } {
     set make_board_type    bf533-ezkit
     set TEST_BUILD_SPI               0
@@ -520,13 +523,15 @@ set build_nand_loc                      2
 set build_splash_loc                    3
 set cf_ide_loc                          4
 set hdd_ide_loc                         5
+set jtag_console_loc                    6
 
 set result_matrix { {{build spi uboot}                    notrun} \
                     {{build uart uboot}                   notrun} \
                     {{build nand uboot}                   notrun} \
                     {{build splash uboot}                 notrun} \
                     {{cf ide}                             notrun} \
-                    {{hdd ide}                            notrun}}
+                    {{hdd ide}                            notrun} \
+                    {{jtag console}                       notrun}}
 
 set CFG_LOAD_ADDR           0x1000000
 set BAUD_RATE               57600
@@ -716,6 +721,271 @@ while 1 {
 
 send "\r"
 wait_for_uboot
+
+###############################################################################################################################
+
+if { $TEST_JTAG_CONSOLE } {
+
+    send " \r"
+    wait_for_uboot
+
+    step "Test jtag console"
+
+    set jtag_console_result $TEST_FAIL
+
+    spawn /bin/sh
+    set root_spawn_id $spawn_id
+    set timeout 8
+    expect -re $HOST_KERNEL_PROMPT
+
+    step "root_spawn_id: run gdbproxy"
+    send "su\r"
+    while 1 {
+        expect {
+            -re "\[pP]assword:" {
+                send "$password\r"
+                while 1 {
+                    expect {
+                        -re "#" {
+                            set jtag_console_result $TEST_PASS
+                            break
+                        }
+                        timeout {
+                            send_user "FAIL: log in as root!\n"
+                            set jtag_console_result $TEST_FAIL
+                            break
+                        }
+                    }
+                }
+                break
+            }
+            timeout {
+                send_user "FAIL: run su command!\n"
+                set jtag_console_result $TEST_FAIL
+                break
+            }
+        }
+    }
+
+    if { $jtag_console_result == $TEST_PASS } {
+        send "bfin-gdbproxy bfin\r"
+        while 1 {
+            expect {
+                -re "bfin-gdbproxy: waiting on TCP port 2000" {
+                    set jtag_console_result $TEST_PASS
+                    break
+                }
+                timeout {
+                    set jtag_console_result $TEST_FAIL
+                    break
+                }
+            }
+        }
+    }
+
+    step "gdb_spawn_id: run bfin-uclinux-gdb"
+    spawn /bin/sh
+    set gdb_spawn_id $spawn_id
+    set timeout 8
+    expect -re $HOST_KERNEL_PROMPT
+
+    if { $jtag_console_result == $TEST_PASS } {
+        send "bfin-uclinux-gdb\r"
+        while 1 {
+            expect {
+                -re "\\\(gdb\\\)" {
+                    send "target remote :2000\r"
+                    while 1 {
+                        expect {
+                            -re "Remote debugging using.*0x\[0-9a-f]+.*\\\(gdb\\\)" {
+                                set jtag_console_result $TEST_PASS
+                                break
+                            }
+                            timeout {
+                                send_user "FAIL: run target remote in gdb\n"
+                                set jtag_console_result $TEST_FAIL
+                                break
+                            }
+                        }
+                    }
+                    break
+                }
+                timeout {
+                    send_user "FAIL: run bfin-uclinux-gdb\n"
+                    set jtag_console_result $TEST_FAIL
+                    break
+                }
+            }
+        }
+    }
+
+    step "netcat_spawn_id: run netcat as jtag console window"
+    spawn /bin/sh
+    set netcat_spawn_id $spawn_id
+    set timeout 5
+    expect -re $HOST_KERNEL_PROMPT
+
+    if { $jtag_console_result == $TEST_PASS } {
+        send "netcat localhost 2001\r"
+        while 1 {
+            expect {
+                -re "\r\n\[a-zA-Z0-9]" {
+                    send_user "FAIL:run netcat!\n"
+                    set jtag_console_result $TEST_FAIL
+                    break
+                }
+                timeout {
+                    set jtag_console_result $TEST_PASS
+                    break
+                }
+            }
+        }
+    }
+
+    step "gdb_spawn_id: Continue to run uboot"
+    if { $jtag_console_result == $TEST_PASS } {
+        set spawn_id $gdb_spawn_id
+        set timeout 5
+        sleep 2
+        send "\r"
+        expect -re "\\\(gdb\\\)"
+
+        send "c\r"
+        while 1 {
+            expect {
+                -re "Continuing\." {
+                    set jtag_console_result $TEST_PASS
+                    break
+                }
+                timeout {
+                    send_user "FAIL:continue in bfin-uclinux-gdb!\n"
+                    set jtag_console_result $TEST_FAIL
+                    break
+                }
+            }
+        }
+    }
+
+    step "kermit_spawn_id: set env for jtag console"
+    if { $jtag_console_result == $TEST_PASS } {
+        set spawn_id $kermit_spawn_id
+        set timeout 5
+        sleep 2
+        send "\r"
+        expect -re $UBOOT_PROMPT
+
+        send "set stdout jtag; set stderr jtag; set stdin jtag\r"
+        while 1 {
+            expect {
+                -re "\r\n\[^a-zA-Z0-9]" {
+                    send_user "FAIL:set std env in serial console!\n"
+                    set jtag_console_result $TEST_FAIL
+                    break
+                }
+                timeout {
+                    set jtag_console_result $TEST_PASS
+                    break
+                }
+            }
+        }
+    }
+
+    step "netcat_spawn_id: testing jtag console"
+    if { $jtag_console_result == $TEST_PASS } {
+        set spawn_id $netcat_spawn_id
+        set timeout 10
+        sleep 2
+        send "\r"
+        expect -re $UBOOT_PROMPT
+
+        send "echo test\r"
+        while 1 {
+            expect {
+                -re "echo test\r\ntest\r\n$UBOOT_PROMPT" {
+                    set jtag_console_result $TEST_PASS
+                    break
+                }
+                timeout {
+                    send_user "FAIL:testing jtag console!\n"
+                    set jtag_console_result $TEST_FAIL
+                    break
+                }
+            }
+        }
+    }
+
+    step "netcat_spawn_id: exit netcat"
+    set spawn_id $netcat_spawn_id
+    sleep 1
+    send "\3"
+    while 1 {
+        expect {
+            -re "punt" {
+                break
+            }
+            timeout {
+                send_user "FAIL: exit netcat!\n"
+                break
+            }
+        }
+    }
+
+    step "gdb_spawn_id: exit gdb"
+    set spawn_id $gdb_spawn_id
+    sleep 1
+    send "\3"
+    while 1 {
+        expect {
+            -re "\\\(gdb\\\)" {
+                send "q\r"
+                expect "y or n"
+                send "y\r"
+                expect -re $KERNEL_PROMPT
+                break
+            }
+            timeout {
+                send_user "FAIL: exit bfin-uclinux-gdb!\n"
+                break
+            }
+        }
+    }
+
+    step "root_spawn_id: exit gdbproxy"
+    set spawn_id $root_spawn_id
+    sleep 1
+    send "\3"
+    while 1 {
+        expect {
+            -re "#" {
+                break
+            }
+            timeout {
+                send_user "FAIL: exit bfin-gdbproxy!\n"
+                break
+            }
+        }
+    }
+
+    source ./reset_board.exp
+
+    set spawn_id $kermit_spawn_id
+    while 1 {
+        expect {
+            -re "Hit any key to stop autoboot" {
+                send "\r"
+                expect -re $UBOOT_PROMPT
+                break
+            }
+            timeout {
+                send_user "FAIL: reset uboot!\n"
+                break
+            }
+        }
+    }
+
+    record_test_result $jtag_console_loc $jtag_console_result
+
+}
 
 ###############################################################################################################################
 
