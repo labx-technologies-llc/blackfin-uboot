@@ -826,7 +826,7 @@ procs() {
 	bash -c "echo ${procs}"
 }
 bmodes() {
-	${no_board} && echo default && return
+	${no_boot} && echo default && return
 	echo para spi_master
 	case $1 in
 		bf5[36]*) echo bypass;;
@@ -873,13 +873,26 @@ LIST_sparc="gr_xc3s_1500	gr_cpci_ax2000	gr_ep2s60	grsim	grsim_leon2"
 
 #-----------------------------------------------------------------------
 
+usage() {
+	cat <<-EOF
+	Usage: MAKEALL [options] [targets]
+
+	Options:
+	  -C  skip cpu variants
+	  -B  skip boot variants
+	  -q  quick -- same as -C -B
+	EOF
+	exit 1
+}
+
 no_cpu=false
-no_board=false
+no_boot=false
 while [ -n "$1" ] ; do
 	case $1 in
 		-C) no_cpu=true;;
-		-B) no_board=true;;
-		-q) no_cpu=true no_board=true;;
+		-B) no_boot=true;;
+		-q) no_cpu=true no_boot=true;;
+		-*) usage;;
 		*)  break;;
 	esac
 	shift
@@ -900,7 +913,7 @@ build_target() {
 	${MAKE} distclean >/dev/null
 	${no_cpu} || \
 	sed -i "/CONFIG_BFIN_CPU/s:\([[:space:]]\)bf[0-9]*-:\1${cpu}-:" include/configs/$target.h
-	${no_board} || \
+	${no_boot} || \
 	sed -i "/^#define[[:space:]]*CONFIG_BFIN_BOOT_MODE/s:BFIN_BOOT_[^[:space:]]*$:BFIN_BOOT_${bmodeU}:" include/configs/$target.h
 	${MAKE} ${target}_config >/dev/null
 
