@@ -390,20 +390,6 @@ int do_nand(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 			else
 				ret = nand_write_skip_bad(nand, off, &size,
 							  (u_char *)addr);
-		} else if (!strcmp(s, ".yaffs")) {
-			extern int nand_write_opts(nand_info_t *meminfo, const nand_write_options_t *opts);
-			nand_write_options_t opts;
-			memset(&opts, 0, sizeof(opts));
-			opts.buffer	= (u_char *) addr;
-			opts.length	= size;
-			opts.offset	= off;
-			opts.pad	= 0;
-			opts.blockalign = 1;
-			opts.quiet      = quiet;
-			opts.writeoob	= 1;
-			opts.autoplace	= 1;
-			opts.forceyaffs = 1;
-			nand_write_opts(nand, &opts);
 		} else if (!strcmp(s, ".oob")) {
 			/* out-of-band data */
 			mtd_oob_ops_t ops = {
@@ -498,8 +484,6 @@ U_BOOT_CMD(nand, 5, 1, do_nand,
 	   "nand write - addr off|partition size\n"
 	   "    read/write 'size' bytes starting at offset 'off'\n"
 	   "    to/from memory address 'addr', skipping bad blocks.\n"
-	   "nand write[.yaffs] - addr off size - write `size' byte yaffs2 image\n"
-	   "    at offset `off' from memory address `addr'\n"
 	   "nand erase [clean] [off size] - erase 'size' bytes from\n"
 	   "    offset 'off' (entire device if not specified)\n"
 	   "nand bad - show bad blocks\n"
