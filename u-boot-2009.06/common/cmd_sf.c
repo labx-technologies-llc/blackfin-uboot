@@ -8,8 +8,8 @@
 
 #include <asm/io.h>
 
-#ifndef CONFIG_SF_DEFAULT_HZ
-# define CONFIG_SF_DEFAULT_HZ	1000000
+#ifndef CONFIG_SF_DEFAULT_SPEED
+# define CONFIG_SF_DEFAULT_SPEED	1000000
 #endif
 #ifndef CONFIG_SF_DEFAULT_MODE
 # define CONFIG_SF_DEFAULT_MODE		SPI_MODE_3
@@ -21,7 +21,7 @@ static int do_spi_flash_probe(int argc, char *argv[])
 {
 	unsigned int bus = 0;
 	unsigned int cs;
-	unsigned int hz = CONFIG_SF_DEFAULT_HZ;
+	unsigned int speed = CONFIG_SF_DEFAULT_SPEED;
 	unsigned int mode = CONFIG_SF_DEFAULT_MODE;
 	char *endp;
 	struct spi_flash *new;
@@ -43,7 +43,7 @@ static int do_spi_flash_probe(int argc, char *argv[])
 	}
 
 	if (argc >= 3) {
-		hz = simple_strtoul(argv[2], &endp, 0);
+		speed = simple_strtoul(argv[2], &endp, 0);
 		if (*argv[2] == 0 || *endp != 0)
 			goto usage;
 	}
@@ -53,7 +53,7 @@ static int do_spi_flash_probe(int argc, char *argv[])
 			goto usage;
 	}
 
-	new = spi_flash_probe(bus, cs, hz, mode);
+	new = spi_flash_probe(bus, cs, speed, mode);
 	if (!new) {
 		printf("Failed to initialize SPI flash at %u:%u\n", bus, cs);
 		return 1;
