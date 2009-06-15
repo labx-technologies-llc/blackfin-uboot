@@ -23,8 +23,6 @@
 
 include $(TOPDIR)/config.mk
 
-CFLAGS := $(CFLAGS:-Os=-O2)
-
 LIB	= $(obj)libgeneric.a
 
 COBJS-$(CONFIG_ADDR_MAP) += addr_map.o
