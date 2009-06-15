@@ -1,0 +1,152 @@
+/*
+ * Blackfin MUSB HCD (Host Controller Driver) for u-boot
+ *
+ * Copyright (c) 2008-2009 Analog Devices Inc.
+ *
+ * Licensed under the GPL-2 or later.
+ */
+
+#include <common.h>
+
+#include <usb.h>
+
+#include <asm/blackfin.h>
+#include <asm/mach-common/bits/usb.h>
+
+#include "blackfin_usb.h"
+
+/* MUSB platform configuration */
+struct musb_config musb_cfg = {
+	.regs       = (struct musb_regs *)MENTOR_USB_BASE,
+	.timeout    = 0x3FFFFFF,
+	.musb_speed = 0,
+};
+
+/*
+ * This function read or write data to endpoint fifo
+ * Blackfin use DMA polling method to avoid buffer alignment issues
+ *
+ * ep		- Endpoint number
+ * length	- Number of bytes to write to FIFO
+ * fifo_data	- Pointer to data buffer to be read/write
+ * is_write	- Flag for read or write
+ */
+void rw_fifo(u8 ep, u32 length, void *fifo_data, int is_write)
+{
+	u16 dma_reg = 0;
+
+	blackfin_dcache_flush_invalidate_range(fifo_data,
+		(fifo_data + length));
+
+	/* Setup DMA address register */
+	dma_reg = (u16) ((u32) fifo_data & 0xFFFF);
+	bfin_write16(USB_DMA_REG(ep, USB_DMAx_ADDR_LOW), dma_reg);
+	SSYNC();
+
+	dma_reg = (u16) (((u32) fifo_data >> 16) & 0xFFFF);
+	bfin_write16(USB_DMA_REG(ep, USB_DMAx_ADDR_HIGH), dma_reg);
+	SSYNC();
+
+	/* Setup DMA count register */
+	bfin_write16(USB_DMA_REG(ep, USB_DMAx_COUNT_LOW), length);
+	bfin_write16(USB_DMA_REG(ep, USB_DMAx_COUNT_HIGH), 0);
+	SSYNC();
+
+	/* Enable the DMA */
+	dma_reg = (ep << 4) | DMA_ENA | INT_ENA;
+	if (is_write)
+		dma_reg |= DIRECTION;
+	bfin_write16(USB_DMA_REG(ep, USB_DMAx_CTRL), dma_reg);
+	SSYNC();
+
+	/* Wait for compelete */
+	while (!(bfin_read_USB_DMA_INTERRUPT() & (1 << ep)));
+
+	/* acknowledge dma interrupt */
+	bfin_write_USB_DMA_INTERRUPT(1 << ep);
+	SSYNC();
+
+	/* Reset DMA */
+	bfin_write16(USB_DMA_REG(ep, USB_DMAx_CTRL), 0);
+	SSYNC();
+}
+
+void write_fifo(u8 ep, u32 length, void *fifo_data)
+{
+	rw_fifo(ep, length, fifo_data, 1);
+}
+
+void read_fifo(u8 ep, u32 length, void *fifo_data)
+{
+	rw_fifo(ep, length, fifo_data, 0);
+}
+
+int musb_platform_init(void)
+{
+
+#if defined(__ADSPBF54x__)
+	/*
+	 * Rev 1.0 BF549 EZ-KITs require PE7 to be high for both DEVICE
+	 * and OTG HOST modes, while rev 1.1 and greater require PE7 to
+	 * be low for DEVICE mode and high for HOST mode. We set it high
+	 * here because we are in host mode
+	 */
+	*pPORTE_FER = *pPORTE_FER & ~PE7;
+	*pPORTE_DIR_SET |= PE7;
+	*pPORTE_SET |= PE7;
+	SSYNC();
+#endif
+
+#if defined(__ADSPBF52x__)
+	/*
+	 * BF527 EZ-KITs require PG13 to be high for HOST mode
+	 */
+	*pPORTG_FER = *pPORTG_FER & ~PG13;
+	*pPORTGIO_DIR |= PG13;
+	*pPORTGIO_SET |= PG13;
+	SSYNC();
+#endif
+
+	if (ANOMALY_05000346) {
+		bfin_write_USB_APHY_CALIB(ANOMALY_05000346_value);
+		SSYNC();
+	}
+
+	if (ANOMALY_05000347) {
+		bfin_write_USB_APHY_CNTRL(0x0);
+		SSYNC();
+	}
+
+	/* Configure PLL oscillator register */
+	bfin_write_USB_PLLOSC_CTRL(0x30a8);
+	SSYNC();
+
+	bfin_write_USB_SRP_CLKDIV((get_sclk()/1000) / 32 - 1);
+	SSYNC();
+
+	bfin_write_USB_EP_NI0_RXMAXP(64);
+	SSYNC();
+
+	bfin_write_USB_EP_NI0_TXMAXP(64);
+	SSYNC();
+
+	/* Route INTRUSB/INTR_RX/INTR_TX to USB_INT0*/
+	bfin_write_USB_GLOBINTR(0x7);
+	SSYNC();
+
+	bfin_write_USB_GLOBAL_CTL(GLOBAL_ENA | EP1_TX_ENA | EP2_TX_ENA |
+				EP3_TX_ENA | EP4_TX_ENA | EP5_TX_ENA |
+				EP6_TX_ENA | EP7_TX_ENA | EP1_RX_ENA |
+				EP2_RX_ENA | EP3_RX_ENA | EP4_RX_ENA |
+				EP5_RX_ENA | EP6_RX_ENA | EP7_RX_ENA);
+	SSYNC();
+
+	return 0;
+}
+
+/*
+ * This function performs Blackfin platform specific deinitialization for usb.
+*/
+void musb_platform_deinit(void)
+{
+}
