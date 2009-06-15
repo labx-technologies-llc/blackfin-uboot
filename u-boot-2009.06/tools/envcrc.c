@@ -21,6 +21,7 @@
  * MA 02111-1307 USA
  */
 
+#include "compiler.h"
 #include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -29,7 +30,6 @@
 #include <string.h>
 #include <unistd.h>
 #include "elf.h"
-#include "uswap.h"
 
 #ifndef __ASSEMBLY__
 #define	__ASSEMBLY__			/* Dirty trick to get only #defines	*/
