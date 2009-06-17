@@ -390,7 +390,7 @@ static int bootm_load_os(image_info_t os, ulong *load_end, int boot_progress)
 		printf ("   Uncompressing %s ... ", type_name);
 
 		int ret = lzmaBuffToBuffDecompress(
-			(unsigned char *)load, &unc_len,
+			(unsigned char *)load, (size_t *)&unc_len,
 			(unsigned char *)image_start, image_len);
 		if (ret != LZMA_RESULT_OK) {
 			printf ("LZMA: uncompress or overwrite error %d "
