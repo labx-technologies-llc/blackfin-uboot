@@ -77,7 +77,3 @@ unsigned long do_go_exec(ulong (*entry)(int, char *[]), int argc, char *argv[])
 
 	return ret;
 }
-unsigned long do_bootelf_exec(ulong (*entry)(int, char *[]), int argc, char *argv[])
-{
-	return do_go_exec(entry, argc, argv);
-}
