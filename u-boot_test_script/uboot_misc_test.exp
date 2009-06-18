@@ -768,6 +768,9 @@ if { $TEST_JTAG_CONSOLE } {
     }
 
     if { $jtag_console_result == $TEST_PASS } {
+        send "export PATH=/opt/uClinux/bfin-uclinux/bin:/opt/uClinux/bfin-elf/bin:/opt/uClinux/bfin-linux-uclibc/bin:\$PATH\n"
+        expect -re "#"
+
         send "bfin-gdbproxy bfin\r"
         while 1 {
             expect {
@@ -790,6 +793,9 @@ if { $TEST_JTAG_CONSOLE } {
     expect -re $HOST_KERNEL_PROMPT
 
     if { $jtag_console_result == $TEST_PASS } {
+        send "export PATH=/opt/uClinux/bfin-uclinux/bin:/opt/uClinux/bfin-elf/bin:/opt/uClinux/bfin-linux-uclibc/bin:\$PATH\n"
+        expect -re $HOST_KERNEL_PROMPT
+
         send "bfin-uclinux-gdb\r"
         while 1 {
             expect {
