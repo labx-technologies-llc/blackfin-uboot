@@ -33,6 +33,8 @@ elif [ $1 = "BF527-EZKIT" ] ; then
     config_param=bf527-ezkit_config
 elif [ $1 = "BF518F-EZBRD" ] ; then
     config_param=bf518f-ezbrd_config
+elif [ $1 = "BF526-EZBRD" ] ; then
+    config_param=bf526-ezbrd_config
 else
     echo "Unknown target board type $BOARD_TYPE."
     exit 2
