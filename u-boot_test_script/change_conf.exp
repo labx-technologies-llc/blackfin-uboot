@@ -35,6 +35,8 @@ if { $board_type == "BF533-STAMP" } {
     set config_file bf527-ezkit.h
 } elseif { $board_type == "BF518F-EZBRD" } {
     set config_file bf518f-ezbrd.h
+} elseif { $board_type == "BF526-EZBRD" } {
+    set config_file bf526-ezbrd.h
 } else {
     send_user "\n Unknown target board type.\n"
     exit 1

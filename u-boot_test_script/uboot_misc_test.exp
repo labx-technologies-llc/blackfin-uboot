@@ -43,6 +43,9 @@ if { $board_type == "BF533-STAMP" } {
     set make_board_type    bf518f-ezbrd
     set TEST_BUILD_NAND              0
     set uboot_test_image    u-boot.ldr
+} elseif { $board_type == "BF526-EZBRD" } {
+    set make_board_type    bf526-ezbrd
+    set uboot_test_image    u-boot.ldr
 } else {
     send_user "\n Unknown target board type.\n"
     exit
