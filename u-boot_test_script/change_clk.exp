@@ -60,20 +60,20 @@ proc usage {} {
     send_user "\n********************************************************************\n"
 
     send_user "\n********************************************************************\n"
-    send_user "\nFor BF518F-EZBRD (ExtClock=25Mhz, CPU_MaxClock=600Mhz) :\n"
+    send_user "\nFor BF518F-EZBRD (ExtCLK=25Mhz, CPU_MaxCLK=400Mhz, Max_SCLK=80MHz) :\n"
     send_user "\n NUM CCLK(Mhz)  SCLK (Mhz)   VCO_MULT  CCLK_DIV  SCLK_DIV  \n"
     send_user "\n 0   400         80         16          1         5        \n"
     send_user "\n 2   100         50          8          2         4        \n"
     send_user "\n 3   400         50         16          1         8        \n"
-    send_user "\n 1   200        100         16          2         4        \n"
+    send_user "\n 1   156         78         25          4         8        \n"
     send_user "\n********************************************************************\n"
 
     send_user "\n********************************************************************\n"
-    send_user "\nFor BF526-EZBRD (ExtClock=25Mhz, CPU_MaxClock=600Mhz) :\n"
+    send_user "\nFor BF526-EZBRD (ExtCLK=25Mhz, CPU_MaxCLK=600Mhz, Max_SCLK=80MHz) :\n"
     send_user "\n NUM CCLK(Mhz)  SCLK (Mhz)   VCO_MULT  CCLK_DIV  SCLK_DIV  \n"
     send_user "\n 0   400         80         16          1         5        \n"
     send_user "\n 2   100         50          8          2         4        \n"
-    send_user "\n 3   400         50         16          1         8        \n"
+    send_user "\n 3   600         50         24          1        12        \n"
     send_user "\n 1   156         78         25          4         8        \n"
     send_user "\n********************************************************************\n"
     exit
@@ -245,9 +245,9 @@ if { $board_type == "BF533-STAMP" } {
             set cclk_div  1
             set sclk_div  8
         } elseif { $num == "3" } {
-            set vco_mult  16
-            set cclk_div  2
-            set sclk_div  4
+            set vco_mult  25
+            set cclk_div  4
+            set sclk_div  8
         }
 } elseif { $board_type == "BF526-EZBRD" } {
     set config_file bf518f-ezbrd.h
@@ -260,9 +260,9 @@ if { $board_type == "BF533-STAMP" } {
             set cclk_div  2
             set sclk_div  4
         } elseif { $num == "2" } {
-            set vco_mult  16
+            set vco_mult  24
             set cclk_div  1
-            set sclk_div  8
+            set sclk_div  12
         } elseif { $num == "3" } {
             set vco_mult  25
             set cclk_div  4
