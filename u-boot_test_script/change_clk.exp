@@ -250,7 +250,7 @@ if { $board_type == "BF533-STAMP" } {
             set sclk_div  8
         }
 } elseif { $board_type == "BF526-EZBRD" } {
-    set config_file bf518f-ezbrd.h
+    set config_file bf526-ezbrd.h
         if { $num == "0" } {
             set vco_mult  16
             set cclk_div  1
