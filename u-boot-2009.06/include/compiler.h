@@ -31,8 +31,11 @@ extern int errno;
 # include <sys/mman.h>
 #endif
 
+/* Not all systems (like Windows) has this define, and yes
+ * we do replace/emulate mmap() on those systems ...
+ */
 #ifndef MAP_FAILED
-#define MAP_FAILED (-1)
+# define MAP_FAILED ((void *)-1)
 #endif
 
 #include <fcntl.h>

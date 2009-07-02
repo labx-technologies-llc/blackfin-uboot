@@ -281,8 +281,8 @@ typedef struct bootm_headers {
 #define CHUNKSZ_SHA1 (64 * 1024)
 #endif
 
-#define uimage_to_cpu(x)		ntohl(x)
-#define cpu_to_uimage(x)		htonl(x)
+#define uimage_to_cpu(x)		be32_to_cpu(x)
+#define cpu_to_uimage(x)		cpu_to_be32(x)
 
 const char *genimg_get_os_name (uint8_t os);
 const char *genimg_get_arch_name (uint8_t arch);
