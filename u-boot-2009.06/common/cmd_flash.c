@@ -696,6 +696,66 @@ int flash_sect_protect (int p, ulong addr_first, ulong addr_last)
 }
 #endif /* CONFIG_SYS_NO_FLASH */
 
+#if defined(CONFIG_CFI_FLASH_USE_WEAK_ACCESSORS) && !defined(CONFIG_SYS_NO_FLASH)
+int do_flread(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
+{
+	ulong src, dst, size;
+	u8 *psrc, *pdst, *pend;
+	flash_info_t *info = &flash_info[0];
+
+	if (argc != 4) {
+		cmd_usage(cmdtp);
+		return 1;
+	}
+
+	src = simple_strtoul(argv[1], NULL, 16);
+	dst = simple_strtoul(argv[2], NULL, 16);
+	size = simple_strtoul(argv[3], NULL, 16);
+	if (src < info->start[0] ||
+	    (src + size) > (info->start[0] + info->size)) {
+		printf("Error: memory area %#08lx to %#08lx is not in FLASH\n",
+		       src, src + size);
+		return 1;
+	}
+
+	psrc = (void *)src;
+	pend = psrc + size;
+	pdst = (void *)dst;
+	if ((src & 0x3) == (dst & 0x3)) {
+		/* copy byte-wise until we get a 32-bit-aligned address */
+		while ((u32)psrc & 0x3) {
+			*pdst = flash_read8(psrc);
+			++pdst;
+			++psrc;
+		}
+		/* copy 32-bit words */
+		while (psrc < pend - 3) {
+			u32 *pdst32 = (void *)pdst,
+			    *psrc32 = (void *)psrc;
+			*pdst32 = flash_read32(psrc32);
+			pdst = (void *)++pdst32;
+			psrc = (void *)++psrc32;
+		}
+	}
+	/* copy remaining byte-wise */
+	while (psrc < pend) {
+		*pdst = flash_read8(psrc);
+		++pdst;
+		++psrc;
+	}
+
+	printf("Done.\n");
+
+	return 0;
+}
+
+U_BOOT_CMD(
+	flread,  4,  0,  do_flread,
+	"read from FLASH to RAM",
+	"src dest length\n"
+	"    - copy 'length' bytes from FLASH addr 'src' to RAM addr 'dest'\n"
+);
+#endif
 
 /**************************************************/
 #if defined(CONFIG_CMD_JFFS2) && defined(CONFIG_CMD_MTDPARTS)
