@@ -25,10 +25,20 @@ if [ "${CROSS_COMPILE}" ] ; then
 	MAKE="${MAKE} CROSS_COMPILE=${CROSS_COMPILE}"
 fi
 
+initelf() {
+	bfin-elf-gcc \
+		-nostartfiles \
+		../init.S cpu/blackfin/initcode.o \
+		-o init.elf \
+		-Iinclude -mcpu=${CONFIG_BFIN_CPU}
+}
+
 buildit() {
 	local bmode bmodeU suffix
 	local board=$1
 	shift
+
+	rm -f init.elf
 
 	for bmode in "$@" ; do
 		bmodeU=$(echo ${bmode} | tr '[:lower:]' '[:upper:]')
@@ -47,8 +57,17 @@ buildit() {
 		esac
 		mv u-boot${suffix} ../RELEASE/u-boot-${board}-${bmode}-${ver}${suffix}
 
+		if [ ! -e init.elf ] ; then
+			eval `grep "^CONFIG_BFIN_CPU" include/autoconf.mk`
+			printf "${board}: init.elf\n"
+			initelf
+			cp init.elf ../RELEASE/u-boot-${board}-init.elf
+		fi
+
 		${MAKE} distclean
 	done
+
+	rm -f init.elf
 
 	[ -d .git ] \
 		&& git checkout include/configs/${board}.h \
