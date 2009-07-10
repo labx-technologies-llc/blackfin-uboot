@@ -21,6 +21,8 @@
 # MA 02111-1307 USA
 #
 
+CROSS_COMPILE ?= bfin-uclinux-
+
 define extract_define
 $(strip $(shell echo '$1' | $(CPP) -P -include $(TOPDIR)/include/configs/$(BOARD).h -I $(TOPDIR)/include - 2>/dev/null | tail -n 1))
 endef
