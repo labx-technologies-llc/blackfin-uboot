@@ -124,6 +124,7 @@ buildit cm-bf561 bypass para
 buildit tcm-bf537 bypass para uart
 
 buildit bf537-srv1 spi_master uart
+buildit blackstamp spi_master
 
 cd ..
 rm -rf ${uboot}
