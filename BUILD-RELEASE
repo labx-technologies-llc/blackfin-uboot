@@ -28,7 +28,7 @@ fi
 initelf() {
 	bfin-elf-gcc \
 		-nostartfiles \
-		../init.S cpu/blackfin/initcode.o \
+		../../init.S cpu/blackfin/initcode.o \
 		-o init.elf \
 		-Iinclude -mcpu=${CONFIG_BFIN_CPU}
 }
@@ -37,6 +37,8 @@ buildit() {
 	local bmode bmodeU suffix
 	local board=$1
 	shift
+
+	allboards="$allboards $board"
 
 	rm -f init.elf
 
@@ -55,13 +57,14 @@ buildit() {
 			bypass) suffix=".bin";;
 			*) suffix=".ldr";;
 		esac
-		mv u-boot${suffix} ../RELEASE/u-boot-${board}-${bmode}-${ver}${suffix}
+		mv u-boot${suffix} ../u-boot-${board}-${bmode}-${ver}${suffix}
 
 		if [ ! -e init.elf ] ; then
 			eval `grep "^CONFIG_BFIN_CPU" include/autoconf.mk`
 			printf "${board}: init.elf\n"
 			initelf
-			cp init.elf ../RELEASE/u-boot-${board}-init.elf
+			cp init.elf ../u-boot-${board}-init-${ver}.elf
+			cp u-boot ../u-boot-${board}-${ver}.elf
 		fi
 
 		${MAKE} distclean
@@ -69,15 +72,31 @@ buildit() {
 
 	rm -f init.elf
 
-	[ -d .git ] \
-		&& git checkout include/configs/${board}.h \
-		|| svn revert -q include/configs/${board}.h
+	[ -d .git ] && git checkout include/configs/${board}.h || :
+	[ -d .svn ] && svn revert -q include/configs/${board}.h || :
 }
 
 rm -rf ../RELEASE
 mkdir ../RELEASE
 
 ver=$(sed -e 's:[[:space:]]*(ADI-::' -e 's:)[[:space:]]*::' localversion-adi)
+
+# create a tarball of the source code
+uboot="u-boot-${uboot_ver}-${ver}"
+echo "Creating ${uboot}.tar.bz2"
+if [ -d .git ] ; then
+	git-archive --prefix=${uboot}/ master > ../RELEASE/${uboot}.tar
+	cd ../RELEASE
+	tar xf ${uboot}.tar
+	bzip2 ${uboot}.tar
+else
+	svn export -q . ../RELEASE/${uboot}
+	cd ../RELEASE
+	tar jcf ${uboot}.tar.bz2 ${uboot}
+fi
+cd ${uboot}
+
+allboards=""
 
 buildit bf518f-ezbrd para spi_master uart
 buildit bf526-ezbrd para spi_master uart
@@ -88,7 +107,8 @@ buildit bf538f-ezkit bypass para
 buildit bf537-stamp bypass para spi_master uart
 buildit bf548-ezkit nand para spi_master uart
 buildit bf561-ezkit bypass para
-too_big=$(find ../RELEASE/ -size +256k)
+too_big=$(find ../ -maxdepth 1 -size +256k \
+	'(' '!' -name '*.tar.bz2' -a '!' -name '*.elf' ')')
 if [ -n "${too_big}" ] ; then
 	echo " *** WARNING *** "
 	echo " These files exceed 256KB:"
@@ -105,22 +125,19 @@ buildit tcm-bf537 bypass para uart
 
 buildit bf537-srv1 spi_master uart
 
-# finally, create a tarball of the source code
-uboot="u-boot-${uboot_ver}-${ver}"
-if [ -d .git ] ; then
-	git-archive --prefix=${uboot}/ master | bzip2 > ../RELEASE/${uboot}.tar.bz2
-else
-	svn export . ../RELEASE/${uboot}
-	tar jcf ../RELEASE/${uboot}.tar.bz2 -C ../RELEASE ${uboot}
-	rm -rf ../RELEASE/${uboot}
-fi
-
-cd ../RELEASE
+cd ..
+rm -rf ${uboot}
 chmod a-x *
 
 # we only release spi-master ldrs, so remove "_master" suffix
 for f in *_master* ; do
 	mv ${f} $(echo ${f} | sed 's:_master::')
+done
+
+# bundle up the boards into one tar each
+for board in $allboards ; do
+	tar jcf u-boot-${board}-${ver}.tar.bz2 u-boot-${board}*
+	find u-boot-${board}* '!' -name '*.tar.bz2' -exec rm -f {} +
 done
 
 du -b *
