@@ -147,6 +147,13 @@ SUBDIRS	= tools \
 
 ifeq ($(obj)include/config.mk,$(wildcard $(obj)include/config.mk))
 
+# Include autoconf.mk before config.mk so that the config options are available
+# to all top level build files.  We need the dummy all: target to prevent the
+# dependency target in autoconf.mk.dep from being the default.
+all:
+sinclude $(obj)include/autoconf.mk.dep
+sinclude $(obj)include/autoconf.mk
+
 # load ARCH, BOARD, and CPU configuration
 include $(obj)include/config.mk
 export	ARCH CPU BOARD VENDOR SOC
@@ -441,8 +448,6 @@ $(obj)include/autoconf.mk: $(obj)include/config.h
 	$(CPP) $(CFLAGS) -DDO_DEPS_ONLY -dM include/common.h | \
 		sed -n -f tools/scripts/define2mk.sed > $@.tmp && \
 	mv $@.tmp $@
-
-sinclude $(obj)include/autoconf.mk.dep
 
 #########################################################################
 else	# !config.mk
@@ -3328,10 +3333,6 @@ BFIN_BOARDS += ibf-dsp561
 
 $(BFIN_BOARDS:%=%_config)	: unconfig
 	@$(MKCONFIG) $(@:_config=) blackfin blackfin $(@:_config=)
-	@# autoconf.mk affects toplevel build flags, so force it before `make`
-	@$(MAKE) -s -B $(obj)include/autoconf.mk
-	@# toplevel build flags can affect board config, so force it again
-	@$(MAKE) -s -B $(obj)include/autoconf.mk
 
 $(BFIN_BOARDS):
 	$(MAKE) $@_config
