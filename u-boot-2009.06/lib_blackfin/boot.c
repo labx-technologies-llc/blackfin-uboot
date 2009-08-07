@@ -18,6 +18,10 @@
 extern void swap_to(int device_id);
 #endif
 
+#ifdef CONFIG_VIDEO
+extern void video_stop(void);
+#endif
+
 static char *make_command_line(void)
 {
 	char *dest = (char *)CONFIG_LINUX_CMDLINE_ADDR;
@@ -43,6 +47,10 @@ int do_bootm_linux(int flag, int argc, char *argv[], bootm_headers_t *images)
 
 #ifdef SHARED_RESOURCES
 	swap_to(FLASH);
+#endif
+
+#ifdef CONFIG_VIDEO
+	video_stop();
 #endif
 
 	appl = (int (*)(char *))images->ep;

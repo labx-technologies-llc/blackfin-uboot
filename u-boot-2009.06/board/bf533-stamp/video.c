@@ -152,6 +152,12 @@ static void video_init(char *NTSCFrame)
 	bfin_write_PPI_CONTROL(0x0083);
 }
 
+void video_stop(void)
+{
+	bfin_write_PPI_CONTROL(0);
+	bfin_write_DMA0_CONFIG(0);
+}
+
 int drv_video_init(void)
 {
 	device_t videodev;
