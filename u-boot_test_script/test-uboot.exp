@@ -105,6 +105,8 @@ set BDINFO_MEMSIZE           128*1024*1024
 } elseif { $board_type == "BF537-STAMP" } {
 
 set TEST_SPI_FLASH			 0
+set TEST_SDIO                            1
+
 set NUMBER_OF_FLASH_SECTORS 67
 set BDINFO_FLASHSIZE        "0x00400000"
 set KERNEL_FLASH_LOC        "0x20100000"
@@ -4496,7 +4498,7 @@ if { $TEST_SDIO } {
     send "mmcinit\r"
     while 1 {
         expect {
-            -re "SD Card detected.*Card capacity.*bytes.*>" {
+            -re "(SD Card detected.*Card capacity.*bytes|SD card found).*$UBOOT_PROMPT" {
                 set sdio_result $TEST_PASS
                 break
             }
