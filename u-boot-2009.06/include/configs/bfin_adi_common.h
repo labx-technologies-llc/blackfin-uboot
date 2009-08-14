@@ -20,7 +20,6 @@
 #  define CONFIG_KEEP_SERVERADDR
 #  define CONFIG_CMD_DNS
 #  define CONFIG_CMD_PING
-#  define CONFIG_CMD_SNTP
 #  ifdef CONFIG_BFIN_MAC
 #   define CONFIG_CMD_MII
 #  endif
@@ -54,6 +53,9 @@
 # endif
 # ifdef CONFIG_RTC_BFIN
 #  define CONFIG_CMD_DATE
+#  if ADI_CMDS_NETWORK
+#   define CONFIG_CMD_SNTP
+#  endif
 # endif
 # ifdef CONFIG_SPI
 #  define CONFIG_CMD_EEPROM
