@@ -11,7 +11,7 @@
 /*
  * Processor Settings
  */
-#define CONFIG_BFIN_CPU             bf537-0.3
+#define CONFIG_BFIN_CPU             bf537-0.2
 #define CONFIG_BFIN_BOOT_MODE       BFIN_BOOT_BYPASS
 
 
@@ -82,7 +82,7 @@
 #define CONFIG_SYS_FLASH_CFI
 #define CONFIG_SYS_FLASH_PROTECTION
 #define CONFIG_SYS_MAX_FLASH_BANKS	1
-#define CONFIG_SYS_MAX_FLASH_SECT	32
+#define CONFIG_SYS_MAX_FLASH_SECT	35
 
 
 /*
