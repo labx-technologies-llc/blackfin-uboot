@@ -3,7 +3,7 @@ log_file spi_flash_test_log
 send_user "Starting spi_flash_test.exp \n"
 
 set CHECKOUT   ~/checkouts
-set uboot_path ~/checkouts/u-boot/u-boot-2008.10
+set uboot_path ~/checkouts/u-boot/u-boot-2009.06
 set UBOOT_SCRIPTS  ~/checkouts/u-boot/u-boot_test_script
 set ttydev /dev/ttyS0
 

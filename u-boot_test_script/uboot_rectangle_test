@@ -2,7 +2,7 @@
 USER=/home/test/work/cruise
 CHECKOUT=$USER/checkouts
 UBOOT_SCRIPTS=$USER/test_scripts/u-boot
-UBOOT_SRC=$CHECKOUT/u-boot/u-boot-2008.10
+UBOOT_SRC=$CHECKOUT/u-boot/u-boot-2009.06
 BOARD_TYPE=BF537-STAMP
 
 TIMESTAMP=`date +%Y_%m_%d_%H_%M`
