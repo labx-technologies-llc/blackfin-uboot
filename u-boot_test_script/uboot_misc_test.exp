@@ -91,7 +91,7 @@ proc make_uboot {} {
                 send_user "make fail\n"
                 return 1
             }
-            -re "OK.*Done.*$HOST_KERNEL_PROMPT" {
+            -re "u-boot\.bin.*$HOST_KERNEL_PROMPT" {
                 send_user "make pass\n"
                 return 2
             }
