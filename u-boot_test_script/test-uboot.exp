@@ -81,7 +81,7 @@ set TEST_PASS_PARAM			 1
 set TEST_DMA    			 1
 set TEST_SPI_FLASH			 1
 set TEST_TFTP_WITH_ETHTOOL               1
-set TEST_SDIO                            0
+set TEST_MMC                             0
 set TEST_ATAPI                           0
 set TEST_USB                             0
 
@@ -105,7 +105,7 @@ set BDINFO_MEMSIZE           128*1024*1024
 } elseif { $board_type == "BF537-STAMP" } {
 
 set TEST_SPI_FLASH			 0
-set TEST_SDIO                            1
+set TEST_MMC                             1
 
 set NUMBER_OF_FLASH_SECTORS 67
 set BDINFO_FLASHSIZE        "0x00400000"
@@ -147,7 +147,7 @@ set BDINFO_MEMSIZE           32*1024*1024
 } elseif { $board_type == "BF548-EZKIT" } {
 
 #set TEST_SPI_FLASH                       0
-set TEST_SDIO                            1
+set TEST_MMC                             1
 set TEST_ATAPI                           1
 set TEST_USB                             1
 
@@ -178,7 +178,7 @@ set BDINFO_MEMSIZE           64*1024*1024
 
 } elseif { $board_type == "BF518F-EZBRD" } {
 
-set TEST_SDIO                            1
+set TEST_MMC                             1
 
 set NUMBER_OF_FLASH_SECTORS    71
 set BDINFO_FLASHSIZE           "0x00400000"
@@ -196,7 +196,7 @@ set TEST_SPI_FLASH			 0
 
 } elseif { $board_type == "BF526-EZBRD" } {
 
-set TEST_SDIO                            0
+set TEST_MMC                             0
 
 set NUMBER_OF_FLASH_SECTORS    71
 set BDINFO_FLASHSIZE           "0x00400000"
@@ -1355,7 +1355,7 @@ set tftp_10_half_loc                    44
 set tftp_10_full_loc                    45
 set tftp_100_half_loc                   46
 set tftp_100_full_loc                   47
-set SDIO_loc                            48
+set MMC_loc                            48
 set ATAPI_loc                           49
 set USB_loc                             50
 
@@ -1407,7 +1407,7 @@ set result_matrix { {mtest                                notrun} \
                     {tftp_10_full                         notrun} \
                     {tftp_100_half                        notrun} \
                     {tftp_100_full                        notrun} \
-                    {sdio                                 notrun} \
+                    {mmc                                  notrun} \
                     {atapi                                notrun} \
                     {usb                                  notrun}}
 
@@ -4479,49 +4479,49 @@ if {  $TEST_DMA } {
 
 ###############################################################################################################################
 
-if { $TEST_SDIO } {
+if { $TEST_MMC } {
 
     expect ">"
     send "\r"
     wait_for_uboot
 
-    step "Test SDIO MMC/SD"
+    step "Test MMC/SD"
 
-    set sdio_result $TEST_FAIL
+    set mmc_result $TEST_FAIL
 
-    set sdio_test_image uimage
-    set sdio_imgload_addr 0x1000000
-    set sdio_interface mmc
-    set sdio_dev 0
+    set mmc_test_image uimage
+    set mmc_imgload_addr 0x1000000
+    set mmc_interface mmc
+    set mmc_dev 0
 
     set timeout 5
-    send "mmcinit\r"
+    send "mmc init\r"
     while 1 {
         expect {
             -re "(SD Card detected.*Card capacity.*bytes|SD card found).*$UBOOT_PROMPT" {
-                set sdio_result $TEST_PASS
+                set mmc_result $TEST_PASS
                 break
             }
             timeout {
-                send_user "ERROR: init sdiommc failed\n"
+                send_user "ERROR: init mmc failed\n"
                 recover
                 break
             }
         }
     }
 
-    if {$sdio_result == $TEST_PASS} {
+    if {$mmc_result == $TEST_PASS} {
         set timeout 5
-        send "fatls $sdio_interface $sdio_dev\r"
+        send "fatls $mmc_interface $mmc_dev\r"
         while 1 {
             expect {
-                -re "\[0-9]+.*$sdio_test_image.*$UBOOT_PROMPT" {
-                    set sdio_result $TEST_PASS
+                -re "\[0-9]+.*$mmc_test_image.*$UBOOT_PROMPT" {
+                    set mmc_result $TEST_PASS
                     break
                 }
                 timeout {
-                    send_user "ERROR: can not find $sdio_test_image\n"
-                    set sdio_result $TEST_FAIL
+                    send_user "ERROR: can not find $mmc_test_image\n"
+                    set mmc_result $TEST_FAIL
                     recover
                     break
                 }
@@ -4529,25 +4529,25 @@ if { $TEST_SDIO } {
         }
     }
 
-    if {$sdio_result == $TEST_PASS} {
+    if {$mmc_result == $TEST_PASS} {
         set timeout 300
-        send "fatload $sdio_interface $sdio_dev $sdio_imgload_addr $sdio_test_image \r"
+        send "fatload $mmc_interface $mmc_dev $mmc_imgload_addr $mmc_test_image \r"
         while 1 {
             expect {
                 -re "\[uU]nable|\[iI]nvalid|\[fF]ail|\[eE]rror" {
-                    set sdio_result $TEST_FAIL
+                    set mmc_result $TEST_FAIL
                     sleep 5
-                    send_user "ERROR: load $sdio_test_image to memory failed\n"
+                    send_user "ERROR: load $mmc_test_image to memory failed\n"
                     recover
                     break
                 }
-                -re "reading $sdio_test_image.*\[0-9]+ bytes read.*$UBOOT_PROMPT" {
-                    set sdio_result $TEST_PASS
+                -re "reading $mmc_test_image.*\[0-9]+ bytes read.*$UBOOT_PROMPT" {
+                    set mmc_result $TEST_PASS
                     break
                 }
                 timeout {
-                    set sdio_result $TEST_FAIL
-                    send_user "ERROR: load $sdio_test_image to memory failed\n"
+                    set mmc_result $TEST_FAIL
+                    send_user "ERROR: load $mmc_test_image to memory failed\n"
                     recover
                     break
                 }
@@ -4555,28 +4555,28 @@ if { $TEST_SDIO } {
         }
     }
 
-    if {$sdio_result == $TEST_PASS} {
+    if {$mmc_result == $TEST_PASS} {
         set timeout 150
-        send "bootm $sdio_imgload_addr\r"
+        send "bootm $mmc_imgload_addr\r"
         while 1 {
             expect {
                 -re $KERNEL_PROMPT {
-                    set sdio_result $TEST_PASS
+                    set mmc_result $TEST_PASS
                     break
                 }
                 timeout {
                     send_user "ERROR: boot kernel failed\n"
-                    set sdio_result $TEST_FAIL
+                    set mmc_result $TEST_FAIL
                     break
                 }
             }
         }
     }
 
-    record_test_result $SDIO_loc $sdio_result
+    record_test_result $MMC_loc $mmc_result
 
     #Reboot out of the kernel and back to u-boot.
-    if { $sdio_result == $TEST_PASS } {
+    if { $mmc_result == $TEST_PASS } {
         send "reboot\r"
     } else {
         recover
