@@ -88,7 +88,7 @@ set TEST_USB                             0
 
 set UBOOT_PROMPT             "bfin>"
 
-set NUMBER_OF_FLASH_SECTORS [get_uboot_define CFG_MAX_FLASH_SECT $uboot_test_loc ]
+set NUMBER_OF_FLASH_SECTORS [get_uboot_define CONFIG_SYS_MAX_FLASH_SECT $uboot_test_loc ]
 
 if { $board_type == "BF533-STAMP" } {
 
@@ -1449,9 +1449,9 @@ set readimage_cmd "/opt/uClinux/bfin-uclinux/bin/bfin-uclinux-mkimage"
 set BAUD_RATE 57600
 #set CFG_LOAD_ADDR [get_uboot_define CFG_LOAD_ADDR $uboot_test_loc ]
 set CFG_LOAD_ADDR 0x1000000
-set NUMBER_OF_FLASH_BANKS   [get_uboot_define CFG_MAX_FLASH_BANKS $uboot_test_loc ]
+set NUMBER_OF_FLASH_BANKS   [get_uboot_define CONFIG_SYS_MAX_FLASH_BANKS $uboot_test_loc ]
 #set NUMBER_OF_FLASH_SECTORS [get_uboot_define CFG_MAX_FLASH_SECT $uboot_test_loc ]
-set FLASH_BASE              [get_uboot_define CFG_FLASH_BASE $uboot_test_loc ]
+set FLASH_BASE              [get_uboot_define CONFIG_SYS_FLASH_BASE $uboot_test_loc ]
 set FLASH_SECTOR_SIZE       0x4000
 set FLASH_WRITABLE_SECTOR   30   ;# Identify a flash location we can write to
 
@@ -1470,7 +1470,7 @@ set BASE_RESULT             0x00000000
 #set BDINFO_MEMSTART         [get_uboot_define CFG_SDRAM_BASE $uboot_test_loc ]
 set BDINFO_MEMSTART         0x00000000
 #set BDINFO_MEMSIZE          [get_uboot_define CFG_MAX_RAM_SIZE $uboot_test_loc ]
-set BDINFO_FLASHSTART       [get_uboot_define CFG_FLASH_BASE $uboot_test_loc ]
+set BDINFO_FLASHSTART       [get_uboot_define CONFIG_SYS_FLASH_BASE $uboot_test_loc ]
 #set BDINFO_FLASHSIZE        [get_uboot_define CFG_FLASH_SIZE $uboot_test_loc ]
 #set BDINFO_FLASHSIZE        "0x00400000"
 set BDINFO_BAUDRATE         $BAUD_RATE
