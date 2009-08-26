@@ -2041,11 +2041,11 @@ send -s "help\r"
 while 1 {
     expect {
 
-	-re "autoscr\[ ]+- run script from memory" {
+	-re "autoscr\[ ]+- DEPRECATED - use \"source\" command instead" {
 	    set autoscr_help $TEST_PASS
 	}
 
-	-re "base\t- print or set address offset" {
+	-re "base\[ ]+- print or set address offset" {
 	    set base_help $TEST_PASS
 	}
 
