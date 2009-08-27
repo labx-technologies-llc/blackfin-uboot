@@ -3,7 +3,7 @@ USER=/home/test/work/cruise
 CHECKOUT=$USER/checkouts
 UBOOT_SCRIPTS=$USER/test_scripts/u-boot
 UBOOT_SRC=$CHECKOUT/u-boot/u-boot-2009.06
-source ./host_config.sh
+$UBOOT_SCRIPTS/host_config.sh
 
 TIMESTAMP=`date +%Y_%m_%d_%H_%M`
 
@@ -13,6 +13,7 @@ mv summary lastrun-summary
 
 cp $CHECKOUT/u-boot/u-boot_test_script/*.exp $UBOOT_SCRIPTS
 cp $CHECKOUT/u-boot/u-boot_test_script/uboot-test $UBOOT_SCRIPTS
+cp $CHECKOUT/u-boot/u-boot_test_script/uboot_rectangle_test $UBOOT_SCRIPTS
 
 $UBOOT_SCRIPTS/uboot-test $BOARD_TYPE 0
 if [ $? != 2 ] ; then
