@@ -3,7 +3,7 @@ USER=/home/test/work/cruise
 CHECKOUT=$USER/checkouts
 UBOOT_SCRIPTS=$USER/test_scripts/u-boot
 UBOOT_SRC=$CHECKOUT/u-boot/u-boot-2009.06
-$UBOOT_SCRIPTS/host_config.sh
+source $UBOOT_SCRIPTS/host_config.sh
 
 TIMESTAMP=`date +%Y_%m_%d_%H_%M`
 
