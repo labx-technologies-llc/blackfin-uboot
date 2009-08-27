@@ -1146,11 +1146,8 @@ if { $TEST_BUILD_NAND } {
     }
 
     if { $board_type == "BF537-STAMP" } {
-        set search_str "CONFIG_BF537_NAND"
-        set change_str "#define CONFIG_BF537_NAND"
-    } elseif { $board_type == "BF527-EZKIT" || $board_type == "BF526-EZBRD" } {
-        set search_str "CONFIG_BFIN_NFC"
-        set change_str "#define CONFIG_BFIN_NFC"
+        set search_str "CONFIG_NAND_PLAT"
+        set change_str "#define CONFIG_NAND_PLAT"
     } else {
         set search_str "CONFIG_BFIN_BOOT_MODE"
         set change_str "#define CONFIG_BFIN_BOOT_MODE  BFIN_BOOT_NAND"
