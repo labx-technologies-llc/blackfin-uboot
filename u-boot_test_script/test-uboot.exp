@@ -3891,250 +3891,222 @@ send "\3"
 ######################################################################################
 if {  $TEST_JFFS2 } {
 
-expect ">"
-send "\r"
-wait_for_uboot
+    expect ">"
+    send "\r"
+    wait_for_uboot
 
-step "Check JFFS2 function"
-set  timeout 240
-set  jffs2_result $TEST_FAIL
-set  jffs2_ls_result $TEST_FAIL
-set  jffs2_fsinfo_result $TEST_FAIL
-set  jffs2_fsload_result $TEST_FAIL
-set  send_slow {1 .01}
-set jffs2_temp_result $TEST_FAIL
+    step "Check JFFS2 function"
+    set  timeout 240
+    set  jffs2_result $TEST_FAIL
+    set  jffs2_ls_result $TEST_FAIL
+    set  jffs2_fsinfo_result $TEST_FAIL
+    set  jffs2_fsload_result $TEST_FAIL
+    set  send_slow {1 .01}
+    set jffs2_temp_result $TEST_FAIL
 
-send -s "tftpboot 0x1000000 jffs2.image\r"
-while 1 {
-    expect {
-
-    	"done" {
-		set jffs2_temp_result $TEST_PASS
-	}
-
-	$UBOOT_PROMPT {
-		break
-	}
-
-	timeout {
-	    send_user "ERROR: JFFS2 tftp download failed\n"
-	    recover
-	    break
-	}
-    }
-}
-
-set flash_boundary 0x203fffff
-if { $board_type == "BF518F-EZBRD" } {
-    #0x20300000-0x203fffff can not be used in nor flash testing
-    #because of hardware conflict of SPI dev and nor flash
-    set flash_boundary 0x202fffff
-}
-
-if {$jffs2_temp_result == $TEST_PASS} {
-	set jffs2_temp_result $TEST_FAIL
-	send -s "protect off 0x20080000 $flash_boundary\r"
-	while 1 {
-    		expect {
-
-    	    	    "Un-Protected" {
-				set jffs2_temp_result $TEST_PASS
-			}
-
-		    $UBOOT_PROMPT {
-				break
-			}
-
-		    timeout {
-	    			send_user "ERROR: JFFS2 unprotect failed\n"
-	    			recover
-	    			break
-			}
-    		}
-	}
-}
-
-set timeout 480
-if { $jffs2_temp_result == $TEST_PASS} {
- 	set jffs2_temp_result $TEST_FAIL
-	send -s "erase 0x20080000 $flash_boundary\r"
-	while 1 {
-	    expect {
-
-	    	"Erased * sectors" {
-	    		set jffs2_temp_result $TEST_PASS
-		}
-
-		$UBOOT_PROMPT {
-			break
-		}
-
-		timeout {
-		    send_user "ERROR: JFFS2 erase failed\n"
-		    recover
-		    break
-		}
-	    }
-	}
-}
-
-set timeout 1500
-if { $jffs2_temp_result == $TEST_PASS } {
- 	set jffs2_temp_result $TEST_FAIL
-	send -s "cp.b 0x1000000 0x20080000 \$(filesize)\r"
-	while 1 {
-	    expect {
-
-	    	"done" {
-	    		set jffs2_temp_result $TEST_PASS
-		}
-
-		$UBOOT_PROMPT {
-			break
-		}
-
-		timeout {
-		    send_user "ERROR: JFFS2 cp failed\n"
-		    recover
-		    break
-		}
-	    }
-	}
-}
-
-#sleep 15
-send -s "reset\r"
-    set timeout 20
+    send -s "tftpboot 0x1000000 jffs2.image\r"
     while 1 {
-	expect {
-	    "Hit any key"
-            {
-	     sleep 2
-	     send "\3"
-	    }
-
-	    ">" {
-	    break
-	    }
-
-	    timeout {
-		send_user "ERROR: u-boot failed to reset\n"
-		#recover
-		break
-	    }
-	}
-    }
-send "\r"
-wait_for_uboot
-set timeout 3000
-if { $jffs2_temp_result == $TEST_PASS } {
-	send -s "ls\r"
-	while 1 {
-    	    expect {
-
-	    	"done" {
-		    	set jffs2_ls_result $TEST_PASS
-	    	}
-
-	    	$UBOOT_PROMPT {
-			break
-	    	}
-
-	    	timeout {
-	    		send_user "ERROR: Uboot can not support 'ls' command\n"
-	    		recover
-	    		break
-	    	}
+        expect {
+            "done" {
+                set jffs2_temp_result $TEST_PASS
             }
-       }
-}
-
-set timeout 1200
-if { $jffs2_temp_result == $TEST_PASS } {
-	send -s "fsinfo\r"
-	while 1 {
-    	    expect {
-
-    		"Compression" {
-			set jffs2_fsinfo_result $TEST_PASS
-		}
-
-		$UBOOT_PROMPT {
-			break
-		}
-
-		timeout {
-	    		send_user "ERROR: Uboot can not support 'fsinfo' command\n"
-	    		recover
-	    		break
-		}
-    	    }
-	}
-}
-
-set timeout 2400
-if { $jffs2_temp_result == $TEST_PASS } {
-        set jffs2_temp_result $TEST_FAIL
-	send -s "fsload /uImage\r"
-	while 1 {
-	    expect {
-
-	    	"complete" {
-	    		set jffs2_temp_result $TEST_PASS
-		}
-
-		$UBOOT_PROMPT {
-			break
-		}
-
-		timeout {
-		    send_user "ERROR: JFFS2 'fsload' failed\n"
-		    recover
-		    break
-		}
-	    }
-	}
-}
-if {$jffs2_temp_result == $TEST_PASS } {
-	set jffs2_fsload_result $TEST_PASS
-}
-
-if {$jffs2_ls_result == $TEST_PASS && $jffs2_fsinfo_result == $TEST_PASS \
-    && $jffs2_fsload_result == $TEST_PASS} {
-	set jffs2_result $TEST_PASS
-} else {
-	set jffs2_result $TEST_FAIL
-	send_user "JFFS2 'ls'     result: $jffs2_ls_result\n"
-	send_user "JFFS2 'fsinfo' result: $jffs2_fsinfo_result\n"
-	send_user "JFFS2 'fsload' result: $jffs2_fsload_result\n"
-}
-
-record_test_result $jffs2_loc $jffs2_result
-
-send -s "reset\r"
-    set timeout 20
-    while 1 {
-	expect {
-	    "Hit any key"
-	    {
-	     sleep 2
-	     send "\3"
-	    }
-
-	    ">"
-	    {
-	    break
-	    }
-
-	    timeout {
-		send_user "ERROR: u-boot failed to reset\n"
-		#recover
-		break
-	    }
-	}
+            $UBOOT_PROMPT {
+                break
+            }
+            timeout {
+                send_user "ERROR: JFFS2 tftp download failed\n"
+                recover
+                break
+            }
+        }
     }
 
-send "\r"
+    set flash_boundary 0x203fffff
+    if { $board_type == "BF518F-EZBRD" } {
+        #0x20300000-0x203fffff can not be used in nor flash testing
+        #because of hardware conflict of SPI dev and nor flash
+        set flash_boundary 0x202fffff
+    }
+
+    if {$jffs2_temp_result == $TEST_PASS} {
+        set jffs2_temp_result $TEST_FAIL
+        send -s "protect off 0x20080000 $flash_boundary\r"
+        while 1 {
+            expect {
+                "Un-Protected" {
+                    set jffs2_temp_result $TEST_PASS
+                }
+                $UBOOT_PROMPT {
+                    break
+                }
+                timeout {
+                    send_user "ERROR: JFFS2 unprotect failed\n"
+                    recover
+                    break
+                }
+            }
+        }
+    }
+
+    set timeout 480
+    if { $jffs2_temp_result == $TEST_PASS} {
+        set jffs2_temp_result $TEST_FAIL
+        send -s "erase 0x20080000 $flash_boundary\r"
+        while 1 {
+            expect {
+                "Erased * sectors" {
+                    set jffs2_temp_result $TEST_PASS
+                }
+                $UBOOT_PROMPT {
+                    break
+                }
+                timeout {
+                    send_user "ERROR: JFFS2 erase failed\n"
+                    recover
+                    break
+                }
+            }
+        }
+    }
+
+    set timeout 600
+    if { $jffs2_temp_result == $TEST_PASS } {
+        set jffs2_temp_result $TEST_FAIL
+        send -s "cp.b 0x1000000 0x20080000 \$(filesize)\r"
+        while 1 {
+            expect {
+                "done" {
+                    set jffs2_temp_result $TEST_PASS
+                }
+                $UBOOT_PROMPT {
+                    break
+                }
+                timeout {
+                    send_user "ERROR: JFFS2 cp failed\n"
+                    recover
+                    break
+                }
+            }
+        }
+    }
+
+    send -s "reset\r"
+    set timeout 20
+    while 1 {
+        expect {
+            "Hit any key" {
+                sleep 2
+                send "\3"
+            }
+            ">" {
+                break
+            }
+            timeout {
+                send_user "ERROR: u-boot failed to reset\n"
+                #recover
+                break
+            }
+        }
+    }
+
+    send "\r"
+    wait_for_uboot
+
+    set timeout 300
+    if { $jffs2_temp_result == $TEST_PASS } {
+        send -s "ls\r"
+        while 1 {
+            expect {
+                "done" {
+                    set jffs2_ls_result $TEST_PASS
+                }
+                $UBOOT_PROMPT {
+                    break
+                }
+                timeout {
+                    send_user "ERROR: Uboot can not support 'ls' command\n"
+                    recover
+                    break
+                }
+            }
+        }
+    }
+
+    if { $jffs2_temp_result == $TEST_PASS } {
+        send -s "fsinfo\r"
+        while 1 {
+            expect {
+                "Compression" {
+                    set jffs2_fsinfo_result $TEST_PASS
+                }
+                $UBOOT_PROMPT {
+                    break
+                }
+                timeout {
+                    send_user "ERROR: Uboot can not support 'fsinfo' command\n"
+                    recover
+                    break
+                }
+            }
+        }
+    }
+
+    set timeout 600
+    if { $jffs2_temp_result == $TEST_PASS } {
+        set jffs2_temp_result $TEST_FAIL
+        send -s "fsload /uImage\r"
+        while 1 {
+            expect {
+                "complete" {
+                    set jffs2_temp_result $TEST_PASS
+                }
+                $UBOOT_PROMPT {
+                    break
+                }
+                timeout {
+                    send_user "ERROR: JFFS2 'fsload' failed\n"
+                    recover
+                    break
+                }
+            }
+        }
+    }
+    if {$jffs2_temp_result == $TEST_PASS } {
+        set jffs2_fsload_result $TEST_PASS
+    }
+
+    if {$jffs2_ls_result == $TEST_PASS && $jffs2_fsinfo_result == $TEST_PASS \
+        && $jffs2_fsload_result == $TEST_PASS} {
+            set jffs2_result $TEST_PASS
+        } else {
+            set jffs2_result $TEST_FAIL
+            send_user "JFFS2 'ls'     result: $jffs2_ls_result\n"
+            send_user "JFFS2 'fsinfo' result: $jffs2_fsinfo_result\n"
+            send_user "JFFS2 'fsload' result: $jffs2_fsload_result\n"
+        }
+
+    record_test_result $jffs2_loc $jffs2_result
+
+    send -s "reset\r"
+    set timeout 20
+    while 1 {
+        expect {
+            "Hit any key" {
+                sleep 2
+                send "\3"
+            }
+            ">" {
+                break
+            }
+            timeout {
+                send_user "ERROR: u-boot failed to reset\n"
+                #recover
+                break
+            }
+        }
+    }
+
+    send "\r"
 }
 
 ###############################################################################################################################
