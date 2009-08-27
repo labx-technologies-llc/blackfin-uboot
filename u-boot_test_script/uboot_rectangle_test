@@ -3,7 +3,7 @@ USER=/home/test/work/cruise
 CHECKOUT=$USER/checkouts
 UBOOT_SCRIPTS=$USER/test_scripts/u-boot
 UBOOT_SRC=$CHECKOUT/u-boot/u-boot-2009.06
-BOARD_TYPE=BF537-STAMP
+source ./host_config.sh
 
 TIMESTAMP=`date +%Y_%m_%d_%H_%M`
 
@@ -17,22 +17,30 @@ cp $CHECKOUT/u-boot/u-boot_test_script/uboot-test $UBOOT_SCRIPTS
 $UBOOT_SCRIPTS/uboot-test $BOARD_TYPE 0
 if [ $? != 2 ] ; then
     mv -f /tftpboot/u-boot.bin /tftpboot/u-boot.bin.0
-    mv -f /tftpboot/u-boot.ldr /tftpboot/u-boot.ldr.0
+    if [ $BOARD_TYPE != "BF537-STAMP" ] && [ $BOARD_TYPE != "BF533-EZKIT" ] && [ $BOARD_TYPE != "BF561-EZKIT" ] ; then
+        mv -f /tftpboot/u-boot.ldr /tftpboot/u-boot.ldr.0
+    fi
 fi
 $UBOOT_SCRIPTS/uboot-test $BOARD_TYPE 1
 if [ $? != 2 ] ; then
     mv -f /tftpboot/u-boot.bin /tftpboot/u-boot.bin.1
-    mv -f /tftpboot/u-boot.ldr /tftpboot/u-boot.ldr.1
+    if [ $BOARD_TYPE != "BF537-STAMP" ] && [ $BOARD_TYPE != "BF533-EZKIT" ] && [ $BOARD_TYPE != "BF561-EZKIT" ] ; then
+        mv -f /tftpboot/u-boot.ldr /tftpboot/u-boot.ldr.1
+    fi
 fi
 $UBOOT_SCRIPTS/uboot-test $BOARD_TYPE 2
 if [ $? != 2 ] ; then
     mv -f /tftpboot/u-boot.bin /tftpboot/u-boot.bin.2
-    mv -f /tftpboot/u-boot.ldr /tftpboot/u-boot.ldr.2
+    if [ $BOARD_TYPE != "BF537-STAMP" ] && [ $BOARD_TYPE != "BF533-EZKIT" ] && [ $BOARD_TYPE != "BF561-EZKIT" ] ; then
+        mv -f /tftpboot/u-boot.ldr /tftpboot/u-boot.ldr.2
+    fi
 fi
 $UBOOT_SCRIPTS/uboot-test $BOARD_TYPE 3
 if [ $? != 2 ] ; then
     mv -f /tftpboot/u-boot.bin /tftpboot/u-boot.bin.3
-    mv -f /tftpboot/u-boot.ldr /tftpboot/u-boot.ldr.3
+    if [ $BOARD_TYPE != "BF537-STAMP" ] && [ $BOARD_TYPE != "BF533-EZKIT" ] && [ $BOARD_TYPE != "BF561-EZKIT" ] ; then
+        mv -f /tftpboot/u-boot.ldr /tftpboot/u-boot.ldr.3
+    fi
 fi
 
 cd $UBOOT_SCRIPTS
