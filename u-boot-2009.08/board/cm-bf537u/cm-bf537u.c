@@ -45,6 +45,13 @@ int board_eth_init(bd_t *bis)
 }
 #endif
 
+#ifdef CONFIG_SMC911X
+int board_eth_init(bd_t *bis)
+{
+	return smc911x_initialize(0, CONFIG_SMC911X_BASE);
+}
+#endif
+
 int misc_init_r(void)
 {
 #ifdef CONFIG_BFIN_MAC

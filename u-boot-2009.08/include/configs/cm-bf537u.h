@@ -63,10 +63,11 @@
  */
 #ifndef __ADSPBF534__
 #define ADI_CMDS_NETWORK	1
+#define CONFIG_NET_MULTI
 /* The next 3 lines are for use with SMSC on EXT-BF5xx-USB-ETH2 */
-#define CONFIG_DRIVER_SMC911X		1
-#define CONFIG_DRIVER_SMC911X_BASE	0x20308000
-#define CONFIG_DRIVER_SMC911X_16_BIT	1
+#define CONFIG_SMC911X	1
+#define CONFIG_SMC911X_BASE	0x24000000
+#define CONFIG_SMC911X_16_BIT
 #endif
 #define CONFIG_HOSTNAME		cm-bf537u
 /* Uncomment next line to use fixed MAC address */
