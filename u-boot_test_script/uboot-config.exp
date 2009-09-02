@@ -63,7 +63,7 @@ set step_sequence_number    1
 set config_loc  "include/config.h"
 set configs_loc  "include/configs"
 set uboot_test_dirname  "/home/$user/checkouts/u-boot"
-set uboot_basename  "u-boot-2009.06"
+set uboot_basename  "u-boot-2009.08"
 set uboot_test_loc  "$uboot_test_dirname/$uboot_basename"
 set uboot_bin_loc   "$uboot_test_loc/u-boot.bin"
 set uboot_dir  $uboot_test_loc
