@@ -179,25 +179,25 @@
  * CF-CARD IDE-HDD Support
  */
 
-	/*
-	 * Add CF flash card support in TRUE-IDE Mode (CF-IDE-NAND Card)
-	 * Strange address mapping Blackfin A13 connects to CF_A0
-	 */
+/*
+ * Add CF flash card support in TRUE-IDE Mode (CF-IDE-NAND Card)
+ * Strange address mapping Blackfin A13 connects to CF_A0
+ */
 
 /* #define CONFIG_BFIN_TRUE_IDE */
 
-	/*
-	 * Add CF flash card support in Common Memory Mode (CF-IDE-NAND Card)
-	 * This should be the preferred mode
-	 */
+/*
+ * Add CF flash card support in Common Memory Mode (CF-IDE-NAND Card)
+ * This should be the preferred mode
+ */
 
 /* #define CONFIG_BFIN_CF_IDE */
 
-	/*
-	 * Add IDE Disk Drive (HDD) support
-	 * See example interface here:
-	 * http://docs.blackfin.uclinux.org/doku.php?id=linux-kernel:drivers:ide-blackfin
-	 */
+/*
+ * Add IDE Disk Drive (HDD) support
+ * See example interface here:
+ * http://docs.blackfin.uclinux.org/doku.php?id=linux-kernel:drivers:ide-blackfin
+ */
 
 /* #define CONFIG_BFIN_HDD_IDE */
 
