@@ -951,11 +951,11 @@ build_target() {
 	sed -i "/^#define[[:space:]]*CONFIG_BFIN_BOOT_MODE/s:BFIN_BOOT_[^[:space:]]*$:BFIN_BOOT_${bmodeU}:" include/configs/$target.h
 	${MAKE} ${target}_config >/dev/null
 
-	${MAKE} ${JOBS} all 2>&1 >${LOG_DIR}/$target.$cpu.MAKELOG \
-				| tee ${LOG_DIR}/$target.$cpu.ERR
+	${MAKE} ${JOBS} all 2>&1 >${LOG_DIR}/$target.$cpu.$bmode.MAKELOG \
+				| tee ${LOG_DIR}/$target.$cpu.$bmode.ERR
 
 	${CROSS_COMPILE}size ${BUILD_DIR}/u-boot \
-				| tee -a ${LOG_DIR}/$target.$cpu.MAKELOG
+				| tee -a ${LOG_DIR}/$target.$cpu.$bmode.MAKELOG
 }
 
 #-----------------------------------------------------------------------
