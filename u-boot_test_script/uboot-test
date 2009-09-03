@@ -60,11 +60,9 @@ make mrproper  >/dev/null  2>&1
 make $config_param  >/dev/null  2>&1
 make  >> $UBOOT_SCRIPTS/uboot_make_log  2>&1
 
-if [ -e u-boot.bin ] && [ -e u-boot.ldr ] ; then
+if [ -e u-boot.bin ] || [ -e u-boot.ldr ] ; then
     cp u-boot.bin /tftpboot
     cp u-boot.ldr /tftpboot
-elif [ -e u-boot.bin ] && ( [ $1 == "BF537-STAMP" ] || [ $1 == "BF533-EZKIT" ] || [ $1 == "BF561-EZKIT" ] ) ; then
-    cp u-boot.bin /tftpboot
 else
     tail -100 $UBOOT_SCRIPTS/uboot_make_log
     exit 2

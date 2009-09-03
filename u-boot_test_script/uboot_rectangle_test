@@ -15,34 +15,18 @@ cp $CHECKOUT/u-boot/u-boot_test_script/*.exp $UBOOT_SCRIPTS
 cp $CHECKOUT/u-boot/u-boot_test_script/uboot-test $UBOOT_SCRIPTS
 cp $CHECKOUT/u-boot/u-boot_test_script/uboot_rectangle_test $UBOOT_SCRIPTS
 
-$UBOOT_SCRIPTS/uboot-test $BOARD_TYPE 0
-if [ $? != 2 ] ; then
-    mv -f /tftpboot/u-boot.bin /tftpboot/u-boot.bin.0
-    if [ $BOARD_TYPE != "BF537-STAMP" ] && [ $BOARD_TYPE != "BF533-EZKIT" ] && [ $BOARD_TYPE != "BF533-STAMP" ] && [ $BOARD_TYPE != "BF561-EZKIT" ] ; then
-        mv -f /tftpboot/u-boot.ldr /tftpboot/u-boot.ldr.0
+for TEST_ROUND in `seq 0 3`;
+do
+    $UBOOT_SCRIPTS/uboot-test $BOARD_TYPE $TEST_ROUND
+    if [ $? != 2 ] ; then
+        if [ -e /tftpboot/u-boot.bin ]; then
+            mv -f /tftpboot/u-boot.bin /tftpboot/u-boot.bin.$TEST_ROUND
+        fi
+        if [ -e /tftpboot/u-boot.ldr ]; then
+            mv -f /tftpboot/u-boot.ldr /tftpboot/u-boot.ldr.$TEST_ROUND
+        fi
     fi
-fi
-$UBOOT_SCRIPTS/uboot-test $BOARD_TYPE 1
-if [ $? != 2 ] ; then
-    mv -f /tftpboot/u-boot.bin /tftpboot/u-boot.bin.1
-    if [ $BOARD_TYPE != "BF537-STAMP" ] && [ $BOARD_TYPE != "BF533-EZKIT" ] && [ $BOARD_TYPE != "BF533-STAMP" ] && [ $BOARD_TYPE != "BF561-EZKIT" ] ; then
-        mv -f /tftpboot/u-boot.ldr /tftpboot/u-boot.ldr.1
-    fi
-fi
-$UBOOT_SCRIPTS/uboot-test $BOARD_TYPE 2
-if [ $? != 2 ] ; then
-    mv -f /tftpboot/u-boot.bin /tftpboot/u-boot.bin.2
-    if [ $BOARD_TYPE != "BF537-STAMP" ] && [ $BOARD_TYPE != "BF533-EZKIT" ] && [ $BOARD_TYPE != "BF533-STAMP" ] && [ $BOARD_TYPE != "BF561-EZKIT" ] ; then
-        mv -f /tftpboot/u-boot.ldr /tftpboot/u-boot.ldr.2
-    fi
-fi
-$UBOOT_SCRIPTS/uboot-test $BOARD_TYPE 3
-if [ $? != 2 ] ; then
-    mv -f /tftpboot/u-boot.bin /tftpboot/u-boot.bin.3
-    if [ $BOARD_TYPE != "BF537-STAMP" ] && [ $BOARD_TYPE != "BF533-EZKIT" ] && [ $BOARD_TYPE != "BF533-STAMP" ] && [ $BOARD_TYPE != "BF561-EZKIT" ] ; then
-        mv -f /tftpboot/u-boot.ldr /tftpboot/u-boot.ldr.3
-    fi
-fi
+done
 
 cd $UBOOT_SCRIPTS
 $UBOOT_SCRIPTS/uboot_misc_test.exp $BOARD_TYPE
