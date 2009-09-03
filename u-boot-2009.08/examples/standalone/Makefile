@@ -30,6 +30,7 @@ ELF-y        := hello_world
 
 ELF-$(CONFIG_SMC91111)           += smc91111_eeprom
 ELF-$(CONFIG_SMC911X)            += smc911x_eeprom
+ELF-$(CONFIG_SPI_FLASH_ATMEL)    += atmel_df_pow2
 ELF-i386                         += 82559_eeprom
 ELF-mpc5xxx                      += interrupt
 ELF-mpc8xx                       += test_burst timer
