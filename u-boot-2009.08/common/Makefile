@@ -165,7 +165,7 @@ OBJS	:= $(addprefix $(obj),$(AOBJS) $(COBJS))
 
 CPPFLAGS += -I..
 
-all:	$(LIB) $(AOBJS) $(obj)env_embedded.o
+all:	$(LIB) $(AOBJS)
 
 $(LIB): $(obj).depend $(OBJS)
 	$(AR) $(ARFLAGS) $@ $(OBJS)
