@@ -149,6 +149,8 @@ static const char version[] =
 
 #ifdef SHARED_RESOURCES
 extern void swap_to(int device_id);
+#else
+# define swap_to(x)
 #endif
 
 #ifndef CONFIG_SMC91111_EXT_PHY
@@ -401,9 +403,8 @@ static void smc_halt(struct eth_device *dev)
 	SMC_SELECT_BANK( dev, 0 );
 	SMC_outb( dev, RCR_CLEAR, RCR_REG );
 	SMC_outb( dev, TCR_CLEAR, TCR_REG );
-#ifdef SHARED_RESOURCES
+
 	swap_to(FLASH);
-#endif
 }
 
 
@@ -663,9 +664,7 @@ static int smc_init(struct eth_device *dev, bd_t *bd)
 {
 	int i;
 
-#ifdef SHARED_RESOURCES
 	swap_to(ETHERNET);
-#endif
 
 	PRINTK2 ("%s: smc_init\n", SMC_DEV_NAME);
 
@@ -695,6 +694,8 @@ static int smc_init(struct eth_device *dev, bd_t *bd)
 	for (i = 0; i < 6; i++)
 		SMC_outb(dev, dev->enetaddr[i], (ADDR0_REG + i));
 #endif
+
+	printf(SMC_DEV_NAME ": MAC %pM\n", dev->enetaddr);
 
 	return 0;
 }
@@ -1363,9 +1364,11 @@ int smc91111_initialize(u8 dev_num, int base_addr)
 	dev->priv = priv;
 	dev->iobase = base_addr;
 
+	swap_to(ETHERNET);
 	SMC_SELECT_BANK(dev, 1);
 	for (i = 0; i < 6; ++i)
 		dev->enetaddr[i] = SMC_inb(dev, (ADDR0_REG + i));
+	swap_to(FLASH);
 
 	dev->init = smc_init;
 	dev->halt = smc_halt;
