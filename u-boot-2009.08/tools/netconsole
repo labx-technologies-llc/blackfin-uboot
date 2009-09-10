@@ -39,11 +39,16 @@ echo "NOTE: the interrupt signal (normally ^C) has been remapped to ^T"
 
 stty -icanon -echo intr ^T
 (
-if [ -x ./ncb ] ; then
-	exec ./ncb ${port}
+if type ncb 2>/dev/null ; then
+	# see if ncb is in $PATH
+	exec ncb ${port}
+
 elif [ -x ${0%/*}/ncb ] ; then
+	# maybe it's in the same dir as the netconsole script
 	exec ${0%/*}/ncb ${port}
+
 else
+	# blah, just use regular netcat
 	while ${nc} -u -l -p ${port} < /dev/null ; do
 		:
 	done
@@ -51,4 +56,4 @@ fi
 ) &
 pid=$!
 ${nc} -u ${ip} ${port}
-kill $pid 2>/dev/null
+kill ${pid} 2>/dev/null
