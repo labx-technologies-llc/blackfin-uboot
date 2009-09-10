@@ -7,28 +7,6 @@ to be easily added and controlled at runtime.  This guide is meant for people
 who wish to review the net driver stack with an eye towards implementing your
 own ethernet device driver.  Here we will describe a new pseudo 'APE' driver.
 
-----------------
- CONFIG Options
-----------------
-
-The common config defines your device should respect (if applicable):
-	CONFIG_MII  - configure in MII mode
-	CONFIG_RMII - configure in RMII mode
-
-	CONFIG_CMD_MII - support the MII command
-
-If you want to add config options specific to your driver, you should use the
-naming convention:
-	CONFIG_NET_<DRIVERNAME>_<OPTION>
-For example, if the APE driver could operate in either 16bit or 32bit mode,
-there would probably be the option:
-	CONFIG_NET_APE_32BIT - operate in 32bit mode rather than 16bit default
-
-And to control whether your driver is even enabled, you should use:
-	CONFIG_SYS_NET_<DRIVERNAME>
-So the APE driver would look like:
-	CONFIG_SYS_NET_APE
-
 ------------------
  Driver Functions
 ------------------
@@ -175,9 +153,9 @@ some net operation (ping / tftp / whatever...)
 	eth_halt()
 		dev->halt()
 
-----------------
- CONFIG_CMD_MII
-----------------
+-----------------------------
+ CONFIG_MII / CONFIG_CMD_MII
+-----------------------------
 
 If your device supports banging arbitrary values on the MII bus (pretty much
 every device does), you should add support for the mii command.  Doing so is
@@ -185,7 +163,7 @@ fairly trivial and makes debugging mii issues a lot easier at runtime.
 
 After you have called eth_register() in your driver's register function, add
 a call to miiphy_register() like so:
-#ifdef CONFIG_CMD_MII
+#if defined(CONFIG_MII) || defined(CONFIG_CMD_MII)
 	miiphy_register(dev->name, mii_read, mii_write);
 #endif
 
