@@ -43,6 +43,11 @@ endif
 ifneq ($(CONFIG_BFIN_BOOT_MODE),BFIN_BOOT_BYPASS)
 ALL += $(obj)u-boot.ldr
 endif
+ifeq ($(CONFIG_ENV_IS_EMBEDDED_CUSTOM),y)
+CREATE_LDR_ENV = $(obj)tools/envcrc --binary > $(obj)env-ldr.o
+else
+CREATE_LDR_ENV =
+endif
 
 SYM_PREFIX = _
 
