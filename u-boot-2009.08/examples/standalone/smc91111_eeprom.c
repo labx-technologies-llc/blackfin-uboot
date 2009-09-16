@@ -29,9 +29,11 @@
 
 #include <common.h>
 #include <exports.h>
+/* the smc91111.h gets base addr through eth_device' iobase */
+struct eth_device { unsigned long iobase; };
 #include "../drivers/net/smc91111.h"
 
-#ifdef CONFIG_DRIVER_SMC91111
+#ifdef CONFIG_SMC91111
 
 #ifndef SMC91111_EEPROM_INIT
 # define SMC91111_EEPROM_INIT()
