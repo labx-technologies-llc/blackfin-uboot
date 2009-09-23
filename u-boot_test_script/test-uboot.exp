@@ -3075,7 +3075,7 @@ send_user "\nGet uImage header info\n"
 spawn $readimage_cmd -l /tftpboot/$KERNEL_GZ_FILENAME
 while 1 {
     expect {
-        -re "(Image Name: +)(.*svn\[0-9]*)" {
+        -re "(Image Name: +)(\[0-9a-zA-Z.-]+)" {
             set KERNEL_GZ_NAME "$expect_out(2,string)"
         }
         -re "(Created: +)(.*20\[0-9]{2,2})" {
@@ -3087,11 +3087,11 @@ while 1 {
         -re "(Data Size: +)(.*)Bytes.*kB.*MB" {
             set KERNEL_GZ_SIZE "$expect_out(2,string)"
         }
-        -re "(Load Address: +)0\[xX](\[0-9]+)" {
-            set KERNEL_GZ_ADDR "$expect_out(2,string)"
+        -re "(Load Address: +)(0\[xX])?(\[0-9]+)" {
+            set KERNEL_GZ_ADDR "$expect_out(3,string)"
         }
-        -re "(Entry Point: +)0\[xX](\[0-9a-fA-F]+)" {
-            set KERNEL_GZ_ENTRY "$expect_out(2,string)"
+        -re "(Entry Point: +)(0\[xX])?(\[0-9a-fA-F]+)" {
+            set KERNEL_GZ_ENTRY "$expect_out(3,string)"
         }
         eof {
             break
