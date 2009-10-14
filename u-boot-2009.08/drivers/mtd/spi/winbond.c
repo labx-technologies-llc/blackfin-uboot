@@ -1,7 +1,7 @@
 /*
  * Copyright 2008, Network Appliance Inc.
  * Author: Jason McMullan <mcmullan <at> netapp.com>
- *
+ * Licensed under the GPL-2 or later.
  */
 
 #include <common.h>
