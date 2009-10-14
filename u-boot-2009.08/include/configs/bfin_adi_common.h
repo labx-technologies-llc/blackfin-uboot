@@ -130,6 +130,9 @@
 #ifndef CONFIG_BOOTARGS_ROOT
 # define CONFIG_BOOTARGS_ROOT "/dev/mtdblock0 rw"
 #endif
+#ifndef FLASHBOOT_ENV_SETTINGS
+# define FLASHBOOT_ENV_SETTINGS "flashboot=bootm 0x20100000\0"
+#endif
 #define CONFIG_BOOTARGS	\
 	"root=" CONFIG_BOOTARGS_ROOT " " \
 	"clkin_hz=" MK_STR(CONFIG_CLKIN_HZ) " " \
@@ -214,7 +217,7 @@
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	NAND_ENV_SETTINGS \
 	NETWORK_ENV_SETTINGS \
-	"flashboot=bootm 0x20100000\0"
+	FLASHBOOT_ENV_SETTINGS
 
 /*
  * Network Settings
