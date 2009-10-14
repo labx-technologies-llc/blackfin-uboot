@@ -1,41 +1,27 @@
-/**************************************************************
-*
-* Copyright (C) 2005, Rubico AB. All Rights Reserve.
-*
-* Developed as a part the CDT project C4(www.cdt.ltu.se).
-*
-* FILE mmc_spi_mode.c
-*
-* PROGRAMMER: Hans Eklund (hans [at] rubico [dot] se) (Rubico AB)
-*
-* DATE OF CREATION: April, 2006.
-*
-* SYNOPSIS:
-*
-* DESCRIPTION: SPI-MMC/SD Protocol.
-*
-* DEPENDENCIES: Independent.
-*	(well, one, for printing debug text on the target, (kernel.h for linux))
-*
-* TODO: Correct Multiple block read and write functions. Didnt have time
-*	to make them all failsafe. Will be done soon.
-*
-**************************************************************
-*
-* This program is free software; you can distribute it and/or modify it
-* under the terms of the GNU General Public License (Version 2) as
-* published by the Free Software Foundation.
-*
-* This program is distributed in the hope it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-* for more details.
-*
-* You should have received a copy of the GNU General Public License along
-* with this program; if not, write to the Free Software Foundation, Inc.,
-* 59 Temple Place - Suite 330, Boston MA 02111-1307, USA.
-*
-**************************************************************/
+/*
+ * Copyright (C) 2005, Rubico AB. All Rights Reserve.
+ *
+ * Developed as a part the CDT project C4(www.cdt.ltu.se).
+ *
+ * FILE mmc_spi_mode.c
+ *
+ * PROGRAMMER: Hans Eklund (hans [at] rubico [dot] se) (Rubico AB)
+ *
+ * DATE OF CREATION: April, 2006.
+ *
+ * SYNOPSIS:
+ *
+ * DESCRIPTION: SPI-MMC/SD Protocol.
+ *
+ * DEPENDENCIES: Independent.
+ *	(well, one, for printing debug text on the target, (kernel.h for linux))
+ *
+ * TODO: Correct Multiple block read and write functions. Didnt have time
+ *	to make them all failsafe. Will be done soon.
+ *
+ * Licensed under the GPL-2.
+ */
+
 #include <common.h>
 #include "bfin_spimmc_mode.h"
 
@@ -56,7 +42,7 @@ static unsigned char wrb[WRB_LEN];
 * MMC CSD/CID related, could be somewhat trimmed and cleaned
 *
 \**********************************************************************/
-unsigned char getbit(void *ptr, unsigned int n)
+static unsigned char getbit(void *ptr, unsigned int n)
 {
 	unsigned int byte_nr;
 	unsigned int bit_nr;
@@ -67,7 +53,7 @@ unsigned char getbit(void *ptr, unsigned int n)
 	return (unsigned char)(((unsigned char *)ptr)[byte_nr] >> bit_nr) & 1;
 }
 
-unsigned int getvalue(void *ptr, unsigned int n, unsigned int len)
+static unsigned int getvalue(void *ptr, unsigned int n, unsigned int len)
 {
 	unsigned int value = 0;
 	int i = 0;
