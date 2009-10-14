@@ -24,7 +24,7 @@
 include $(TOPDIR)/config.mk
 
 # stick it up here to avoid conflicts
-COBJS-$(CONFIG_BFIN_SPI_MMC) += bfin_spi_mmc.o bfin_spimmc_mode.o
+COBJS-$(CONFIG_SPI_MMC) += spi_mmc.o
 
 LIB	:= $(obj)libmmc.a
 

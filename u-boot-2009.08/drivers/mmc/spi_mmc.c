@@ -1,4 +1,15 @@
 /*
+ * Copyright (C) 2007, Rubico AB (www.rubico.se). All Rights Reserve.
+ *
+ * Developed as a part the CDT project C4 (www.cdt.ltu.se).
+ *
+ * Robert Selberg, <robert@rubico.se>
+ * Hans Eklund, <hans@rubico.se>
+ *
+ * Licensed under the GPL-2.
+ */
+
+/*
  * Copyright (C) 2005, Rubico AB. All Rights Reserve.
  *
  * Developed as a part the CDT project C4(www.cdt.ltu.se).
@@ -23,20 +34,163 @@
  */
 
 #include <common.h>
-#include "bfin_spimmc_mode.h"
+#include <malloc.h>
+#include <spi.h>
+#include <mmc.h>
+
+enum {
+	MMC_INIT_TIMEOUT 	= 30000,
+	MMC_COMMAND_TIMEOUT	= 5000,
+	MMC_PROG_TIMEOUT	= 500000,
+	BUSY_BLOCK_LEN 		= 1,
+	BUSY_BLOCK_LEN_SHORT	= 16,
+	MMC_SECTOR_SIZE		= 512,
+	SD_PRE_CMD_ZEROS	= 4,
+	SD_CLK_CNTRL		= 2,
+	LOG_LEN			= 16,
+	WRB_LEN			= 256,
+
+/* Card command classes */
+
+/* Internal error codes */
+	ERR_SPI_TIMEOUT		= 0xF1,
+	ERR_MMC_TIMEOUT		= 0xF2,
+	ERR_MMC_PROG_TIMEOUT 	= 0xF3,
+	ERR_UNKNOWN_TOK		= 0xF4,
+
+/* return values from functions */
+	RVAL_OK			= 0,
+	RVAL_ERROR		= 1,
+	RVAL_CRITICAL		= 2,
+
+/* Format R1(b) response tokens (1 byte long) */
+	BUSY_TOKEN		= 0x00,
+	R1_OK			= 0x00,
+	R1_IDLE_STATE		= 0x01,
+	R1_ERASE_STATE		= 0x02,
+	R1_ILLEGAL_CMD		= 0x04,
+	R1_COM_CRC_ERROR	= 0x08,
+	R1_ERASE_SEQ_ERROR	= 0x10,
+	R1_ADDRESS_ERROR	= 0x20,
+	R1_PARAMETER_ERROR	= 0x40,
+
+/* Format R2 response tokens (2 bytes long, first is same as R1 responses) */
+	R2_OK			= 0x00,
+	R2_CARD_LOCKED		= 0x01,
+	R2_WP_ERASE_SKIP	= 0x02,
+	R2_LOCK_UNLOCK_CMD_FAIL	= 0x02,
+	R2_ERROR		= 0x04,
+	R2_CC_ERROR		= 0x08,
+	R2_CARD_ECC_FAILED	= 0x10,
+	R2_WP_VIOLATION		= 0x20,
+	R2_ERASE_PARAM		= 0x40,
+	R2_OUT_OF_RANGE		= 0x80,
+	R2_CSD_OVERWRITE	= 0x80,
+/* TODO: Format R3 response tokens */
+
+/* Data response tokens */
+	DR_MASK			= 0x0F,
+	DR_ACCEPTED		= 0x05,
+	DR_CRC_ERROR		= 0x0B,
+	DR_WRITE_ERROR		= 0x0D,
+
+/*
+ Data tokens (4 bytes to (N+3) bytes long), N is data block len
+ format of the Start Data Block Token
+*/
+	SBT_S_BLOCK_READ	= 0xFE,
+	SBT_M_BLOCK_READ	= 0xFE,
+	SBT_S_BLOCK_WRITE	= 0xFE,
+	SBT_M_BLOCK_WRITE 	= 0xFC,
+	STT_M_BLOCK_WRITE	= 0xFD,
+
+/* Data error tokens (1 byte long) */
+	DE_ERROR		= 0x01,
+	DE_CC_ERROR		= 0x02,
+	DE_CARD_ECC_FAILED	= 0x04,
+	DE_OUT_OF_RANGE		= 0x08,
+	DE_CARD_IS_LOCKED	= 0x10,
+
+/* MMC/SD SPI mode commands */
+	GO_IDLE_STATE		= 0,
+	SEND_OP_COND		= 1,
+	SEND_CSD		= 9,
+	SEND_CID		= 10,
+	STOP_TRANSMISSION	= 12,
+	SEND_STATUS		= 13,
+	SET_BLOCKLEN		= 16,
+	READ_SINGLE_BLOCK	= 17,
+	READ_MULTIPLE_BLOCK	= 18,
+	WRITE_BLOCK		= 24,
+	WRITE_MULTIPLE_BLOCK	= 25,
+	SD_SEND_OP_COND		= 41,
+	APP_CMD			= 55,
+};
+
+/* minimal local versions of CSD/CID structures,
+   somewhat ripped from linux MMC layer, the entire
+   CSD struct is larger and is not completley parsed
+*/
+struct cid_str {
+	unsigned int		manfid;
+	char			prod_name[8];
+	unsigned int		serial;
+	unsigned short		oemid;
+	unsigned short		year;
+	unsigned char		hwrev;
+	unsigned char		fwrev;
+	unsigned char		month;
+};
+
+struct csd_str {				/* __csd field name__*/
+	unsigned char		mmca_vsn;	/* CSD_STRUCTURE */
+	unsigned short		cmdclass;	/* CCC */
+	unsigned short		tacc_clks;	/* TAAC */
+	unsigned int		tacc_ns;	/* NSAC */
+	unsigned int		max_dtr;	/* TRANS_SPEED */
+	unsigned int		read_blkbits;	/* READ_BL_LEN */
+	unsigned int		capacity;
+};
+
+/*
+ mmc_spi_dev - Implementation need to configure this struct
+ with callback functions to read and write data that the
+ mmc_spi function can use for its operations.
+ NOTE: Every function defined here expect exclusive access to
+ any MMC/SD card it is operating on. Functions should be considered
+ critical sections. Also note that the read/write callbacks may a mutex
+ if they can be executed by another context.
+*/
+struct mmc_spi_dev {
+	int		(*read)(unsigned char *buf, unsigned int nbytes, void *priv_data);
+	int		(*write)(unsigned char *buf, unsigned int nbytes, void *priv_data);
+	void	(*doassert)(void);
+	void	(*deassert)(void);
+	void		*priv_data;	/* incomming pointer to private data for callbacks */
+	unsigned char 	raw_csd[18];	/* raw csd data to use with external parser */
+	unsigned char 	raw_cid[18];	/* raw cid data to use with external parser */
+	struct cid_str 	cid;		/* internal represent. of cid data */
+	struct csd_str 	csd;		/* internal represent. of csd data */
+	int		sd;					/* true if SD card found */
+	int		log_len;
+	unsigned int	est_write_lat;	/* [bytes] */
+	unsigned short	force_cs_high;	/* true if write/read callbacks should ask for CS high */
+	unsigned int	errors;		/* total amount of errors recorded since card insertion */
+	unsigned char	cmd_log[LOG_LEN];
+	unsigned short	error_log[LOG_LEN];
+	unsigned short	status_log[LOG_LEN]; /* Status is not checked anymore since some cards will cry */
+};
+
 
 static unsigned char mmc_cmd[6] = {0x40, 0x00, 0x00, 0x00, 0x00, 0x95};
 static unsigned char Null_Word[10] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 					0xFF, 0xFF, 0xFF};
 static unsigned char latest_cmd;
 
-static short read_mmc_reg(struct mmc_spi_dev *pdev, short csd);
-static unsigned char mmc_wait_response(struct mmc_spi_dev *pdev, unsigned int timeout);
-
 static int init_mode = 1;
-static unsigned char wrb[WRB_LEN];
 
 
+#if 0
 /**********************************************************************\
 *
 * MMC CSD/CID related, could be somewhat trimmed and cleaned
@@ -62,8 +216,145 @@ static unsigned int getvalue(void *ptr, unsigned int n, unsigned int len)
 		value += ((unsigned int)getbit(ptr, n+i)) << i;
 	return value;
 }
+#endif
 
-void mmc_spi_fill_card_struct(struct mmc_spi_dev *pdev)
+static unsigned char mmc_wait_response(struct mmc_spi_dev *pdev, unsigned int timeout)
+{
+	unsigned char card_resp = 0xFF;
+	unsigned int n = 0;
+	/* reset time and set to timeout ms */
+	while (1) {
+
+		if (pdev->read(&card_resp, 1, pdev->priv_data) < 0) {
+			debug("error: mmc_wait_response read error\n");
+			return ERR_SPI_TIMEOUT;
+		}
+		if (card_resp != 0xFF)
+			return card_resp;
+		/*
+		 NOTE: "timeout" in seconds may not be a good idea after all
+		 (by doing pdev->elapsed_time() )
+		 wait for a specific amount of polls for now.
+		*/
+		if ((n++ >= timeout)) {
+			debug("hey! timed out after %d since %d bytes was maximum(latest_cmd=%d)\n", n,
+				timeout, latest_cmd);
+			return ERR_MMC_TIMEOUT;
+		}
+	}
+}
+
+static short mmc_spi_read_status(struct mmc_spi_dev *pdev)
+{
+	unsigned char b1 = 0;
+	unsigned char b2 = 0;
+	unsigned short r2 = 0xffff;
+	static unsigned char status_cmd[6] = {0x4D, 0x00, 0x00, 0x00, 0x00, 0x95};
+
+	pdev->doassert();
+
+	if (pdev->sd) {
+		if (pdev->write(Null_Word, SD_PRE_CMD_ZEROS, pdev->priv_data) < 0) {
+			debug("sending SD_PRE_CMD_ZEROS failed\n");
+			pdev->deassert();
+			return ERR_SPI_TIMEOUT;
+		}
+	}
+	if (pdev->write(status_cmd, 6, pdev->priv_data) < 0) {
+		debug("sending of SEND_STATUS command failed\n");
+		pdev->deassert();
+		return ERR_SPI_TIMEOUT;
+	}
+	b1 = mmc_wait_response(pdev, MMC_COMMAND_TIMEOUT);
+	b2 = mmc_wait_response(pdev, MMC_COMMAND_TIMEOUT);
+
+	if (b1 == ERR_MMC_TIMEOUT || b2 == ERR_MMC_TIMEOUT) {
+		debug("No status received !\n");
+		pdev->deassert();
+		return ERR_MMC_TIMEOUT;
+	}
+
+	r2 = b2 + (b1 << 8);
+
+	if (r2)
+		debug("STATUS r2: 0x%04x\n", r2);
+	pdev->deassert();
+
+	return r2;
+
+	/* TODO: Implement in a finer way */
+	switch (b1) {
+	case R1_OK:
+		break;
+	case R1_IDLE_STATE:
+		printf("R1_IDLE_STATE\n");
+		break;
+	case R1_ERASE_STATE:
+		printf("R1_ERASE_STATE\n");
+		break;
+	case R1_ILLEGAL_CMD:
+		printf("R1_ILLEGAL_COMMAND\n");
+		break;
+	case R1_COM_CRC_ERROR:
+		printf("R1_COM_CRC_ERROR\n");
+		break;
+	case R1_ERASE_SEQ_ERROR:
+		printf("R1_ERASE_SEQ_ERROR\n");
+		break;
+	case R1_ADDRESS_ERROR:
+		printf("R1_ADDRESS_ERROR\n");
+		break;
+	case R1_PARAMETER_ERROR:
+		printf("R1_PARAMETER_ERROR\n");
+		break;
+	case 0xFF:
+		printf("b1: STATUS RESPONSE TIMEOUT\n");
+		break;
+	default:
+		printf("b1: INVALID STATUS RESPONSE(0x%02x)\n", b1);
+		break;
+	}
+
+	switch (b2) {
+	case R2_OK:
+		break;
+	case R2_CARD_LOCKED:
+		printf("R2_CARD_LOCKED\n");
+		break;
+	case R2_WP_ERASE_SKIP:
+		printf("R2_WP_ERASE_SKIP/Unlock command failed\n");
+		break;
+	case R2_ERROR:
+		printf("R2_ERROR\n");
+		break;
+	case R2_CC_ERROR:
+		printf("R2_CC_ERROR\n");
+		break;
+	case R2_CARD_ECC_FAILED:
+		printf("R2_CARD_ECC_FAILED\n");
+		break;
+	case R2_WP_VIOLATION:
+		printf("R2_WP_VIOLATION\n");
+		break;
+	case R2_ERASE_PARAM:
+		printf("R2_ERASE_PARAM\n");
+		break;
+	case R2_OUT_OF_RANGE:
+		printf("R2_OUT_OF_RANGE, CSD_Overwrite\n");
+		break;
+	case 0xFF:
+		printf("b2: STATUS RESPONSE TIMEOUT\n");
+		break;
+	default:
+		printf("b2: INVALID STATUS RESPONSE(0x%02x)\n", b2);
+		break;
+	}
+
+	return r2;
+}
+
+#if 0
+static void mmc_spi_fill_card_struct(struct mmc_spi_dev *pdev)
 {
 	unsigned short c_size_mult = 0;
 	unsigned short c_size = 0;
@@ -93,20 +384,20 @@ void mmc_spi_fill_card_struct(struct mmc_spi_dev *pdev)
 	pdev->cid.fwrev = getvalue(raw_cid, 127-55, 8) & 0x0F;
 	pdev->cid.month = (getvalue(raw_cid, 127-15, 8) & 0xF0) >> 4;
 }
+#endif
 
-short mmc_spi_get_card(struct mmc_spi_dev *pdev)
+static short mmc_spi_dummy_clocks(struct mmc_spi_dev *pdev, unsigned short nbytes)
 {
-	if (read_mmc_reg(pdev, 1)) {
-		debug("CSD register read failed.\n");
-		return 1;
-	}
-	if (read_mmc_reg(pdev, 0)) {
-		debug("CID register read failed.\n");
-		return 1;
-	}
+	int i;
 
-	/* Parse CSD and CID data */
-	mmc_spi_fill_card_struct(pdev);
+	pdev->force_cs_high = 1;
+	for (i = 0; i < nbytes; i++) {
+		if (pdev->write(Null_Word, 1, pdev->priv_data) < 0) {
+			pdev->force_cs_high = 0;
+			return 1;
+		}
+	}
+	pdev->force_cs_high = 0;
 
 	return 0;
 }
@@ -217,6 +508,7 @@ static short mmc_spi_error_handler(struct mmc_spi_dev *pdev, short rval)
 	return 0;
 }
 
+#if 0
 /**
 * read_mmc_reg - reads the 128 bit CSD or CID register data + 2 byte CRC
 *
@@ -227,7 +519,7 @@ static short read_mmc_reg(struct mmc_spi_dev *pdev, short csd)
 	unsigned char *buf;
 	unsigned short rval = 0;
 
-	pdev->assert();
+	pdev->doassert();
 	if (csd) {
 		rval = send_cmd_and_wait(pdev, SEND_CSD, 0, R1_OK, MMC_COMMAND_TIMEOUT);
 		if (rval)
@@ -265,121 +557,30 @@ out:
 	return rval;
 }
 
-short mmc_spi_read_status(struct mmc_spi_dev *pdev)
+static short mmc_spi_get_card(struct mmc_spi_dev *pdev)
 {
-	unsigned char b1 = 0;
-	unsigned char b2 = 0;
-	unsigned short r2 = 0xffff;
-	static unsigned char status_cmd[6] = {0x4D, 0x00, 0x00, 0x00, 0x00, 0x95};
-
-	pdev->assert();
-
-	if (pdev->sd) {
-		if (pdev->write(Null_Word, SD_PRE_CMD_ZEROS, pdev->priv_data) < 0) {
-			debug("sending SD_PRE_CMD_ZEROS failed\n");
-			pdev->deassert();
-			return ERR_SPI_TIMEOUT;
-		}
+	if (read_mmc_reg(pdev, 1)) {
+		debug("CSD register read failed.\n");
+		return 1;
 	}
-	if (pdev->write(status_cmd, 6, pdev->priv_data) < 0) {
-		debug("sending of SEND_STATUS command failed\n");
-		pdev->deassert();
-		return ERR_SPI_TIMEOUT;
-	}
-	b1 = mmc_wait_response(pdev, MMC_COMMAND_TIMEOUT);
-	b2 = mmc_wait_response(pdev, MMC_COMMAND_TIMEOUT);
-
-	if (b1 == ERR_MMC_TIMEOUT || b2 == ERR_MMC_TIMEOUT) {
-		debug("No status received !\n");
-		pdev->deassert();
-		return ERR_MMC_TIMEOUT;
+	if (read_mmc_reg(pdev, 0)) {
+		debug("CID register read failed.\n");
+		return 1;
 	}
 
-	r2 = b2 + (b1 << 8);
+	/* Parse CSD and CID data */
+	mmc_spi_fill_card_struct(pdev);
 
-	if (r2)
-		debug("STATUS r2: 0x%04x\n", r2);
-	pdev->deassert();
-
-	return r2;
-
-	/* TODO: Implement in a finer way */
-	switch (b1) {
-	case R1_OK:
-		break;
-	case R1_IDLE_STATE:
-		printf("R1_IDLE_STATE\n");
-		break;
-	case R1_ERASE_STATE:
-		printf("R1_ERASE_STATE\n");
-		break;
-	case R1_ILLEGAL_CMD:
-		printf("R1_ILLEGAL_COMMAND\n");
-		break;
-	case R1_COM_CRC_ERROR:
-		printf("R1_COM_CRC_ERROR\n");
-		break;
-	case R1_ERASE_SEQ_ERROR:
-		printf("R1_ERASE_SEQ_ERROR\n");
-		break;
-	case R1_ADDRESS_ERROR:
-		printf("R1_ADDRESS_ERROR\n");
-		break;
-	case R1_PARAMETER_ERROR:
-		printf("R1_PARAMETER_ERROR\n");
-		break;
-	case 0xFF:
-		printf("b1: STATUS RESPONSE TIMEOUT\n");
-		break;
-	default:
-		printf("b1: INVALID STATUS RESPONSE(0x%02x)\n", b1);
-		break;
-	}
-
-	switch (b2) {
-	case R2_OK:
-		break;
-	case R2_CARD_LOCKED:
-		printf("R2_CARD_LOCKED\n");
-		break;
-	case R2_WP_ERASE_SKIP:
-		printf("R2_WP_ERASE_SKIP/Unlock command failed\n");
-		break;
-	case R2_ERROR:
-		printf("R2_ERROR\n");
-		break;
-	case R2_CC_ERROR:
-		printf("R2_CC_ERROR\n");
-		break;
-	case R2_CARD_ECC_FAILED:
-		printf("R2_CARD_ECC_FAILED\n");
-		break;
-	case R2_WP_VIOLATION:
-		printf("R2_WP_VIOLATION\n");
-		break;
-	case R2_ERASE_PARAM:
-		printf("R2_ERASE_PARAM\n");
-		break;
-	case R2_OUT_OF_RANGE:
-		printf("R2_OUT_OF_RANGE, CSD_Overwrite\n");
-		break;
-	case 0xFF:
-		printf("b2: STATUS RESPONSE TIMEOUT\n");
-		break;
-	default:
-		printf("b2: INVALID STATUS RESPONSE(0x%02x)\n", b2);
-		break;
-	}
-
-	return r2;
+	return 0;
 }
+#endif
 
-short mmc_spi_read_mmc_block(struct mmc_spi_dev *pdev, unsigned char *buf, unsigned long address)
+static short mmc_spi_read_mmc_block(struct mmc_spi_dev *pdev, unsigned char *buf, unsigned long address)
 {
 	unsigned char resp = 0xff;
 	unsigned short rval = 0;
 
-	pdev->assert();
+	pdev->doassert();
 	rval = send_cmd_and_wait(pdev, READ_SINGLE_BLOCK, address, R1_OK, MMC_COMMAND_TIMEOUT);
 	if (rval)
 		goto out;
@@ -413,7 +614,7 @@ out:;
  requested could be 514 bytes read.. this could be solved with some hacks though)
 */
 #ifdef USE_MULT_BLOCK_READS
-short mmc_spi_read_mult_mmc_block(struct mmc_spi_dev *pdev, unsigned char *buf,
+static short mmc_spi_read_mult_mmc_block(struct mmc_spi_dev *pdev, unsigned char *buf,
 	unsigned int address, int nblocks)
 {
 	unsigned char resp = 0xff;
@@ -455,16 +656,15 @@ out:
 
 	return mmc_spi_error_handler(pdev, rval);
 }
-#endif
 
-short mmc_spi_write_mmc_block(struct mmc_spi_dev *pdev, unsigned char *buf, unsigned int address)
+static short mmc_spi_write_mmc_block(struct mmc_spi_dev *pdev, unsigned char *buf, unsigned int address)
 {
 	unsigned short rval = 0;
 	unsigned char resp = 0xff;
 	unsigned char token;
 	unsigned int n_polls = 0;
 
-	pdev->assert();
+	pdev->doassert();
 	rval = send_cmd_and_wait(pdev, WRITE_BLOCK, address, R1_OK, MMC_COMMAND_TIMEOUT);
 	if (rval) {
 		debug("write error at %08x \n", address);
@@ -539,8 +739,10 @@ out:
 	return mmc_spi_error_handler(pdev, rval);
 }
 
-short mmc_spi_write_mult_mmc_block(struct mmc_spi_dev *pdev, unsigned char *buf,
-	unsigned int address, int nblocks)
+static unsigned char wrb[WRB_LEN];
+
+static short mmc_spi_write_mult_mmc_block(struct mmc_spi_dev *pdev,
+	unsigned char *buf, unsigned int address, int nblocks)
 {
 	unsigned short rval = 0;
 	unsigned char resp = 0xff;
@@ -553,7 +755,7 @@ short mmc_spi_write_mult_mmc_block(struct mmc_spi_dev *pdev, unsigned char *buf,
 
 
 	debug("adr(r): %08x\n", address);
-	pdev->assert();
+	pdev->doassert();
 	rval = send_cmd_and_wait(pdev, WRITE_MULTIPLE_BLOCK, address, R1_OK, MMC_COMMAND_TIMEOUT);
 	if (rval) {
 		debug("NO MBW!!!\n");
@@ -680,23 +882,9 @@ out:
 	/* Reading status breaks compatibility with some cards, skip it */
 	return mmc_spi_error_handler(pdev, rval);
 }
+#endif
 
-short mmc_spi_dummy_clocks(struct mmc_spi_dev *pdev, unsigned short nbytes)
-{
-	int i;
-
-	pdev->force_cs_high = 1;
-	for (i = 0; i < nbytes; i++) {
-		if (pdev->write(Null_Word, 1, pdev->priv_data) < 0) {
-			pdev->force_cs_high = 0;
-			return 1;
-		}
-	}
-	pdev->force_cs_high = 0;
-
-	return 0;
-}
-short mmc_spi_init_card(struct mmc_spi_dev *pdev)
+static short mmc_spi_init_card(struct mmc_spi_dev *pdev)
 {
 	unsigned short cntr = 0;
 
@@ -707,14 +895,14 @@ short mmc_spi_init_card(struct mmc_spi_dev *pdev)
 
 	/* 10 bytes(80 cycles) with CS de-asserted */
 	mmc_spi_dummy_clocks(pdev, 10);
-	pdev->assert();
+	pdev->doassert();
 	if (send_cmd_and_wait(pdev, GO_IDLE_STATE, 0, R1_IDLE_STATE, MMC_INIT_TIMEOUT))
 		return 1;
 	pdev->deassert();
 	/* Send One Byte Delay */
 	if (pdev->write(Null_Word, 1, pdev->priv_data) < 0)
 		return 1;
-	pdev->assert();
+	pdev->doassert();
 	/* Look for SD card */
 	for (cntr = 0; cntr < 60; cntr++) {
 		/* Send One Byte Delay */
@@ -762,34 +950,8 @@ next:
 		return 1;
 }
 
-static unsigned char mmc_wait_response(struct mmc_spi_dev *pdev, unsigned int timeout)
-{
-	unsigned char card_resp = 0xFF;
-	unsigned int n = 0;
-	/* reset time and set to timeout ms */
-	while (1) {
-
-		if (pdev->read(&card_resp, 1, pdev->priv_data) < 0) {
-			debug("error: mmc_wait_response read error\n");
-			return ERR_SPI_TIMEOUT;
-		}
-		if (card_resp != 0xFF)
-			return card_resp;
-		/*
-		 NOTE: "timeout" in seconds may not be a good idea after all
-		 (by doing pdev->elapsed_time() )
-		 wait for a specific amount of polls for now.
-		*/
-		if ((n++ >= timeout)) {
-			debug("hey! timed out after %d since %d bytes was maximum(latest_cmd=%d)\n", n,
-				timeout, latest_cmd);
-			return ERR_MMC_TIMEOUT;
-		}
-	}
-}
-
 #ifdef DEBUG_REGS
-short mmc_spi_mmc_spi_get_card_old(struct mmc_spi_dev *pdev)
+static short mmc_spi_mmc_spi_get_card_old(struct mmc_spi_dev *pdev)
 {
 	int i;
 	struct mmc_card *card = pdev->private_data->card;
@@ -844,5 +1006,103 @@ short mmc_spi_mmc_spi_get_card_old(struct mmc_spi_dev *pdev)
 		card.cid.year, card.cid.month, card.cid.serial, card.cid.serial);
 	return 0;
 }
-
 #endif
+
+
+#ifndef CONFIG_SPI_MMC_DEFAULT_CS
+# define CONFIG_SPI_MMC_DEFAULT_CS 1
+#endif
+#ifndef CONFIG_SPI_MMC_DEFAULT_SPEED
+# define CONFIG_SPI_MMC_DEFAULT_SPEED 30000000
+#endif
+#ifndef CONFIG_SPI_MMC_DEFAULT_MODE
+# define CONFIG_SPI_MMC_DEFAULT_MODE SPI_MODE_3
+#endif
+
+#define MMC_BLOCK_SIZE 512
+
+static block_dev_desc_t mmc_block_dev_desc;
+static struct mmc_spi_dev msdev;
+
+block_dev_desc_t *mmc_get_dev(int dev)
+{
+    debug("mmc_get_dev\n");
+    return (block_dev_desc_t *)&mmc_block_dev_desc;
+}
+
+static int r;
+unsigned long mmc_block_read(int dev, unsigned long blk_start, lbaint_t blkcnt, void *dst2)
+{
+	int i;
+	unsigned char *dst = dst2;
+
+	for (i = 0; i < blkcnt; i++, blk_start++, dst += MMC_BLOCK_SIZE) {
+		r += MMC_BLOCK_SIZE;
+		if (mmc_spi_read_mmc_block(&msdev, dst, blk_start * MMC_BLOCK_SIZE) != RVAL_OK)
+			printf("error in mmc_block_read\n");;
+	}
+	debug("mmc_block_read: %d bytes\n", r);
+	return blkcnt;
+}
+
+static struct spi_slave *slave;
+
+static void spi_assert(void)
+{
+	spi_cs_activate(slave);
+}
+
+static void spi_deassert(void)
+{
+	spi_cs_deactivate(slave);
+}
+
+static int spi_wait_write(unsigned char *buffer, unsigned int count, void *dummy)
+{
+	spi_xfer(slave, count * 8, buffer, NULL, 0);
+	return count;
+}
+
+static int spi_wait_read(unsigned char *buffer, unsigned int count, void *dummy)
+{
+	spi_xfer(slave, count * 8, NULL, buffer, 0);
+	return count;
+}
+
+static int spi_mmc_init(void)
+{
+	if (slave) {
+		spi_release_bus(slave);
+		spi_free_slave(slave);
+	}
+
+	slave = spi_setup_slave(0, CONFIG_SPI_MMC_DEFAULT_CS,
+		CONFIG_SPI_MMC_DEFAULT_SPEED, CONFIG_SPI_MMC_DEFAULT_MODE);
+	if (!slave)
+		return -1;
+	spi_claim_bus(slave);
+
+	return 0;
+}
+
+int mmc_legacy_init(int verbose)
+{
+	int ret;
+
+	spi_mmc_init();
+	msdev.read = &spi_wait_read;
+	msdev.write = &spi_wait_write;
+	msdev.doassert = &spi_assert;
+	msdev.deassert = &spi_deassert;
+	ret = mmc_spi_init_card(&msdev);
+	if (ret)
+		return ret;
+	mmc_block_dev_desc.if_type = IF_TYPE_MMC;
+	mmc_block_dev_desc.part_type = PART_TYPE_DOS;
+	mmc_block_dev_desc.dev = 0;
+	mmc_block_dev_desc.blksz = MMC_BLOCK_SIZE;
+	mmc_block_dev_desc.block_read = mmc_block_read;
+	sprintf(mmc_block_dev_desc.vendor, "Rubico AB <www.rubico.se>");
+	init_part(&mmc_block_dev_desc);
+	return 0;
+}
