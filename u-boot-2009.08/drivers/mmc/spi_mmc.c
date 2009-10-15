@@ -1,36 +1,19 @@
 /*
- * Copyright (C) 2007, Rubico AB (www.rubico.se). All Rights Reserve.
+ * SPI-MMC/SD Protocol.
+ *
+ * Copyright (C) 2005-2007, Rubico AB (www.rubico.se)
  *
  * Developed as a part the CDT project C4 (www.cdt.ltu.se).
  *
  * Robert Selberg, <robert@rubico.se>
  * Hans Eklund, <hans@rubico.se>
  *
- * Licensed under the GPL-2.
+ * Licensed under the GPL-2 or later.
  */
 
 /*
- * Copyright (C) 2005, Rubico AB. All Rights Reserve.
- *
- * Developed as a part the CDT project C4(www.cdt.ltu.se).
- *
- * FILE mmc_spi_mode.c
- *
- * PROGRAMMER: Hans Eklund (hans [at] rubico [dot] se) (Rubico AB)
- *
- * DATE OF CREATION: April, 2006.
- *
- * SYNOPSIS:
- *
- * DESCRIPTION: SPI-MMC/SD Protocol.
- *
- * DEPENDENCIES: Independent.
- *	(well, one, for printing debug text on the target, (kernel.h for linux))
- *
  * TODO: Correct Multiple block read and write functions. Didnt have time
  *	to make them all failsafe. Will be done soon.
- *
- * Licensed under the GPL-2.
  */
 
 #include <common.h>
