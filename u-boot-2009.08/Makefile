@@ -496,6 +496,9 @@ unconfig:
 		$(obj)board/*/config.tmp $(obj)board/*/*/config.tmp \
 		$(obj)include/autoconf.mk $(obj)include/autoconf.mk.dep
 
+%: %_config
+	$(MAKE)
+
 #========================================================================
 # PowerPC
 #========================================================================
@@ -3505,10 +3508,6 @@ BFIN_BOARDS += ibf-dsp561
 
 $(BFIN_BOARDS:%=%_config)	: unconfig
 	@$(MKCONFIG) $(@:_config=) blackfin blackfin $(@:_config=)
-
-$(BFIN_BOARDS):
-	$(MAKE) $@_config
-	$(MAKE)
 
 #========================================================================
 # AVR32
