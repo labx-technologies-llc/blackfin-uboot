@@ -69,7 +69,7 @@ include $(TOPDIR)/config.mk
 BIN_FILES-$(CONFIG_CMD_LOADS) += img2srec$(SFX)
 BIN_FILES-y += mkimage$(SFX)
 BIN_FILES-$(CONFIG_ENV_IS_EMBEDDED) += envcrc$(SFX)
-BIN_FILES-$(CONFIG_ENV_IS_EMBEDDED_CUSTOM) += envcrc$(SFX)
+BIN_FILES-$(CONFIG_BUILD_ENVCRC) += envcrc$(SFX)
 BIN_FILES-$(CONFIG_SHA1_CHECK_UB_IMG) += ubsha1$(SFX)
 BIN_FILES-$(CONFIG_CMD_NET) += gen_eth_addr$(SFX)
 BIN_FILES-$(CONFIG_LCD_LOGO) += bmp_logo$(SFX)
@@ -87,8 +87,8 @@ EXT_OBJ_FILES-y += common/image.o
 # Source files located in the tools directory
 OBJ_FILES-$(CONFIG_CMD_LOADS) += img2srec.o
 OBJ_FILES-y += mkimage.o
-BIN_FILES-$(CONFIG_ENV_IS_EMBEDDED) += envcrc.o
-BIN_FILES-$(CONFIG_ENV_IS_EMBEDDED_CUSTOM) += envcrc.o
+OBJ_FILES-$(CONFIG_ENV_IS_EMBEDDED) += envcrc.o
+OBJ_FILES-$(CONFIG_BUILD_ENVCRC) += envcrc.o
 OBJ_FILES-$(CONFIG_SHA1_CHECK_UB_IMG) += ubsha1.o
 OBJ_FILES-$(CONFIG_CMD_NET) += gen_eth_addr.o
 OBJ_FILES-$(CONFIG_LCD_LOGO) += bmp_logo.o
