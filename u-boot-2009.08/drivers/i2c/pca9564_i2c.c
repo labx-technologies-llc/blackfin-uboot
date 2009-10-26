@@ -32,19 +32,11 @@
 #include <pca9564.h>
 #include <asm/io.h>
 
-#undef DEBUG_I2C
-
-#ifdef DEBUG_I2C
-#define DEBUGI(fmt,args...) printf(fmt ,##args)
-#else
-#define DEBUGI(fmt,args...)
-#endif
-
-#define PCA_STA			CONFIG_PCA9564_BASE + 0
-#define PCA_TO			CONFIG_PCA9564_BASE + 0
-#define PCA_DAT			CONFIG_PCA9564_BASE + (1 << 2)
-#define PCA_ADR			CONFIG_PCA9564_BASE + (2 << 2)
-#define PCA_CON			CONFIG_PCA9564_BASE + (3 << 2)
+#define PCA_STA			(CONFIG_PCA9564_BASE + 0)
+#define PCA_TO			(CONFIG_PCA9564_BASE + 0)
+#define PCA_DAT			(CONFIG_PCA9564_BASE + (1 << 2))
+#define PCA_ADR			(CONFIG_PCA9564_BASE + (2 << 2))
+#define PCA_CON			(CONFIG_PCA9564_BASE + (3 << 2))
 
 static unsigned char pca_read_reg(unsigned int reg)
 {
@@ -64,9 +56,9 @@ static int pca_wait_busy(void)
 		udelay(1);
 
 	if (timeout == 0)
-		DEBUGI("I2C timeout!\n");
+		debug("I2C timeout!\n");
 
-	DEBUGI("CON = 0x%02x, STA = 0x%02x\n", pca_read_reg(PCA_CON),
+	debug("CON = 0x%02x, STA = 0x%02x\n", pca_read_reg(PCA_CON),
 	       pca_read_reg(PCA_STA));
 
 	return timeout ? 0 : 1;
