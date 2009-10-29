@@ -1054,13 +1054,31 @@ static int spi_wait_read(unsigned char *buffer, unsigned int count, void *dummy)
 
 static int spi_mmc_init(void)
 {
+	char *s;
+	int cs, hz, mode;
+
 	if (slave) {
 		spi_release_bus(slave);
 		spi_free_slave(slave);
 	}
 
-	slave = spi_setup_slave(0, CONFIG_SPI_MMC_DEFAULT_CS,
-		CONFIG_SPI_MMC_DEFAULT_SPEED, CONFIG_SPI_MMC_DEFAULT_MODE);
+	if ((s = getenv("mmc_cs")))
+		cs = simple_strtoul(s, NULL, 10);
+	else
+		cs = CONFIG_SPI_MMC_DEFAULT_CS;
+
+	if ((s = getenv("mmc_hz")))
+		hz = simple_strtoul(s, NULL, 10);
+	else
+		hz = CONFIG_SPI_MMC_DEFAULT_SPEED;
+
+	if ((s = getenv("mmc_mode")))
+		mode = simple_strtoul(s, NULL, 10);
+	else
+		mode = CONFIG_SPI_MMC_DEFAULT_MODE;
+
+	printf("using spi0.%i at %i hz with mode %x\n", cs, hz, mode);
+	slave = spi_setup_slave(0, cs, hz, mode);
 	if (!slave)
 		return -1;
 	spi_claim_bus(slave);
@@ -1072,7 +1090,9 @@ int mmc_legacy_init(int verbose)
 {
 	int ret;
 
-	spi_mmc_init();
+	ret = spi_mmc_init();
+	if (ret)
+		return ret;
 	msdev.read = &spi_wait_read;
 	msdev.write = &spi_wait_write;
 	msdev.doassert = &spi_assert;
