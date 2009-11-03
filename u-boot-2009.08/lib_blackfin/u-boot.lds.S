@@ -113,7 +113,9 @@ SECTIONS
 		. = ALIGN(4);
 		__etext_l1 = .;
 	} >l1_code AT>ram
-	__stext_l1_lma = LOADADDR(.text_l1);
+	__text_l1_lma = LOADADDR(.text_l1);
+	__text_l1_len = SIZEOF(.text_l1);
+	ASSERT (__text_l1_len <= L1_INST_SRAM_SIZE, "L1 text overflow!")
 
 	.data_l1 :
 	{
@@ -124,7 +126,9 @@ SECTIONS
 		. = ALIGN(4);
 		__edata_l1 = .;
 	} >l1_data AT>ram
-	__sdata_l1_lma = LOADADDR(.data_l1);
+	__data_l1_lma = LOADADDR(.data_l1);
+	__data_l1_len = SIZEOF(.data_l1);
+	ASSERT (__data_l1_len <= L1_DATA_B_SRAM_SIZE, "L1 data B overflow!")
 
 	.bss :
 	{
