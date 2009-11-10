@@ -151,17 +151,19 @@ void init_cplbtables(void)
 	dcplb_add(0xFF800000, L1_DMEMORY);
 	++i;
 
-	icplb_add(CONFIG_SYS_MONITOR_BASE & CPLB_PAGE_MASK, SDRAM_IKERNEL);
-	dcplb_add(CONFIG_SYS_MONITOR_BASE & CPLB_PAGE_MASK, SDRAM_DKERNEL);
-	++i;
-
-	/* If the monitor crosses a 4 meg boundary, we'll need
-	 * to lock two entries for it.
-	 */
-	if ((CONFIG_SYS_MONITOR_BASE & CPLB_PAGE_MASK) != ((CONFIG_SYS_MONITOR_BASE + CONFIG_SYS_MONITOR_LEN) & CPLB_PAGE_MASK)) {
-		icplb_add((CONFIG_SYS_MONITOR_BASE + CONFIG_SYS_MONITOR_LEN) & CPLB_PAGE_MASK, SDRAM_IKERNEL);
-		dcplb_add((CONFIG_SYS_MONITOR_BASE + CONFIG_SYS_MONITOR_LEN) & CPLB_PAGE_MASK, SDRAM_DKERNEL);
+	if (CONFIG_MEM_SIZE) {
+		icplb_add(CONFIG_SYS_MONITOR_BASE & CPLB_PAGE_MASK, SDRAM_IKERNEL);
+		dcplb_add(CONFIG_SYS_MONITOR_BASE & CPLB_PAGE_MASK, SDRAM_DKERNEL);
 		++i;
+
+		/* If the monitor crosses a 4 meg boundary, we'll need
+		 * to lock two entries for it.
+		 */
+		if ((CONFIG_SYS_MONITOR_BASE & CPLB_PAGE_MASK) != ((CONFIG_SYS_MONITOR_BASE + CONFIG_SYS_MONITOR_LEN) & CPLB_PAGE_MASK)) {
+			icplb_add((CONFIG_SYS_MONITOR_BASE + CONFIG_SYS_MONITOR_LEN) & CPLB_PAGE_MASK, SDRAM_IKERNEL);
+			dcplb_add((CONFIG_SYS_MONITOR_BASE + CONFIG_SYS_MONITOR_LEN) & CPLB_PAGE_MASK, SDRAM_DKERNEL);
+			++i;
+		}
 	}
 
 	icplb_add(0x20000000, SDRAM_INON_CHBL);
