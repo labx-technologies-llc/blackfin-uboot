@@ -826,14 +826,14 @@ int musb_submit_rh_msg(struct usb_device *dev, unsigned long pipe, void *buffer,
 int submit_control_msg(struct usb_device *dev, unsigned long pipe, void *buffer,
 			int len, struct devrequest *setup)
 {
-	int devnum = usb_pipedevice(pipe);
 	u16 csr;
 	u8  devspeed;
-
+#ifndef CONFIG_USB_BLACKFIN
+	int devnum = usb_pipedevice(pipe);
 	/* Control message is for the HUB? */
 	if (devnum == rh_devnum)
 		return musb_submit_rh_msg(dev, pipe, buffer, len, setup);
-
+#endif
 	/* select control endpoint */
 	writeb(MUSB_CONTROL_EP, &musbr->index);
 	csr = readw(&musbr->txcsr);
