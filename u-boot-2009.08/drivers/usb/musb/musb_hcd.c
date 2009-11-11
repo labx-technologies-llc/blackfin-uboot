@@ -144,7 +144,7 @@ static void write_toggle(struct usb_device *dev, u8 ep, u8 dir_out)
 	if (dir_out) {
 		if (!toggle)
 #ifdef CONFIG_USB_BLACKFIN
-			writew(MUSB_TXCSR_CLRDATATOG, 0);
+			writew(0, &musbr->txcsr);
 #else
 			writew(MUSB_TXCSR_CLRDATATOG, &musbr->txcsr);
 #endif
@@ -158,7 +158,7 @@ static void write_toggle(struct usb_device *dev, u8 ep, u8 dir_out)
 	} else {
 		if (!toggle)
 #ifdef CONFIG_USB_BLACKFIN
-			writew(MUSB_RXCSR_CLRDATATOG, 0);
+			writew(0, &musbr->rxcsr);
 #else
 			writew(MUSB_RXCSR_CLRDATATOG, &musbr->rxcsr);
 #endif
