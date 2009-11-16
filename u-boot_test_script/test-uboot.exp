@@ -4012,7 +4012,7 @@ if {  $TEST_JFFS2 } {
     send "\r"
     wait_for_uboot
 
-    set timeout 300
+    set timeout 120
     if { $jffs2_temp_result == $TEST_PASS } {
         send -s "ls\r"
         while 1 {
@@ -4051,7 +4051,7 @@ if {  $TEST_JFFS2 } {
         }
     }
 
-    set timeout 600
+    set timeout 300
     if { $jffs2_temp_result == $TEST_PASS } {
         set jffs2_temp_result $TEST_FAIL
         send -s "fsload /uImage\r"
@@ -4714,7 +4714,7 @@ if { $TEST_USB } {
     send "usb start\r"
     while 1 {
         expect {
-            -re "2 USB Device\\\(s\\\) found.*1 Storage Device\\\(s\\\) found.*>" {
+            -re "1 USB Device\\\(s\\\) found.*1 Storage Device\\\(s\\\) found.*>" {
                 set usb_result $TEST_PASS
                 break
             }
