@@ -34,7 +34,7 @@ static inline void serial_init(void)
 		size_t i;
 
 		/* force RTS rather than relying on auto RTS */
-		bfin_write_UART1_MCR(bfin_read_UART1_MCR() | FCPOL);
+		pUART->mcr |= FCPOL;
 
 		/* Wait for the line to clear up.  We cannot rely on UART
 		 * registers as none of them reflect the status of the RSR.
@@ -64,7 +64,7 @@ static inline void serial_init(void)
 #endif
 
 	if (BFIN_DEBUG_EARLY_SERIAL) {
-		int ucen = *pUART_GCTL & UCEN;
+		int ucen = pUART->gctl & UCEN;
 		serial_early_init();
 
 #ifndef CONFIG_BAUDRATE
@@ -84,7 +84,7 @@ static inline void serial_deinit(void)
 #ifdef __ADSPBF54x__
 	if (BFIN_UART_USE_RTS && CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART) {
 		/* clear forced RTS rather than relying on auto RTS */
-		bfin_write_UART1_MCR(bfin_read_UART1_MCR() & ~FCPOL);
+		pUART->mcr &= ~FCPOL;
 	}
 #endif
 }
@@ -98,18 +98,18 @@ static inline void serial_putc(char c)
 	if (c == '\n') {
 #if (__GNUC__ < 4) || (__GNUC__ == 4 && __GNUC_MINOR__ <= 1)
 		/* gcc-4.1 sucks and cant inline this */
-		*pUART_THR = '\r';
+		pUART->thr = '\r';
 
-		while (!(*pUART_LSR & TEMT))
+		while (!(pUART->lsr & TEMT))
 			continue;
 #else
 		serial_putc('\r');
 #endif
 	}
 
-	*pUART_THR = c;
+	pUART->thr = c;
 
-	while (!(*pUART_LSR & TEMT))
+	while (!(pUART->lsr & TEMT))
 		continue;
 }
 
