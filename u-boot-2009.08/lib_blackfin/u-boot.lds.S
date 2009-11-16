@@ -72,16 +72,22 @@ MEMORY
 ENTRY(_start)
 SECTIONS
 {
-	.text :
+	.text.pre :
 	{
 		cpu/blackfin/start.o (.text .text.*)
 
 		LDS_BOARD_TEXT
+	} >ram_code
 
-		__initcode_start = .;
+	.text.init :
+	{
 		cpu/blackfin/initcode.o (.text .text.*)
-		__initcode_end = .;
+	} >ram_code
+	__initcode_lma = LOADADDR(.text.init);
+	__initcode_len = SIZEOF(.text.init);
 
+	.text :
+	{
 		*(.text .text.*)
 	} >ram_code
 
@@ -140,11 +146,11 @@ SECTIONS
 	.bss :
 	{
 		. = ALIGN(4);
-		__bss_start = .;
 		*(.sbss) *(.scommon)
 		*(.dynbss)
 		*(.bss .bss.*)
 		*(COMMON)
-		__bss_end = .;
 	} >ram_data
+	__bss_vma = ADDR(.bss);
+	__bss_len = SIZEOF(.bss);
 }
