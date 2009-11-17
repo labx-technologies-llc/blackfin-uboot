@@ -10,10 +10,10 @@
 
 #ifndef USE_HOSTCC	/* Shut down "ANSI does not permit..." warnings */
 #include <common.h>
-#else
-#include <stdint.h>
-#endif
 #include <asm/byteorder.h>
+#else
+#include <compiler.h>
+#endif
 //#include <u-boot/crc.h>
 
 #if defined(CONFIG_HW_WATCHDOG) || defined(CONFIG_WATCHDOG)
@@ -23,6 +23,8 @@
 
 #define local static
 #define ZEXPORT	/* empty */
+
+#define tole(x) cpu_to_le32(x)
 
 #ifdef DYNAMIC_CRC_TABLE
 
@@ -54,7 +56,6 @@ local void make_crc_table OF((void));
   the information needed to generate CRC's on data a byte at a time for all
   combinations of CRC register values and incoming bytes.
 */
-#define tole(x) __cpu_to_le32(x)
 local void make_crc_table()
 {
   uint32_t c;
@@ -81,7 +82,6 @@ local void make_crc_table()
 /* ========================================================================
  * Table of CRC-32's of all single-byte values (made by make_crc_table)
  */
-#define tole(x) __constant_cpu_to_le32(x)
 
 local const uint32_t crc_table[256] = {
 tole(0x00000000L), tole(0x77073096L), tole(0xee0e612cL), tole(0x990951baL),
@@ -185,7 +185,7 @@ uint32_t ZEXPORT crc32_no_comp(uint32_t crc, const Bytef *buf, uInt len)
     if (crc_table_empty)
       make_crc_table();
 #endif
-    crc = __cpu_to_le32(crc);
+    crc = cpu_to_le32(crc);
     /* Align it */
     if (((long)b) & 3 && len) {
 	 uint8_t *p = (uint8_t *)b;
@@ -214,7 +214,7 @@ uint32_t ZEXPORT crc32_no_comp(uint32_t crc, const Bytef *buf, uInt len)
 	 } while (--len);
     }
 
-    return __le32_to_cpu(crc);
+    return le32_to_cpu(crc);
 }
 #undef DO_CRC
 
