@@ -340,7 +340,7 @@ int spi_xfer(struct spi_slave *slave, unsigned int bitlen, const void *dout,
 
 	/* todo: take advantage of hardware fifos and setup RX dma */
 	while (bytes--) {
-		u8 value = (tx ? *tx++ : 0);
+		u8 value = (tx ? *tx++ : 0xff);
 		debug("%s: tx:%x ", __func__, value);
 		write_SPI_TDBR(bss, value);
 		SSYNC();
