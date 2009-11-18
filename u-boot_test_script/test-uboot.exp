@@ -196,8 +196,6 @@ set TEST_SPI_FLASH			 0
 
 } elseif { $board_type == "BF526-EZBRD" } {
 
-set TEST_MMC                             0
-
 set NUMBER_OF_FLASH_SECTORS    71
 set BDINFO_FLASHSIZE           "0x00400000"
 set KERNEL_FLASH_LOC           "0x20100000"
@@ -4466,11 +4464,34 @@ if { $TEST_MMC } {
     set mmc_interface mmc
     set mmc_dev 0
 
+    if { $board_type == "BF537-STAMP" } {
+        set timeout 10
+        send "set mmc_cs 4; set mmc_hz 20000000\r"
+        expect -re $UBOOT_PROMPT
+
+        send "save\r"
+        expect -re $UBOOT_PROMPT
+
+        send "printenv mmc_cs mmc_hz\r"
+        while 1 {
+            expect {
+                -re "=.*=.*$UBOOT_PROMPT" {
+                    set mmc_result $TEST_PASS
+                    break
+                }
+                timeout {
+                    send_user "ERROR: set mmc default CS and HZ failed\n"
+                    break
+                }
+            }
+        }
+    }
+
     set timeout 5
     send "mmc init\r"
     while 1 {
         expect {
-            -re "(SD Card detected.*Card capacity.*bytes|SD card found).*$UBOOT_PROMPT" {
+            -re "(SD Card detected.*Card capacity.*bytes|SD card found|mmc1 is available).*$UBOOT_PROMPT" {
                 set mmc_result $TEST_PASS
                 break
             }
