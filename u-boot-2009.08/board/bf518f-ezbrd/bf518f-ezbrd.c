@@ -165,3 +165,10 @@ int board_early_init_f(void)
 #endif
 	return 0;
 }
+
+#ifdef CONFIG_BFIN_SDH
+int board_mmc_init(bd_t *bis)
+{
+	return bfin_mmc_init(bis);
+}
+#endif

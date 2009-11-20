@@ -78,3 +78,10 @@ int board_eth_init(bd_t *bis)
 	return smc911x_initialize(0, CONFIG_SMC911X_BASE);
 }
 #endif
+
+#ifdef CONFIG_BFIN_SDH
+int board_mmc_init(bd_t *bis)
+{
+	return bfin_mmc_init(bis);
+}
+#endif
