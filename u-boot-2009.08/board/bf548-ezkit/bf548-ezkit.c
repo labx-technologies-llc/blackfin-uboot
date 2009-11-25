@@ -11,6 +11,7 @@
 #include <config.h>
 #include <command.h>
 #include <asm/blackfin.h>
+#include <asm/sdh.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 

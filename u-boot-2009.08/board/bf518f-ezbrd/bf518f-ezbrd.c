@@ -15,6 +15,7 @@
 #include <asm/blackfin.h>
 #include <asm/net.h>
 #include <asm/mach-common/bits/otp.h>
+#include <asm/sdh.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
