@@ -1,7 +1,7 @@
 /*
  * Driver for Blackfin on-chip SDH controller
  *
- * Copyright (c) 2009 Analog Devices Inc.
+ * Copyright (c) 2008-2009 Analog Devices Inc.
  *
  * Licensed under the GPL-2 or later.
  */
