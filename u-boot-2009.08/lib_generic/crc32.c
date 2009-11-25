@@ -8,12 +8,7 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
-#ifndef USE_HOSTCC	/* Shut down "ANSI does not permit..." warnings */
-#include <common.h>
-#include <asm/byteorder.h>
-#else
 #include <compiler.h>
-#endif
 //#include <u-boot/crc.h>
 
 #if defined(CONFIG_HW_WATCHDOG) || defined(CONFIG_WATCHDOG)
