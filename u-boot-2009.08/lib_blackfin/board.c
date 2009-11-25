@@ -359,6 +359,7 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	puts("MMC:  ");
 	mmc_initialize(bd);
 #endif
+
 	/* relocate environment function pointers etc. */
 	env_relocate();
 
