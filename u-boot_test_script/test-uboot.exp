@@ -4488,17 +4488,34 @@ if { $TEST_MMC } {
     }
 
     set timeout 5
-    send "mmc init\r"
-    while 1 {
-        expect {
-            -re "(SD Card detected.*Card capacity.*bytes|SD card found|mmc1 is available).*$UBOOT_PROMPT" {
-                set mmc_result $TEST_PASS
-                break
+    if { $board_type == "BF537-STAMP" } {
+        send "mmc init\r"
+        while 1 {
+            expect {
+                -re "mmc1 is available.*$UBOOT_PROMPT" {
+                    set mmc_result $TEST_PASS
+                    break
+                }
+                timeout {
+                    send_user "ERROR: init mmc failed\n"
+                    recover
+                    break
+                }
             }
-            timeout {
-                send_user "ERROR: init mmc failed\n"
-                recover
-                break
+        }
+    } else {
+        send "mmc rescan 0\r"
+        while 1 {
+            expect {
+                -re $UBOOT_PROMPT {
+                    set mmc_result $TEST_PASS
+                    break
+                }
+                timeout {
+                    send_user "ERROR: init mmc failed\n"
+                    recover
+                    break
+                }
             }
         }
     }
