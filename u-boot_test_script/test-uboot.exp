@@ -1472,6 +1472,7 @@ set BDINFO_FLASHSTART       [get_uboot_define CONFIG_SYS_FLASH_BASE $uboot_test_
 #set BDINFO_FLASHSIZE        [get_uboot_define CFG_FLASH_SIZE $uboot_test_loc ]
 #set BDINFO_FLASHSIZE        "0x00400000"
 set BDINFO_BAUDRATE         $BAUD_RATE
+set UART_CONSOLE            [get_uboot_define CONFIG_UART_CONSOLE $uboot_test_loc ]
 
 # Number of times to execute the ping command for the ping test.
 set PING_ITERATIONS         10
@@ -4214,11 +4215,7 @@ if {  $TEST_PASS_PARAM } {
     set temp_status_flag $TEST_FAIL
     set timeout 20
 
-    if { $board_type == "BF548-EZKIT" || $board_type == "BF527-EZKIT" || $board_type == "BF518F-EZBRD" } {
-        send -s "set bootargs root=/dev/mtdblock0 rw ip=10.100.4.60 console=ttyBF0\r"
-    } else {
-        send -s "set bootargs root=/dev/mtdblock0 rw ip=10.100.4.60\r"
-    }
+    send -s "set bootargs root=/dev/mtdblock0 rw ip=10.100.4.60 console=ttyBF$UART_CONSOLE\r"
     while 1 {
         expect {
             ">" {
