@@ -71,4 +71,7 @@ static inline const char *get_bfin_boot_mode(int bfin_boot)
 # define BFIN_BOOT_SPI_SSEL 1
 #endif
 
+/* We are single threaded most of the time */
+#define CONFIG_BFIN_INS_LOWOVERHEAD
+
 #endif
