@@ -86,7 +86,7 @@ struct bfin_mmr_serial {
 # if CONFIG_UART_CONSOLE != 0
 #  error CONFIG_UART_CONSOLE must be 0 on parts with only one UART
 # endif
-# define UART_BASE UART_LSR
+# define UART_BASE UART_DLL
 #endif
 #define pUART ((volatile struct bfin_mmr_serial *)UART_BASE)
 
