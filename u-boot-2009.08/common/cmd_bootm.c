@@ -57,6 +57,10 @@
 #include <lzma/LzmaTools.h>
 #endif /* CONFIG_LZMA */
 
+ulong load_addr = CONFIG_SYS_LOAD_ADDR;	/* Default Load Address */
+
+#ifndef CONFIG_SYS_NO_BOOTM
+
 DECLARE_GLOBAL_DATA_PTR;
 
 extern int gunzip (void *dst, int dstlen, unsigned char *src, unsigned long *lenp);
@@ -153,7 +157,6 @@ static boot_os_fn *boot_os[] = {
 #endif
 };
 
-ulong load_addr = CONFIG_SYS_LOAD_ADDR;	/* Default Load Address */
 static bootm_headers_t images;		/* pointers to os/initrd/fdt images */
 
 #if defined(__ARM__)
@@ -1447,3 +1450,5 @@ static int do_bootm_integrity (int flag, int argc, char *argv[],
 	return 1;
 }
 #endif
+
+#endif /* CONFIG_SYS_NO_BOOTM */
