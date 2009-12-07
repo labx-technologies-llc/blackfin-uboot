@@ -106,6 +106,9 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 	}
 
 	baud = get_sclk() / (2 * max_hz);
+	/* baud should be rounded up */
+	if (get_sclk() % (2 * max_hz))
+		baud += 1;
 	if (baud < 2)
 		baud = 2;
 	else if (baud > (u16)-1)
