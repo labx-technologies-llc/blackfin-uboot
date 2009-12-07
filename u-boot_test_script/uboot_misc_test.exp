@@ -51,6 +51,7 @@ if { $board_type == "BF533-STAMP" } {
     exit
 }
 set config_file        $make_board_type.h
+set test_script_path   /home/test/work/cruise/checkouts/u-boot/u-boot_test_script
 
 
 proc make_uboot {} {
@@ -128,12 +129,14 @@ proc update_uboot {} {
     send -s "saveenv\r"
     expect -re $UBOOT_PROMPT
 
+    set timeout 20
     send -s "reset\r"
     while 1 {
         expect {
             "Hit any key " {
                 sleep 2
                 send "\r"
+                expect -re $UBOOT_PROMPT
                 return 2
             }
             timeout {
@@ -736,6 +739,61 @@ if { $TEST_JTAG_CONSOLE } {
 
     set jtag_console_result $TEST_FAIL
 
+#flash new u-boot image
+    exec rm -f /tftpboot/$uboot_test_image.jtag_console /tftpboot/$uboot_test_image
+
+    cd $uboot_test_loc
+    sleep 3
+    set timeout 2
+    if [ catch {exec rm include/configs/$config_file} ] {
+        send_user "\nfail delete include/configs/$config_file\n"
+        set jtag_console_result $TEST_FAIL
+    } else {
+        set build_spi_result $TEST_PASS
+    }
+
+    if [ catch {exec svn up include/configs/$config_file} ] {
+        send_user "\nfail to update include/configs/$config_file\n"
+        set jtag_console_result $TEST_FAIL
+    } else {
+        set build_spi_result $TEST_PASS
+    }
+
+    if { $jtag_console_result == $TEST_PASS } {
+        if { [make_uboot] == 2 } {
+            set jtag_console_result $TEST_PASS
+        } else {
+            set jtag_console_result $TEST_FAIL
+        }
+    }
+
+    if { $jtag_console_result == $TEST_PASS } {
+        if { [catch {exec cp $uboot_test_loc/$uboot_test_image /tftpboot/$uboot_test_image.jtag_console } ] } {
+            send_user "\nfail to copy $uboot_test_image.jtag_console\n"
+            set jtag_console_result $TEST_FAIL
+        } else {
+            set jtag_console_result $TEST_PASS
+        }
+    }
+
+    cd $test_script_path
+
+    set spawn_id $kermit_spawn_id
+
+    if { $jtag_console_result == $TEST_PASS } {
+        exec cp /tftpboot/$uboot_test_image.jtag_console /tftpboot/$uboot_test_image
+
+        send " \r"
+        expect $UBOOT_PROMPT
+
+        if { [update_uboot] == 2 } {
+            set jtag_console_result $TEST_PASS
+        } else {
+            set jtag_console_result $TEST_FAIL
+        }
+    }
+
+#start test
     spawn /bin/sh
     set root_spawn_id $spawn_id
     set timeout 8
@@ -1499,7 +1557,7 @@ if 0 {
 
 }
 
-exec rm -f $uboot_test_loc/include/configs/$make_board_type.h
-exec svn up $uboot_test_loc/include/configs/$make_board_type.h
+exec rm -f $uboot_test_loc/include/configs/$config_file
+exec svn up $uboot_test_loc/include/configs/$config_file
 
 all_done
