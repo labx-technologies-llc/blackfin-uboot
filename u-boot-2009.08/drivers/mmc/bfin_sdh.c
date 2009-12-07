@@ -53,13 +53,13 @@
 static int
 sdh_send_cmd(struct mmc *mmc, struct mmc_cmd *mmc_cmd)
 {
-	unsigned int sdh_cmd;
 	unsigned int status;
 	int cmd = mmc_cmd->cmdidx;
 	int flags = mmc_cmd->resp_type;
 	int arg = mmc_cmd->cmdarg;
 	int ret = 0;
-	sdh_cmd = 0;
+	u16 reg = 0;
+	u16 sdh_cmd = 0;
 
 	sdh_cmd |= cmd;
 
@@ -70,8 +70,9 @@ sdh_send_cmd(struct mmc *mmc, struct mmc_cmd *mmc_cmd)
 		sdh_cmd |= CMD_L_RSP;
 
 	bfin_write_SDH_ARGUMENT(arg);
+	SSYNC();
 	bfin_write_SDH_COMMAND(sdh_cmd | CMD_E);
-
+	SSYNC();
 	/* wait for a while */
 	do {
 		udelay(1);
@@ -88,13 +89,17 @@ sdh_send_cmd(struct mmc *mmc, struct mmc_cmd *mmc_cmd)
 		}
 	}
 
-	if (status & CMD_TIME_OUT)
+	if (status & CMD_TIME_OUT) {
 		ret |= TIMEOUT;
-	else if (status & CMD_CRC_FAIL && flags & MMC_RSP_CRC)
+		reg |= CMD_TIMEOUT_STAT;
+	} else if (status & CMD_CRC_FAIL && flags & MMC_RSP_CRC) {
 		ret |= COMM_ERR;
+		reg |= CMD_CRC_FAIL_STAT;
+	} else
+		reg |= CMD_SENT_STAT | CMD_RESP_END_STAT;
 
-	bfin_write_SDH_STATUS_CLR(CMD_SENT_STAT | CMD_RESP_END_STAT |
-				CMD_TIMEOUT_STAT | CMD_CRC_FAIL_STAT);
+	bfin_write_SDH_STATUS_CLR(reg);
+	SSYNC();
 	return ret;
 }
 
@@ -108,24 +113,28 @@ static int sdh_setup_data(struct mmc *mmc, struct mmc_data *data)
 	/* Don't support write yet. */
 	if (data->flags & MMC_DATA_WRITE)
 		return UNUSABLE_ERR;
+	blackfin_dcache_flush_invalidate_range(data->dest,
+			data->dest + data->blocksize);
+	SSYNC();
 	data_ctl |= ((ffs(data->blocksize) - 1) << 4);
 	data_ctl |= DTX_DIR;
 	bfin_write_SDH_DATA_CTL(data_ctl);
+	SSYNC();
 	dma_cfg = WDSIZE_32 | RESTART | WNR | DMAEN;
 
-	bfin_write_SDH_DATA_TIMER(0xFFFF);
-
-	blackfin_dcache_flush_invalidate_range(data->dest,
-			data->dest + data->blocksize);
+	bfin_write_SDH_DATA_TIMER(0xFFFFFFFF);
+	SSYNC();
 	/* configure DMA */
 	bfin_write_DMA_START_ADDR(data->dest);
 	bfin_write_DMA_X_COUNT(data->blocksize / 4);
 	bfin_write_DMA_X_MODIFY(4);
 	bfin_write_DMA_CONFIG(dma_cfg);
+	SSYNC();
 	bfin_write_SDH_DATA_LGTH(data->blocksize);
+	SSYNC();
 	/* kick off transfer */
 	bfin_write_SDH_DATA_CTL(bfin_read_SDH_DATA_CTL() | DTX_DMA_E | DTX_E);
-
+	SSYNC();
 	return ret;
 }
 
@@ -135,6 +144,7 @@ static int bfin_sdh_request(struct mmc *mmc, struct mmc_cmd *cmd,
 {
 	u32 status;
 	int ret = 0;
+	u16 reg = 0;
 
 	ret = sdh_send_cmd(mmc, cmd);
 	if (ret) {
@@ -149,14 +159,16 @@ static int bfin_sdh_request(struct mmc *mmc, struct mmc_cmd *cmd,
 		} while (!(status & (DAT_BLK_END | DAT_END | DAT_TIME_OUT | DAT_CRC_FAIL | RX_OVERRUN)));
 
 		if (status & DAT_TIME_OUT) {
-			bfin_write_SDH_STATUS_CLR(DAT_TIMEOUT_STAT);
+			reg |= DAT_TIMEOUT_STAT;
 			ret |= TIMEOUT;
 		} else if (status & (DAT_CRC_FAIL | RX_OVERRUN)) {
-			bfin_write_SDH_STATUS_CLR(DAT_CRC_FAIL_STAT | RX_OVERRUN_STAT);
+			reg |= DAT_CRC_FAIL_STAT | RX_OVERRUN_STAT;
 			ret |= COMM_ERR;
 		} else
-			bfin_write_SDH_STATUS_CLR(DAT_BLK_END_STAT | DAT_END_STAT);
+			reg |= DAT_BLK_END_STAT | DAT_END_STAT;
 
+		bfin_write_SDH_STATUS_CLR(reg);
+		SSYNC();
 		if (ret) {
 			printf("tranfering data failed\n");
 			return ret;
@@ -176,6 +188,7 @@ static void sdh_set_clk(unsigned long clk)
 		/* setting SD_CLK */
 		sys_clk = get_sclk();
 		bfin_write_SDH_CLK_CTL(clk_ctl & ~CLK_E);
+		SSYNC();
 		if (sys_clk % (2 * clk) == 0)
 			clk_div = sys_clk / (2 * clk) - 1;
 		else
@@ -188,6 +201,7 @@ static void sdh_set_clk(unsigned long clk)
 		bfin_write_SDH_CLK_CTL(clk_ctl);
 	} else
 		bfin_write_SDH_CLK_CTL(clk_ctl & ~CLK_E);
+	SSYNC();
 }
 
 static void bfin_sdh_set_ios(struct mmc *mmc)
@@ -203,6 +217,7 @@ static void bfin_sdh_set_ios(struct mmc *mmc)
 		clk_ctl |= WIDE_BUS;
 	}
 	bfin_write_SDH_CLK_CTL(clk_ctl);
+	SSYNC();
 	sdh_set_clk(mmc->clock);
 }
 
@@ -221,13 +236,16 @@ static int bfin_sdh_init(struct mmc *mmc)
 #else
 # error no portmux for this proc yet
 #endif
+	SSYNC();
 	bfin_write_SDH_CFG(bfin_read_SDH_CFG() | CLKS_EN);
+	SSYNC();
 	/* Disable card detect pin */
 	bfin_write_SDH_CFG((bfin_read_SDH_CFG() & 0x1F) | 0x60);
-
+	SSYNC();
 	pwr_ctl |= ROD_CTL;
 	pwr_ctl |= PWR_ON;
 	bfin_write_SDH_PWR_CTL(pwr_ctl);
+	SSYNC();
 	return 0;
 }
 
