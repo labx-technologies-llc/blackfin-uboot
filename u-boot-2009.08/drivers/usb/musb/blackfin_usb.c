@@ -81,31 +81,22 @@ void read_fifo(u8 ep, u32 length, void *fifo_data)
 	rw_fifo(ep, length, fifo_data, 0);
 }
 
-int musb_platform_init(void)
+
+/*
+ * CPU and board-specific MUSB initializations.  Aliased function
+ * signals caller to move on.
+ */
+static void __def_musb_init(void)
 {
 
-#if defined(__ADSPBF54x__)
-	/*
-	 * Rev 1.0 BF549 EZ-KITs require PE7 to be high for both DEVICE
-	 * and OTG HOST modes, while rev 1.1 and greater require PE7 to
-	 * be low for DEVICE mode and high for HOST mode. We set it high
-	 * here because we are in host mode
-	 */
-	*pPORTE_FER = *pPORTE_FER & ~PE7;
-	*pPORTE_DIR_SET |= PE7;
-	*pPORTE_SET |= PE7;
-	SSYNC();
-#endif
+}
 
-#if defined(__ADSPBF52x__)
-	/*
-	 * BF527 EZ-KITs require PG13 to be high for HOST mode
-	 */
-	*pPORTG_FER = *pPORTG_FER & ~PG13;
-	*pPORTGIO_DIR |= PG13;
-	*pPORTGIO_SET |= PG13;
-	SSYNC();
-#endif
+void board_musb_init(void) __attribute__((weak, alias("__def_musb_init")));
+
+int musb_platform_init(void)
+{
+	/* board specific initialization */
+	board_musb_init();
 
 	if (ANOMALY_05000346) {
 		bfin_write_USB_APHY_CALIB(ANOMALY_05000346_value);
