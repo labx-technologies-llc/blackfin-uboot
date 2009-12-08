@@ -68,3 +68,16 @@ int misc_init_r(void)
 
 	return 0;
 }
+
+#ifdef CONFIG_USB_BLACKFIN
+void board_musb_init(void)
+{
+	/*
+	 * BF527 EZ-KITs require PG13 to be high for HOST mode
+	 */
+	*pPORTG_FER = *pPORTG_FER & ~PG13;
+	*pPORTGIO_DIR |= PG13;
+	*pPORTGIO_SET |= PG13;
+	SSYNC();
+}
+#endif
