@@ -3494,8 +3494,8 @@ suzaku_config:	unconfig
 #========================================================================
 
 # Analog Devices boards
-BFIN_BOARDS = bf518f-ezbrd bf526-ezbrd bf527-ezkit bf527-ezkit-v2 bf533-ezkit \
-	bf533-stamp bf537-pnav bf537-stamp bf538f-ezkit bf548-ezkit bf561-ezkit
+BFIN_BOARDS = bf518f-ezbrd bf526-ezbrd bf527-ezkit bf533-ezkit bf533-stamp \
+	bf537-pnav bf537-stamp bf538f-ezkit bf548-ezkit bf561-ezkit
 
 # Bluetechnix tinyboards
 BFIN_BOARDS += cm-bf527 cm-bf533 cm-bf537e cm-bf537u cm-bf548 cm-bf561 tcm-bf537
