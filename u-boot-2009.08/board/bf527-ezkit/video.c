@@ -21,8 +21,6 @@ int gunzip(void *, int, unsigned char *, unsigned long *);
 #include <asm/mach-common/bits/ppi.h>
 #include <asm/mach-common/bits/timer.h>
 
-#include <asm/bfin_logo_230x230.h>
-
 #ifdef CONFIG_BF527_EZKIT_REV_2_1 /* lq035q1 */
 
 #define LCD_X_RES		320	/* Horizontal Resolution */
@@ -30,7 +28,7 @@ int gunzip(void *, int, unsigned char *, unsigned long *);
 #define	DMA_BUS_SIZE		16
 
 #if !(defined(CONFIG_LQ035Q1_USE_RGB888_8_BIT_PPI) || defined(CONFIG_LQ035Q1_USE_RGB565_8_BIT_PPI))
-#define CONFIG_LQ035Q1_USE_RGB888_8_BIT_PPI
+#define CONFIG_LQ035Q1_USE_RGB565_8_BIT_PPI
 #endif
 
 /* Interface 16/18-bit TFT over an 8-bit wide PPI using a small Programmable Logic Device (CPLD)
@@ -38,12 +36,14 @@ int gunzip(void *, int, unsigned char *, unsigned long *);
  */
 
 #ifdef CONFIG_LQ035Q1_USE_RGB565_8_BIT_PPI
+#include <asm/bfin_logo_rgb565_230x230.h>
 #define LCD_BPP		16	/* Bit Per Pixel */
 #define CLOCKS_PER_PIX	2
 #define CPLD_PIPELINE_DELAY_COR 3	/* RGB565 */
 #endif
 
 #ifdef CONFIG_LQ035Q1_USE_RGB888_8_BIT_PPI
+#include <asm/bfin_logo_230x230.h>
 #define LCD_BPP		24	/* Bit Per Pixel */
 #define CLOCKS_PER_PIX	3
 #define CPLD_PIPELINE_DELAY_COR 5	/* RGB888 */
@@ -95,6 +95,7 @@ int gunzip(void *, int, unsigned char *, unsigned long *);
 #endif
 
 #else /* t350mcqb */
+#include <asm/bfin_logo_230x230.h>
 
 #define LCD_X_RES		320	/* Horizontal Resolution */
 #define LCD_Y_RES		240	/* Vertical Resolution */
