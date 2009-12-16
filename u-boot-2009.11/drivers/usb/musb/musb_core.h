@@ -375,7 +375,7 @@ extern void read_fifo(u8 ep, u32 length, void *fifo_data);
  * is only 8-bits in size.  Fun stuff.
  */
 # undef  readb
-# define readb(addr)     (u8)readw(addr)
+# define readb(addr)     (u8)bfin_read16(addr)
 # undef  writeb
 # define writeb(b, addr) writew(b, addr)
 #endif
