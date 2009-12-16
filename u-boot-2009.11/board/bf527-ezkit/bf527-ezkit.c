@@ -75,9 +75,9 @@ void board_musb_init(void)
 	/*
 	 * BF527 EZ-KITs require PG13 to be high for HOST mode
 	 */
-	*pPORTG_FER = *pPORTG_FER & ~PG13;
-	*pPORTGIO_DIR |= PG13;
-	*pPORTGIO_SET |= PG13;
+	bfin_write_PORTG_FER(bfin_read_PORTG_FER() & ~PG13);
+	bfin_write_PORTGIO_DIR(bfin_read_PORTGIO_DIR() | PG13);
+	bfin_write_PORTGIO_SET(PG13);
 	SSYNC();
 }
 #endif
