@@ -501,11 +501,11 @@ int main (int argc, char *argv[])
 			break;
 		case 'g':
 			use_gzip |= 0x1;
-			puts("Compressing with gzip");
+			puts ("Compressing with gzip");
 			break;
 		case 'b':
 			use_gzip |= 0x2;
-			puts("Preallocating bss space for decompressing image");
+			puts ("Preallocating bss space for decompressing image");
 			break;
 		default:
 			usage (1);
@@ -546,31 +546,29 @@ int main (int argc, char *argv[])
 
 	/* Import TGA logo */
 
-	printf("L");
+	printf ("L");
 	if (image_load_tga(&rgb888_logo, inputfile) < 0) {
 		printf ("input file not found!\n");
 		exit (1);
 	}
 
-	/* Convert it to YUYV format if wanted */
+	/* Convert, save, and free the image */
 
 	if (!use_rgb888 && !use_rgb565) {
 		printf ("C");
 		image_rgb_to_yuyv(&rgb888_logo, &yuyv_logo);
 
-		/* Save it into a header format */
 		printf("S");
 		image_save_header(&yuyv_logo, outputfile, varname);
 		image_free(&yuyv_logo);
 	} else if (use_rgb565) {
 		printf("C");
 		image_rgb888_to_rgb565(&rgb888_logo, &rgb565_logo);
-		/* Save it into a header format */
+
 		printf("S");
 		image_save_header(&rgb565_logo, outputfile, varname);
 		image_free(&rgb565_logo);
 	} else {
-		/* Save it into a header format */
 		printf("S");
 		image_save_header(&rgb888_logo, outputfile, varname);
 	}
