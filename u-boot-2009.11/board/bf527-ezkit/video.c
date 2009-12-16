@@ -21,7 +21,7 @@ int gunzip(void *, int, unsigned char *, unsigned long *);
 #include <asm/mach-common/bits/ppi.h>
 #include <asm/mach-common/bits/timer.h>
 
-#ifdef CONFIG_BF527_EZKIT_REV_2_1 /* lq035q1 */
+#ifdef CONFIG_MK_BF527_EZKIT_REV_2_1 /* lq035q1 */
 
 #define LCD_X_RES		320	/* Horizontal Resolution */
 #define LCD_Y_RES		240	/* Vertical Resolution */
@@ -128,7 +128,7 @@ int gunzip(void *, int, unsigned char *, unsigned long *);
 #define PPI_PACK_EN		0x80
 #define PPI_POLS_1		0x8000
 
-#ifdef CONFIG_BF527_EZKIT_REV_2_1
+#ifdef CONFIG_MK_BF527_EZKIT_REV_2_1
 static struct spi_slave *slave;
 static int lq035q1_control(unsigned char reg, unsigned short value)
 {
@@ -304,7 +304,7 @@ void EnableTIMER12(void)
 int video_init(void *dst)
 {
 
-#ifdef CONFIG_BF527_EZKIT_REV_2_1
+#ifdef CONFIG_MK_BF527_EZKIT_REV_2_1
 	lq035q1_control(LQ035_SHUT_CTL, LQ035_ON);
 	lq035q1_control(LQ035_DRIVER_OUTPUT_CTL, (CONFIG_LQ035Q1_LCD_MODE &
 		LQ035_DRIVER_OUTPUT_MASK) | LQ035_DRIVER_OUTPUT_DEFAULT);
@@ -317,7 +317,7 @@ int video_init(void *dst)
 	Init_PPI();
 	EnablePPI();
 
-#ifdef CONFIG_BF527_EZKIT_REV_2_1
+#ifdef CONFIG_MK_BF527_EZKIT_REV_2_1
 	EnableTIMER12();
 #else
 	/* Frame sync 2 (VS) needs to start at least one PPI clk earlier */
@@ -387,7 +387,7 @@ void video_stop(void)
 	DisableDMA();
 	DisableTIMER0();
 	DisableTIMER1();
-#ifdef CONFIG_BF527_EZKIT_REV_2_1
+#ifdef CONFIG_MK_BF527_EZKIT_REV_2_1
 	lq035q1_control(LQ035_SHUT_CTL, LQ035_SHUT);
 #endif
 }

@@ -155,20 +155,20 @@
 
 
 /*
+ * Video Settings
+ */
+#ifdef CONFIG_MK_BF527_EZKIT_REV_2_1
+# define CONFIG_LQ035Q1_SPI_BUS	0
+# define CONFIG_LQ035Q1_SPI_CS	7
+#endif
+
+
+/*
  * Misc Settings
  */
 #define CONFIG_MISC_INIT_R
 #define CONFIG_RTC_BFIN
 #define CONFIG_UART_CONSOLE	1
-
-/*
- * Video Settings
- */
-
-#ifdef CONFIG_BF527_EZKIT_REV_2_1
-#define CONFIG_LQ035Q1_SPI_BUS	0
-#define CONFIG_LQ035Q1_SPI_CS	7
-#endif
 
 /* Don't waste time transferring a logo over the UART */
 #if (CONFIG_BFIN_BOOT_MODE != BFIN_BOOT_UART)

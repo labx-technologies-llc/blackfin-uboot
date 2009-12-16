@@ -3557,11 +3557,10 @@ BFIN_BOARDS += bf537-minotaur bf537-srv1 bf561-acvilon blackstamp
 BFIN_BOARDS += ibf-dsp561
 
 $(BFIN_BOARDS:%=%_config)	: unconfig
-	@$(MKCONFIG) $(@:_config=) blackfin blackfin $(@:_config=)
+	@$(MKCONFIG) $(MKCONFIG_$(@:_config=)) $(@:_config=) blackfin blackfin $(@:_config=)
 
-bf527-ezkit-v2_config:
-	$(MAKE) bf527-ezkit_config
-	@sed -i "1i\#define CONFIG_BF527_EZKIT_REV_2_1" $(obj)include/config.h
+bf527-ezkit-v2_config	: unconfig
+	@$(MKCONFIG) -t BF527_EZKIT_REV_2_1 bf527-ezkit blackfin blackfin bf527-ezkit
 
 #========================================================================
 # AVR32
