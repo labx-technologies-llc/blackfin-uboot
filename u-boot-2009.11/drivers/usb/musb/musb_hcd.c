@@ -40,7 +40,7 @@ static int rh_devnum;
 static u32 port_status;
 
 /* Device descriptor */
-static __u8 root_hub_dev_des[] = {
+static u8 root_hub_dev_des[] = {
 	0x12,			/*  __u8  bLength; */
 	0x01,			/*  __u8  bDescriptorType; Device */
 	0x00,			/*  __u16 bcdUSB; v1.1 */
@@ -62,7 +62,7 @@ static __u8 root_hub_dev_des[] = {
 };
 
 /* Configuration descriptor */
-static __u8 root_hub_config_des[] = {
+static u8 root_hub_config_des[] = {
 	0x09,			/*  __u8  bLength; */
 	0x02,			/*  __u8  bDescriptorType; Configuration */
 	0x19,			/*  __u16 wTotalLength; */
@@ -517,7 +517,7 @@ static void config_hub_port(struct usb_device *dev, u8 ep)
 #endif
 }
 
-void musb_port_reset(int do_reset)
+static void musb_port_reset(int do_reset)
 {
 	u8 power = readb(&musbr->power);
 
@@ -540,11 +540,13 @@ void musb_port_reset(int do_reset)
 			| (USB_PORT_STAT_C_ENABLE << 16);
 	}
 }
+
 /*
  * root hub control
  */
-int musb_submit_rh_msg(struct usb_device *dev, unsigned long pipe, void *buffer,
-			int transfer_len, struct devrequest *cmd)
+static int musb_submit_rh_msg(struct usb_device *dev, unsigned long pipe,
+			      void *buffer, int transfer_len,
+			      struct devrequest *cmd)
 {
 	int leni = transfer_len;
 	int len = 0;
