@@ -160,7 +160,7 @@ struct musb_regs {
 		u8	rxhubport;
 	} tar[16];
 #endif
-} __attribute__((aligned(32)));
+} __attribute__((packed, aligned(32)));
 
 /*
  * MUSB Register bits
