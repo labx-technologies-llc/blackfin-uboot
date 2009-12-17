@@ -1204,7 +1204,8 @@ int submit_int_msg(struct usb_device *dev, unsigned long pipe,
 					(len-txlen) : dev->epmaxpacketin[ep];
 
 			/* Set the ReqPkt bit */
-			writew(MUSB_RXCSR_H_REQPKT, &musbr->rxcsr);
+			csr = readw(&musbr->rxcsr);
+			writew(csr | MUSB_RXCSR_H_REQPKT, &musbr->rxcsr);
 
 			/* Wait until the RxPktRdy bit is set */
 			if (!wait_until_rxep_ready(dev, MUSB_INTR_EP)) {
