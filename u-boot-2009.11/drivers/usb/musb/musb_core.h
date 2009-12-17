@@ -377,7 +377,7 @@ extern void read_fifo(u8 ep, u32 length, void *fifo_data);
 # undef  readb
 # define readb(addr)     (u8)bfin_read16(addr)
 # undef  writeb
-# define writeb(b, addr) writew(b, addr)
+# define writeb(b, addr) bfin_write16(addr, b)
 #endif
 
 #endif	/* __MUSB_HDRC_DEFS_H__ */
