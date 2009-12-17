@@ -11,17 +11,19 @@
 
 #include "musb_core.h"
 
-/* Base address of Blackfin musb core */
-#define MENTOR_USB_BASE		(USB_FADDR)
+/* Every register is 32bit aligned, but only 16bits in size */
+#define ureg(name) u16 name; u16 __pad_##name;
 
-/* Blackfin uses DMA polling method of FIFO read/write */
-#define USB_DMA_BASE		USB_DMA_INTERRUPT
-#define USB_DMAx_CTRL		0x04
-#define USB_DMAx_ADDR_LOW	0x08
-#define USB_DMAx_ADDR_HIGH	0x0C
-#define USB_DMAx_COUNT_LOW	0x10
-#define USB_DMAx_COUNT_HIGH	0x14
+struct bfin_musb_dma_regs {
+	ureg(interrupt);
+	ureg(control);
+	ureg(addr_low);
+	ureg(addr_high);
+	ureg(count_low);
+	ureg(count_high);
+	ureg(pad);
+};
 
-#define USB_DMA_REG(ep, reg)	(USB_DMA_BASE + 0x20 * ep + reg)
+#undef ureg
 
 #endif

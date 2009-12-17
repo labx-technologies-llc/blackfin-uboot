@@ -17,7 +17,7 @@
 
 /* MUSB platform configuration */
 struct musb_config musb_cfg = {
-	.regs       = (struct musb_regs *)MENTOR_USB_BASE,
+	.regs       = (struct musb_regs *)USB_FADDR,
 	.timeout    = 0x3FFFFFF,
 	.musb_speed = 0,
 };
@@ -33,41 +33,43 @@ struct musb_config musb_cfg = {
  */
 void rw_fifo(u8 ep, u32 length, void *fifo_data, int is_write)
 {
-	u16 dma_reg = 0;
+	struct bfin_musb_dma_regs *regs;
+	u32 val = (u32)fifo_data;
 
-	blackfin_dcache_flush_invalidate_range(fifo_data,
-		(fifo_data + length));
+	blackfin_dcache_flush_invalidate_range(fifo_data, fifo_data + length);
+
+	regs = (void *)USB_DMA_INTERRUPT;
+	regs += ep;
 
 	/* Setup DMA address register */
-	dma_reg = (u16) ((u32) fifo_data & 0xFFFF);
-	bfin_write16(USB_DMA_REG(ep, USB_DMAx_ADDR_LOW), dma_reg);
+	bfin_write16(&regs->addr_low, val);
 	SSYNC();
 
-	dma_reg = (u16) (((u32) fifo_data >> 16) & 0xFFFF);
-	bfin_write16(USB_DMA_REG(ep, USB_DMAx_ADDR_HIGH), dma_reg);
+	bfin_write16(&regs->addr_high, val >> 16);
 	SSYNC();
 
 	/* Setup DMA count register */
-	bfin_write16(USB_DMA_REG(ep, USB_DMAx_COUNT_LOW), length);
-	bfin_write16(USB_DMA_REG(ep, USB_DMAx_COUNT_HIGH), 0);
+	bfin_write16(&regs->count_low, length);
+	bfin_write16(&regs->count_high, 0);
 	SSYNC();
 
 	/* Enable the DMA */
-	dma_reg = (ep << 4) | DMA_ENA | INT_ENA;
+	val = (ep << 4) | DMA_ENA | INT_ENA;
 	if (is_write)
-		dma_reg |= DIRECTION;
-	bfin_write16(USB_DMA_REG(ep, USB_DMAx_CTRL), dma_reg);
+		val |= DIRECTION;
+	bfin_write16(&regs->control, val);
 	SSYNC();
 
 	/* Wait for compelete */
-	while (!(bfin_read_USB_DMA_INTERRUPT() & (1 << ep)));
+	while (!(bfin_read_USB_DMA_INTERRUPT() & (1 << ep)))
+		continue;
 
 	/* acknowledge dma interrupt */
 	bfin_write_USB_DMA_INTERRUPT(1 << ep);
 	SSYNC();
 
 	/* Reset DMA */
-	bfin_write16(USB_DMA_REG(ep, USB_DMAx_CTRL), 0);
+	bfin_write16(&regs->control, 0);
 	SSYNC();
 }
 
@@ -88,9 +90,7 @@ void read_fifo(u8 ep, u32 length, void *fifo_data)
  */
 static void __def_musb_init(void)
 {
-
 }
-
 void board_musb_init(void) __attribute__((weak, alias("__def_musb_init")));
 
 int musb_platform_init(void)
