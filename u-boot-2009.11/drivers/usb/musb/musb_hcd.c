@@ -986,7 +986,7 @@ int submit_bulk_msg(struct usb_device *dev, unsigned long pipe,
 
 #ifdef CONFIG_USB_BLACKFIN
 			/* Set the transfer data size */
-			writew(nextlen, &musbr->txcount); //MUSB_INDEXED_OFFSET(MUSB_TXCOUNT), nextlen);
+			writew(nextlen, &musbr->txcount);
 #endif
 
 			/* Write the data to the FIFO */
