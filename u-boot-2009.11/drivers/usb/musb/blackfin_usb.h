@@ -87,4 +87,7 @@ struct bfin_musb_dma_regs {
 
 #undef ureg
 
+/* EP5-EP7 are the only ones with 1024 byte FIFOs which BULK really needs */
+#define MUSB_BULK_EP 5
+
 #endif

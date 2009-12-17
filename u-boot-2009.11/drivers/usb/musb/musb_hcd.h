@@ -38,10 +38,8 @@ extern unsigned char new[];
 #define MUSB_CONTROL_EP 0
 
 /* This defines the endpoint number used for bulk transfer */
-#ifdef CONFIG_USB_BLACKFIN
-#define MUSB_BULK_EP 5
-#else
-#define MUSB_BULK_EP 1
+#ifndef MUSB_BULK_EP
+# define MUSB_BULK_EP 1
 #endif
 
 /* This defines the endpoint number used for interrupt transfer */
