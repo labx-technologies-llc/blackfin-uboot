@@ -94,8 +94,8 @@ struct bfin_mmr_serial {
 # define ACCESS_LATCH()
 # define ACCESS_PORT_IER()
 #else
-# define ACCESS_LATCH()    (pUART->lcr |= DLAB)
-# define ACCESS_PORT_IER() (pUART->lcr &= ~DLAB)
+# define ACCESS_LATCH()    bfin_write16(&pUART->lcr, bfin_read16(&pUART->lcr) | DLAB)
+# define ACCESS_PORT_IER() bfin_write16(&pUART->lcr, bfin_read16(&pUART->lcr) & ~DLAB)
 #endif
 
 __attribute__((always_inline))
@@ -149,10 +149,10 @@ static inline void serial_early_init(void)
 	serial_do_portmux();
 
 	/* always enable UART -- avoids anomalies 05000309 and 05000350 */
-	pUART->gctl = UCEN;
+	bfin_write16(&pUART->gctl, UCEN);
 
 	/* Set LCR to Word Lengh 8-bit word select */
-	pUART->lcr = WLS_8;
+	bfin_write16(&pUART->lcr, WLS_8);
 
 	SSYNC();
 }
@@ -165,8 +165,8 @@ static inline void serial_early_put_div(uint16_t divisor)
 	SSYNC();
 
 	/* Program the divisor to get the baud rate we want */
-	pUART->dll = LOB(divisor);
-	pUART->dlh = HIB(divisor);
+	bfin_write16(&pUART->dll, LOB(divisor));
+	bfin_write16(&pUART->dlh, HIB(divisor));
 	SSYNC();
 
 	/* Clear DLAB in LCR to Access THR RBR IER */
@@ -181,8 +181,8 @@ static inline uint16_t serial_early_get_div(void)
 	ACCESS_LATCH();
 	SSYNC();
 
-	uint8_t dll = pUART->dll;
-	uint8_t dlh = pUART->dlh;
+	uint8_t dll = bfin_read16(&pUART->dll);
+	uint8_t dlh = bfin_read16(&pUART->dlh);
 	uint16_t divisor = (dlh << 8) | dll;
 
 	/* Clear DLAB in LCR to Access THR RBR IER */

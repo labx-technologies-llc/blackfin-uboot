@@ -59,7 +59,7 @@ size_t cache_count;
 static uint16_t uart_lsr_save;
 static uint16_t uart_lsr_read(void)
 {
-	uint16_t lsr = pUART->lsr;
+	uint16_t lsr = bfin_read16(&pUART->lsr);
 	uart_lsr_save |= (lsr & (OE|PE|FE|BI));
 	return lsr | uart_lsr_save;
 }
@@ -67,15 +67,15 @@ static uint16_t uart_lsr_read(void)
 static void uart_lsr_clear(void)
 {
 	uart_lsr_save = 0;
-	pUART->lsr |= -1;
+	bfin_write16(&pUART->lsr, bfin_read16(&pUART->lsr) | -1);
 }
 #else
 /* When debugging is disabled, we only care about the DR bit, so if other
  * bits get set/cleared, we don't really care since we don't read them
  * anyways (and thus anomaly 05000099 is irrelevant).
  */
-static uint16_t uart_lsr_read(void) { return pUART->lsr; }
-static void uart_lsr_clear(void) { pUART->lsr |= -1; }
+static uint16_t uart_lsr_read(void) { return bfin_read16(&pUART->lsr); }
+static void uart_lsr_clear(void) { bfin_write16(&pUART->lsr, bfin_read16(&pUART->lsr) | -1); }
 #endif
 
 /* Symbol for our assembly to call. */
@@ -126,7 +126,7 @@ void serial_putc(const char c)
 		continue;
 
 	/* queue the character for transmission */
-	pUART->thr = c;
+	bfin_write16(&pUART->thr, c);
 	SSYNC();
 
 	WATCHDOG_RESET();
@@ -147,7 +147,7 @@ int serial_getc(void)
 		continue;
 
 	/* grab the new byte */
-	uart_rbr_val = pUART->rbr;
+	uart_rbr_val = bfin_read16(&pUART->rbr);
 
 #ifdef CONFIG_DEBUG_SERIAL
 	/* grab & clear the LSR */
@@ -161,8 +161,8 @@ int serial_getc(void)
 		uint16_t dll, dlh;
 		printf("\n[SERIAL ERROR]\n");
 		ACCESS_LATCH();
-		dll = pUART->dll;
-		dlh = pUART->dlh;
+		dll = bfin_read16(&pUART->dll);
+		dlh = bfin_read16(&pUART->dlh);
 		ACCESS_PORT_IER();
 		printf("\tDLL=0x%x DLH=0x%x\n", dll, dlh);
 		do {
