@@ -38,72 +38,15 @@
 #include <usb_defs.h>
 #include <asm/io.h>
 
+#ifdef CONFIG_USB_BLACKFIN
+# include "blackfin_usb.h"
+#endif
+
 #define MUSB_EP0_FIFOSIZE	64	/* This is non-configurable */
 
 /* Mentor USB core register overlay structure */
+#ifndef musb_regs
 struct musb_regs {
-#if defined(CONFIG_USB_BLACKFIN)
-	/* Every register is 32bit aligned, but only 16bits in size */
-# define ureg(name) u16 name; u16 __pad_##name;
-	/* common registers */
-	ureg(faddr)
-	ureg(power)
-	ureg(intrtx)
-	ureg(intrrx)
-	ureg(intrtxe)
-	ureg(intrrxe)
-	ureg(intrusb)
-	ureg(intrusbe)
-	ureg(frame)
-	ureg(index)
-	ureg(testmode)
-	ureg(globintr)
-	ureg(global_ctl)
-	u32	reserved0[3];
-	/* indexed registers */
-	ureg(txmaxp)
-	ureg(txcsr)
-	ureg(rxmaxp)
-	ureg(rxcsr)
-	ureg(rxcount)
-	ureg(txtype)
-	ureg(txinterval)
-	ureg(rxtype)
-	ureg(rxinterval)
-	u32	reserved1;
-	ureg(txcount)
-	u32	reserved2[5];
-	/* fifo */
-	u16	fifox[32];
-	/* OTG, dynamic FIFO, version & vendor registers */
-	u32	reserved3[16];
-	ureg(devctl)
-	ureg(vbus_irq)
-	ureg(vbus_mask)
-	u32 reserved4[15];
-	ureg(linkinfo)
-	ureg(vplen)
-	ureg(hseof1)
-	ureg(fseof1)
-	ureg(lseof1)
-	u32 reserved5[41];
-	/* target address registers */
-	struct musb_tar_regs {
-		ureg(txmaxp)
-		ureg(txcsr)
-		ureg(rxmaxp)
-		ureg(rxcsr)
-		ureg(rxcount)
-		ureg(txtype)
-		ureg(txinternal)
-		ureg(rxtype)
-		ureg(rxinternal)
-		u32	reserved6;
-		ureg(txcount)
-		u32 reserved7[5];
-	} tar[8];
-# undef ureg
-#else
 	/* common registers */
 	u8	faddr;
 	u8	power;
@@ -159,8 +102,8 @@ struct musb_regs {
 		u8	rxhubaddr;
 		u8	rxhubport;
 	} tar[16];
-#endif
 } __attribute__((packed, aligned(32)));
+#endif
 
 /*
  * MUSB Register bits

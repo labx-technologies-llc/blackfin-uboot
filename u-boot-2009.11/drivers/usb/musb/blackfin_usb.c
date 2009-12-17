@@ -13,7 +13,7 @@
 #include <asm/blackfin.h>
 #include <asm/mach-common/bits/usb.h>
 
-#include "blackfin_usb.h"
+#include "musb_core.h"
 
 /* MUSB platform configuration */
 struct musb_config musb_cfg = {
