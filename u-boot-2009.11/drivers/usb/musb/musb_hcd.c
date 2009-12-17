@@ -508,7 +508,7 @@ static void config_hub_port(struct usb_device *dev, u8 ep)
 		if (dev->parent->children[chid] == dev)
 			break;
 
-#ifndef CONFIG_BLACKFIN
+#ifndef MUSB_NO_MULTIPOINT
 	/* configure the hub address and the port address */
 	writeb(hub, &musbr->tar[ep].txhubaddr);
 	writeb((chid + 1), &musbr->tar[ep].txhubport);
@@ -840,7 +840,7 @@ int submit_control_msg(struct usb_device *dev, unsigned long pipe, void *buffer,
 	writeb(MUSB_CONTROL_EP, &musbr->index);
 	csr = readw(&musbr->txcsr);
 
-#ifndef CONFIG_USB_BLACKFIN
+#ifndef MUSB_NO_MULTIPOINT
 	/* target addr and (for multipoint) hub addr/port */
 	writeb(devnum, &musbr->tar[MUSB_CONTROL_EP].txfuncaddr);
 	writeb(devnum, &musbr->tar[MUSB_CONTROL_EP].rxfuncaddr);
@@ -854,7 +854,7 @@ int submit_control_msg(struct usb_device *dev, unsigned long pipe, void *buffer,
 		writeb(devspeed << 6, &musbr->txtype);
 	} else {
 		writeb(musb_cfg.musb_speed << 6, &musbr->txtype);
-#ifndef CONFIG_USB_BLACKFIN
+#ifndef MUSB_NO_MULTIPOINT
 		writeb(0, &musbr->tar[MUSB_CONTROL_EP].txhubaddr);
 		writeb(0, &musbr->tar[MUSB_CONTROL_EP].txhubport);
 		writeb(0, &musbr->tar[MUSB_CONTROL_EP].rxhubaddr);
@@ -925,7 +925,7 @@ int submit_bulk_msg(struct usb_device *dev, unsigned long pipe,
 {
 	int dir_out = usb_pipeout(pipe);
 	int ep = usb_pipeendpoint(pipe);
-#ifndef CONFIG_USB_BLACKFIN
+#ifndef MUSB_NO_MULTIPOINT
 	int devnum = usb_pipedevice(pipe);
 #endif
 	u8  type;
@@ -937,7 +937,7 @@ int submit_bulk_msg(struct usb_device *dev, unsigned long pipe,
 	/* select bulk endpoint */
 	writeb(MUSB_BULK_EP, &musbr->index);
 
-#ifndef CONFIG_USB_BLACKFIN
+#ifndef MUSB_NO_MULTIPOINT
 	/* write the address of the device */
 	if (dir_out)
 		writeb(devnum, &musbr->tar[MUSB_BULK_EP].txfuncaddr);
@@ -956,7 +956,7 @@ int submit_bulk_msg(struct usb_device *dev, unsigned long pipe,
 		 */
 		config_hub_port(dev, MUSB_BULK_EP);
 	} else {
-#ifndef CONFIG_USB_BLACKFIN
+#ifndef MUSB_NO_MULTIPOINT
 		if (dir_out) {
 			writeb(0, &musbr->tar[MUSB_BULK_EP].txhubaddr);
 			writeb(0, &musbr->tar[MUSB_BULK_EP].txhubport);
@@ -1139,7 +1139,7 @@ int submit_int_msg(struct usb_device *dev, unsigned long pipe,
 {
 	int dir_out = usb_pipeout(pipe);
 	int ep = usb_pipeendpoint(pipe);
-#ifndef CONFIG_USB_BLACKFIN
+#ifndef MUSB_NO_MULTIPOINT
 	int devnum = usb_pipedevice(pipe);
 #endif
 	u8  type;
@@ -1151,7 +1151,7 @@ int submit_int_msg(struct usb_device *dev, unsigned long pipe,
 	/* select interrupt endpoint */
 	writeb(MUSB_INTR_EP, &musbr->index);
 
-#ifndef CONFIG_USB_BLACKFIN
+#ifndef MUSB_NO_MULTIPOINT
 	/* write the address of the device */
 	if (dir_out)
 		writeb(devnum, &musbr->tar[MUSB_INTR_EP].txfuncaddr);
@@ -1170,7 +1170,7 @@ int submit_int_msg(struct usb_device *dev, unsigned long pipe,
 		 */
 		config_hub_port(dev, MUSB_INTR_EP);
 	} else {
-#ifndef CONFIG_USB_BLACKFIN
+#ifndef MUSB_NO_MULTIPOINT
 		if (dir_out) {
 			writeb(0, &musbr->tar[MUSB_INTR_EP].txhubaddr);
 			writeb(0, &musbr->tar[MUSB_INTR_EP].txhubport);

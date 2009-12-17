@@ -93,4 +93,7 @@ struct bfin_musb_dma_regs {
 /* Blackfin FIFO's are static */
 #define MUSB_NO_DYNAMIC_FIFO
 
+/* No HUB support :( */
+#define MUSB_NO_MULTIPOINT
+
 #endif
