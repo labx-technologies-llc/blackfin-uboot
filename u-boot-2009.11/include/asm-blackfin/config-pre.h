@@ -74,7 +74,7 @@ static inline const char *get_bfin_boot_mode(int bfin_boot)
 /* There is no Blackfin/NetBSD port */
 #undef CONFIG_BOOTM_NETBSD
 
-/* We are single threaded most of the time */
+/* We rarely use interrupts, so favor throughput over latency */
 #define CONFIG_BFIN_INS_LOWOVERHEAD
 
 #endif
