@@ -67,9 +67,6 @@ static inline void serial_init(void)
 		int ucen = bfin_read16(&pUART->gctl) & UCEN;
 		serial_early_init();
 
-#ifndef CONFIG_BAUDRATE
-# define CONFIG_BAUDRATE 57600
-#endif
 		/* If the UART is off, that means we need to program
 		 * the baud rate ourselves initially.
 		 */
