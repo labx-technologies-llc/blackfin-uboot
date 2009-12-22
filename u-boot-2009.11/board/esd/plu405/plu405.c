@@ -90,9 +90,6 @@ void init_coupler(u32 addr)
 	out_8(&ctrl->cr, CR_RR);
 }
 
-/* Prototypes */
-int gunzip(void *, int, unsigned char *, unsigned long *);
-
 int board_early_init_f(void)
 {
 	/*

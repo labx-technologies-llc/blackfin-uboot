@@ -608,6 +608,11 @@ ulong	usec2ticks    (unsigned long usec);
 ulong	ticks2usec    (unsigned long ticks);
 int	init_timebase (void);
 
+/* lib_generic/gunzip.c */
+int gunzip(void *, int, unsigned char *, unsigned long *);
+int zunzip(void *dst, int dstlen, unsigned char *src, unsigned long *lenp,
+						int stoponerr, int offset);
+
 /* lib_generic/vsprintf.c */
 ulong	simple_strtoul(const char *cp,char **endp,unsigned int base);
 #ifdef CONFIG_SYS_64BIT_VSPRINTF

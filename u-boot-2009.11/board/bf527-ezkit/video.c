@@ -16,8 +16,6 @@
 #include <linux/types.h>
 #include <stdio_dev.h>
 
-int gunzip(void *, int, unsigned char *, unsigned long *);
-
 #include <asm/mach-common/bits/ppi.h>
 #include <asm/mach-common/bits/timer.h>
 
