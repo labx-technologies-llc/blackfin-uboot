@@ -1007,11 +1007,11 @@ build_target() {
 		RC=1
 	fi
 
-	if [ -s ${LOG_DIR}/$target.ERR ] ; then
+	if [ -s ${LOG_DIR}/$target.$cpu.$bmode.ERR ] ; then
 		ERR_CNT=$((ERR_CNT + 1))
 		ERR_LIST="${ERR_LIST} $target"
 	else
-		rm ${LOG_DIR}/$target.ERR
+		rm ${LOG_DIR}/$target.$cpu.$bmode.ERR
 	fi
 
 	TOTAL_CNT=$((TOTAL_CNT + 1))
