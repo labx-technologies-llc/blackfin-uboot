@@ -94,8 +94,10 @@ struct bfin_mmr_serial {
 # define ACCESS_LATCH()
 # define ACCESS_PORT_IER()
 #else
-# define ACCESS_LATCH()    bfin_write16(&pUART->lcr, bfin_read16(&pUART->lcr) | DLAB)
-# define ACCESS_PORT_IER() bfin_write16(&pUART->lcr, bfin_read16(&pUART->lcr) & ~DLAB)
+# define ACCESS_LATCH() \
+	bfin_write16(&pUART->lcr, bfin_read16(&pUART->lcr) | DLAB)
+# define ACCESS_PORT_IER() \
+	bfin_write16(&pUART->lcr, bfin_read16(&pUART->lcr) & ~DLAB)
 #endif
 
 __attribute__((always_inline))

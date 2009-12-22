@@ -33,7 +33,6 @@
 
 #include <common.h>
 #include <netdev.h>
-#include <asm/io.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 

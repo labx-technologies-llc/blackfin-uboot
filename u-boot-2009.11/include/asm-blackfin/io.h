@@ -214,10 +214,10 @@ extern void cf_outb(unsigned char val, volatile unsigned char *addr);
 #undef outb
 #undef insw
 #undef outsw
-#define inb(addr) cf_inb((volatile unsigned char *)(addr))
-#define outb(x, addr) cf_outb((unsigned char)(x), (volatile unsigned char *)(addr))
-#define insw(port, addr, count) cf_insw((unsigned short *)(addr), (unsigned short *)(port), (count))
-#define outsw(port, addr, count) cf_outsw((unsigned short *)(port), (unsigned short *)(addr), (count))
+#define inb(addr) cf_inb((void *)(addr))
+#define outb(x, addr) cf_outb((unsigned char)(x), (void *)(addr))
+#define insw(port, addr, cnt) cf_insw((void *)(addr), (void *)(port), cnt)
+#define outsw(port, addr, cnt) cf_outsw((void *)(port), (void *)(addr), cnt)
 #endif
 
 #endif

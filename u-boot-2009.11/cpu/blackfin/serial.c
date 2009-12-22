@@ -74,8 +74,14 @@ static void uart_lsr_clear(void)
  * bits get set/cleared, we don't really care since we don't read them
  * anyways (and thus anomaly 05000099 is irrelevant).
  */
-static uint16_t uart_lsr_read(void) { return bfin_read16(&pUART->lsr); }
-static void uart_lsr_clear(void) { bfin_write16(&pUART->lsr, bfin_read16(&pUART->lsr) | -1); }
+static uint16_t uart_lsr_read(void)
+{
+	return bfin_read16(&pUART->lsr);
+}
+static void uart_lsr_clear(void)
+{
+	bfin_write16(&pUART->lsr, bfin_read16(&pUART->lsr) | -1);
+}
 #endif
 
 /* Symbol for our assembly to call. */

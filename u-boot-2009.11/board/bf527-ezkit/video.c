@@ -19,50 +19,52 @@
 #include <asm/mach-common/bits/ppi.h>
 #include <asm/mach-common/bits/timer.h>
 
-#ifdef CONFIG_MK_BF527_EZKIT_REV_2_1 /* lq035q1 */
-
 #define LCD_X_RES		320	/* Horizontal Resolution */
 #define LCD_Y_RES		240	/* Vertical Resolution */
-#define	DMA_BUS_SIZE		16
+#define DMA_BUS_SIZE		16
 
-#if !(defined(CONFIG_LQ035Q1_USE_RGB888_8_BIT_PPI) || defined(CONFIG_LQ035Q1_USE_RGB565_8_BIT_PPI))
-#define CONFIG_LQ035Q1_USE_RGB565_8_BIT_PPI
+#ifdef CONFIG_MK_BF527_EZKIT_REV_2_1 /* lq035q1 */
+
+#if !defined(CONFIG_LQ035Q1_USE_RGB888_8_BIT_PPI) && \
+    !defined(CONFIG_LQ035Q1_USE_RGB565_8_BIT_PPI)
+# define CONFIG_LQ035Q1_USE_RGB565_8_BIT_PPI
 #endif
 
-/* Interface 16/18-bit TFT over an 8-bit wide PPI using a small Programmable Logic Device (CPLD)
+/* Interface 16/18-bit TFT over an 8-bit wide PPI using a
+ * small Programmable Logic Device (CPLD)
  * http://blackfin.uclinux.org/gf/project/stamp/frs/?action=FrsReleaseBrowse&frs_package_id=165
  */
 
 #ifdef CONFIG_LQ035Q1_USE_RGB565_8_BIT_PPI
 #include <asm/bfin_logo_rgb565_230x230.h>
 #define LCD_BPP		16	/* Bit Per Pixel */
-#define CLOCKS_PER_PIX	2
-#define CPLD_PIPELINE_DELAY_COR 3	/* RGB565 */
+#define CLOCKS_PPIX	2	/* Clocks per pixel */
+#define CPLD_DELAY	3	/* RGB565 pipeline delay */
 #endif
 
 #ifdef CONFIG_LQ035Q1_USE_RGB888_8_BIT_PPI
 #include <asm/bfin_logo_230x230.h>
 #define LCD_BPP		24	/* Bit Per Pixel */
-#define CLOCKS_PER_PIX	3
-#define CPLD_PIPELINE_DELAY_COR 5	/* RGB888 */
+#define CLOCKS_PPIX	3	/* Clocks per pixel */
+#define CPLD_DELAY	5	/* RGB888 pipeline delay */
 #endif
 
-	/*
-	 * HS and VS timing parameters (all in number of PPI clk ticks)
-	 */
+/*
+ * HS and VS timing parameters (all in number of PPI clk ticks)
+ */
+
+#define H_ACTPIX	(LCD_X_RES * CLOCKS_PPIX)	/* active horizontal pixel */
+#define H_PERIOD	(336 * CLOCKS_PPIX)		/* HS period */
+#define H_PULSE		(2 * CLOCKS_PPIX)		/* HS pulse width */
+#define H_START		(7 * CLOCKS_PPIX + CPLD_DELAY)	/* first valid pixel */
 
 #define U_LINE		4				/* Blanking Lines */
 
-#define H_ACTPIX	(LCD_X_RES * CLOCKS_PER_PIX)	/* active horizontal pixel */
-#define H_PERIOD	(336 * CLOCKS_PER_PIX)		/* HS period */
-#define H_PULSE		(2 * CLOCKS_PER_PIX)				/* HS pulse width */
-#define H_START		(7 * CLOCKS_PER_PIX + CPLD_PIPELINE_DELAY_COR)	/* first valid pixel */
-
-#define	V_LINES		(LCD_Y_RES + U_LINE)		/* total vertical lines */
-#define V_PULSE		(2 * CLOCKS_PER_PIX)		/* VS pulse width (1-5 H_PERIODs) */
+#define V_LINES		(LCD_Y_RES + U_LINE)		/* total vertical lines */
+#define V_PULSE		(2 * CLOCKS_PPIX)		/* VS pulse width (1-5 H_PERIODs) */
 #define V_PERIOD	(H_PERIOD * V_LINES)		/* VS period */
 
-#define ACTIVE_VIDEO_MEM_OFFSET		((U_LINE / 2) * LCD_X_RES * (LCD_BPP / 8))
+#define ACTIVE_VIDEO_MEM_OFFSET	((U_LINE / 2) * LCD_X_RES * (LCD_BPP / 8))
 
 /*
  * LCD Modes
@@ -83,7 +85,7 @@
 #define LQ035_SHUT_CTL			0x11
 
 #define LQ035_DRIVER_OUTPUT_MASK	(LQ035_LR | LQ035_TB | LQ035_BGR | LQ035_REV)
-#define LQ035_DRIVER_OUTPUT_DEFAULT 	(0x2AEF & ~LQ035_DRIVER_OUTPUT_MASK)
+#define LQ035_DRIVER_OUTPUT_DEFAULT	(0x2AEF & ~LQ035_DRIVER_OUTPUT_MASK)
 
 #define LQ035_SHUT			(1 << 0)	/* Shutdown */
 #define LQ035_ON			(0 << 0)	/* Shutdown */
@@ -95,22 +97,18 @@
 #else /* t350mcqb */
 #include <asm/bfin_logo_230x230.h>
 
-#define LCD_X_RES		320	/* Horizontal Resolution */
-#define LCD_Y_RES		240	/* Vertical Resolution */
-
-#define LCD_BPP			24	/* Bit Per Pixel */
-#define	DMA_BUS_SIZE		16
-#define CLOCKS_PER_PIX		3
+#define LCD_BPP		24	/* Bit Per Pixel */
+#define CLOCKS_PPIX	3	/* Clocks per pixel */
 
 /* HS and VS timing parameters (all in number of PPI clk ticks) */
-#define H_ACTPIX	(LCD_X_RES * CLOCKS_PER_PIX)	/* active horizontal pixel */
-#define H_PERIOD	(408 * CLOCKS_PER_PIX)		/* HS period */
+#define H_ACTPIX	(LCD_X_RES * CLOCKS_PPIX)	/* active horizontal pixel */
+#define H_PERIOD	(408 * CLOCKS_PPIX)		/* HS period */
 #define H_PULSE		90				/* HS pulse width */
 #define H_START		204				/* first valid pixel */
 
 #define U_LINE		1				/* Blanking Lines */
 
-#define	V_LINES		(LCD_Y_RES + U_LINE)		/* total vertical lines */
+#define V_LINES		(LCD_Y_RES + U_LINE)		/* total vertical lines */
 #define V_PULSE		(3 * H_PERIOD)			/* VS pulse width (1-5 H_PERIODs) */
 #define V_PERIOD	(H_PERIOD * V_LINES)		/* VS period */
 
@@ -216,6 +214,7 @@ void Init_DMA(void *dst)
 		FLOW_AUTO;		/* autobuffer mode */
 }
 
+
 void EnableDMA(void)
 {
 	*pDMA0_CONFIG |= DMAEN;
@@ -260,6 +259,7 @@ void DisableTIMER0(void)
 	SSYNC();
 }
 
+
 void InitTIMER1(void)
 {
 	*pTIMER_DISABLE |= TIMDIS1;			/* disable Timer */
@@ -283,13 +283,13 @@ void InitTIMER1(void)
 
 void EnableTIMER1(void)
 {
-	*pTIMER_ENABLE |= TIMEN1;
+	*pTIMER_ENABLE  |= TIMEN1;
 	SSYNC();
 }
 
 void DisableTIMER1(void)
 {
-	*pTIMER_DISABLE |= TIMDIS1;
+	*pTIMER_DISABLE  |= TIMDIS1;
 	SSYNC();
 }
 
