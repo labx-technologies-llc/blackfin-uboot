@@ -48,7 +48,7 @@ if { $num == "1" } {
     set boot_config BFIN_BOOT_SPI_SLAVE
 }
 
-cd $checkout_path/u-boot/u-boot-2009.08
+cd $checkout_path/u-boot/u-boot-2009.11
 sleep 3
 set timeout 2
 spawn ex include/configs/$config_file
