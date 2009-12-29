@@ -61,7 +61,7 @@ set TEST_MM                              1
 set TEST_RESET                           1
 set TEST_SAVEENV                         1
 set TEST_PING                            1
-set TEST_AUTOSCR                         1
+set TEST_SOURCE                          1
 set TEST_BASE                            1
 set TEST_BDINFO                          1
 set TEST_IMINFO                          1
@@ -1269,13 +1269,13 @@ proc copy_test {from_loc from_type to_loc to_type size flash_from_erase_start \
 #   uboot test script
 #
 #   This script has several requirements in order to run it.
-#     1)  You need a valid uImage, linux.dxe, autoscr file, and testfile.bin
+#     1)  You need a valid uImage, linux.dxe, source test file, and testfile.bin
 #         in the host /tftpboot.  You will need to add the details of these
-#         files into the definitions below for the tests to work.  autoscr
+#         files into the definitions below for the tests to work. source test file
 #         must contain commands to echo text out to the console (and the
 #         text must be defined below).
 #     2)  The host must be set up to be a tftp server.
-#     3)  You need the autoscript test file uboot-autoscr-test.img on
+#     3)  You need the source test file uboot-source-test.img on
 #         the host /tftpboot
 #     4)  You need a functional kermit application in your path.
 #     5)  uboot must already be loaded on your board.
@@ -1320,7 +1320,7 @@ set mm_loc                              11
 set reset_loc                           12
 set savenv_loc                          13
 set ping_loc                            14
-set autoscr_loc                         15
+set source_loc                          15
 set base_loc                            16
 set bdinfo_loc                          17
 set iminfo_loc                          18
@@ -1372,7 +1372,7 @@ set result_matrix { {mtest                                notrun} \
                     {reset                                notrun} \
                     {savenv                               notrun} \
                     {ping                                 notrun} \
-                    {autoscr                              notrun} \
+                    {source                               notrun} \
                     {base                                 notrun} \
                     {bdinfo                               notrun} \
                     {iminfo                               notrun} \
@@ -1453,9 +1453,9 @@ set FLASH_BASE              [get_uboot_define CONFIG_SYS_FLASH_BASE $uboot_test_
 set FLASH_SECTOR_SIZE       0x4000
 set FLASH_WRITABLE_SECTOR   30   ;# Identify a flash location we can write to
 
-set AUTOSCR_TEST_FILE       "uboot-autoscr-test.img"
-# the autoscr file above will echo the characters below.
-set AUTOSCR_TEST_RESULT     "hello Robin"
+set SOURCE_TEST_FILE        "uboot-source-test.img"
+# the source test file above will echo the characters below.
+set SOURCE_TEST_RESULT      "hello Robin"
 set LINUX_DXE_FILE          "linux.dxe"
 set BIG_KERNEL_GZ_FILE      "uImage.big"
 
@@ -2027,23 +2027,18 @@ step "help"
 #
 set timeout 15
 # check for several specific lines of help
-set autoscr_help $TEST_FAIL
 set base_help $TEST_FAIL
 set bdinfo_help $TEST_FAIL
 set bootelf_help $TEST_FAIL
 set flinfo_help $TEST_FAIL
 set saveenv_help $TEST_FAIL
+set source_help $TEST_FAIL
 set tftpboot_help $TEST_FAIL
 set version_help $TEST_FAIL
 
 send -s "help\r"
 while 1 {
     expect {
-
-	-re "autoscr\[ ]+- DEPRECATED - use \"source\" command instead" {
-	    set autoscr_help $TEST_PASS
-	}
-
 	-re "base\[ ]+- print or set address offset" {
 	    set base_help $TEST_PASS
 	}
@@ -2063,6 +2058,10 @@ while 1 {
 	-re "saveenv\[ ]+- save environment variables to persistent storage" {
 	    set saveenv_help $TEST_PASS
 	}
+
+        -re "source\[ ]+- run script from memory" {
+            set source_help $TEST_PASS
+        }
 
 	-re "tftpboot\[ ]+- boot image via network using TFTP protocol" {
 	    set tftpboot_help $TEST_PASS
@@ -2089,19 +2088,19 @@ while 1 {
     }
 }
 
-if { $autoscr_help==$TEST_PASS && $base_help==$TEST_PASS && \
+if { $source_help==$TEST_PASS && $base_help==$TEST_PASS && \
          $bdinfo_help==$TEST_PASS && $bootelf_help==$TEST_PASS && \
          $flinfo_help==$TEST_PASS && $saveenv_help==$TEST_PASS && \
          $tftpboot_help==$TEST_PASS && $version_help==$TEST_PASS } {
    set temp_status_flag $TEST_PASS
 } else {
    send_user "Since the help command failed, here are the details:\n"
-   send_user "autoscr result is $autoscr_help\n"
    send_user "base result is $base_help\n"
    send_user "bdinfo result is $bdinfo_help\n"
    send_user "bootelf result is $bootelf_help\n"
    send_user "flinfo result is $flinfo_help\n"
    send_user "saveenv result is $saveenv_help\n"
+   send_user "source result is $source_help\n"
    send_user "tftpboot result is $tftpboot_help\n"
    send_user "version result is $version_help\n"
    set temp_status_flag $TEST_FAIL
@@ -2815,15 +2814,14 @@ record_test_result $ping_loc $ping_result
 
 #############################################################################################
 
-if {  $TEST_AUTOSCR } {
-
+if { $TEST_SOURCE } {
 
 send "\r"
 wait_for_uboot
 
-step "autoscr"
+step "source"
 set timeout 30
-send -s "tftp 0x1000000 $AUTOSCR_TEST_FILE\r"
+send -s "tftp 0x1000000 $SOURCE_TEST_FILE\r"
 set temp_status_flag $FAILURE
 while 1 {
    expect {
@@ -2842,15 +2840,14 @@ while 1 {
 }
 
 if { $temp_status_flag == $FAILURE } {
-   send_user "INFO: Can't execute autoscr test because tftp didn't work.\n"
+   send_user "INFO: Can't execute source test because tftp didn't work.\n"
 } else {
    expect ">"
-   send -s "autoscr\n"
+   send -s "source\n"
    set temp_status_flag $TEST_FAIL
    while 1 {
       expect {
-
-         $AUTOSCR_TEST_RESULT {
+         $SOURCE_TEST_RESULT {
             set temp_status_flag $TEST_PASS
 	     break
          }
@@ -2862,7 +2859,7 @@ if { $temp_status_flag == $FAILURE } {
          }
       }
    }
-   record_test_result $autoscr_loc $temp_status_flag
+   record_test_result $source_loc $temp_status_flag
 }
 }
 
