@@ -333,7 +333,6 @@ proc all_done { } {
     global TEST_FAIL
     global TEST_INFO
     global ttydev
-    global target_ip_addr
     global board_type
     global HOST_IP_ADDR
     global compare_file

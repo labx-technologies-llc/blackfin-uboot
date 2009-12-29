@@ -55,6 +55,7 @@ set HACKED_PRINTER_CABLE_PORT  $ALTERNATE_PARALLEL_PORT
 # Misc
 set ip_subnet               "10.100.4"
 set host_ipaddr             "$ip_subnet.174"
+set target_ipaddr           "$ip_subnet.50"
 set ttydev                  /dev/ttyS0
 
 set step_sequence_number    1

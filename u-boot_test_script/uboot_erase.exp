@@ -195,9 +195,11 @@ while 1 {
 set timeout 50
 expect ">"
 send_user "set uboot environment\n"
-send -s "set ipaddr 10.100.4.50\r"
+send -s "set ipaddr $target_ipaddr\r"
 expect ">"
-send -s "set serverip 10.100.4.174\r"
+send -s "set serverip $host_ipaddr\r"
+expect ">"
+send -s "set gatewayip $host_ipaddr\r"
 expect ">"
 send -s "set bootcmd run ramboot\r"
 expect ">"

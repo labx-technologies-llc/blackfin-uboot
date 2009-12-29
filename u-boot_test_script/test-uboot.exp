@@ -223,6 +223,7 @@ proc ethtool_tftp { speed status } {
     global TEST_PASS
     global BIG_IMG_LOAD_ADDRESS
     global BIG_KERNEL_GZ_FILE
+    global target_ipaddr
 
     spawn su
     sleep 1.5
@@ -282,7 +283,7 @@ proc ethtool_tftp { speed status } {
         }
     }
 
-    spawn sudo ping -f 10.100.4.50
+    spawn sudo ping -f $target_ipaddr
     sleep .5
     set timeout 5
     while 1 {
@@ -683,7 +684,6 @@ proc all_done { } {
     global TEST_FAIL
     global TEST_INFO
     global ttydev
-    global target_ip_addr
     global board_type
     global HOST_IP_ADDR
     global test_started
@@ -4212,7 +4212,7 @@ if {  $TEST_PASS_PARAM } {
     set temp_status_flag $TEST_FAIL
     set timeout 20
 
-    send -s "set bootargs root=/dev/mtdblock0 rw ip=10.100.4.60 console=ttyBF$UART_CONSOLE\r"
+    send -s "set bootargs root=/dev/mtdblock0 rw ip=$ip_subnet.60 console=ttyBF$UART_CONSOLE\r"
     while 1 {
         expect {
             ">" {
@@ -4291,7 +4291,7 @@ if {  $TEST_PASS_PARAM } {
     send -s "cat /proc/cmdline\r"
     while 1 {
         expect {
-            "root=/dev/mtdblock0 rw ip=10.100.4.60" {
+            "root=/dev/mtdblock0 rw ip=$ip_subnet.60" {
                 set flag 1
                 set temp_status_flag $TEST_PASS
                 puts "Pass argument from uboot success.\n"
