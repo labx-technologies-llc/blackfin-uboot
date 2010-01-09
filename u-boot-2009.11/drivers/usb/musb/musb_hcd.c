@@ -36,6 +36,7 @@ static struct musb_epinfo epinfo[3] = {
 };
 
 /* --- Virtual Root Hub ---------------------------------------------------- */
+#ifdef MUSB_NO_MULTIPOINT
 static int rh_devnum;
 static u32 port_status;
 
@@ -132,6 +133,7 @@ static unsigned char root_hub_str_index1[] = {
 	'b',			/*  __u8  Unicode */
 	0,			/*  __u8  Unicode */
 };
+#endif
 
 /*
  * This function writes the data toggle value.
@@ -517,6 +519,8 @@ static void config_hub_port(struct usb_device *dev, u8 ep)
 #endif
 }
 
+#ifdef MUSB_NO_MULTIPOINT
+
 static void musb_port_reset(int do_reset)
 {
 	u8 power = readb(&musbr->power);
@@ -822,6 +826,18 @@ static int musb_submit_rh_msg(struct usb_device *dev, unsigned long pipe,
 	return stat;
 }
 
+static void musb_rh_init(void)
+{
+	rh_devnum = 0;
+	port_status = 0;
+}
+
+#else
+
+static void musb_rh_init(void) {}
+
+#endif
+
 /*
  * do a control transfer
  */
@@ -832,9 +848,11 @@ int submit_control_msg(struct usb_device *dev, unsigned long pipe, void *buffer,
 	u16 csr;
 	u8  devspeed;
 
+#ifdef MUSB_NO_MULTIPOINT
 	/* Control message is for the HUB? */
 	if (devnum == rh_devnum)
 		return musb_submit_rh_msg(dev, pipe, buffer, len, setup);
+#endif
 
 	/* select control endpoint */
 	writeb(MUSB_CONTROL_EP, &musbr->index);
@@ -1074,8 +1092,7 @@ int usb_lowlevel_init(void)
 	u8  power;
 	u32 timeout;
 
-	rh_devnum = 0;
-	port_status = 0;
+	musb_rh_init();
 
 	if (musb_platform_init() == -1)
 		return -1;
