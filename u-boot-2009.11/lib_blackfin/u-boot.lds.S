@@ -94,9 +94,7 @@ SECTIONS
 	.rodata :
 	{
 		. = ALIGN(4);
-		*(.rodata .rodata.*)
-		*(.rodata1)
-		*(.eh_frame)
+		*(SORT_BY_ALIGNMENT(SORT_BY_NAME(.rodata*)))
 		. = ALIGN(4);
 	} >ram_data
 
