@@ -268,7 +268,7 @@ static inline void serial_putc(char c)
 #endif
 
 __attribute__((always_inline)) static inline void
-program_early_devices(ADI_BOOT_DATA *bootstruct, uint *sdivB, uint *divB, uint *vcoB)
+program_early_devices(ADI_BOOT_DATA *bs, uint *sdivB, uint *divB, uint *vcoB)
 {
 	serial_putc('a');
 
@@ -311,7 +311,7 @@ program_early_devices(ADI_BOOT_DATA *bootstruct, uint *sdivB, uint *divB, uint *
 	if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER) {
 		serial_putc('h');
 		if (BOOTROM_SUPPORTS_SPI_FAST_READ && CONFIG_SPI_BAUD_INITBLOCK < 4)
-			bootstruct->dFlags |= BFLAG_FASTREAD;
+			bs->dFlags |= BFLAG_FASTREAD;
 		bfin_write_SPI_BAUD(CONFIG_SPI_BAUD_INITBLOCK);
 		serial_putc('i');
 	}
@@ -320,7 +320,7 @@ program_early_devices(ADI_BOOT_DATA *bootstruct, uint *sdivB, uint *divB, uint *
 }
 
 __attribute__((always_inline)) static inline bool
-maybe_self_refresh(ADI_BOOT_DATA *bootstruct)
+maybe_self_refresh(ADI_BOOT_DATA *bs)
 {
 	serial_putc('a');
 
@@ -348,7 +348,7 @@ maybe_self_refresh(ADI_BOOT_DATA *bootstruct)
 }
 
 __attribute__((always_inline)) static inline u16
-program_clocks(ADI_BOOT_DATA *bootstruct, bool put_into_srfs)
+program_clocks(ADI_BOOT_DATA *bs, bool put_into_srfs)
 {
 	u16 vr_ctl;
 
@@ -480,7 +480,7 @@ program_clocks(ADI_BOOT_DATA *bootstruct, bool put_into_srfs)
 }
 
 __attribute__((always_inline)) static inline void
-update_serial_clocks(ADI_BOOT_DATA *bootstruct, uint sdivB, uint divB, uint vcoB)
+update_serial_clocks(ADI_BOOT_DATA *bs, uint sdivB, uint divB, uint vcoB)
 {
 	serial_putc('a');
 
@@ -507,7 +507,7 @@ update_serial_clocks(ADI_BOOT_DATA *bootstruct, uint sdivB, uint divB, uint vcoB
 }
 
 __attribute__((always_inline)) static inline void
-program_memory_controller(ADI_BOOT_DATA *bootstruct, bool put_into_srfs)
+program_memory_controller(ADI_BOOT_DATA *bs, bool put_into_srfs)
 {
 	serial_putc('a');
 
@@ -572,7 +572,7 @@ program_memory_controller(ADI_BOOT_DATA *bootstruct, bool put_into_srfs)
 }
 
 __attribute__((always_inline)) static inline void
-check_hibernation(ADI_BOOT_DATA *bootstruct, u16 vr_ctl, bool put_into_srfs)
+check_hibernation(ADI_BOOT_DATA *bs, u16 vr_ctl, bool put_into_srfs)
 {
 	serial_putc('a');
 
@@ -617,7 +617,7 @@ check_hibernation(ADI_BOOT_DATA *bootstruct, u16 vr_ctl, bool put_into_srfs)
 }
 
 __attribute__((always_inline)) static inline void
-program_async_controller(ADI_BOOT_DATA *bootstruct)
+program_async_controller(ADI_BOOT_DATA *bs)
 {
 	serial_putc('a');
 
@@ -645,7 +645,7 @@ program_async_controller(ADI_BOOT_DATA *bootstruct)
 }
 
 BOOTROM_CALLED_FUNC_ATTR
-void initcode(ADI_BOOT_DATA *bootstruct)
+void initcode(ADI_BOOT_DATA *bs)
 {
 	ADI_BOOT_DATA bootstruct_scratch;
 
@@ -657,30 +657,30 @@ void initcode(ADI_BOOT_DATA *bootstruct)
 	 * dynamically and not via LDR (bootrom).  So set the struct to
 	 * some scratch space.
 	 */
-	if (!bootstruct)
-		bootstruct = &bootstruct_scratch;
+	if (!bs)
+		bs = &bootstruct_scratch;
 
 	serial_putc('B');
-	bool put_into_srfs = maybe_self_refresh(bootstruct);
+	bool put_into_srfs = maybe_self_refresh(bs);
 
 	serial_putc('C');
 	uint sdivB, divB, vcoB;
-	program_early_devices(bootstruct, &sdivB, &divB, &vcoB);
+	program_early_devices(bs, &sdivB, &divB, &vcoB);
 
 	serial_putc('D');
-	u16 vr_ctl = program_clocks(bootstruct, put_into_srfs);
+	u16 vr_ctl = program_clocks(bs, put_into_srfs);
 
 	serial_putc('E');
-	update_serial_clocks(bootstruct, sdivB, divB, vcoB);
+	update_serial_clocks(bs, sdivB, divB, vcoB);
 
 	serial_putc('F');
-	program_memory_controller(bootstruct, put_into_srfs);
+	program_memory_controller(bs, put_into_srfs);
 
 	serial_putc('G');
-	check_hibernation(bootstruct, vr_ctl, put_into_srfs);
+	check_hibernation(bs, vr_ctl, put_into_srfs);
 
 	serial_putc('H');
-	program_async_controller(bootstruct);
+	program_async_controller(bs);
 
 #ifdef CONFIG_BFIN_BOOTROM_USES_EVT1
 	serial_putc('I');

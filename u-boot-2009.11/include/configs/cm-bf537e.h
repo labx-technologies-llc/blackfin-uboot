@@ -131,7 +131,9 @@
 #define CONFIG_RTC_BFIN
 #define CONFIG_UART_CONSOLE	0
 #define CONFIG_BOOTCOMMAND	"run flashboot"
-#define FLASHBOOT_ENV_SETTINGS	"flashboot=flread 20040000 1000000 300000; bootm 0x1000000\0"
+#define FLASHBOOT_ENV_SETTINGS \
+	"flashboot=flread 20040000 1000000 300000;" \
+	"bootm 0x1000000\0"
 
 
 /*
