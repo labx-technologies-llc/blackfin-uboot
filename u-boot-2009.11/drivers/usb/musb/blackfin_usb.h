@@ -76,13 +76,14 @@ struct musb_regs {
 } __attribute__((packed));
 
 struct bfin_musb_dma_regs {
-	ureg(interrupt);
-	ureg(control);
-	ureg(addr_low);
-	ureg(addr_high);
-	ureg(count_low);
-	ureg(count_high);
-	ureg(pad);
+	u32 interrupt;
+	u32 control;
+	u32 addr_low;
+	u32 addr_high;
+	u32 count_low;
+	u32 count_high;
+	u32 pad0;
+	u32 pad1;
 };
 
 #undef ureg
