@@ -407,7 +407,6 @@ proc all_done { } {
     log_file
     cd $starting_dir
     log_file -noappend $summary_logfile
-    puts "\nsending summary results to $summary_logfile\n"
     send_user "Test Results\n"
     send_user "=====================================\n"
 

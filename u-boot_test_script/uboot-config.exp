@@ -108,9 +108,8 @@ create_dir_if_needed $log_dir
 proc step { message } {
     global step_sequence_number
 
-    puts "\n*****************************"
-    puts "STEP $step_sequence_number: $message\n\n"
-    send_log "STEP $step_sequence_number: $message\n\n"
+    send_user "\n*****************************\n"
+    send_user "STEP $step_sequence_number: $message\n\n"
     incr step_sequence_number
 }
 

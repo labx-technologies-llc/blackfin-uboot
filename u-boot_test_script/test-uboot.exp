@@ -234,7 +234,7 @@ proc ethtool_tftp { speed status } {
                 break
             }
             timeout {
-                puts "Fail su command. "
+                send_user "Fail su command\n"
                 break
             }
         }
@@ -243,11 +243,11 @@ proc ethtool_tftp { speed status } {
     while 1 {
         expect {
             "#" {
-                puts "su success.\n"
+                send_user "su success\n"
                 break
             }
             timeout {
-                puts "Fail su as root. "
+                send_user "Fail su as root\n"
                 break
             }
         }
@@ -262,7 +262,7 @@ proc ethtool_tftp { speed status } {
                 break
             }
             timeout {
-                puts "Failed enter $ethtool_path."
+                send_user "Failed enter $ethtool_path\n"
                 break
             }
         }
@@ -277,7 +277,7 @@ proc ethtool_tftp { speed status } {
                 break
             }
             timeout {
-                puts "Failed to start ethtool."
+                send_user "Failed to start ethtool\n"
                 break
             }
         }
@@ -293,7 +293,7 @@ proc ethtool_tftp { speed status } {
                 break
             }
             timeout {
-                puts "no password input "
+                send_user "no password input\n"
                 break
             }
         }
@@ -302,11 +302,11 @@ proc ethtool_tftp { speed status } {
     while 1 {
         expect {
             "......" {
-                puts "ping flood working.\n"
+                send_user "ping flood working\n"
                 break
             }
             timeout {
-                puts "Fail su ping flood as root. "
+                send_user "Fail su ping flood as root. "
                 break
             }
         }
@@ -360,10 +360,10 @@ proc ethtool_tftp { speed status } {
     }
 
     if { $tftp_flag == 0 }  {
-        puts "Fail to tftp download $BIG_KERNEL_GZ_FILE.\n"
+        send_user "Fail to tftp download $BIG_KERNEL_GZ_FILE.\n"
         set TFTP_RESULT  $TEST_FAIL
     } else {
-        puts "Success to tftp download $BIG_KERNEL_GZ_FILE.\n"
+        send_user "Success to tftp download $BIG_KERNEL_GZ_FILE.\n"
         set TFTP_RESULT $TEST_PASS
     }
 
@@ -383,17 +383,17 @@ proc ethtool_tftp { speed status } {
     while 1 {
         expect {
             "......" {
-                puts " on"
+                send_user "on\n"
                 expect {
                     timeout {
-                        puts " still on "
+                        send_user "still on\n"
                         break
                     }
                 }
             }
 
             timeout {
-                puts "still on . "
+                send_user "still on\n"
                 break
             }
         }
@@ -402,13 +402,13 @@ proc ethtool_tftp { speed status } {
     send -s "\3"
     expect {
         ">" {
-            puts "> is found.\r"
+            send_user "> is found\r"
         }
         "#" {
-            puts "# is found.\r"
+            send_user "# is found\r"
         }
         timeout {
-            puts "Finished ping flood. "
+            send_user "Finished ping flood.\n"
         }
     }
 
@@ -764,7 +764,6 @@ proc all_done { } {
     log_file
     cd $starting_dir
     log_file -noappend $summary_logfile
-    puts "\nsending summary results to $summary_logfile\n"
     send_user "\ntest started $test_started\n\n"
     send_user "Test Results\n"
     send_user "=====================================\n"
@@ -2261,8 +2260,7 @@ while 1 {
 
       # check that the result is correct near the end of the range.
       "$addr1:*dead 1234 dead 1234 dead 1234 dead 1234*..4...4...4...4." {
-         puts "we saw the correct thing written to memory"
-         send_log "we saw the correct thing written to memory\n"
+         send_user "we saw the correct thing written to memory\n"
          set write_result $TEST_PASS
 
       }
@@ -3149,7 +3147,6 @@ while 1 {
    }
 }
 if {$temp_status_flag==$TEST_PASS} {
-   puts "testing out iminfo"
    set iminfo_name_result $TEST_FAIL
    set iminfo_date_result $TEST_PASS
    set iminfo_type_result $TEST_FAIL
@@ -4267,19 +4264,19 @@ if {  $TEST_PASS_PARAM } {
                 break
             }
             -re "Sash command shell.*/> " {
-                puts "successful boot attempt"
+                send_user "successful boot attempt\n"
                 #incr successful_boots
                 break
             }
             -re $KERNEL_PROMPT {
-                puts "successful boot attempt"
+                send_user "successful boot attempt\n"
                 break
             }
             -re "Linux version (.*) " {
                 set linux_version $expect_out(1,string)
             }
             timeout {
-                puts "failed boot attempt"
+                send_user "failed boot attempt\n"
                 set run_kernel_fail 1
                 break
             }
@@ -4294,11 +4291,11 @@ if {  $TEST_PASS_PARAM } {
             "root=/dev/mtdblock0 rw ip=$ip_subnet.60" {
                 set flag 1
                 set temp_status_flag $TEST_PASS
-                puts "Pass argument from uboot success.\n"
+                send_user "Pass argument from uboot success.\n"
                 break
             }
             timeout {
-                puts "Fail argument from uboot. "
+                send_user "Fail argument from uboot.\n"
                 break
             }
         }
@@ -4311,7 +4308,7 @@ if {  $TEST_PASS_PARAM } {
                 break
             }
             timeout {
-                puts "Can't get kernel prompt."
+                send_user "Can't get kernel prompt.\n"
                 break
             }
         }
