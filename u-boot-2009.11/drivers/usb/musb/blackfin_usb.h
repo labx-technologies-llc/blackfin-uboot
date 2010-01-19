@@ -82,9 +82,18 @@ struct bfin_musb_dma_regs {
 	ureg(addr_high);
 	ureg(count_low);
 	ureg(count_high);
-	ureg(pad);
+	u32 reserved0[2];
 };
 
 #undef ureg
+
+/* EP5-EP7 are the only ones with 1024 byte FIFOs which BULK really needs */
+#define MUSB_BULK_EP 5
+
+/* Blackfin FIFO's are static */
+#define MUSB_NO_DYNAMIC_FIFO
+
+/* No HUB support :( */
+#define MUSB_NO_MULTIPOINT
 
 #endif
