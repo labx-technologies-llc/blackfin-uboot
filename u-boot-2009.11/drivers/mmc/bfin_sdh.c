@@ -58,7 +58,6 @@ sdh_send_cmd(struct mmc *mmc, struct mmc_cmd *mmc_cmd)
 	int flags = mmc_cmd->resp_type;
 	int arg = mmc_cmd->cmdarg;
 	int ret = 0;
-	u16 reg = 0;
 	u16 sdh_cmd = 0;
 
 	sdh_cmd |= cmd;
@@ -89,16 +88,13 @@ sdh_send_cmd(struct mmc *mmc, struct mmc_cmd *mmc_cmd)
 		}
 	}
 
-	if (status & CMD_TIME_OUT) {
+	if (status & CMD_TIME_OUT)
 		ret |= TIMEOUT;
-		reg |= CMD_TIMEOUT_STAT;
-	} else if (status & CMD_CRC_FAIL && flags & MMC_RSP_CRC) {
+	else if (status & CMD_CRC_FAIL && flags & MMC_RSP_CRC)
 		ret |= COMM_ERR;
-		reg |= CMD_CRC_FAIL_STAT;
-	} else
-		reg |= CMD_SENT_STAT | CMD_RESP_END_STAT;
 
-	bfin_write_SDH_STATUS_CLR(reg);
+	bfin_write_SDH_STATUS_CLR(CMD_SENT_STAT | CMD_RESP_END_STAT |
+				CMD_TIMEOUT_STAT | CMD_CRC_FAIL_STAT);
 	SSYNC();
 	return ret;
 }
