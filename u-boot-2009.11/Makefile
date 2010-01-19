@@ -399,8 +399,11 @@ updater:
 env:
 		$(MAKE) -C tools/env all MTD_VERSION=${MTD_VERSION} || exit 1
 
+# Explicitly make _depend in subdirs containing multiple targets to prevent
+# parallel sub-makes creating .depend files simultaneously.
 depend dep:	$(TIMESTAMP_FILE) $(VERSION_FILE) $(obj)include/autoconf.mk
-		for dir in $(SUBDIRS) ; do $(MAKE) -C $$dir _depend ; done
+		for dir in $(SUBDIRS) cpu/$(CPU) $(dir $(LDSCRIPT)) ; do \
+			$(MAKE) -C $$dir _depend ; done
 
 TAG_SUBDIRS += include
 TAG_SUBDIRS += lib_generic board/$(BOARDDIR)
