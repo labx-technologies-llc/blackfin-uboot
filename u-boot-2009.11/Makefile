@@ -490,7 +490,6 @@ updater env depend dep tags ctags etags cscope $(obj)System.map:
 	@echo "System not configured - see README" >&2
 	@ exit 1
 
-include $(TOPDIR)/config.mk
 tools:
 	$(MAKE) -C tools
 tools-all:
