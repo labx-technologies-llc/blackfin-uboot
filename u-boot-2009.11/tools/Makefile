@@ -235,7 +235,7 @@ $(obj)%.o: $(SRCTREE)/common/%.c
 $(obj)%.o: $(SRCTREE)/lib_generic/%.c
 	$(CC) -g $(CFLAGS) -c -o $@ $<
 
-$(LIBFDT_OBJS):
+$(obj)%.o: $(SRCTREE)/libfdt/%.c
 	$(CC) -g $(FIT_CFLAGS) -c -o $@ $<
 
 subdirs:
