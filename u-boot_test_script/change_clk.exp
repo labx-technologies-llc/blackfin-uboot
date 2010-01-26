@@ -281,7 +281,7 @@ if { $argc > 5} {
 
 send_user "VCO_MULT: $vco_mult ,CCLK_DIV: $cclk_div , SCLK_DIV $sclk_div\n"
 
-cd $checkout_path/u-boot/u-boot-2009.11
+cd $checkout_path/u-boot/$env(UBOOT_VER)
 sleep 3
 set timeout 2
 spawn ex include/configs/$config_file
