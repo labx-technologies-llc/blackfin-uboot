@@ -1876,7 +1876,7 @@ void copy_filename (char *dst, char *src, int size)
  */
 unsigned int random_port(void)
 {
-	return 1024 + (get_timer(0) % 0x8000);;
+	return 1024 + (get_timer(0) % 0x4000);
 }
 #endif
 
