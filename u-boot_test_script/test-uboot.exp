@@ -3962,7 +3962,7 @@ if {  $TEST_JFFS2 } {
         }
     }
 
-    set timeout 600
+    set timeout 900
     if { $jffs2_temp_result == $TEST_PASS } {
         set jffs2_temp_result $TEST_FAIL
         send -s "cp.b 0x1000000 0x20080000 \$(filesize)\r"
@@ -4005,7 +4005,7 @@ if {  $TEST_JFFS2 } {
     send "\r"
     wait_for_uboot
 
-    set timeout 120
+    set timeout 500
     if { $jffs2_temp_result == $TEST_PASS } {
         send -s "ls\r"
         while 1 {
@@ -4044,7 +4044,6 @@ if {  $TEST_JFFS2 } {
         }
     }
 
-    set timeout 300
     if { $jffs2_temp_result == $TEST_PASS } {
         set jffs2_temp_result $TEST_FAIL
         send -s "fsload /uImage\r"
