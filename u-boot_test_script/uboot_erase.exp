@@ -142,6 +142,7 @@ if { $where_are_we == "uboot" } {
     }
 }
 
+set timeout 30
 while 1 {
     expect {
         "Hit any key " {
@@ -172,8 +173,24 @@ while 1 {
     }
 }
 
-send -s "saveenv\r"
-expect ">"
+set timeout 8
+send -s "printenv\r"
+while 1 {
+    expect {
+        -re "ethaddr=((\[0-9A-F]\{2\}:)\{5\}\[0-9A-F]\{2\}).*>" {
+            set ethaddr "$expect_out(1,string)\r"
+            send_user "ethaddr is $ethaddr\n"
+            break
+        }
+        timeout {
+            set ethaddr ""
+            send_user "ethaddr is not set\n"
+            break
+        }
+    }
+}
+
+set timeout 60
 send_user "sending reset\n"
 send -s "reset\r"
 
@@ -192,7 +209,6 @@ while 1 {
     }
 }
 
-set timeout 50
 expect ">"
 send_user "set uboot environment\n"
 send -s "set ipaddr $target_ipaddr\r"
@@ -201,10 +217,27 @@ send -s "set serverip $host_ipaddr\r"
 expect ">"
 send -s "set gatewayip $host_ipaddr\r"
 expect ">"
+send -s "set ethaddr $ethaddr\r"
+expect ">"
 send -s "set bootcmd run ramboot\r"
 expect ">"
 send -s "save\r"
-expect ">"
+while 1 {
+    expect {
+        -nocase -re "(error|fail).*>" {
+            send_user "fail to saveenv\n"
+            exit
+        }
+        -re "Saving Environment to Flash.*>" {
+            break
+        }
+        timeout {
+            send_user "saveenv timeout\n"
+            exit
+        }
+    }
+}
+
 send -s "run ramboot\r"
 while 1 {
     expect {
