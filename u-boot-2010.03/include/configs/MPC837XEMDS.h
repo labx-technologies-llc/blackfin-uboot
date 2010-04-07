@@ -321,9 +321,6 @@
 #define CONFIG_OF_BOARD_SETUP	1
 #define CONFIG_OF_STDOUT_VIA_ALIAS	1
 
-#define CONFIG_SYS_64BIT_STRTOUL		1
-#define CONFIG_SYS_64BIT_VSPRINTF		1
-
 /* I2C */
 #define CONFIG_HARD_I2C		/* I2C with hardware support */
 #undef CONFIG_SOFT_I2C		/* I2C bit-banged */
@@ -640,9 +637,7 @@ extern int board_pci_host_broken(void);
 
 #if defined(CONFIG_TSEC_ENET)
 #define CONFIG_HAS_ETH0
-#define CONFIG_ETHADDR		00:E0:0C:00:83:79
 #define CONFIG_HAS_ETH1
-#define CONFIG_ETH1ADDR		00:E0:0C:00:83:78
 #endif
 
 #define CONFIG_BAUDRATE 115200

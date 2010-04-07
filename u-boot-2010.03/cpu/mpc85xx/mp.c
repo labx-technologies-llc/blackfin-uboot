@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2009 Freescale Semiconductor, Inc.
+ * Copyright 2008-2010 Freescale Semiconductor, Inc.
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -68,6 +68,36 @@ int cpu_status(int nr)
 	return 0;
 }
 
+#ifdef CONFIG_FSL_CORENET
+int cpu_disable(int nr)
+{
+	volatile ccsr_gur_t *gur = (void *)(CONFIG_SYS_MPC85xx_GUTS_ADDR);
+
+	setbits_be32(&gur->coredisrl, 1 << nr);
+
+	return 0;
+}
+#else
+int cpu_disable(int nr)
+{
+	volatile ccsr_gur_t *gur = (void *)(CONFIG_SYS_MPC85xx_GUTS_ADDR);
+
+	switch (nr) {
+	case 0:
+		setbits_be32(&gur->devdisr, MPC85xx_DEVDISR_CPU0);
+		break;
+	case 1:
+		setbits_be32(&gur->devdisr, MPC85xx_DEVDISR_CPU1);
+		break;
+	default:
+		printf("Invalid cpu number for disable %d\n", nr);
+		return 1;
+	}
+
+	return 0;
+}
+#endif
+
 static u8 boot_entry_map[4] = {
 	0,
 	BOOT_ENTRY_PIR,
@@ -90,11 +120,7 @@ int cpu_release(int nr, int argc, char *argv[])
 		return 1;
 	}
 
-#ifdef CONFIG_SYS_64BIT_STRTOUL
 	boot_addr = simple_strtoull(argv[0], NULL, 16);
-#else
-	boot_addr = simple_strtoul(argv[0], NULL, 16);
-#endif
 
 	/* handle pir, r3, r6 */
 	for (i = 1; i < 4; i++) {
@@ -168,6 +194,9 @@ static void plat_mp_up(unsigned long bootpg)
 
 	e = find_law(bootpg);
 	out_be32(&ccm->bstrar, LAW_EN | e.trgt_id << 20 | LAW_SIZE_4K);
+
+	/* readback to sync write */
+	in_be32(&ccm->bstrar);
 
 	/* disable time base at the platform */
 	out_be32(&rcpm->ctbenrl, cpu_up_mask);
@@ -313,7 +342,7 @@ void setup_mp(void)
 		disable_tlb(i);
 
 		set_tlb(1, CONFIG_BPTR_VIRT_ADDR, bootpg, /* tlb, epn, rpn */
-			MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I, /* perms, wimge */
+			MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G, /* perms, wimge */
 			0, i, BOOKE_PAGESZ_4K, 1); /* ts, esel, tsize, iprot */
 
 		memcpy((void *)CONFIG_BPTR_VIRT_ADDR, (void *)fixup, 4096);

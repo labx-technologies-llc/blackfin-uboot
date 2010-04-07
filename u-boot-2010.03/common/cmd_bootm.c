@@ -57,9 +57,9 @@
 #include <lzma/LzmaTools.h>
 #endif /* CONFIG_LZMA */
 
-ulong load_addr = CONFIG_SYS_LOAD_ADDR;	/* Default Load Address */
-
-#ifndef CONFIG_SYS_NO_BOOTM
+#ifdef CONFIG_LZO
+#include <linux/lzo.h>
+#endif /* CONFIG_LZO */
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -150,6 +150,7 @@ static boot_os_fn *boot_os[] = {
 #endif
 };
 
+ulong load_addr = CONFIG_SYS_LOAD_ADDR;	/* Default Load Address */
 static bootm_headers_t images;		/* pointers to os/initrd/fdt images */
 
 /* Allow for arch specific config before we boot */
@@ -290,7 +291,9 @@ static int bootm_start(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		return 1;
 	}
 
-	if (images.os.os == IH_OS_LINUX) {
+	if (((images.os.type == IH_TYPE_KERNEL) ||
+	     (images.os.type == IH_TYPE_MULTI)) &&
+	    (images.os.os == IH_OS_LINUX)) {
 		/* find ramdisk */
 		ret = boot_get_ramdisk (argc, argv, &images, IH_INITRD_ARCH,
 				&images.rd_start, &images.rd_end);
@@ -403,6 +406,24 @@ static int bootm_load_os(image_info_t os, ulong *load_end, int boot_progress)
 		*load_end = load + unc_len;
 		break;
 #endif /* CONFIG_LZMA */
+#ifdef CONFIG_LZO
+	case IH_COMP_LZO:
+		printf ("   Uncompressing %s ... ", type_name);
+
+		int ret = lzop_decompress((const unsigned char *)image_start,
+					  image_len, (unsigned char *)load,
+					  &unc_len);
+		if (ret != LZO_E_OK) {
+			printf ("LZO: uncompress or overwrite error %d "
+			      "- must RESET board to recover\n", ret);
+			if (boot_progress)
+				show_boot_progress (-6);
+			return BOOTM_ERR_RESET;
+		}
+
+		*load_end = load + unc_len;
+		break;
+#endif /* CONFIG_LZO */
 	default:
 		printf ("Unimplemented compression type %d\n", comp);
 		return BOOTM_ERR_UNIMPLEMENTED;
@@ -865,9 +886,6 @@ static void *boot_get_kernel (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[]
 			image_multi_getimg (hdr, 0, os_data, os_len);
 			break;
 		case IH_TYPE_STANDALONE:
-			if (argc >2) {
-				hdr->ih_load = htonl(simple_strtoul(argv[2], NULL, 16));
-			}
 			*os_data = image_get_data (hdr);
 			*os_len = image_get_data_size (hdr);
 			break;
@@ -1455,5 +1473,3 @@ static int do_bootm_integrity (int flag, int argc, char *argv[],
 	return 1;
 }
 #endif
-
-#endif /* CONFIG_SYS_NO_BOOTM */

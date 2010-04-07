@@ -136,6 +136,10 @@ struct gpmc {
 	u32 ecc8_result;	/* 0x21C */
 	u32 ecc9_result;	/* 0x220 */
 };
+
+/* Used for board specific gpmc initialization */
+extern struct gpmc *gpmc_cfg;
+
 #else /* __ASSEMBLY__ */
 #define GPMC_CONFIG1		0x00
 #define GPMC_CONFIG2		0x04
@@ -222,6 +226,7 @@ struct sdrc {
 
 #define PAGEPOLICY_HIGH		(0x1 << 0)
 #define SRFRONRESET		(0x1 << 7)
+#define PWDNEN			(0x1 << 2)
 #define WAKEUPPROC		(0x1 << 26)
 
 #define DDR_SDRAM		(0x1 << 0)

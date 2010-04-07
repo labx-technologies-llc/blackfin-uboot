@@ -21,7 +21,7 @@
 # MA 02111-1307 USA
 #
 
-PLATFORM_RELFLAGS += -fPIC -ffixed-r14 -meabi
+PLATFORM_RELFLAGS += -fPIC -meabi
 PLATFORM_CPPFLAGS += -DCONFIG_4xx -ffixed-r2 -mstring -msoft-float
 
 cfg=$(shell grep configs $(OBJTREE)/include/config.h | sed 's/.*<\(configs.*\)>/\1/')
@@ -32,3 +32,6 @@ PLATFORM_CPPFLAGS += -Wa,-m440 -mcpu=440
 else
 PLATFORM_CPPFLAGS += -Wa,-m405 -mcpu=405
 endif
+
+# Use default linker script.  Board port can override in board/*/config.mk
+LDSCRIPT := $(SRCTREE)/cpu/ppc4xx/u-boot.lds

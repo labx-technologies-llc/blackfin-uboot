@@ -64,6 +64,7 @@ LIST_5xxx="		\
 	icecube_5100	\
 	icecube_5200	\
 	inka4x0		\
+	ipek01		\
 	lite5200b	\
 	mcc200		\
 	mecp5200	\
@@ -212,7 +213,6 @@ LIST_4xx="		\
 	DU440		\
 	ebony		\
 	ERIC		\
-	EXBITGEN	\
 	fx12mm		\
 	G2000		\
 	gdppc440etx	\
@@ -238,7 +238,6 @@ LIST_4xx="		\
 	MIP405		\
 	MIP405T		\
 	ML2		\
-	ml300		\
 	ml507		\
 	ml507_flash	\
 	neo		\
@@ -312,7 +311,6 @@ LIST_824x="		\
 	Sandpoint8240	\
 	Sandpoint8245	\
 	sbc8240		\
-	SL8245		\
 	utx8245		\
 "
 
@@ -357,10 +355,12 @@ LIST_8260="		\
 #########################################################################
 
 LIST_83xx="		\
+	caddy2		\
 	kmeter1		\
 	MPC8313ERDB_33	\
 	MPC8313ERDB_NAND_66	\
 	MPC8315ERDB	\
+	MPC8315ERDB_NAND	\
 	MPC8323ERDB	\
 	MPC832XEMDS	\
 	MPC832XEMDS_ATM	\
@@ -400,6 +400,8 @@ LIST_85xx="		\
 	MPC8560ADS	\
 	MPC8568MDS	\
 	MPC8569MDS	\
+	MPC8569MDS_ATM	\
+	MPC8569MDS_NAND \
 	MPC8572DS	\
 	MPC8572DS_36BIT	\
 	P2020DS		\
@@ -539,6 +541,7 @@ LIST_ARM7="		\
 #########################################################################
 
 LIST_ARM9="			\
+	a320evb			\
 	ap920t			\
 	ap922_XA10		\
 	ap926ejs		\
@@ -549,6 +552,15 @@ LIST_ARM9="			\
 	cp926ejs		\
 	cp946es			\
 	cp966			\
+	da830evm		\
+	edb9301			\
+	edb9302			\
+	edb9302a		\
+	edb9307			\
+	edb9307a		\
+	edb9312			\
+	edb9315			\
+	edb9315a		\
 	imx27lite		\
 	lpd7a400		\
 	mv88f6281gtw_ge		\
@@ -569,6 +581,11 @@ LIST_ARM9="			\
 	sheevaplug		\
 	smdk2400		\
 	smdk2410		\
+	spear300		\
+	spear310		\
+	spear320		\
+	spear600		\
+	suen3			\
 	trab			\
 	VCMA9			\
 	versatile		\
@@ -581,6 +598,7 @@ LIST_ARM9="			\
 	davinci_sonata		\
 	davinci_dm355evm	\
 	davinci_dm355leopard	\
+	davinci_dm365evm	\
 	davinci_dm6467evm	\
 "
 
@@ -614,6 +632,7 @@ LIST_ARM11="			\
 #########################################################################
 LIST_ARM_CORTEX_A8="		\
 	devkit8000		\
+	mx51evk			\
 	omap3_beagle		\
 	omap3_overo		\
 	omap3_evm		\
@@ -645,10 +664,12 @@ LIST_at91="			\
 	CPU9260			\
 	CPU9G20			\
 	csb637			\
+	eb_cpux9k2		\
 	kb9202			\
 	meesc			\
 	mp2usb			\
 	m501sk			\
+	otc570			\
 	pm9261			\
 	pm9263			\
 	SBC35_A9G20		\

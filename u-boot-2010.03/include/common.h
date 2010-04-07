@@ -107,6 +107,9 @@ typedef volatile unsigned char	vu_char;
 #ifdef CONFIG_BLACKFIN
 #include <asm/blackfin.h>
 #endif
+#ifdef CONFIG_SOC_DA8XX
+#include <asm/arch/hardware.h>
+#endif
 
 #include <part.h>
 #include <flash.h>
@@ -119,6 +122,11 @@ typedef volatile unsigned char	vu_char;
 #define debug(fmt,args...)
 #define debugX(level,fmt,args...)
 #endif	/* DEBUG */
+
+#define error(fmt, args...) do {					\
+		printf("ERROR: " fmt "\nat %s:%d/%s()\n",		\
+			##args, __FILE__, __LINE__, __func__);		\
+} while (0)
 
 #ifndef BUG
 #define BUG() do { \
@@ -333,7 +341,9 @@ extern void  pic_write (uchar reg, uchar val);
 #if defined(CONFIG_SPI) || !defined(CONFIG_SYS_I2C_EEPROM_ADDR)
 # define CONFIG_SYS_DEF_EEPROM_ADDR 0
 #else
+#if !defined(CONFIG_ENV_EEPROM_IS_ON_I2C)
 # define CONFIG_SYS_DEF_EEPROM_ADDR CONFIG_SYS_I2C_EEPROM_ADDR
+#endif
 #endif /* CONFIG_SPI || !defined(CONFIG_SYS_I2C_EEPROM_ADDR) */
 
 #if defined(CONFIG_SPI)
@@ -495,8 +505,10 @@ int	prt_mpc8220_clks (void);
 ulong	get_OPB_freq (void);
 ulong	get_PCI_freq (void);
 #endif
-#if defined(CONFIG_S3C2400) || defined(CONFIG_S3C2410) || \
-	defined(CONFIG_LH7A40X) || defined(CONFIG_S3C6400)
+#if defined(CONFIG_S3C24X0) || \
+    defined(CONFIG_LH7A40X) || \
+    defined(CONFIG_S3C6400) || \
+    defined(CONFIG_EP93XX)
 ulong	get_FCLK (void);
 ulong	get_HCLK (void);
 ulong	get_PCLK (void);
@@ -603,7 +615,7 @@ unsigned long long get_ticks(void);
 void	wait_ticks    (unsigned long);
 
 /* lib_$(ARCH)/time.c */
-void	udelay	      (unsigned long);
+void	__udelay      (unsigned long);
 ulong	usec2ticks    (unsigned long usec);
 ulong	ticks2usec    (unsigned long ticks);
 int	init_timebase (void);
@@ -613,11 +625,19 @@ int gunzip(void *, int, unsigned char *, unsigned long *);
 int zunzip(void *dst, int dstlen, unsigned char *src, unsigned long *lenp,
 						int stoponerr, int offset);
 
+/* lib_generic/net_utils.c */
+#include <net.h>
+static inline IPaddr_t getenv_IPaddr (char *var)
+{
+	return (string_to_ip(getenv(var)));
+}
+
+/* lib_generic/time.c */
+void	udelay        (unsigned long);
+
 /* lib_generic/vsprintf.c */
 ulong	simple_strtoul(const char *cp,char **endp,unsigned int base);
-#ifdef CONFIG_SYS_64BIT_VSPRINTF
 unsigned long long	simple_strtoull(const char *cp,char **endp,unsigned int base);
-#endif
 long	simple_strtol(const char *cp,char **endp,unsigned int base);
 void	panic(const char *fmt, ...)
 		__attribute__ ((format (__printf__, 1, 2)));
@@ -698,6 +718,7 @@ void show_boot_progress(int val);
 #ifdef CONFIG_MP
 int cpu_status(int nr);
 int cpu_reset(int nr);
+int cpu_disable(int nr);
 int cpu_release(int nr, int argc, char *argv[]);
 #endif
 

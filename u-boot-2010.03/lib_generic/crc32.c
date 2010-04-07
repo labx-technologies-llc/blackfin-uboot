@@ -8,8 +8,11 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
+#ifndef USE_HOSTCC
+#include <common.h>
+#endif
 #include <compiler.h>
-//#include <u-boot/crc.h>
+#include <u-boot/crc.h>
 
 #if defined(CONFIG_HW_WATCHDOG) || defined(CONFIG_WATCHDOG)
 #include <watchdog.h>
@@ -160,7 +163,7 @@ const uint32_t * ZEXPORT get_crc_table()
 #endif
 
 /* ========================================================================= */
-# ifdef __LITTLE_ENDIAN
+# if __BYTE_ORDER == __LITTLE_ENDIAN
 #  define DO_CRC(x) crc = tab[(crc ^ (x)) & 255] ^ (crc >> 8)
 # else
 #  define DO_CRC(x) crc = tab[((crc >> 24) ^ (x)) & 255] ^ (crc << 8)

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2000-2006
+ * (C) Copyright 2000-2010
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
  * See file CREDITS for list of people who contributed to this
@@ -378,8 +378,9 @@ void board_init_f (ulong bootflag)
 	/* compiler optimization barrier needed for GCC >= 3.4 */
 	__asm__ __volatile__("": : :"memory");
 
-#if !defined(CONFIG_CPM2) && !defined(CONFIG_MPC83xx) && \
-    !defined(CONFIG_MPC85xx) && !defined(CONFIG_MPC86xx)
+#if !defined(CONFIG_CPM2) && !defined(CONFIG_MPC512X) && \
+    !defined(CONFIG_MPC83xx) && !defined(CONFIG_MPC85xx) && \
+    !defined(CONFIG_MPC86xx)
 	/* Clear initial global data */
 	memset ((void *) gd, 0, sizeof (gd_t));
 #endif
@@ -475,10 +476,6 @@ void board_init_f (ulong bootflag)
 #endif
 
 	debug ("Reserving %ldk for U-Boot at: %08lx\n", len >> 10, addr);
-
-#ifdef CONFIG_AMIGAONEG3SE
-	gd->relocaddr = addr;
-#endif
 
 	/*
 	 * reserve memory for malloc() arena
@@ -610,6 +607,8 @@ void board_init_f (ulong bootflag)
 #endif
 
 	WATCHDOG_RESET();
+
+	gd->relocaddr = addr; /* Record relocation address, useful for debug */
 
 	memcpy (id, (void *)gd, sizeof (gd_t));
 

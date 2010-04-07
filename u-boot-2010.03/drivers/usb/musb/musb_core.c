@@ -32,7 +32,9 @@ struct musb_regs *musbr;
  */
 void musb_start(void)
 {
+#if defined(CONFIG_MUSB_HCD)
 	u8 devctl;
+#endif
 
 	/* disable all interrupts */
 	writew(0, &musbr->intrtxe);
@@ -84,9 +86,9 @@ void musb_configure_ep(struct musb_epinfo *epinfo, u8 cnt)
 			/* Configure fifo size and fifo base address */
 			config_fifo(tx, idx, fifoaddr);
 
+			csr = readw(&musbr->txcsr);
 #if defined(CONFIG_MUSB_HCD)
 			/* clear the data toggle bit */
-			csr = readw(&musbr->txcsr);
 			writew(csr | MUSB_TXCSR_CLRDATATOG, &musbr->txcsr);
 #endif
 			/* Flush fifo if required */
@@ -97,9 +99,9 @@ void musb_configure_ep(struct musb_epinfo *epinfo, u8 cnt)
 			/* Configure fifo size and fifo base address */
 			config_fifo(rx, idx, fifoaddr);
 
+			csr = readw(&musbr->rxcsr);
 #if defined(CONFIG_MUSB_HCD)
 			/* clear the data toggle bit */
-			csr = readw(&musbr->rxcsr);
 			writew(csr | MUSB_RXCSR_CLRDATATOG, &musbr->rxcsr);
 #endif
 			/* Flush fifo if required */

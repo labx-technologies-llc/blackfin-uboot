@@ -9,14 +9,6 @@
  */
 
 #include <common.h>
-
-
-/*
- *
- * New NAND support
- *
- */
-#include <common.h>
 #include <linux/mtd/mtd.h>
 #include <command.h>
 #include <watchdog.h>
@@ -510,7 +502,7 @@ static int nand_load_image(cmd_tbl_t *cmdtp, nand_info_t *nand,
 			   ulong offset, ulong addr, char *cmd)
 {
 	int r;
-	char *s;
+	char *ep, *s;
 	size_t cnt;
 	image_header_t *hdr;
 #if defined(CONFIG_FIT)
@@ -585,9 +577,8 @@ static int nand_load_image(cmd_tbl_t *cmdtp, nand_info_t *nand,
 
 	load_addr = addr;
 
-#ifndef CONFIG_SYS_NO_BOOTM
 	/* Check if we should attempt an auto-start */
-	if (((s = getenv("autostart")) != NULL) && (strcmp(s, "yes") == 0)) {
+	if (((ep = getenv("autostart")) != NULL) && (strcmp(ep, "yes") == 0)) {
 		char *local_args[2];
 		extern int do_bootm(cmd_tbl_t *, int, int, char *[]);
 
@@ -599,8 +590,6 @@ static int nand_load_image(cmd_tbl_t *cmdtp, nand_info_t *nand,
 		do_bootm(cmdtp, 0, 1, local_args);
 		return 1;
 	}
-#endif
-
 	return 0;
 }
 

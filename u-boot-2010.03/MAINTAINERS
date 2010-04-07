@@ -36,6 +36,7 @@ Reinhard Arlt <reinhard.arlt@esd-electronics.com>
 	mecp5200	MPC5200
 	pf5200		MPC5200
 
+	caddy2		MPC8349
 	vme8349		MPC8349
 
 	CPCI750		PPC750FX/GX
@@ -117,7 +118,6 @@ Wolfgang Denk <wd@denx.de>
 
 	CU824		MPC8240
 	Sandpoint8240	MPC8240
-	SL8245		MPC8245
 
 	ATC		MPC8250
 	PM825		MPC8250
@@ -132,8 +132,6 @@ Wolfgang Denk <wd@denx.de>
 
 	PCIPPC2		MPC750
 	PCIPPC6		MPC750
-
-	EXBITGEN	PPC405GP
 
 Jon Diekema <jon.diekema@smiths-aerospace.com>
 
@@ -150,6 +148,10 @@ Dirk Eibach <eibach@gdsys.de>
 Dave Ellis <DGE@sixnetio.com>
 
 	SXNI855T	MPC8xx
+
+Fred Fan <fanyefeng@gmail.com>
+
+	mx51evk		i.MX51
 
 Thomas Frieden <ThomasF@hyperion-entertainment.com>
 
@@ -200,6 +202,8 @@ Frank Gottschling <fgottschling@eltec.de>
 	BAB7xx		MPC740/MPC750
 
 Wolfgang Grandegger <wg@denx.de>
+
+	ipek01		MPC5200
 
 	CCM		MPC855
 
@@ -408,8 +412,8 @@ Heiko Schocher <hs@denx.de>
 	muas3001	MPC8270
 	municse		MPC5200
 	sc3		PPC405GP
+	suen3		ARM926EJS (Kirkwood SoC)
 	uc101		MPC5200
-
 
 Peter De Schrijver <p2@mind.be>
 
@@ -543,6 +547,10 @@ Rick Bronson <rick@efn.org>
 
 	AT91RM9200DK	at91rm9200
 
+Po-Yu Chuang <ratbert@faraday-tech.com>
+
+	a320evb		FA526 (ARM920T-like) (a320 SoC)
+
 George G. Davis <gdavis@mvista.com>
 
 	assabet		SA1100
@@ -567,6 +575,7 @@ Peter Figuli <peposh@etc.sk>
 Daniel Gorsulowski <daniel.gorsulowski@esd.eu>
 
 	meesc		ARM926EJS (AT91SAM9263 SoC)
+	otc570		ARM926EJS (AT91SAM9263 SoC)
 
 Sedji Gaouaou<sedji.gaouaou@atmel.com>
 	at91sam9g10ek		ARM926EJS (AT91SAM9G10 SoC)
@@ -590,6 +599,16 @@ Gary Jennejohn <garyj@denx.de>
 
 	smdk2400	ARM920T
 	trab		ARM920T
+
+Matthias Kaehlcke <matthias@kaehlcke.net>
+	edb9301			ARM920T (EP9301)
+	edb9302			ARM920T (EP9302)
+	edb9302a		ARM920T (EP9302)
+	edb9307			ARM920T (EP9307)
+	edb9307a		ARM920T (EP9307)
+	edb9312			ARM920T (EP9312)
+	edb9315			ARM920T (EP9315)
+	edb9315a		ARM920T (EP9315)
 
 Konstantin Kletschke <kletschke@synertronixx.de>
 	scb9328		ARM920T
@@ -681,6 +700,10 @@ Tom Rix <Tom.Rix@windriver.com>
 
 	omap3_zoom2	ARM CORTEX-A8 (OMAP3xx SoC)
 
+John Rigby <jcrigby@gmail.com>
+
+	tx25		i.MX25
+
 Stefan Roese <sr@denx.de>
 
 	ixdpg425	xscale
@@ -690,11 +713,15 @@ Stefan Roese <sr@denx.de>
 Alessandro Rubini <rubini@unipv.it>
 Nomadik Linux Team <STN_WMM_nomadik_linux@list.st.com>
 
-	nmdk8815	ARM926EJS (Nomadik 8815 Soc)
+	nhk8815		ARM926EJS (Nomadik 8815 Soc)
 
 Steve Sakoman <sakoman@gmail.com>
 
 	omap3_overo	ARM CORTEX-A8 (OMAP3xx SoC)
+
+Jens Scharsig <esw@bus-elektronik.de>
+
+	eb_cpux9k2	ARM920T (AT91RM9200 SoC)
 
 Robert Schwebel <r.schwebel@pengutronix.de>
 
@@ -711,6 +738,10 @@ Michael Schwingen <michael@schwingen.org>
 Andrea Scian <andrea.scian@dave-tech.it>
 
 	B2		ARM7TDMI (S3C44B0X)
+
+Nick Thompson <nick.thompson@gefanuc.com>
+
+	da830evm	ARM926EJS (DA830/OMAP-L137)
 
 Albin Tonnerre <albin.tonnerre@free-electrons.com>
 

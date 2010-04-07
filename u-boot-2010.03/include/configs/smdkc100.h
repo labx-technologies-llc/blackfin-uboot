@@ -47,8 +47,6 @@
 
 #undef CONFIG_SKIP_RELOCATE_UBOOT
 
-#define CONFIG_L2_OFF
-
 /* input clock of PLL: SMDKC100 has 12MHz input clock */
 #define CONFIG_SYS_CLK_FREQ		12000000
 
@@ -212,8 +210,6 @@
 
 #define CONFIG_SYS_MONITOR_LEN		(256 << 10)	/* 256 KiB */
 #define CONFIG_IDENT_STRING		" for SMDKC100"
-
-#define CONFIG_SYS_64BIT_VSPRINTF
 
 #if !defined(CONFIG_NAND_SPL) && (TEXT_BASE >= 0xc0000000)
 #define CONFIG_ENABLE_MMU

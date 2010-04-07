@@ -107,6 +107,9 @@ typedef	struct	global_data {
 #if defined(CONFIG_FSL_LAW)
 	u32 used_laws;
 #endif
+#if defined(CONFIG_E500)
+	u32 used_tlb_cams[(CONFIG_SYS_NUM_TLBCAMS+31)/32];
+#endif
 #if defined(CONFIG_MPC5xxx)
 	unsigned long	ipb_clk;
 	unsigned long	pci_clk;
@@ -149,9 +152,7 @@ typedef	struct	global_data {
     defined(CONFIG_SANDPOINT)
 	void *		console_addr;
 #endif
-#ifdef CONFIG_AMIGAONEG3SE
 	unsigned long	relocaddr;	/* Start address of U-Boot in RAM */
-#endif
 #if defined(CONFIG_LCD) || defined(CONFIG_VIDEO)
 	unsigned long	fb_base;	/* Base address of framebuffer memory	*/
 #endif

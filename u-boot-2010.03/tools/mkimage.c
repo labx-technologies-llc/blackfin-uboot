@@ -37,6 +37,7 @@ struct mkimage_params params = {
 	.type = IH_TYPE_KERNEL,
 	.comp = IH_COMP_GZIP,
 	.dtc = MKIMAGE_DEFAULT_DTC_OPTIONS,
+	.imagename = "",
 };
 
 /*
@@ -150,6 +151,8 @@ main (int argc, char **argv)
 
 	/* Init Kirkwood Boot image generation/list support */
 	init_kwb_image_type ();
+	/* Init Freescale imx Boot image generation/list support */
+	init_imx_image_type ();
 	/* Init FIT image generation/list support */
 	init_fit_image_type ();
 	/* Init Default image generation/list support */

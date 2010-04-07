@@ -79,6 +79,13 @@ echo "BOARD  = $4" >> config.mk
 
 [ "$6" ] && [ "$6" != "NULL" ] && echo "SOC    = $6" >> config.mk
 
+# Assign board directory to BOARDIR variable
+if [ -z "$5" -o "$5" = "NULL" ] ; then
+    BOARDDIR=$4
+else
+    BOARDDIR=$5/$4
+fi
+
 #
 # Create board specific header file
 #
@@ -88,10 +95,15 @@ then
 else
 	> config.h		# Create new config file
 fi
+echo "/* Automatically generated - do not edit */" >>config.h
+
+for i in ${TARGETS} ; do
+	echo "#define CONFIG_MK_${i} 1" >>config.h ;
+done
+
 cat << EOF >> config.h
-/* Automatically generated - do not edit */
+#define CONFIG_BOARDDIR board/$BOARDDIR
 #include <config_defaults.h>
-$(printf "#define CONFIG_MK_%s 1" ${TARGETS})
 #include <configs/$1.h>
 #include <asm/config.h>
 EOF
