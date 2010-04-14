@@ -59,10 +59,6 @@ BIN_FILES-y += mkimage$(SFX)
 BIN_FILES-$(CONFIG_NETCONSOLE) += ncb$(SFX)
 BIN_FILES-$(CONFIG_SHA1_CHECK_UB_IMG) += ubsha1$(SFX)
 
-ifneq ($(HOST_TOOLS_ALL),)
-BIN_FILES-y += $(filter-out envcrc$(SFX),$(BIN_FILES-))
-endif
-
 # Source files which exist outside the tools directory
 EXT_OBJ_FILES-y += common/env_embedded.o
 EXT_OBJ_FILES-y += common/image.o
