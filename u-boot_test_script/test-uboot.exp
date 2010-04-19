@@ -3962,7 +3962,7 @@ if {  $TEST_JFFS2 } {
         }
     }
 
-    set timeout 900
+    set timeout 1000
     if { $jffs2_temp_result == $TEST_PASS } {
         set jffs2_temp_result $TEST_FAIL
         send -s "cp.b 0x1000000 0x20080000 \$(filesize)\r"
