@@ -20,7 +20,7 @@ cp $CHECKOUT/u-boot/u-boot_test_script/uboot-test $UBOOT_SCRIPTS
 cp $CHECKOUT/u-boot/u-boot_test_script/uboot_rectangle_test $UBOOT_SCRIPTS
 
 cd $UBOOT_SCRIPTS
-$UBOOT_SCRIPTS/uboot_misc_test.exp $BOARD_TYPE
+$UBOOT_SCRIPTS/uboot_misc_test.exp $BOARD_TYPE > /dev/null 2>&1
 
 for TEST_ROUND in `seq 0 3`;
 do
