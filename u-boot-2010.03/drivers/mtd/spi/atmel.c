@@ -540,7 +540,7 @@ struct spi_flash *spi_flash_probe_atmel(struct spi_slave *spi, u8 *idcode)
 				* params->blocks_per_sector
 				* params->nr_sectors;
 
-	debug("SF: Detected %s with page size %lu, total %u bytes\n",
+	printf("SF: Detected %s with page size %lu, total %u bytes\n",
 			params->name, page_size, asf->flash.size);
 
 	return &asf->flash;

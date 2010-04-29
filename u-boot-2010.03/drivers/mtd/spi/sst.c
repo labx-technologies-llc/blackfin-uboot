@@ -364,8 +364,8 @@ spi_flash_probe_sst(struct spi_slave *spi, u8 *idcode)
 	stm->flash.read = sst_read_fast;
 	stm->flash.size = SST_SECTOR_SIZE * params->nr_sectors;
 
-	debug("SF: Detected %s with page size %u, total %u bytes\n",
-	      params->name, SST_SECTOR_SIZE, stm->flash.size);
+	printf("SF: Detected %s with page size %u, total %u bytes\n",
+	       params->name, SST_SECTOR_SIZE, stm->flash.size);
 
 	/* Flash powers up read-only, so clear BP# bits */
 	sst_unlock(&stm->flash);

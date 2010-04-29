@@ -343,8 +343,8 @@ struct spi_flash *spi_flash_probe_spansion(struct spi_slave *spi, u8 *idcode)
 	spsn->flash.size = params->page_size * params->pages_per_sector
 	    * params->nr_sectors;
 
-	debug("SF: Detected %s with page size %u, total %u bytes\n",
-	      params->name, params->page_size, spsn->flash.size);
+	printf("SF: Detected %s with page size %u, total %u bytes\n",
+	       params->name, params->page_size, spsn->flash.size);
 
 	return &spsn->flash;
 }
