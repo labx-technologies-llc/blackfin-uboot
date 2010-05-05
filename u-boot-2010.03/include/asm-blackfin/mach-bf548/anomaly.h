@@ -18,9 +18,11 @@
 #define _MACH_ANOMALY_H_
 
 /* We do not support 0.0 or 0.1 silicon - sorry */
+/* XXX: let u-boot slide
 #if __SILICON_REVISION__ < 2
 # error will not work on BF548 silicon version 0.0, or 0.1
 #endif
+*/
 
 /* Multi-Issue Instruction with dsp32shiftimm in slot1 and P-reg Store in slot2 Not Supported */
 #define ANOMALY_05000074 (1)
