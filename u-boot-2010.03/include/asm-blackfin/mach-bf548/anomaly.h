@@ -18,11 +18,9 @@
 #define _MACH_ANOMALY_H_
 
 /* We do not support 0.0 or 0.1 silicon - sorry */
-/* XXX: let u-boot slide
 #if __SILICON_REVISION__ < 2
 # error will not work on BF548 silicon version 0.0, or 0.1
 #endif
-*/
 
 /* Multi-Issue Instruction with dsp32shiftimm in slot1 and P-reg Store in slot2 Not Supported */
 #define ANOMALY_05000074 (1)
@@ -30,7 +28,7 @@
 #define ANOMALY_05000119 (1)
 /* Rx.H Cannot Be Used to Access 16-bit System MMR Registers */
 #define ANOMALY_05000122 (1)
-/* Data Corruption with Cached External Memory and Non-Cached On-Chip L2 Memory */
+/* Data Corruption/Core Hang with L2/L3 Configured in Writeback Cache Mode */
 #define ANOMALY_05000220 (1)
 /* False Hardware Error from an Access in the Shadow of a Conditional Branch */
 #define ANOMALY_05000245 (1)
@@ -212,10 +210,14 @@
 #define ANOMALY_05000473 (1)
 /* Access to DDR-SDRAM causes system hang under certain PLL/VR settings */
 #define ANOMALY_05000474 (1)
-/* Core Hang With L2/L3 Configured in Writeback Cache Mode */
-#define ANOMALY_05000475 (1)
 /* TESTSET Instruction Cannot Be Interrupted */
 #define ANOMALY_05000477 (1)
+/* Reads of ITEST_COMMAND and ITEST_DATA Registers Cause Cache Corruption */
+#define ANOMALY_05000481 (1)
+/* Possible USB Data Corruption When Multiple Endpoints Are Accessed by the Core */
+#define ANOMALY_05000483 (1)
+/* PLL_CTL Change Using bfrom_SysControl() Can Result in Processor Overclocking */
+#define ANOMALY_05000485 (__SILICON_REVISION__ >= 2)
 
 /* Anomalies that don't exist on this proc */
 #define ANOMALY_05000099 (0)
@@ -266,5 +268,6 @@
 #define ANOMALY_05000412 (0)
 #define ANOMALY_05000432 (0)
 #define ANOMALY_05000435 (0)
+#define ANOMALY_05000475 (0)
 
 #endif

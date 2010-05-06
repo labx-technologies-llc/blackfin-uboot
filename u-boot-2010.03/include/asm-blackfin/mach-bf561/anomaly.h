@@ -152,8 +152,8 @@
 #define ANOMALY_05000215 (__SILICON_REVISION__ < 5)
 /* NMI Event at Boot Time Results in Unpredictable State */
 #define ANOMALY_05000219 (__SILICON_REVISION__ < 5)
-/* Data Corruption with Cached External Memory and Non-Cached On-Chip L2 Memory */
-#define ANOMALY_05000220 (__SILICON_REVISION__ < 5)
+/* Data Corruption/Core Hang with L2/L3 Configured in Writeback Cache Mode */
+#define ANOMALY_05000220 (__SILICON_REVISION__ < 4)
 /* Incorrect Pulse-Width of UART Start Bit */
 #define ANOMALY_05000225 (__SILICON_REVISION__ < 5)
 /* Scratchpad Memory Bank Reads May Return Incorrect Data */
@@ -290,10 +290,12 @@
 #define ANOMALY_05000461 (1)
 /* Interrupted 32-Bit SPORT Data Register Access Results In Underflow */
 #define ANOMALY_05000473 (1)
-/* Core Hang With L2/L3 Configured in Writeback Cache Mode */
+/* Possible Lockup Condition whem Modifying PLL from External Memory */
 #define ANOMALY_05000475 (__SILICON_REVISION__ < 4)
 /* TESTSET Instruction Cannot Be Interrupted */
 #define ANOMALY_05000477 (1)
+/* Reads of ITEST_COMMAND and ITEST_DATA Registers Cause Cache Corruption */
+#define ANOMALY_05000481 (1)
 
 /* Anomalies that don't exist on this proc */
 #define ANOMALY_05000119 (0)
@@ -319,5 +321,6 @@
 #define ANOMALY_05000465 (0)
 #define ANOMALY_05000467 (0)
 #define ANOMALY_05000474 (0)
+#define ANOMALY_05000485 (0)
 
 #endif
