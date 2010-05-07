@@ -134,7 +134,7 @@ static void bfin_nfc_write_buf(struct mtd_info *mtd, const uint8_t *buf, int len
 	}
 
 	/* Wait for the buffer to drain before we return */
-	while (bfin_read_NFC_STAT() & WB_EMPTY)
+	while (!(bfin_read_NFC_STAT() & WB_EMPTY))
 		if (ctrlc())
 			return;
 }
