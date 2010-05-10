@@ -41,6 +41,7 @@ int board_eth_init(bd_t *bis);
 int cpu_eth_init(bd_t *bis);
 
 /* Driver initialization prototypes */
+int ax88180_initialize(bd_t *bis);
 int au1x00_enet_initialize(bd_t*);
 int at91emac_register(bd_t *bis, unsigned long iobase);
 int bfin_EMAC_initialize(bd_t *bis);
