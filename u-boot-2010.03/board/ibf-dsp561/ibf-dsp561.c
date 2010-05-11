@@ -7,6 +7,7 @@
  */
 
 #include <common.h>
+#include <netdev.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
