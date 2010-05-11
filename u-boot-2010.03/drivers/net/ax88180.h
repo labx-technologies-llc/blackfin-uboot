@@ -371,6 +371,11 @@ static inline unsigned short READ_RXBUF (struct eth_device *dev)
 {
 	return le16_to_cpu(inw(RXBUFFER_START + dev->iobase));
 }
+
+static inline void WRITE_TXBUF (struct eth_device *dev, unsigned short data)
+{
+	outw(cpu_to_le16(data), dev->iobase + TXBUFFER_START);
+}
 #else
 static inline void OUTW (struct eth_device *dev, unsigned short command, unsigned long addr)
 {
@@ -381,11 +386,11 @@ static inline unsigned long READ_RXBUF (struct eth_device *dev)
 {
 	return le32_to_cpu(inl(RXBUFFER_START + dev->iobase));
 }
-#endif
 
-static inline void WRITE_TXBUF(struct eth_device *dev, unsigned short data)
+static inline void WRITE_TXBUF (struct eth_device *dev, unsigned long data)
 {
-	OUTW(dev, data, TXBUFFER_START);
+	outl(cpu_to_le32(data), dev->iobase + TXBUFFER_START);
 }
+#endif
 
 #endif /* _AX88180_H_ */
