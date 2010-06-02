@@ -160,17 +160,21 @@
 /* define to enable run status via led */
 /* #define CONFIG_STATUS_LED */
 #ifdef CONFIG_STATUS_LED
+#define CONFIG_GPIO_STATUS_LED
 #define CONFIG_BOARD_SPECIFIC_LED
 /* use LED0 to indicate booting/alive */
+#define GPIO_LED0 GPIO_PF8
 #define STATUS_LED_BOOT 0
 #define STATUS_LED_BIT 1
 #define STATUS_LED_STATE STATUS_LED_ON
 #define STATUS_LED_PERIOD (CONFIG_SYS_HZ / 4)
 /* use LED1 to indicate crash */
+#define GPIO_LED1 GPIO_PG11
 #define STATUS_LED_CRASH 1
 #define STATUS_LED_BIT1 2
 #define STATUS_LED_STATE1 STATUS_LED_ON
 #define STATUS_LED_PERIOD1 (CONFIG_SYS_HZ / 2)
+/* #define GPIO_LED2 GPIO_PG12 */
 #endif
 
 
