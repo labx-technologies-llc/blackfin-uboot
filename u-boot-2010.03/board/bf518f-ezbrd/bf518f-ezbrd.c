@@ -126,17 +126,10 @@ int board_eth_init(bd_t *bis)
 		}
 	}
 
-	ret = -1;
-	if (switch_is_alive) {
-		ret = bfin_EMAC_initialize(bis);
-		if (!phy_is_ksz)
-			/* newer boards have a National part which lacks a RX
-			 * error pin.  so undo the portmuxing to avoid errors.
-			 */
-			*pPORTG_FER &= ~PG1;
-	}
-
-	return ret;
+	if (switch_is_alive)
+		return bfin_EMAC_initialize(bis);
+	else
+		return -1;
 }
 #endif
 
