@@ -173,7 +173,7 @@ void DisablePPI(void)
 void Init_Ports(void)
 {
 	const unsigned short pins[] = {
-		P_PPI0_D0, P_PPI0_D1, P_PPI0_D2, P_PPI0_D3, P_PPI0_D4
+		P_PPI0_D0, P_PPI0_D1, P_PPI0_D2, P_PPI0_D3, P_PPI0_D4,
 		P_PPI0_D5, P_PPI0_D6, P_PPI0_D7, P_PPI0_FS2, 0,
 	};
 	peripheral_request_list(pins, "lcd");

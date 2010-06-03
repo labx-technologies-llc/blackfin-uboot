@@ -76,7 +76,7 @@ void board_musb_init(void)
 	/*
 	 * BF527 EZ-KITs require PG13 to be high for HOST mode
 	 */
-	gpio_request(GPIO_PE13, "musb-vbus");
-	gpio_direction_output(GPIO_PE13, 1);
+	gpio_request(GPIO_PG13, "musb-vbus");
+	gpio_direction_output(GPIO_PG13, 1);
 }
 #endif
