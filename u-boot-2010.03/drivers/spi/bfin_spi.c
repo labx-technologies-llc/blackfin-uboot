@@ -14,6 +14,7 @@
 
 #include <asm/blackfin.h>
 #include <asm/dma.h>
+#include <asm/gpio.h>
 #include <asm/portmux.h>
 #include <asm/mach-common/bits/spi.h>
 
@@ -27,7 +28,6 @@ struct bfin_spi_slave {
 static inline void write_##mmr(struct bfin_spi_slave *bss, u16 val) { bfin_write16(bss->mmr_base + off, val); } \
 static inline u16 read_##mmr(struct bfin_spi_slave *bss) { return bfin_read16(bss->mmr_base + off); }
 MAKE_SPI_FUNC(SPI_CTL,  0x00)
-MAKE_SPI_FUNC(SPI_FLG,  0x04)
 MAKE_SPI_FUNC(SPI_STAT, 0x08)
 MAKE_SPI_FUNC(SPI_TDBR, 0x0c)
 MAKE_SPI_FUNC(SPI_RDBR, 0x10)
@@ -48,33 +48,18 @@ __attribute__((weak))
 void spi_cs_activate(struct spi_slave *slave)
 {
 	struct bfin_spi_slave *bss = to_bfin_spi_slave(slave);
-	write_SPI_FLG(bss,
-		(read_SPI_FLG(bss) &
-		~((!bss->flg << 8) << slave->cs)) |
-		(1 << slave->cs));
+	gpio_set_value(slave->cs, bss->flg);
 	SSYNC();
-	debug("%s: SPI_FLG:%x\n", __func__, read_SPI_FLG(bss));
+	debug("%s: SPI_CS_GPIO:%x\n", __func__, gpio_get_value(slave->cs));
 }
 
 __attribute__((weak))
 void spi_cs_deactivate(struct spi_slave *slave)
 {
 	struct bfin_spi_slave *bss = to_bfin_spi_slave(slave);
-	u16 flg;
-
-	/* make sure we force the cs to deassert rather than let the
-	 * pin float back up.  otherwise, exact timings may not be
-	 * met some of the time leading to random behavior (ugh).
-	 */
-	flg = read_SPI_FLG(bss) | ((!bss->flg << 8) << slave->cs);
-	write_SPI_FLG(bss, flg);
+	gpio_set_value(slave->cs, !bss->flg);
 	SSYNC();
-	debug("%s: SPI_FLG:%x\n", __func__, read_SPI_FLG(bss));
-
-	flg &= ~(1 << slave->cs);
-	write_SPI_FLG(bss, flg);
-	SSYNC();
-	debug("%s: SPI_FLG:%x\n", __func__, read_SPI_FLG(bss));
+	debug("%s: SPI_CS_GPIO:%x\n", __func__, gpio_get_value(slave->cs));
 }
 
 void spi_init()
@@ -168,6 +153,8 @@ int spi_claim_bus(struct spi_slave *slave)
 	debug("%s: bus:%i cs:%i\n", __func__, slave->bus, slave->cs);
 
 	peripheral_request_list(pins[slave->bus], "bfin-spi");
+	gpio_request(slave->cs, "bfin-spi");
+	gpio_direction_output(slave->cs, !bss->flg);
 
 	write_SPI_CTL(bss, bss->ctl);
 	write_SPI_BAUD(bss, bss->baud);
@@ -183,6 +170,7 @@ void spi_release_bus(struct spi_slave *slave)
 	debug("%s: bus:%i cs:%i\n", __func__, slave->bus, slave->cs);
 
 	peripheral_free_list(pins[slave->bus]);
+	gpio_free(slave->cs);
 
 	write_SPI_CTL(bss, 0);
 	SSYNC();
