@@ -147,7 +147,7 @@ int misc_init_r(void)
 
 int board_early_init_f(void)
 {
-	/* setup BF518-EZBRD GPIO pin PG11 to AMS2. */
+	/* connect async banks by default */
 	const unsigned short pins[] = {
 		P_AMS2, P_AMS3, 0,
 	};
