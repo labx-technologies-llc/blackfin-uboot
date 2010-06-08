@@ -252,6 +252,18 @@
 #endif
 
 /*
+ * I2C Settings
+ */
+#if defined(CONFIG_HARD_I2C) || defined(CONFIG_SOFT_I2C)
+# ifndef CONFIG_SYS_I2C_SPEED
+#  define CONFIG_SYS_I2C_SPEED 50000
+# endif
+# ifndef CONFIG_SYS_I2C_SLAVE
+#  define CONFIG_SYS_I2C_SLAVE 0
+# endif
+#endif
+
+/*
  * Misc Settings
  */
 #define CONFIG_LZMA
