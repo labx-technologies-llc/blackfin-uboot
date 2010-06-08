@@ -138,7 +138,7 @@
 #define CONFIG_MMC
 #define CONFIG_CMD_EXT2
 #define CONFIG_SPI_MMC
-#define CONFIG_SPI_MMC_DEFAULT_CS 0	/* PH3 see board file */
+#define CONFIG_SPI_MMC_DEFAULT_CS GPIO_PH3
 
 /*
  * Misc Settings
