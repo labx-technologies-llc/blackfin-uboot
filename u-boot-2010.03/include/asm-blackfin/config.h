@@ -81,7 +81,7 @@
 
 /* Set default SPI flash CS to the one we boot from */
 #if defined(CONFIG_ENV_IS_IN_SPI_FLASH) && !defined(CONFIG_ENV_SPI_CS)
-# define CONFIG_ENV_SPI_CS BFIN_BOOT_SPI_SSEL
+# define CONFIG_ENV_SPI_CS GPIO_DEFAULT_BOOT_SPI_CS
 #endif
 
 /* We need envcrc to embed the env into LDRs */
