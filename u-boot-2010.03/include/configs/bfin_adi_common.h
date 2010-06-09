@@ -168,7 +168,7 @@
 		"eeprom write $(loadaddr) 0x0 $(filesize)"
 #  else
 #   define UBOOT_ENV_UPDATE \
-		"sf probe " MK_STR(GPIO_DEFAULT_BOOT_SPI_CS) ";" \
+		"sf probe " MK_STR(BFIN_BOOT_SPI_SSEL) ";" \
 		"sf erase 0 0x40000;" \
 		"sf write $(loadaddr) 0 $(filesize)"
 #  endif

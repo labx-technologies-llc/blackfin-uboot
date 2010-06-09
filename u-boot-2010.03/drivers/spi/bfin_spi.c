@@ -28,6 +28,7 @@ struct bfin_spi_slave {
 static inline void write_##mmr(struct bfin_spi_slave *bss, u16 val) { bfin_write16(bss->mmr_base + off, val); } \
 static inline u16 read_##mmr(struct bfin_spi_slave *bss) { return bfin_read16(bss->mmr_base + off); }
 MAKE_SPI_FUNC(SPI_CTL,  0x00)
+MAKE_SPI_FUNC(SPI_FLG,  0x04)
 MAKE_SPI_FUNC(SPI_STAT, 0x08)
 MAKE_SPI_FUNC(SPI_TDBR, 0x0c)
 MAKE_SPI_FUNC(SPI_RDBR, 0x10)
@@ -35,31 +36,65 @@ MAKE_SPI_FUNC(SPI_BAUD, 0x14)
 
 #define to_bfin_spi_slave(s) container_of(s, struct bfin_spi_slave, slave)
 
-static inline int _spi_cs_is_valid(unsigned int bus, unsigned int cs)
-{
-	return gpio_is_valid(cs);
-}
+#define MAX_CTRL_CS 7
+
+#ifdef CONFIG_BFIN_SPI_GPIO_CS
+# define is_gpio_cs(cs) (slave->cs > MAX_CTRL_CS)
+#else
+# define is_gpio_cs(cs) 0
+#endif
+
 int spi_cs_is_valid(unsigned int bus, unsigned int cs)
 {
-	return _spi_cs_is_valid(bus, cs);
+	if (is_gpio_cs(cs))
+		return gpio_is_valid(cs - MAX_CTRL_CS);
+	else
+		return (cs >= 1 && cs <= MAX_CTRL_CS);
 }
 
-__attribute__((weak))
 void spi_cs_activate(struct spi_slave *slave)
 {
 	struct bfin_spi_slave *bss = to_bfin_spi_slave(slave);
-	gpio_set_value(slave->cs, bss->flg);
+
+	if (is_gpio_cs(cs)) {
+		gpio_set_value(slave->cs - MAX_CTRL_CS, bss->flg);
+		debug("%s: SPI_CS_GPIO:%x\n", __func__, gpio_get_value(slave->cs));
+	} else {
+		write_SPI_FLG(bss,
+			(read_SPI_FLG(bss) &
+			~((!bss->flg << 8) << slave->cs)) |
+			(1 << slave->cs));
+		debug("%s: SPI_FLG:%x\n", __func__, read_SPI_FLG(bss));
+	}
+
 	SSYNC();
-	debug("%s: SPI_CS_GPIO:%x\n", __func__, gpio_get_value(slave->cs));
 }
 
-__attribute__((weak))
 void spi_cs_deactivate(struct spi_slave *slave)
 {
 	struct bfin_spi_slave *bss = to_bfin_spi_slave(slave);
-	gpio_set_value(slave->cs, !bss->flg);
+
+	if (is_gpio_cs(cs)) {
+		gpio_set_value(slave->cs, !bss->flg);
+		debug("%s: SPI_CS_GPIO:%x\n", __func__, gpio_get_value(slave->cs));
+	} else {
+		u16 flg;
+
+		/* make sure we force the cs to deassert rather than let the
+		 * pin float back up.  otherwise, exact timings may not be
+		 * met some of the time leading to random behavior (ugh).
+		 */
+		flg = read_SPI_FLG(bss) | ((!bss->flg << 8) << slave->cs);
+		write_SPI_FLG(bss, flg);
+		SSYNC();
+		debug("%s: SPI_FLG:%x\n", __func__, read_SPI_FLG(bss));
+
+		flg &= ~(1 << slave->cs);
+		write_SPI_FLG(bss, flg);
+		debug("%s: SPI_FLG:%x\n", __func__, read_SPI_FLG(bss));
+	}
+
 	SSYNC();
-	debug("%s: SPI_CS_GPIO:%x\n", __func__, gpio_get_value(slave->cs));
 }
 
 void spi_init()
@@ -70,15 +105,35 @@ void spi_init()
 # define SPI0_CTL SPI_CTL
 #endif
 
-static const unsigned short pins[][4] = {
+#define SPI_PINS(n) \
+	[n] = { 0, P_SPI##n##_SCK, P_SPI##n##_MISO, P_SPI##n##_MOSI, 0 }
+static unsigned short pins[][5] = {
 #ifdef SPI0_CTL
-	[0] = { P_SPI0_SCK, P_SPI0_MISO, P_SPI0_MOSI, 0 },
+	SPI_PINS(0),
 #endif
 #ifdef SPI1_CTL
-	[1] = { P_SPI1_SCK, P_SPI1_MISO, P_SPI1_MOSI, 0 },
+	SPI_PINS(1),
 #endif
 #ifdef SPI2_CTL
-	[2] = { P_SPI2_SCK, P_SPI2_MISO, P_SPI2_MOSI, 0 },
+	SPI_PINS(2),
+#endif
+};
+
+#define SPI_CS_PINS(n) \
+	[n] = { \
+		P_SPI##n##_SSEL1, P_SPI##n##_SSEL2, P_SPI##n##_SSEL3, \
+		P_SPI##n##_SSEL4, P_SPI##n##_SSEL5, P_SPI##n##_SSEL6, \
+		P_SPI##n##_SSEL7, \
+	}
+static const unsigned short cs_pins[][7] = {
+#ifdef SPI0_CTL
+	SPI_CS_PINS(0),
+#endif
+#ifdef SPI1_CTL
+	SPI_CS_PINS(1),
+#endif
+#ifdef SPI2_CTL
+	SPI_CS_PINS(2),
 #endif
 };
 
@@ -90,7 +145,7 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 	u32 mmr_base;
 	u32 baud;
 
-	if (!_spi_cs_is_valid(bus, cs))
+	if (!spi_cs_is_valid(bus, cs))
 		return NULL;
 
 	if (bus >= ARRAY_SIZE(pins) || pins[bus] == NULL) {
@@ -152,9 +207,13 @@ int spi_claim_bus(struct spi_slave *slave)
 
 	debug("%s: bus:%i cs:%i\n", __func__, slave->bus, slave->cs);
 
+	if (is_gpio_cs(slave->cs)) {
+		gpio_request(slave->cs, "bfin-spi");
+		gpio_direction_output(slave->cs, !bss->flg);
+		pins[slave->bus][0] = P_UNDEF;
+	} else
+		pins[slave->bus][0] = cs_pins[slave->bus][slave->cs - 1];
 	peripheral_request_list(pins[slave->bus], "bfin-spi");
-	gpio_request(slave->cs, "bfin-spi");
-	gpio_direction_output(slave->cs, !bss->flg);
 
 	write_SPI_CTL(bss, bss->ctl);
 	write_SPI_BAUD(bss, bss->baud);
@@ -170,7 +229,8 @@ void spi_release_bus(struct spi_slave *slave)
 	debug("%s: bus:%i cs:%i\n", __func__, slave->bus, slave->cs);
 
 	peripheral_free_list(pins[slave->bus]);
-	gpio_free(slave->cs);
+	if (is_gpio_cs(slave->cs))
+		gpio_free(slave->cs);
 
 	write_SPI_CTL(bss, 0);
 	SSYNC();
