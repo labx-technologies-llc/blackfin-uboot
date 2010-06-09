@@ -115,6 +115,6 @@ int do_gpio(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 }
 
 U_BOOT_CMD(gpio, 3, 0, do_gpio,
-	"gpio    - set/clear/toggle gpio output pins",
-	"<s|c|t> <port><pin>\n"
-	"    - set/clear/toggle the specified pin");
+	"set/clear/toggle gpio output pins",
+	"<set|clear|toggle> <port><pin>\n"
+	"    - set/clear/toggle the specified pin (e.g. PF10)");
