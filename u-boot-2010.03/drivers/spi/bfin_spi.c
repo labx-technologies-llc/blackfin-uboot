@@ -39,7 +39,7 @@ MAKE_SPI_FUNC(SPI_BAUD, 0x14)
 #define MAX_CTRL_CS 7
 
 #ifdef CONFIG_BFIN_SPI_GPIO_CS
-# define is_gpio_cs(cs) (slave->cs > MAX_CTRL_CS)
+# define is_gpio_cs(cs) (cs > MAX_CTRL_CS)
 #else
 # define is_gpio_cs(cs) 0
 #endif
@@ -56,7 +56,7 @@ void spi_cs_activate(struct spi_slave *slave)
 {
 	struct bfin_spi_slave *bss = to_bfin_spi_slave(slave);
 
-	if (is_gpio_cs(cs)) {
+	if (is_gpio_cs(slave->cs)) {
 		gpio_set_value(slave->cs - MAX_CTRL_CS, bss->flg);
 		debug("%s: SPI_CS_GPIO:%x\n", __func__, gpio_get_value(slave->cs));
 	} else {
@@ -74,7 +74,7 @@ void spi_cs_deactivate(struct spi_slave *slave)
 {
 	struct bfin_spi_slave *bss = to_bfin_spi_slave(slave);
 
-	if (is_gpio_cs(cs)) {
+	if (is_gpio_cs(slave->cs)) {
 		gpio_set_value(slave->cs, !bss->flg);
 		debug("%s: SPI_CS_GPIO:%x\n", __func__, gpio_get_value(slave->cs));
 	} else {
