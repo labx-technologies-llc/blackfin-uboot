@@ -3400,8 +3400,12 @@ wait_for_uboot
 
 step "protect on"
 set timeout 30
-send  -s "protect on all\r"
-expect ">"
+if { $board_type == "BF518F-EZBRD" } {
+    send -s "protect on 20000000 202FFFFF\r"
+} else {
+    send -s "protect on all\r"
+}
+expect -re $UBOOT_PROMPT
 
 set protect_on_result $TEST_FAIL
 set random_flash_loc [format "%08x" [expr $FLASH_BASE + 0x430]]
@@ -3410,15 +3414,12 @@ set timeout 60
 send -s "cp.b $CFG_LOAD_ADDR $random_flash_loc $random_flash_bytes\r"
 while 1 {
     expect {
-
 	"Can't write to protected" {
-	    set protect_on_result $TEST_PASS
+            set protect_on_result $TEST_PASS
 	}
-
 	$UBOOT_PROMPT {
 	    break
 	}
-
 	timeout {
 	    send_user "ERROR: copy to flash took too long during protect test\n"
 	    recover
@@ -3440,7 +3441,11 @@ if { $random_flash_start == "undefined" || \
 
     set protect_off_result $TEST_FAIL
     set timeout 30
-    send -s "protect off all\r"
+    if { $board_type == "BF518F-EZBRD" } {
+        send -s "protect off 20000000 202FFFFF\r"
+    } else {
+        send -s "protect off all\r"
+    }
     wait_for_uboot
 
     set timeout 480
