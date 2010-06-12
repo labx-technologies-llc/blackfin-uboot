@@ -226,6 +226,7 @@ proc ethtool_tftp { speed status } {
     global target_ipaddr
 
     spawn su
+    set timeout 15
     sleep 1.5
     while 1 {
         expect {
@@ -243,7 +244,6 @@ proc ethtool_tftp { speed status } {
     while 1 {
         expect {
             "#" {
-                send_user "su success\n"
                 break
             }
             timeout {
@@ -255,24 +255,12 @@ proc ethtool_tftp { speed status } {
 
     set su_id $spawn_id
 
-    send -s "cd $ethtool_path/\r"
+    send -s "ethtool -s eth1 speed $speed duplex $status\r"
     while 1 {
         expect {
-            "#" {
+            -re "(\[fF]ail|\[eE]rror|No such).*#" {
                 break
             }
-            timeout {
-                send_user "Failed enter $ethtool_path\n"
-                break
-            }
-        }
-    }
-
-    set timeout 3600
-
-    send -s "./ethtool -s eth1 speed $speed duplex $status\r"
-    while 1 {
-        expect {
             "#" {
                 break
             }
@@ -299,6 +287,7 @@ proc ethtool_tftp { speed status } {
         }
     }
 
+    set timeout 3600
     while 1 {
         expect {
             "......" {
@@ -315,6 +304,8 @@ proc ethtool_tftp { speed status } {
     set ping_flood_spawn_id $spawn_id
 
     set spawn_id $kermit_spawn_id
+    set timeout 15
+    send "\r"
     expect ">"
     set timeout 500
     set tftp_flag 0
