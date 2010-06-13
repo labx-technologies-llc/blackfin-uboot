@@ -4345,7 +4345,7 @@ if {  $TEST_DMA } {
     send -s "tftp $L1_INSTRUCT_SRAM_ADDRESS add.bin\r"
     while 1 {
         expect {
-            "done" {
+            -re "done.*$UBOOT_PROMPT" {
                 set tftp_flag SUCCESS
                 break
             }
@@ -4359,7 +4359,7 @@ if {  $TEST_DMA } {
     send -s "md.b $L1_INSTRUCT_SRAM_ADDRESS \$(filesize)\r"
     while 1 {
         expect {
-            -re "ffa0b010.*$UBOOT_PROMPT" {
+            -re ":.*:.*$UBOOT_PROMPT" {
                 set tftp_flag SUCCESS
                 break
             }
