@@ -327,16 +327,5 @@ sleep .5
 send ".\r"
 expect ":"
 
-if { $board_type == "BF533-STAMP" || $board_type == "BF533-EZKIT" || $board_type == "BF561-EZKIT" } {
-    send "/#define *CONFIG_BFIN_BOOT_MODE\r"
-    expect "#define *CONFIG_BFIN_BOOT_MODE"
-    send "a\r"
-    sleep .5
-    send "#define CONFIG_IP_DEFRAG\r"
-    sleep .5
-    send ".\r"
-    expect ":"
-}
-
 send "wq\r"
 expect eof
