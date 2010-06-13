@@ -267,6 +267,7 @@
 /*
  * Misc Settings
  */
+#define CONFIG_BFIN_SPI_GPIO_CS /* Only matters if BFIN_SPI is enabled */
 #define CONFIG_LZMA
 
 #endif
