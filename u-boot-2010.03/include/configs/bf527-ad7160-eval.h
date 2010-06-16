@@ -74,12 +74,6 @@
 
 
 /*
- * Network Settings
- */
-#define CONFIG_HOSTNAME		bf527-ad7160-eval
-
-
-/*
  * Flash Settings
  */
 #define CONFIG_FLASH_CFI_DRIVER
@@ -128,8 +122,6 @@
  */
 #define CONFIG_BFIN_TWI_I2C	1
 #define CONFIG_HARD_I2C		1
-#define CONFIG_SYS_I2C_SPEED	50000
-#define CONFIG_SYS_I2C_SLAVE	0
 
 
 /*
@@ -138,23 +130,15 @@
 #define CONFIG_MMC
 #define CONFIG_CMD_EXT2
 #define CONFIG_SPI_MMC
-#define CONFIG_SPI_MMC_DEFAULT_CS GPIO_PH3
+#define CONFIG_SPI_MMC_DEFAULT_CS (7 + GPIO_PH3)
+
 
 /*
  * Misc Settings
  */
-#define CONFIG_MISC_INIT_R
 #define CONFIG_RTC_BFIN
 #define CONFIG_UART_CONSOLE	0
 
-/*
- * Video Settings
- */
-
-/* Don't waste time transferring a logo over the UART */
-#if (CONFIG_BFIN_BOOT_MODE != BFIN_BOOT_UART)
-/*# define CONFIG_VIDEO*/
-#endif
 
 /*
  * Pull in common ADI header for remaining command/environment setup
