@@ -42,11 +42,15 @@
 # define bfin_write_DMA_X_COUNT		bfin_write_DMA4_X_COUNT
 # define bfin_write_DMA_X_MODIFY	bfin_write_DMA4_X_MODIFY
 # define bfin_write_DMA_CONFIG		bfin_write_DMA4_CONFIG
+# define PORTMUX_PINS \
+	{ P_RSI_DATA0, P_RSI_DATA1, P_RSI_DATA2, P_RSI_DATA3, P_RSI_CMD, P_RSI_CLK, 0 }
 #elif defined(__ADSPBF54x__)
 # define bfin_write_DMA_START_ADDR	bfin_write_DMA22_START_ADDR
 # define bfin_write_DMA_X_COUNT		bfin_write_DMA22_X_COUNT
 # define bfin_write_DMA_X_MODIFY	bfin_write_DMA22_X_MODIFY
 # define bfin_write_DMA_CONFIG		bfin_write_DMA22_CONFIG
+# define PORTMUX_PINS \
+	{ P_SD_D0, P_SD_D1, P_SD_D2, P_SD_D3, P_SD_CLK, P_SD_CMD, 0 }
 #else
 # error no support for this proc yet
 #endif
@@ -220,14 +224,7 @@ static void bfin_sdh_set_ios(struct mmc *mmc)
 
 static int bfin_sdh_init(struct mmc *mmc)
 {
-	const unsigned short pins[] = {
-#ifdef P_SD_D0
-		P_SD_D0, P_SD_D1, P_SD_D2, P_SD_D3, P_SD_CLK, P_SD_CMD,
-#else
-		P_RSI_DATA0, P_RSI_DATA1, P_RSI_DATA2, P_RSI_DATA3, P_RSI_CMD, P_RSI_CLK,
-#endif
-		0,
-	};
+	const unsigned short pins[] = PORTMUX_PINS;
 	u16 pwr_ctl = 0;
 
 	/* Initialize sdh controller */
