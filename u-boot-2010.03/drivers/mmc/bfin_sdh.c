@@ -72,9 +72,7 @@ sdh_send_cmd(struct mmc *mmc, struct mmc_cmd *mmc_cmd)
 		sdh_cmd |= CMD_L_RSP;
 
 	bfin_write_SDH_ARGUMENT(arg);
-	SSYNC();
 	bfin_write_SDH_COMMAND(sdh_cmd);
-	SSYNC();
 
 	/* wait for a while */
 	timeout = 0;
@@ -106,7 +104,6 @@ sdh_send_cmd(struct mmc *mmc, struct mmc_cmd *mmc_cmd)
 
 	bfin_write_SDH_STATUS_CLR(CMD_SENT_STAT | CMD_RESP_END_STAT |
 				CMD_TIMEOUT_STAT | CMD_CRC_FAIL_STAT);
-	SSYNC();
 
 	return ret;
 }
