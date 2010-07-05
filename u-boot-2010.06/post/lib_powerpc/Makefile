@@ -22,7 +22,7 @@
 #
 include $(TOPDIR)/config.mk
 
-LIB	= libpostppc.a
+LIB	= libpost$(ARCH).a
 
 AOBJS-$(CONFIG_HAS_POST)	+= asm.o
 COBJS-$(CONFIG_HAS_POST)	+= cpu.o cmp.o cmpi.o two.o twox.o three.o threex.o
