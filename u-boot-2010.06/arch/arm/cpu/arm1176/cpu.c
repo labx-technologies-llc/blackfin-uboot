@@ -33,7 +33,6 @@
 
 #include <common.h>
 #include <command.h>
-#include <asm/arch/s3c6400.h>
 #include <asm/system.h>
 
 static void cache_flush (void);

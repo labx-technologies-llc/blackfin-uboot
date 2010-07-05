@@ -185,6 +185,7 @@ stack_setup:
 #endif
 	sub	sp, r0, #12		/* leave 3 words for abort-stack    */
 #endif	/* CONFIG_PRELOADER */
+	bic	sp, sp, #7		/* 8-byte alignment for ABI compliance */
 
 clear_bss:
 	ldr	r0, _bss_start		/* find start of bss segment	    */
@@ -226,8 +227,8 @@ cpu_init_crit:
 	 * flush v4 I/D caches
 	 */
 	mov	r0, #0
-	mcr	p15, 0, r0, c7, c7, 0	/* flush v3/v4 cache */
-	mcr	p15, 0, r0, c8, c7, 0	/* flush v4 TLB */
+	mcr	p15, 0, r0, c7, c7, 0	/* Invalidate I+D+BTB caches */
+	mcr	p15, 0, r0, c8, c7, 0	/* Invalidate Unified TLB */
 
 	/*
 	 * disable MMU stuff and caches

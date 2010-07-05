@@ -174,8 +174,6 @@ void arch_preboot_os(void) __attribute__((weak, alias("__arch_preboot_os")));
   #define IH_INITRD_ARCH IH_ARCH_MICROBLAZE
 #elif defined(__mips__)
   #define IH_INITRD_ARCH IH_ARCH_MIPS
-#elif defined(__nios__)
-  #define IH_INITRD_ARCH IH_ARCH_NIOS
 #elif defined(__nios2__)
   #define IH_INITRD_ARCH IH_ARCH_NIOS2
 #elif defined(__PPC__)
@@ -344,11 +342,8 @@ static int bootm_load_os(image_info_t os, ulong *load_end, int boot_progress)
 			printf ("   XIP %s ... ", type_name);
 		} else {
 			printf ("   Loading %s ... ", type_name);
-
-			if (load != image_start) {
-				memmove_wd ((void *)load,
-						(void *)image_start, image_len, CHUNKSZ);
-			}
+			memmove_wd ((void *)load, (void *)image_start,
+					image_len, CHUNKSZ);
 		}
 		*load_end = load + image_len;
 		puts("OK\n");
@@ -463,7 +458,7 @@ static int bootm_start_standalone(ulong iflag, int argc, char *argv[])
 
 /* we overload the cmd field with our state machine info instead of a
  * function pointer */
-cmd_tbl_t cmd_bootm_sub[] = {
+static cmd_tbl_t cmd_bootm_sub[] = {
 	U_BOOT_CMD_MKENT(start, 0, 1, (void *)BOOTM_STATE_START, "", ""),
 	U_BOOT_CMD_MKENT(loados, 0, 1, (void *)BOOTM_STATE_LOADOS, "", ""),
 #if defined(CONFIG_PPC) || defined(CONFIG_M68K) || defined(CONFIG_SPARC)

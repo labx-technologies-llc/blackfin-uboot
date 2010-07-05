@@ -1,5 +1,5 @@
 /*
- * arch/ppc/kernel/mpc10x_common.c
+ * arch/powerpc/kernel/mpc10x_common.c
  *
  * Common routines for the Motorola SPS MPC106, MPC107 and MPC8240 Host bridge,
  * Mem ctlr, EPIC, etc.

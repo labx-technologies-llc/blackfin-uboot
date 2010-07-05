@@ -117,7 +117,7 @@ SECTIONS
 
   .bootpg ADDR(.text) - 0x1000 :
   {
-    cpu/mpc85xx/start.o	(.bootpg)
+    arch/powerpc/cpu/mpc85xx/start.o	(.bootpg)
   } :text = 0xffff
 
   . = ADDR(.text) + 0x80000;

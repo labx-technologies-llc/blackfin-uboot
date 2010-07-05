@@ -50,16 +50,10 @@ int checkcpu (void)
 {
 	ulong clock = gd->cpu_clk;
 	char buf[32];
-#ifndef CONFIG_MGT5100
 	uint svr, pvr;
-#endif
 
 	puts ("CPU:   ");
 
-#ifdef CONFIG_MGT5100
-	puts   (CPU_ID_STR);
-	printf (" (JTAG ID %08lx)", *(vu_long *)MPC5XXX_CDM_JTAGID);
-#else
 	svr = get_svr();
 	pvr = get_pvr();
 
@@ -77,7 +71,6 @@ int checkcpu (void)
 
 	printf (" v%d.%d, Core v%d.%d", SVR_MJREV (svr), SVR_MNREV (svr),
 		PVR_MAJ(pvr), PVR_MIN(pvr));
-#endif
 	printf (" at %s MHz\n", strmhz (buf, clock));
 	return 0;
 }
@@ -160,26 +153,6 @@ void ft_cpu_setup(void *blob, bd_t *bd)
 	fdt_fixup_memory(blob, (u64)bd->bi_memstart, (u64)bd->bi_memsize);
 }
 #endif
-
-#ifdef CONFIG_BOOTCOUNT_LIMIT
-
-void bootcount_store (ulong a)
-{
-	volatile ulong *save_addr = (volatile ulong *) (MPC5XXX_CDM_BRDCRMB);
-
-	*save_addr = (BOOTCOUNT_MAGIC & 0xffff0000) | a;
-}
-
-ulong bootcount_load (void)
-{
-	volatile ulong *save_addr = (volatile ulong *) (MPC5XXX_CDM_BRDCRMB);
-
-	if ((*save_addr & 0xffff0000) != (BOOTCOUNT_MAGIC & 0xffff0000))
-		return 0;
-	else
-		return (*save_addr & 0x0000ffff);
-}
-#endif /* CONFIG_BOOTCOUNT_LIMIT */
 
 #ifdef CONFIG_MPC5xxx_FEC
 /* Default initializations for FEC controllers.  To override,

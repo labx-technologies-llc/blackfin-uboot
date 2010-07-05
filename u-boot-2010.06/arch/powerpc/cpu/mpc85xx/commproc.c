@@ -2,7 +2,7 @@
  * Adapted for Motorola MPC8560 chips
  * Xianghua Xiao <x.xiao@motorola.com>
  *
- * This file is based on "arch/ppc/8260_io/commproc.c" - here is it's
+ * This file is based on "arch/powerpc/8260_io/commproc.c" - here is it's
  * copyright notice:
  *
  * General Purpose functions for the global management of the

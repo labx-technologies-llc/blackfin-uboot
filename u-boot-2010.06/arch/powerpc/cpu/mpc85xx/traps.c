@@ -1,5 +1,5 @@
 /*
- * linux/arch/ppc/kernel/traps.c
+ * linux/arch/powerpc/kernel/traps.c
  *
  * Copyright 2007 Freescale Semiconductor.
  * Copyright (C) 2003 Motorola

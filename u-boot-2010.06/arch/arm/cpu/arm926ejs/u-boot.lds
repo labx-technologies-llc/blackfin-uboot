@@ -31,7 +31,7 @@ SECTIONS
 	. = ALIGN(4);
 	.text :
 	{
-		cpu/arm926ejs/start.o	(.text)
+		arch/arm/cpu/arm926ejs/start.o	(.text)
 		*(.text)
 	}
 

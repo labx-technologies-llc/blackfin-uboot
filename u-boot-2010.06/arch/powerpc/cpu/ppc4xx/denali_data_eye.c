@@ -1,5 +1,5 @@
 /*
- * cpu/ppc4xx/denali_data_eye.c
+ * arch/powerpc/cpu/ppc4xx/denali_data_eye.c
  * Extracted from board/amcc/sequoia/sdram.c by Larry Johnson <lrj@acm.org>.
  *
  * (C) Copyright 2006

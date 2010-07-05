@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Freescale Semiconductor, Inc.
+ * Copyright 2009-2010 Freescale Semiconductor, Inc.
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -25,7 +25,7 @@
 #include <pci.h>
 
 struct pci_info {
-	u16	cfg;
+	u32	cfg;
 };
 
 /* The cfg field is a bit mask in which each bit represents the value of
@@ -56,18 +56,6 @@ static struct pci_info pci_config_info[] =
 #elif defined(CONFIG_MPC8536)
 static struct pci_info pci_config_info[] =
 {
-	[LAW_TRGT_IF_PCI] = {
-		.cfg =   0,
-	},
-	[LAW_TRGT_IF_PCIE_1] = {
-		.cfg =   (1 << 2) | (1 << 3) | (1 << 5) | (1 << 7),
-	},
-	[LAW_TRGT_IF_PCIE_2] = {
-		.cfg =   (1 << 5) | (1 << 7),
-	},
-	[LAW_TRGT_IF_PCIE_3] = {
-		.cfg =   (1 << 7),
-	},
 };
 #elif defined(CONFIG_MPC8544)
 static struct pci_info pci_config_info[] =
@@ -153,7 +141,8 @@ static struct pci_info pci_config_info[] =
 			 (1 << 7) | (1 << 0xe) | (1 << 0xf),
 	},
 };
-#elif defined(CONFIG_P1011) || defined(CONFIG_P1020)
+#elif defined(CONFIG_P1011) || defined(CONFIG_P1020) || \
+      defined(CONFIG_P1012) || defined(CONFIG_P1021)
 static struct pci_info pci_config_info[] =
 {
 	[LAW_TRGT_IF_PCIE_1] = {
@@ -161,6 +150,28 @@ static struct pci_info pci_config_info[] =
 	},
 	[LAW_TRGT_IF_PCIE_2] = {
 		.cfg =   (1 << 0xe),
+	},
+};
+#elif defined(CONFIG_P1013) || defined(CONFIG_P1022)
+static struct pci_info pci_config_info[] =
+{
+	[LAW_TRGT_IF_PCIE_1] = {
+		.cfg =   (1 << 6) | (1 << 7) | (1 << 9) | (1 << 0xa) |
+			 (1 << 0xb) | (1 << 0xd) | (1 << 0xe) |
+			 (1 << 0xf) | (1 << 0x15) | (1 << 0x16) |
+			 (1 << 0x17) | (1 << 0x18) | (1 << 0x19) |
+			 (1 << 0x1a) | (1 << 0x1b) | (1 << 0x1c) |
+			 (1 << 0x1d) | (1 << 0x1e) | (1 << 0x1f),
+	},
+	[LAW_TRGT_IF_PCIE_2] = {
+		.cfg =   (1 << 1) | (1 << 6) | (1 << 7) | (1 << 9) |
+			 (1 << 0xd) | (1 << 0x15) | (1 << 0x16) | (1 << 0x17) |
+			 (1 << 0x18) | (1 << 0x19) | (1 << 0x1a) | (1 << 0x1b),
+	},
+	[LAW_TRGT_IF_PCIE_3] = {
+		.cfg =   (1 << 0) | (1 << 1) | (1 << 6) | (1 << 7) | (1 << 9) |
+			 (1 << 0xa) | (1 << 0xb) | (1 << 0xd) | (1 << 0x15) |
+			 (1 << 0x16) | (1 << 0x17) | (1 << 0x18) | (1 << 0x1c),
 	},
 };
 #elif defined(CONFIG_P2010) || defined(CONFIG_P2020)

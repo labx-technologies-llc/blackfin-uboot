@@ -55,7 +55,7 @@ SECTIONS
     /* WARNING - the following is hand-optimized to fit within	*/
     /* the sector layout of our flash chips!	XXX FIXME XXX	*/
 
-    cpu/mpc5xx/start.o	(.text)
+    arch/powerpc/cpu/mpc5xx/start.o	(.text)
 
     *(.text)
     *(.got1)

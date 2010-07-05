@@ -1,5 +1,5 @@
 /*
- * cpu/ppc4xx/40x_spd_sdram.c
+ * arch/powerpc/cpu/ppc4xx/40x_spd_sdram.c
  * This SPD SDRAM detection code supports IBM/AMCC PPC44x cpu with a
  * SDRAM controller. Those are all current 405 PPC's.
  *

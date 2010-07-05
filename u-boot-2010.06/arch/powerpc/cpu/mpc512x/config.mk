@@ -26,4 +26,4 @@ PLATFORM_CPPFLAGS += -DCONFIG_MPC512X -DCONFIG_E300 \
 
 # Use default linker script.
 # A board port can override this setting in board/*/config.mk
-LDSCRIPT := $(SRCTREE)/cpu/mpc512x/u-boot.lds
+LDSCRIPT := $(SRCTREE)/arch/powerpc/cpu/mpc512x/u-boot.lds

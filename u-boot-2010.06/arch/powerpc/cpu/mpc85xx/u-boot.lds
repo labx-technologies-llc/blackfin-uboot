@@ -121,7 +121,7 @@ SECTIONS
 
   .bootpg RESET_VECTOR_ADDRESS - 0xffc :
   {
-    cpu/mpc85xx/start.o	(.bootpg)
+    arch/powerpc/cpu/mpc85xx/start.o	(.bootpg)
   } :text = 0xffff
 
   .resetvec RESET_VECTOR_ADDRESS :

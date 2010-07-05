@@ -27,10 +27,10 @@
 #ifndef __ASM_INTERRUPT_H_
 #define __ASM_INTERRUPT_H_ 1
 
-/* cpu/i386/interrupts.c */
+/* arch/i386/cpu/interrupts.c */
 void set_vector(u8 intnum, void *routine);
 
-/* lib_i386/interupts.c */
+/* arch/i386/lib/interupts.c */
 void disable_irq(int irq);
 void enable_irq(int irq);
 

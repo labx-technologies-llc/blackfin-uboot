@@ -1,5 +1,5 @@
 /*
- * cpu/ppc4xx/44x_spd_ddr.c
+ * arch/powerpc/cpu/ppc4xx/44x_spd_ddr.c
  * This SPD DDR detection code supports IBM/AMCC PPC44x cpu with a
  * DDR controller. Those are 440GP/GX/EP/GR.
  *

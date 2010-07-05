@@ -1,12 +1,12 @@
 /*
- * cpu/ppc4xx/denali_spd_ddr2.c
+ * arch/powerpc/cpu/ppc4xx/denali_spd_ddr2.c
  * This SPD SDRAM detection code supports AMCC PPC44x CPUs with a Denali-core
  * DDR2 controller, specifically the 440EPx/GRx.
  *
  * (C) Copyright 2007-2008
  * Larry Johnson, lrj@acm.org.
  *
- * Based primarily on cpu/ppc4xx/4xx_spd_ddr2.c, which is...
+ * Based primarily on arch/powerpc/cpu/ppc4xx/4xx_spd_ddr2.c, which is...
  *
  * (C) Copyright 2007
  * Stefan Roese, DENX Software Engineering, sr@denx.de.

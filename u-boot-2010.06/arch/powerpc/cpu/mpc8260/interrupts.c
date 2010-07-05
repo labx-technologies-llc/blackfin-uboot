@@ -44,7 +44,7 @@ static struct irq_action irq_handlers[NR_IRQS];
 static ulong ppc_cached_irq_mask[NR_MASK_WORDS];
 
 /****************************************************************************/
-/* this section was ripped out of arch/ppc/kernel/ppc8260_pic.c in the	    */
+/* this section was ripped out of arch/powerpc/kernel/ppc8260_pic.c in the	    */
 /* Linux/PPC 2.4.x source. There was no copyright notice in that file.	    */
 
 /* The 8260 internal interrupt controller.  It is usually
@@ -137,7 +137,7 @@ static int m8260_get_irq (struct pt_regs *regs)
 	return irq;
 }
 
-/* end of code ripped out of arch/ppc/kernel/ppc8260_pic.c		    */
+/* end of code ripped out of arch/powerpc/kernel/ppc8260_pic.c		    */
 /****************************************************************************/
 
 int interrupt_init_cpu (unsigned *decrementer_count)

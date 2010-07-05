@@ -27,13 +27,14 @@
 #include <command.h>
 #include <asm/io.h>
 
-#include "../../board/freescale/common/pixis.h"
-#include "../../board/freescale/common/fsl_diu_fb.h"
+#include "../../../../board/freescale/common/fsl_diu_fb.h"
 
 #if defined(CONFIG_VIDEO) || defined(CONFIG_CFB_CONSOLE)
 #include <stdio_dev.h>
 #include <video_fb.h>
 #endif
+
+DECLARE_GLOBAL_DATA_PTR;
 
 #ifdef CONFIG_FSL_DIU_LOGO_BMP
 extern unsigned int FSL_Logo_BMP[];
@@ -66,10 +67,11 @@ void diu_set_pixel_clock(unsigned int pixclock)
 char *valid_bmp(char *addr)
 {
 	unsigned long h_addr;
+	bd_t *bd = gd->bd;
 
 	h_addr = simple_strtoul(addr, NULL, 16);
-	if (h_addr < CONFIG_SYS_FLASH_BASE ||
-			h_addr >= (CONFIG_SYS_FLASH_BASE + CONFIG_SYS_FLASH_SIZE - 1)) {
+	if (h_addr < bd->bi_flashstart ||
+	    h_addr >= (bd->bi_flashstart + bd->bi_flashsize - 1)) {
 		printf("bmp addr %lx is not a valid flash address\n", h_addr);
 		return 0;
 	} else if ((*(char *)(h_addr) != 'B') || (*(char *)(h_addr+1) != 'M')) {
@@ -85,8 +87,13 @@ int mpc5121_diu_init(void)
 	char *bmp = NULL;
 	char *bmp_env;
 
+#if defined(CONFIG_VIDEO_XRES) & defined(CONFIG_VIDEO_YRES)
+	xres = CONFIG_VIDEO_XRES;
+	yres = CONFIG_VIDEO_YRES;
+#else
 	xres = 1024;
 	yres = 768;
+#endif
 	pixel_format = 0x88883316;
 
 	debug("mpc5121_diu_init\n");

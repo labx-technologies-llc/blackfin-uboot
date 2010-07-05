@@ -1,5 +1,5 @@
 /*
- * needed for cpu/mpc512x/start.S
+ * needed for arch/powerpc/cpu/mpc512x/start.S
  *
  * These should be auto-generated
  */

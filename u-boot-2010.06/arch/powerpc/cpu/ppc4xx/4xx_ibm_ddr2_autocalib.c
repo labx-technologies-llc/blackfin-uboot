@@ -1,5 +1,5 @@
 /*
- * cpu/ppc4xx/4xx_ibm_ddr2_autocalib.c
+ * arch/powerpc/cpu/ppc4xx/4xx_ibm_ddr2_autocalib.c
  * This SPD SDRAM detection code supports AMCC PPC44x cpu's with a
  * DDR2 controller (non Denali Core). Those currently are:
  *

@@ -38,7 +38,7 @@ SECTIONS
 
 	.text :
 	{
-		cpu/sh2/start.o		(.text)
+		arch/sh/cpu/sh2/start.o		(.text)
 		. = ALIGN(8192);
 		common/env_embedded.o	(.ppcenv)
 		. = ALIGN(8192);

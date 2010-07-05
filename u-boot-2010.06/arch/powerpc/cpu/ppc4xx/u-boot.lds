@@ -124,7 +124,7 @@ SECTIONS
 #ifdef CONFIG_440
   .bootpg RESET_VECTOR_ADDRESS - 0xffc :
   {
-    cpu/ppc4xx/start.o	(.bootpg)
+    arch/powerpc/cpu/ppc4xx/start.o	(.bootpg)
 
     /*
      * PPC440 board need a board specific object with the

@@ -84,7 +84,6 @@ static table_entry_t uimage_arch[] = {
 	{	IH_ARCH_MICROBLAZE,	"microblaze",	"MicroBlaze",	},
 	{	IH_ARCH_MIPS,		"mips",		"MIPS",		},
 	{	IH_ARCH_MIPS64,		"mips64",	"MIPS 64 Bit",	},
-	{	IH_ARCH_NIOS,		"nios",		"NIOS",		},
 	{	IH_ARCH_NIOS2,		"nios2",	"NIOS II",	},
 	{	IH_ARCH_PPC,		"powerpc",	"PowerPC",	},
 	{	IH_ARCH_PPC,		"ppc",		"PowerPC",	},
@@ -450,6 +449,9 @@ phys_size_t getenv_bootm_size(void)
 
 void memmove_wd (void *to, void *from, size_t len, ulong chunksz)
 {
+	if (to == from)
+		return;
+
 #if defined(CONFIG_HW_WATCHDOG) || defined(CONFIG_WATCHDOG)
 	while (len > 0) {
 		size_t tail = (len > chunksz) ? chunksz : len;

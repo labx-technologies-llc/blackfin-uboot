@@ -29,7 +29,7 @@ SECTIONS
 	. = 0xfff00000;
 	.text : {
 		*(.text)
-  	}
+	}
 	_etext = .;
 
 	.reloc : {

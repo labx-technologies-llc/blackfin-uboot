@@ -31,7 +31,7 @@ SECTIONS
 	. = ALIGN(4);
 	.text      :
 	{
-	  cpu/arm920t/start.o	(.text)
+	  arch/arm/cpu/arm920t/start.o	(.text)
 		/* the EP93xx expects to find the pattern 'CRUS' at 0x1000 */
 	  . = 0x1000;
 	  LONG(0x53555243)

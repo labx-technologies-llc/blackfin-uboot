@@ -27,7 +27,7 @@
  * MA 02111-1307 USA
  */
 
-/* this section was ripped out of arch/ppc/syslib/mpc52xx_pic.c in the
+/* this section was ripped out of arch/powerpc/syslib/mpc52xx_pic.c in the
  * Linux 2.6 source with the following copyright.
  *
  * Based on (well, mostly copied from) the code from the 2.4 kernel by

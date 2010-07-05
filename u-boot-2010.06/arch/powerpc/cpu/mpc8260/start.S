@@ -576,7 +576,7 @@ init_8260_core:
 	/*								*/
 	/* bits 15-19 correspond to addresses 0x00000000 to 0x0001F000	*/
 	/* incrementing by 0x1000 each time. The code below is sort of	*/
-	/* based on code in "flush_tlbs" from arch/ppc/kernel/head.S	*/
+	/* based on code in "flush_tlbs" from arch/powerpc/kernel/head.S	*/
 	/*								*/
 	/*--------------------------------------------------------------*/
 

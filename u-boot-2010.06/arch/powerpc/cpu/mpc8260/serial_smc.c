@@ -21,7 +21,7 @@
  * MA 02111-1307 USA
  *
  * Hacked for MPC8260 by Murray.Jensen@cmst.csiro.au, 19-Oct-00, with
- * changes based on the file arch/ppc/mbxboot/m8260_tty.c from the
+ * changes based on the file arch/powerpc/mbxboot/m8260_tty.c from the
  * Linux/PPC sources (m8260_tty.c had no copyright info in it).
  */
 

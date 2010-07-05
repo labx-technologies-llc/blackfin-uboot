@@ -14,7 +14,7 @@
  * that the overall structure is a multiple of 16 bytes in length.
  *
  * Note that the offsets of the fields in this struct correspond with
- * the PT_* values below.  This simplifies arch/ppc/kernel/ptrace.c.
+ * the PT_* values below.  This simplifies arch/powerpc/kernel/ptrace.c.
  */
 
 #include <linux/config.h>

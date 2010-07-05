@@ -39,7 +39,7 @@ SECTIONS
 	. = ALIGN(4);
 	.text :
 	{
-		cpu/arm1136/start.o	(.text)
+		arch/arm/cpu/arm1136/start.o	(.text)
 		*(.text)
 	}
 

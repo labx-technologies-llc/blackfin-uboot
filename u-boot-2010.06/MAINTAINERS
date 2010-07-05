@@ -62,6 +62,10 @@ Oliver Brown <obrown@adventnetworks.com>
 
 	gw8260		MPC8260
 
+Cyril Chemparathy <cyril@ti.com>
+
+	tnetv107x_evm	tnetv107x
+
 Conn Clark <clark@esteem.com>
 
 	ESTEEM192E	MPC8xx
@@ -80,7 +84,6 @@ Torsten Demke <torsten.demke@fci.com>
 
 Wolfgang Denk <wd@denx.de>
 
-	IceCube_5100	MGT5100
 	IceCube_5200	MPC5200
 
 	ARIA		MPC5121e
@@ -195,6 +198,10 @@ Niklaus Giger <niklaus.giger@netstal.com>
 	MCU25		PPC405GPr
 	HCU5		PPC440EPx
 
+Siddarth Gore <gores@marvell.com>
+
+	guruplug	ARM926EJS (Kirkwood SoC)
+
 Frank Gottschling <fgottschling@eltec.de>
 
 	MHPC		MPC8xx
@@ -225,6 +232,7 @@ Ilko Iliev <iliev@ronetix.at>
 
 	PM9261		AT91SAM9261
 	PM9263		AT91SAM9263
+	PM9G45		ARM926EJS (AT91SAM9G45 SoC)
 
 Gary Jennejohn <garyj@denx.de>
 
@@ -346,6 +354,10 @@ Daniel Poirot <dan.poirot@windriver.com>
 	sbc8240		MPC8240
 	sbc405		PPC405GP
 
+Sudhakar Rajashekhara <sudhakar.raj@ti.com>
+
+	da850evm	ARM926EJS (DA850/OMAP-L138)
+
 Ricardo Ribalda <ricardo.ribalda@uam.es>
 
 	ml507 		PPC440x5
@@ -369,6 +381,7 @@ Stefan Roese <sr@denx.de>
 	ebony		PPC440GP
 	glacier		PPC460GT
 	haleakala	PPC405EXr
+	icon		PPC440SPe
 	katmai		PPC440SPe
 	kilauea		PPC405EX
 	lwmon5		PPC440EPx
@@ -423,6 +436,7 @@ Andre Schwarz <andre.schwarz@matrix-vision.de>
 
 	mvbc_p		MPC5200
 	mvblm7		MPC8343
+	mvsmr		MPC5200
 
 Jon Smirl <jonsmirl@gmail.com>
 
@@ -466,6 +480,10 @@ Josef Wagner <Wagner@Microsys.de>
 
 	CPC45		MPC8245
 	PM520		MPC5200
+
+Michael Weiss <michael.weiss@ifm.com>
+
+	PDM360NG	MPC5121e
 
 Stephen Williams <steve@icarus.com>
 
@@ -515,6 +533,10 @@ Unknown / orphaned boards:
 # Maintainer Name, Email Address					#
 #	Board		CPU						#
 #########################################################################
+
+Albert ARIBAUD <albert.aribaud@free.fr>
+
+	edminiv2	ARM926EJS (Orion5x SoC)
 
 Rowel Atienza <rowel@diwalabs.com>
 
@@ -591,6 +613,10 @@ Kshitij Gupta <kshitij@ti.com>
 	omap1510inn	ARM925T
 	omap1610inn	ARM926EJS
 
+Vaibhav Hiremath <hvaibhav@ti.com>
+
+	am3517_evm	ARM CORTEX-A8 (AM35x SoC)
+
 Grazvydas Ignotas <notasas@gmail.com>
 
 	omap3_pandora	ARM CORTEX-A8 (OMAP3xx SoC)
@@ -621,6 +647,11 @@ Nishant Kamat <nskamat@ti.com>
 
 	omap1610h2	ARM926EJS
 
+Minkyu Kang <mk7.kang@samsung.com>
+
+	s5p_goni	ARM CORTEX-A8 (S5PC110 SoC)
+	SMDKC100	ARM CORTEX-A8 (S5PC100 SoC)
+
 Frederik Kriewitz <frederik@kriewitz.eu>
 
 	devkit8000	ARM CORTEX-A8 (OMAP3530 SoC)
@@ -631,26 +662,20 @@ Sergey Kubushyn <ksi@koi8.net>
 	SONATA		ARM926EJS
 	SCHMOOGIE	ARM926EJS
 
-Sandeep Paulraj <s-paulraj@ti.com>
-
-	davinci_dm355evm	ARM926EJS
-	davinci_dm355leopard	ARM926EJS
-	davinci_dm365evm	ARM926EJS
-	davinci_dm6467evm	ARM926EJS
-
 Prakash Kumar <prakash@embedx.com>
 
 	cerf250		xscale
 
+Vipin Kumar <vipin.kumar@st.com>
+
+	spear300	ARM926EJS (spear300 Soc)
+	spear310	ARM926EJS (spear310 Soc)
+	spear320	ARM926EJS (spear320 Soc)
+	spear600	ARM926EJS (spear600 Soc)
+
 Sergey Lapin <slapin@ossfans.org>
 
 	afeb9260	ARM926EJS (AT91SAM9260 SoC)
-
-Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-
-	imx31_phycore_eet	i.MX31
-	mx31ads			i.MX31
-	SMDK6400		S3C6400
 
 Nishanth Menon <nm@ti.com>
 
@@ -673,6 +698,13 @@ Rolf Offermanns <rof@sysgo.de>
 Kyungmin Park <kyungmin.park@samsung.com>
 
 	apollon		ARM1136EJS
+
+Sandeep Paulraj <s-paulraj@ti.com>
+
+	davinci_dm355evm	ARM926EJS
+	davinci_dm355leopard	ARM926EJS
+	davinci_dm365evm	ARM926EJS
+	davinci_dm6467evm	ARM926EJS
 
 Peter Pearse <peter.pearse@arm.com>
 	integratorcp	All current ARM supplied & supported core modules
@@ -722,6 +754,10 @@ Steve Sakoman <sakoman@gmail.com>
 Jens Scharsig <esw@bus-elektronik.de>
 
 	eb_cpux9k2	ARM920T (AT91RM9200 SoC)
+
+Heiko Schocher <hs@denx.de>
+
+	magnesium	i.MX27
 
 Robert Schwebel <r.schwebel@pengutronix.de>
 
@@ -774,10 +810,6 @@ Alex Züpke <azu@sysgo.de>
 	lart		SA1100
 	dnp1110		SA1110
 
-Minkyu Kang <mk7.kang@samsung.com>
-
-	SMDKC100	ARM CORTEX-A8 (S5PC100 SoC)
-
 -------------------------------------------------------------------------
 
 Unknown / orphaned boards:
@@ -786,6 +818,10 @@ Unknown / orphaned boards:
 	cradle		xscale	Kyle Harris <kharris@nexus-tech.net> / dead address
 	ixdp425		xscale	Kyle Harris <kharris@nexus-tech.net> / dead address
 	lubbock		xscale	Kyle Harris <kharris@nexus-tech.net> / dead address
+
+	imx31_phycore_eet i.MX31  Guennadi Liakhovetski <g.liakhovetski@gmx.de> / resigned
+	mx31ads		  i.MX31  Guennadi Liakhovetski <g.liakhovetski@gmx.de> / resigned
+	SMDK6400	  S3C6400 Guennadi Liakhovetski <g.liakhovetski@gmx.de> / resigned
 
 #########################################################################
 # x86 Systems:								#
@@ -822,22 +858,6 @@ Stefan Roese <sr@denx.de>
 	vct_xxx		MIPS32 4Kc
 
 #########################################################################
-# Nios-32 Systems:							#
-#									#
-# Maintainer Name, Email Address					#
-#	Board		CPU						#
-#########################################################################
-
-Stephan Linz <linz@li-pro.net>
-
-	DK1S10		Nios-32
-	ADNPESC1	Nios-32
-
-Scott McNutt <smcnutt@psyent.com>
-
-	DK1C20		Nios-32
-
-#########################################################################
 # Nios-II Systems:							#
 #									#
 # Maintainer Name, Email Address					#
@@ -851,6 +871,7 @@ Scott McNutt <smcnutt@psyent.com>
 	EP1C20		Nios-II
 	EP1S10		Nios-II
 	EP1S40		Nios-II
+	nios2-generic	Nios-II
 
 #########################################################################
 # MicroBlaze Systems:							#
@@ -889,6 +910,10 @@ TsiChung Liew <Tsi-Chung.Liew@freescale.com>
 	M54455EVB	mcf5445x
 	M5475EVB	mcf547x_8x
 	M5485EVB	mcf547x_8x
+
+Wolfgang Wegner <w.wegner@astro-kom.de>
+
+	astro_mcf5373l	MCF5373L
 
 #########################################################################
 # AVR32 Systems:							#

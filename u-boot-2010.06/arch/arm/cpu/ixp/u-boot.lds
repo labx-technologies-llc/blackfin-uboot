@@ -31,7 +31,7 @@ SECTIONS
 	. = ALIGN(4);
 	.text :
 	{
-		cpu/ixp/start.o(.text)
+		arch/arm/cpu/ixp/start.o(.text)
 		*(.text)
 	}
 

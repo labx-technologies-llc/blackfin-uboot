@@ -36,7 +36,7 @@ SECTIONS
 	. = ALIGN(4);
 	.text	   :
 	{
-	  cpu/arm_cortexa8/start.o
+	  arch/arm/cpu/arm_cortexa8/start.o
 	  *(.text)
 	}
 

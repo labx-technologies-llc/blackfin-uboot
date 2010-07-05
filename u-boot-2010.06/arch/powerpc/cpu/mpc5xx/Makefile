@@ -25,11 +25,11 @@
 #
 
 #
-# File:			cpu/mpc5xx/Makefile
+# File:			arch/powerpc/cpu/mpc5xx/Makefile
 #
 # Discription:		Makefile to build mpc5xx cpu configuration.
 #			Will include top config.mk which itselfs
-#			uses the definitions made in cpu/mpc5xx/config.mk
+#			uses the definitions made in arch/powerpc/cpu/mpc5xx/config.mk
 #
 
 
