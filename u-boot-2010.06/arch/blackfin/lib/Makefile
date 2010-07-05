@@ -44,7 +44,6 @@ COBJS-y	+= boot.o
 COBJS-y	+= cache.o
 COBJS-y	+= clocks.o
 COBJS-$(CONFIG_CMD_CACHE_DUMP) += cmd_cache_dump.o
-COBJS-$(CONFIG_GPIO_STATUS_LED) += gpio-status-led.o
 COBJS-$(CONFIG_CMD_KGDB) += kgdb.o
 COBJS-y	+= muldi3.o
 COBJS-$(CONFIG_POST) += post.o tests.o
