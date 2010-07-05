@@ -51,6 +51,48 @@
 #endif
 #include <i2c.h>
 
+#if defined(CONFIG_SOFT_I2C_GPIO_SCL)
+# include <asm/gpio.h>
+
+# ifndef I2C_GPIO_SYNC
+#  define I2C_GPIO_SYNC
+# endif
+
+# ifndef I2C_INIT
+#  define I2C_INIT \
+	do { \
+		gpio_request(CONFIG_SOFT_I2C_GPIO_SCL, "soft_i2c"); \
+		gpio_direction_output(CONFIG_SOFT_I2C_GPIO_SCL, 0); \
+		gpio_request(CONFIG_SOFT_I2C_GPIO_SDA, "soft_i2c"); \
+	} while (0)
+# endif
+
+# ifndef I2C_ACTIVE
+#  define I2C_ACTIVE gpio_direction_output(CONFIG_SOFT_I2C_GPIO_SDA, 0)
+# endif
+
+# ifndef I2C_TRISTATE
+#  define I2C_TRISTATE gpio_direction_input(CONFIG_SOFT_I2C_GPIO_SDA)
+# endif
+
+# ifndef I2C_READ
+#  define I2C_READ (gpio_get_value(CONFIG_SOFT_I2C_GPIO_SDA) != 0)
+# endif
+
+# ifndef I2C_SDA
+#  define I2C_SDA(bit) gpio_set_value(CONFIG_SOFT_I2C_GPIO_SDA, bit)
+# endif
+
+# ifndef I2C_SCL
+#  define I2C_SCL(bit) gpio_set_value(CONFIG_SOFT_I2C_GPIO_SCL, bit)
+# endif
+
+# ifndef I2C_DELAY
+#  define I2C_DELAY udelay(5)	/* 1/4 I2C clock duration */
+# endif
+
+#endif
+
 /* #define	DEBUG_I2C	*/
 
 #ifdef DEBUG_I2C
