@@ -1,9 +1,9 @@
 /*
  * Common header file for Blackfin family of processors
  *
- * Copyright 2007-2008 Analog Devices Inc.
- *
- * Licensed under the GPL-2 or later.
+ * Copyright 2007-2008 Analog Devices Inc.
+ *
+ * Licensed under the GPL-2 or later.
  */
 
 #ifndef _PORTMUX_H_
