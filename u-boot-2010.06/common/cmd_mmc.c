@@ -161,7 +161,7 @@ int do_mmcops(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	case 0:
 	case 1:
 	case 4:
-		printf("Usage:\n%s\n", cmdtp->usage);
+		cmd_usage(cmdtp);
 		return 1;
 
 	case 2:
@@ -218,7 +218,7 @@ int do_mmcops(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 				n, (n == cnt) ? "OK" : "ERROR");
 			return (n == cnt) ? 0 : 1;
 		} else {
-			printf("Usage:\n%s\n", cmdtp->usage);
+			cmd_usage(cmdtp);
 			rc = 1;
 		}
 
