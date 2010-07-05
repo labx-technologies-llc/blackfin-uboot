@@ -220,6 +220,8 @@
 #define ANOMALY_05000483 (1)
 /* PLL_CTL Change Using bfrom_SysControl() Can Result in Processor Overclocking */
 #define ANOMALY_05000485 (_ANOMALY_BF526_BF527(< 2, < 3))
+/* IFLUSH sucks at life */
+#define ANOMALY_05000491 (1)
 
 /* Anomalies that don't exist on this proc */
 #define ANOMALY_05000099 (0)

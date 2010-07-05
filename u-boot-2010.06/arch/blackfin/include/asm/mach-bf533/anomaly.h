@@ -214,6 +214,8 @@
 #define ANOMALY_05000477 (1)
 /* Reads of ITEST_COMMAND and ITEST_DATA Registers Cause Cache Corruption */
 #define ANOMALY_05000481 (1)
+/* IFLUSH sucks at life */
+#define ANOMALY_05000491 (1)
 
 /* These anomalies have been "phased" out of analog.com anomaly sheets and are
  * here to show running on older silicon just isn't feasible.
