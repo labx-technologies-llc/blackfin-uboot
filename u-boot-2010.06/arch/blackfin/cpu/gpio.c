@@ -486,7 +486,7 @@ unsigned short get_gpio_dir(unsigned gpio)
 
 /***********************************************************
 *
-* FUNCTIONS: 	Blackfin Peripheral Resource Allocation
+* FUNCTIONS:	Blackfin Peripheral Resource Allocation
 *		and PortMux Setup
 *
 * INPUTS/OUTPUTS:
