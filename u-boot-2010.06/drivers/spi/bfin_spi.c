@@ -7,6 +7,7 @@
  */
 
 /*#define DEBUG*/
+#define CONFIG_BFIN_SPI_NO_DMA /* DMA is currently broken */
 
 #include <common.h>
 #include <malloc.h>
