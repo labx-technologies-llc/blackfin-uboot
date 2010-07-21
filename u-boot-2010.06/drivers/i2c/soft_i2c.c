@@ -62,29 +62,39 @@
 #  define I2C_INIT \
 	do { \
 		gpio_request(CONFIG_SOFT_I2C_GPIO_SCL, "soft_i2c"); \
-		gpio_direction_output(CONFIG_SOFT_I2C_GPIO_SCL, 0); \
 		gpio_request(CONFIG_SOFT_I2C_GPIO_SDA, "soft_i2c"); \
 	} while (0)
 # endif
 
 # ifndef I2C_ACTIVE
-#  define I2C_ACTIVE gpio_direction_output(CONFIG_SOFT_I2C_GPIO_SDA, 0)
+#  define I2C_ACTIVE do { } while (0)
 # endif
 
 # ifndef I2C_TRISTATE
-#  define I2C_TRISTATE gpio_direction_input(CONFIG_SOFT_I2C_GPIO_SDA)
+#  define I2C_TRISTATE do { } while (0)
 # endif
 
 # ifndef I2C_READ
-#  define I2C_READ (gpio_get_value(CONFIG_SOFT_I2C_GPIO_SDA) != 0)
+#  define I2C_READ gpio_get_value(CONFIG_SOFT_I2C_GPIO_SDA)
 # endif
 
 # ifndef I2C_SDA
-#  define I2C_SDA(bit) gpio_set_value(CONFIG_SOFT_I2C_GPIO_SDA, bit)
+#  define I2C_SDA(bit) \
+	do { \
+		if (bit) \
+			gpio_direction_input(CONFIG_SOFT_I2C_GPIO_SDA); \
+		else \
+			gpio_direction_output(CONFIG_SOFT_I2C_GPIO_SDA, 0); \
+		I2C_GPIO_SYNC; \
+	} while (0)
 # endif
 
 # ifndef I2C_SCL
-#  define I2C_SCL(bit) gpio_set_value(CONFIG_SOFT_I2C_GPIO_SCL, bit)
+#  define I2C_SCL(bit) \
+	do { \
+		gpio_direction_output(CONFIG_SOFT_I2C_GPIO_SCL, bit); \
+		I2C_GPIO_SYNC; \
+	} while (0)
 # endif
 
 # ifndef I2C_DELAY
