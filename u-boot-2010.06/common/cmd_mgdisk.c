@@ -54,7 +54,7 @@ int do_mg_disk_cmd (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 			return 1;
 		break;
 	default:
-		printf("Usage:\n%s\n", cmdtp->usage);
+		cmd_usage(cmdtp);
 		return 1;
 	}
 	return 0;
