@@ -1,7 +1,7 @@
 /*
  * jtag-console.c - console driver over Blackfin JTAG
  *
- * Copyright (c) 2008 Analog Devices Inc.
+ * Copyright (c) 2008-2010 Analog Devices Inc.
  *
  * Licensed under the GPL-2 or later.
  */
@@ -10,23 +10,42 @@
 #include <stdio_dev.h>
 #include <asm/blackfin.h>
 
+#ifdef DEBUG
+# define dprintf(...) serial_printf(__VA_ARGS__)
+#else
+# define dprintf(...) while (0) { printf(__VA_ARGS__); }
+#endif
+
+static inline void dprintf_decode(const char *s, uint32_t len)
+{
+	uint32_t i;
+	for (i = 0; i < len; ++i)
+		if (s[i] < 0x20 || s[i] >= 0x7f)
+			dprintf("\\%o", s[i]);
+		else
+			dprintf("%c", s[i]);
+}
+
 #ifndef CONFIG_JTAG_CONSOLE_TIMEOUT
 # define CONFIG_JTAG_CONSOLE_TIMEOUT 500
 #endif
 
+#define write_emudat(e) __asm__ __volatile__("emudat = %0;" : : "d"(e))
+
 /* The Blackfin tends to be much much faster than the JTAG hardware. */
-static void jtag_write_emudat(uint32_t emudat)
+static bool jtag_write_emudat(uint32_t emudat)
 {
 	static bool overflowed = false;
 	ulong timeout = get_timer(0) + CONFIG_JTAG_CONSOLE_TIMEOUT;
 	while (bfin_read_DBGSTAT() & 0x1) {
 		if (overflowed)
-			return;
+			return overflowed;
 		if (timeout < get_timer(0))
 			overflowed = true;
 	}
 	overflowed = false;
-	__asm__ __volatile__("emudat = %0;" : : "d"(emudat));
+	write_emudat(emudat);
+	return overflowed;
 }
 /* Transmit a buffer.  The format is:
  * [32bit length][actual data]
@@ -38,12 +57,26 @@ static void jtag_send(const char *c, uint32_t len)
 	if (len == 0)
 		return;
 
+	dprintf("%s(\"", __func__);
+	dprintf_decode(c, len);
+	dprintf("\", %i)\n", len);
+
 	/* First send the length */
-	jtag_write_emudat(len);
+	if (jtag_write_emudat(len))
+		return;
 
 	/* Then send the data */
-	for (i = 0; i < len; i += 4)
-		jtag_write_emudat((c[i] << 0) | (c[i+1] << 8) | (c[i+2] << 16) | (c[i+3] << 24));
+	for (i = 0; i < len; i += 4) {
+		uint32_t emudat =
+			(c[i + 0] <<  0) |
+			(c[i + 1] <<  8) |
+			(c[i + 2] << 16) |
+			(c[i + 3] << 24);
+		if (jtag_write_emudat(emudat)) {
+			write_emudat(0);
+			return;
+		}
+	}
 }
 static void jtag_putc(const char c)
 {
@@ -59,7 +92,10 @@ static size_t inbound_len, leftovers_len;
 /* Lower layers want to know when jtag has data */
 static int jtag_tstc_dbg(void)
 {
-	return (bfin_read_DBGSTAT() & 0x2);
+	int ret = (bfin_read_DBGSTAT() & 0x2);
+	if (ret)
+		dprintf("%s: ret:%i\n", __func__, ret);
+	return ret;
 }
 
 /* Higher layers want to know when any data is available */
@@ -76,6 +112,9 @@ static int jtag_getc(void)
 {
 	int ret;
 	uint32_t emudat;
+
+	dprintf("%s: inlen:%zu leftlen:%zu left:%x\n", __func__,
+		inbound_len, leftovers_len, leftovers);
 
 	/* see if any data is left over */
 	if (leftovers_len) {
