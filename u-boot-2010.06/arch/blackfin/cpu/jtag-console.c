@@ -7,13 +7,14 @@
  */
 
 #include <common.h>
+#include <malloc.h>
 #include <stdio_dev.h>
 #include <asm/blackfin.h>
 
 #ifdef DEBUG
 # define dprintf(...) serial_printf(__VA_ARGS__)
 #else
-# define dprintf(...) while (0) { printf(__VA_ARGS__); }
+# define dprintf(...) do { if (0) printf(__VA_ARGS__); } while (0)
 #endif
 
 static inline void dprintf_decode(const char *s, uint32_t len)
@@ -26,11 +27,22 @@ static inline void dprintf_decode(const char *s, uint32_t len)
 			dprintf("%c", s[i]);
 }
 
+static inline uint32_t bfin_write_emudat(uint32_t emudat)
+{
+	__asm__ __volatile__("emudat = %0;" : : "d"(emudat));
+	return emudat;
+}
+
+static inline uint32_t bfin_read_emudat(void)
+{
+	uint32_t emudat;
+	__asm__ __volatile__("%0 = emudat;" : "=d"(emudat));
+	return emudat;
+}
+
 #ifndef CONFIG_JTAG_CONSOLE_TIMEOUT
 # define CONFIG_JTAG_CONSOLE_TIMEOUT 500
 #endif
-
-#define write_emudat(e) __asm__ __volatile__("emudat = %0;" : : "d"(e))
 
 /* The Blackfin tends to be much much faster than the JTAG hardware. */
 static bool jtag_write_emudat(uint32_t emudat)
@@ -44,39 +56,61 @@ static bool jtag_write_emudat(uint32_t emudat)
 			overflowed = true;
 	}
 	overflowed = false;
-	write_emudat(emudat);
+	bfin_write_emudat(emudat);
 	return overflowed;
 }
 /* Transmit a buffer.  The format is:
  * [32bit length][actual data]
  */
-static void jtag_send(const char *c, uint32_t len)
+static void jtag_send(const char *raw_str, uint32_t len)
 {
-	uint32_t i;
+	const char *cooked_str;
+	uint32_t i, ex;
 
 	if (len == 0)
 		return;
 
+	/* Ugh, need to output \r after \n */
+	ex = 0;
+	for (i = 0; i < len; ++i)
+		if (raw_str[i] == '\n')
+			++ex;
+	if (ex) {
+		char *c = malloc(len + ex);
+		cooked_str = c;
+		for (i = 0; i < len; ++i) {
+			*c++ = raw_str[i];
+			if (raw_str[i] == '\n')
+				*c++ = '\r';
+		}
+		len += ex;
+	} else
+		cooked_str = raw_str;
+
 	dprintf("%s(\"", __func__);
-	dprintf_decode(c, len);
+	dprintf_decode(cooked_str, len);
 	dprintf("\", %i)\n", len);
 
 	/* First send the length */
 	if (jtag_write_emudat(len))
-		return;
+		goto done;
 
 	/* Then send the data */
 	for (i = 0; i < len; i += 4) {
 		uint32_t emudat =
-			(c[i + 0] <<  0) |
-			(c[i + 1] <<  8) |
-			(c[i + 2] << 16) |
-			(c[i + 3] << 24);
+			(cooked_str[i + 0] <<  0) |
+			(cooked_str[i + 1] <<  8) |
+			(cooked_str[i + 2] << 16) |
+			(cooked_str[i + 3] << 24);
 		if (jtag_write_emudat(emudat)) {
-			write_emudat(0);
-			return;
+			bfin_write_emudat(0);
+			goto done;
 		}
 	}
+
+ done:
+	if (cooked_str != raw_str)
+		free((char *)cooked_str);
 }
 static void jtag_putc(const char c)
 {
@@ -127,7 +161,7 @@ static int jtag_getc(void)
 	/* wait for new data ! */
 	while (!jtag_tstc_dbg())
 		continue;
-	__asm__("%0 = emudat;" : "=d"(emudat));
+	emudat = bfin_read_emudat();
 
 	if (inbound_len == 0) {
 		/* grab the length */
