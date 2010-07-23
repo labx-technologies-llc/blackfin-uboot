@@ -28,7 +28,7 @@ int do_gpio(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 
 	if (argc != 3) {
  show_usage:
-		printf("Usage:\n%s\n", cmdtp->usage);
+		cmd_usage(cmdtp);
 		return 1;
 	}
 
