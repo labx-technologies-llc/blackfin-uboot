@@ -41,8 +41,7 @@ int do_dataflash_mmc_mux (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 			AT91F_GetMuxStatus () ? "MMC" : "SPI");
 		return 0;
 	default:
-		cmd_usage(cmdtp);
-		return 1;
+		return cmd_usage(cmdtp);
 	}
 	return 0;
 }
