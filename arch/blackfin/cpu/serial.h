@@ -175,9 +175,6 @@ static inline void serial_early_init(void)
 	/* Set LCR to Word Lengh 8-bit word select */
 	bfin_write16(&pUART->lcr, WLS_8);
 
-	/* disable all serial interrupts since we poll */
-	bfin_write16(&pUART->ier, 0);
-
 	SSYNC();
 }
 
