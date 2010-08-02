@@ -705,10 +705,8 @@ int do_flread(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	u8 *psrc, *pdst, *pend;
 	flash_info_t *info = &flash_info[0];
 
-	if (argc != 4) {
-		cmd_usage(cmdtp);
-		return 1;
-	}
+	if (argc != 4)
+		return cmd_usage(cmdtp);
 
 	src = simple_strtoul(argv[1], NULL, 16);
 	dst = simple_strtoul(argv[2], NULL, 16);
