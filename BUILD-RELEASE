@@ -28,7 +28,7 @@ fi
 initelf() {
 	bfin-elf-gcc \
 		-nostartfiles \
-		../../init.S cpu/blackfin/initcode.o \
+		init.S arch/blackfin/cpu/initcode.o \
 		-o init.elf \
 		-Iinclude -mcpu=${CONFIG_BFIN_CPU}
 }
