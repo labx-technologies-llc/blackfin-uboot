@@ -53,7 +53,7 @@ export PATH=/opt/uClinux/bfin-uclinux/bin:/opt/uClinux/bfin-elf/bin:/opt/uClinux
 rm /tftpboot/u-boot.bin
 
 echo "Start building u-boot of $1 . Clock config is $2 ."
-cd $CHECKOUT/u-boot/$UBOOT_VER
+cd $CHECKOUT/u-boot/
 make distclean   >/dev/null  2>&1
 make clean   >/dev/null  2>&1
 make mrproper  >/dev/null  2>&1

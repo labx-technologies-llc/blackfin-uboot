@@ -5,10 +5,9 @@ CHECKOUT=$USER/checkouts
 UBOOT_SCRIPTS=$USER/test_scripts/u-boot
 UBOOT_SRC_ROOT=$CHECKOUT/u-boot
 
-export UBOOT_VER=$(cd $UBOOT_SRC_ROOT; ls -d u-boot-* | sort -n | tail -n 1)
 source $UBOOT_SCRIPTS/host_config.sh
 
-UBOOT_SRC=$CHECKOUT/u-boot/$UBOOT_VER
+UBOOT_SRC=$CHECKOUT/u-boot/
 TIMESTAMP=`date +%Y_%m_%d_%H_%M`
 
 cd $UBOOT_SCRIPTS/logs
