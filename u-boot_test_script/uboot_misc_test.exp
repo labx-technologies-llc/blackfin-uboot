@@ -979,17 +979,17 @@ if { $TEST_JTAG_CONSOLE } {
         }
     }
 
-    step "netcat_spawn_id: exit netcat"
-    set spawn_id $netcat_spawn_id
+    step "root_spawn_id: exit gdbproxy"
+    set spawn_id $root_spawn_id
     sleep 1
-    send "\24"
+    send "\3"
     while 1 {
         expect {
-            -re "punt" {
+            -re "#" {
                 break
             }
             timeout {
-                send_user "FAIL: exit netcat!\n"
+                send_user "FAIL: exit bfin-gdbproxy!\n"
                 break
             }
         }
@@ -1003,9 +1003,7 @@ if { $TEST_JTAG_CONSOLE } {
         expect {
             -re "\\\(gdb\\\)" {
                 send "q\r"
-                expect "y or n"
-                send "y\r"
-                expect -re $KERNEL_PROMPT
+                expect ">"
                 break
             }
             timeout {
@@ -1015,17 +1013,17 @@ if { $TEST_JTAG_CONSOLE } {
         }
     }
 
-    step "root_spawn_id: exit gdbproxy"
-    set spawn_id $root_spawn_id
+    step "netcat_spawn_id: exit netcat"
+    set spawn_id $netcat_spawn_id
     sleep 1
-    send "\3"
+    send "\r"
     while 1 {
         expect {
-            -re "#" {
+            -re ">" {
                 break
             }
             timeout {
-                send_user "FAIL: exit bfin-gdbproxy!\n"
+                send_user "FAIL: exit netcat!\n"
                 break
             }
         }
