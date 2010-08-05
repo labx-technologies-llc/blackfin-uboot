@@ -891,16 +891,16 @@ if { $TEST_JTAG_CONSOLE } {
     expect -re $HOST_KERNEL_PROMPT
 
     if { $jtag_console_result == $TEST_PASS } {
-        send "netcat localhost 2001\r"
+        send "$uboot_test_loc/tools/jtagconsole\r"
         while 1 {
             expect {
-                -re "\r\n\[a-zA-Z0-9]" {
-                    send_user "FAIL:run netcat!\n"
-                    set jtag_console_result $TEST_FAIL
+                -re "has been remapped" {
+                    set jtag_console_result $TEST_PASS
                     break
                 }
                 timeout {
-                    set jtag_console_result $TEST_PASS
+                    send_user "FAIL:run jtagconsole script!\n"
+                    set jtag_console_result $TEST_FAIL
                     break
                 }
             }
@@ -982,7 +982,7 @@ if { $TEST_JTAG_CONSOLE } {
     step "netcat_spawn_id: exit netcat"
     set spawn_id $netcat_spawn_id
     sleep 1
-    send "\3"
+    send "\24"
     while 1 {
         expect {
             -re "punt" {
