@@ -85,7 +85,7 @@ ver=$(sed -e 's:[[:space:]]*(ADI-::' -e 's:)[[:space:]]*::' localversion-adi)
 uboot="u-boot-${uboot_ver}-${ver}"
 echo "Creating ${uboot}.tar.bz2"
 if [ -d .git ] ; then
-	git-archive --prefix=${uboot}/ master > ../RELEASE/${uboot}.tar
+	git archive --prefix=${uboot}/ master > ../RELEASE/${uboot}.tar
 	cd ../RELEASE
 	tar xf ${uboot}.tar
 	bzip2 ${uboot}.tar
