@@ -364,6 +364,12 @@ $(SUBDIRS):	depend
 $(LDSCRIPT):	depend
 		$(MAKE) -C $(dir $@) $(notdir $@)
 
+# The linker script lacks proper dependency information atm, so force it
+# to be regenerated on every link.  This shouldn't be to big of an issue
+# since it takes a lot less time than the actual linking process.  This
+# is better than forcing people to run `make clean` after changing their
+# board config file ...
+.PHONY: $(obj)u-boot.lds
 $(obj)u-boot.lds: $(LDSCRIPT)
 		$(CPP) $(CPPFLAGS) $(LDPPFLAGS) -ansi -D__ASSEMBLY__ -P - <$^ >$@
 
