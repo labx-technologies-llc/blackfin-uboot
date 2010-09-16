@@ -747,14 +747,14 @@ if { $TEST_JTAG_CONSOLE } {
         send_user "\nfail delete include/configs/$config_file\n"
         set jtag_console_result $TEST_FAIL
     } else {
-        set build_spi_result $TEST_PASS
+        set jtag_console_result $TEST_PASS
     }
 
     if [ catch {exec svn up include/configs/$config_file} ] {
         send_user "\nfail to update include/configs/$config_file\n"
         set jtag_console_result $TEST_FAIL
     } else {
-        set build_spi_result $TEST_PASS
+        set jtag_console_result $TEST_PASS
     }
 
     if { $jtag_console_result == $TEST_PASS } {
