@@ -7,7 +7,6 @@
  */
 
 /*#define DEBUG*/
-#define CONFIG_BFIN_SPI_NO_DMA /* DMA is currently broken */
 
 #include <common.h>
 #include <malloc.h>
@@ -390,7 +389,8 @@ int spi_xfer(struct spi_slave *slave, unsigned int bitlen, const void *dout,
 	if (flags & SPI_XFER_BEGIN)
 		spi_cs_activate(slave);
 
-	if (SPI_DMA && bytes > 6 && (!tx || !rx))
+	/* TX DMA doesn't work quite right */
+	if (SPI_DMA && bytes > 6 && (!tx /*|| !rx*/))
 		ret = spi_dma_xfer(bss, tx, rx, bytes);
 	else
 		ret = spi_pio_xfer(bss, tx, rx, bytes);
