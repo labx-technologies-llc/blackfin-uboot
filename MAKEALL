@@ -894,6 +894,7 @@ LIST_blackfin="		\
 	bf527-ezkit	\
 	bf527-ezkit-v2	\
 	bf527-ad7160-eval	\
+	bf527-sdp	\
 	bf533-ezkit	\
 	bf533-stamp	\
 	bf537-minotaur	\

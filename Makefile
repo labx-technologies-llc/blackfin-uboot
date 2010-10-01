@@ -3525,7 +3525,8 @@ microblaze-generic_config:	unconfig
 
 # Analog Devices boards
 BFIN_BOARDS = bf518f-ezbrd bf526-ezbrd bf527-ezkit bf533-ezkit bf533-stamp \
-	bf537-pnav bf537-stamp bf538f-ezkit bf548-ezkit bf561-ezkit bf527-ad7160-eval
+	bf537-pnav bf537-stamp bf538f-ezkit bf548-ezkit bf561-ezkit \
+	bf527-ad7160-eval bf527-sdp
 
 # Bluetechnix tinyboards
 BFIN_BOARDS += cm-bf527 cm-bf533 cm-bf537e cm-bf537u cm-bf548 cm-bf561 \
