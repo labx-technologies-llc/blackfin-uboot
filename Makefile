@@ -448,8 +448,7 @@ $(obj)include/autoconf.mk: $(obj)include/config.h
 	@$(XECHO) Generating $@ ; \
 	set -e ; \
 	: Extract the config macros ; \
-	$(CPP) $(CFLAGS) -DDO_DEPS_ONLY -dM include/common.h \
-		-mcpu=$(shell sed -n '/BFIN_CPU/s:.*bf:bf:p' include/configs/$(BOARD).h) | \
+	$(CPP) $(CFLAGS) -DDO_DEPS_ONLY -dM include/common.h | \
 		sed -n -f tools/scripts/define2mk.sed > $@.tmp && \
 	mv $@.tmp $@
 
