@@ -25,6 +25,11 @@
 #define _NAND_H_
 
 extern void nand_init(void);
+#ifdef CONFIG_SYS_NAND_DELAYED_INIT
+# define nand_delayed_init() nand_init()
+#else
+# define nand_delayed_init() do { } while (0)
+#endif
 
 #include <linux/mtd/compat.h>
 #include <linux/mtd/mtd.h>

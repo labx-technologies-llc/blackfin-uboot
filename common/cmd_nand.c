@@ -222,6 +222,8 @@ int do_nand(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 	if (argc < 2)
 		goto usage;
 
+	nand_delayed_init();
+
 	if (quiet_str)
 		quiet = simple_strtoul(quiet_str, NULL, 0) != 0;
 

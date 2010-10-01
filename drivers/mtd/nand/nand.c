@@ -81,6 +81,15 @@ void nand_init(void)
 {
 	int i;
 	unsigned int size = 0;
+
+#ifdef CONFIG_SYS_NAND_DELAYED_INIT
+	static uint8_t initialized;
+	if (initialized)
+		return;
+	initialized = 1;
+	printf("Delayed NAND init: ");
+#endif
+
 	for (i = 0; i < CONFIG_SYS_MAX_NAND_DEVICE; i++) {
 		nand_init_chip(&nand_info[i], &nand_chip[i], base_address[i]);
 		size += nand_info[i].size / 1024;

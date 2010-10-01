@@ -307,6 +307,8 @@ void env_relocate_spec (void)
 		return use_default();
 	}
 
+	nand_delayed_init();
+
 	if (readenv(CONFIG_ENV_OFFSET, (u_char *) tmp_env1))
 		puts("No Valid Environment Area Found\n");
 	if (readenv(CONFIG_ENV_OFFSET_REDUND, (u_char *) tmp_env2))
@@ -347,6 +349,8 @@ void env_relocate_spec (void)
 		free(tmp_env1);
 	}
 
+#else
+	nand_delayed_init();
 #endif /* ! ENV_IS_EMBEDDED */
 }
 #else /* ! CONFIG_ENV_OFFSET_REDUND */
@@ -359,12 +363,16 @@ void env_relocate_spec (void)
 #if !defined(ENV_IS_EMBEDDED)
 	int ret;
 
+	nand_delayed_init();
+
 	ret = readenv(CONFIG_ENV_OFFSET, (u_char *) env_ptr);
 	if (ret)
 		return use_default();
 
 	if (crc32(0, env_ptr->data, ENV_SIZE) != env_ptr->crc)
 		return use_default();
+#else
+	nand_delayed_init();
 #endif /* ! ENV_IS_EMBEDDED */
 }
 #endif /* CONFIG_ENV_OFFSET_REDUND */
