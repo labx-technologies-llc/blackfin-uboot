@@ -1024,14 +1024,18 @@ build_target() {
 
 	echo "Testing build for $target ($cpu/$bmode) ..."
 
+	FLAGS=
 	${MAKE} distclean >/dev/null
-	${no_cpu} || \
-	sed -i "/CONFIG_BFIN_CPU/s:\([[:space:]]\)bf[0-9]*-:\1${cpu}-:" include/configs/$target.h
+
+	CPU=$(awk '$1 == "CONFIG_BFIN_CPU" { print $NF }' board/${target}/config.mk)
+	${no_cpu} || CPU="${cpu}-`echo ${CPU} | sed 's:.*-::'`"
+	[ -n "${CPU}" ] && FLAGS="${FLAGS} CONFIG_BFIN_CPU=${CPU}"
+
 	${no_boot} || \
 	sed -i "/^#define[[:space:]]*CONFIG_BFIN_BOOT_MODE/s:BFIN_BOOT_[^[:space:]]*$:BFIN_BOOT_${bmodeU}:" include/configs/$target.h
-	${MAKE} ${target}_config >/dev/null
 
-	${MAKE} ${JOBS} all 2>&1 >${LOG_DIR}/$target.$cpu.$bmode.MAKELOG \
+	${MAKE} ${FLAGS} ${target}_config >/dev/null
+	${MAKE} ${FLAGS} ${JOBS} all 2>&1 >${LOG_DIR}/$target.$cpu.$bmode.MAKELOG \
 				| tee ${LOG_DIR}/$target.$cpu.$bmode.ERR
 
 	# Check for 'make' errors
