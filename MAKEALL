@@ -907,6 +907,7 @@ LIST_blackfin="		\
 	bf561-acvilon	\
 	bf561-ezkit	\
 	blackstamp	\
+	blackvme	\
 	cm-bf527	\
 	cm-bf533	\
 	cm-bf537e	\

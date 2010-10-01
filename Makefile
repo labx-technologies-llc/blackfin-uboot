@@ -3533,7 +3533,10 @@ BFIN_BOARDS += cm-bf527 cm-bf533 cm-bf537e cm-bf537u cm-bf548 cm-bf561 \
 	tcm-bf518 tcm-bf537
 
 # Misc third party boards
-BFIN_BOARDS += bf537-minotaur bf537-srv1 bf561-acvilon blackstamp ip04
+BFIN_BOARDS += bf537-minotaur bf537-srv1 bf561-acvilon ip04
+
+# SkuTek Instrumentation boards
+BFIN_BOARDS += blackstamp blackvme
 
 # I-SYST Micromodule
 BFIN_BOARDS += ibf-dsp561
