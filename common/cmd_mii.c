@@ -299,7 +299,7 @@ int do_mii (cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 	unsigned char	addr, reg;
 	unsigned short	data;
 	int		rcode = 0;
-	char		*devname;
+	const char	*devname;
 
 	if (argc < 2) {
 		cmd_usage(cmdtp);

@@ -46,7 +46,7 @@
  *
  * Returns 16bit phy register value, or 0xffff on error
  */
-static int smi_reg_read(char *devname, u8 phy_adr, u8 reg_ofs, u16 * data)
+static int smi_reg_read(const char *devname, u8 phy_adr, u8 reg_ofs, u16 * data)
 {
 	struct eth_device *dev = eth_get_dev_by_name(devname);
 	struct kwgbe_device *dkwgbe = to_dkwgbe(dev);
@@ -122,7 +122,7 @@ static int smi_reg_read(char *devname, u8 phy_adr, u8 reg_ofs, u16 * data)
  * Returns 0 if write succeed, -EINVAL on bad parameters
  * -ETIME on timeout
  */
-static int smi_reg_write(char *devname, u8 phy_adr, u8 reg_ofs, u16 data)
+static int smi_reg_write(const char *devname, u8 phy_adr, u8 reg_ofs, u16 data)
 {
 	struct eth_device *dev = eth_get_dev_by_name(devname);
 	struct kwgbe_device *dkwgbe = to_dkwgbe(dev);
