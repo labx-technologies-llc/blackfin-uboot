@@ -50,6 +50,7 @@ int do_bootm_linux(int flag, int argc, char *argv[], bootm_headers_t *images)
 #endif
 
 #ifdef CONFIG_VIDEO
+	/* maybe this should be standardized and moved to bootm ... */
 	video_stop();
 #endif
 
