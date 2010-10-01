@@ -920,6 +920,9 @@ LIST_blackfin="		\
 	tcm-bf537	\
 "
 
+board_cpu() {
+	awk '$1 == "CONFIG_BFIN_CPU" { print $NF }' board/${target}/config.mk 2>/dev/null
+}
 procs() {
 	${no_cpu} && set -- default
 	case ${@:-${target}} in
@@ -930,7 +933,7 @@ procs() {
 		*bf53[89]*)     procs=bf53{8,9};;
 		*bf54[24789]*)  procs=bf54{2,4,7,9,8};;
 		*bf561*)        procs=bf561;;
-		*)              proc=$(awk '$1 == "CONFIG_BFIN_CPU" { print $NF }' board/${target}/config.mk)
+		*)              proc=$(board_cpu)
 		                ${no_cpu} && echo ${proc%-*} && return
 		                procs=$(procs ${proc}) ;;
 	esac
@@ -1025,12 +1028,13 @@ build_target() {
 	FLAGS=
 	${MAKE} distclean >/dev/null
 
-	CPU=$(awk '$1 == "CONFIG_BFIN_CPU" { print $NF }' board/${target}/config.mk)
-	${no_cpu} || CPU="${cpu}-`echo ${CPU} | sed 's:.*-::'`"
+	CPU=$(board_cpu)
+	${no_cpu} || CPU="${cpu}`echo ${CPU} | sed 's:.*-:-:'`"
 	[ -n "${CPU}" ] && FLAGS="${FLAGS} CONFIG_BFIN_CPU=${CPU}"
 
-	${no_boot} || \
-	sed -i "/^#define[[:space:]]*CONFIG_BFIN_BOOT_MODE/s:BFIN_BOOT_[^[:space:]]*$:BFIN_BOOT_${bmodeU}:" include/configs/$target.h
+	if ! ${no_boot} && [ -e include/configs/$target.h ] ; then
+		sed -i "/^#define[[:space:]]*CONFIG_BFIN_BOOT_MODE/s:BFIN_BOOT_[^[:space:]]*$:BFIN_BOOT_${bmodeU}:" include/configs/$target.h
+	fi
 
 	${MAKE} ${FLAGS} ${target}_config >/dev/null
 	${MAKE} ${FLAGS} ${JOBS} all 2>&1 >${LOG_DIR}/$target.$cpu.$bmode.MAKELOG \
