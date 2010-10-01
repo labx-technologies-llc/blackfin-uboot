@@ -63,6 +63,7 @@
 /*
  * Network Settings
  */
+#ifndef __ADSPBF534__
 #define ADI_CMDS_NETWORK	1
 #define CONFIG_BFIN_MAC		1
 #define CONFIG_NETCONSOLE	1
@@ -74,6 +75,7 @@
 #define CONFIG_ROOTPATH		/romfs/brettl2
 /* Uncomment next line to use fixed MAC address */
 /* #define CONFIG_ETHADDR	02:80:ad:20:31:e8 */
+#endif
 
 
 /*
