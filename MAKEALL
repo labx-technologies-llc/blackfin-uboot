@@ -930,9 +930,7 @@ procs() {
 		*bf53[89]*)     procs=bf53{8,9};;
 		*bf54[24789]*)  procs=bf54{2,4,7,9,8};;
 		*bf561*)        procs=bf561;;
-		*)              proc=$(echo CPU=CONFIG_BFIN_CPU | \
-		                       ${CPP:-cpp} -P -include include/configs/${target}.h -I include - 2>/dev/null | \
-		                       sed -n 's:CPU=::p')
+		*)              proc=$(awk '$1 == "CONFIG_BFIN_CPU" { print $NF }' board/${target}/config.mk)
 		                ${no_cpu} && echo ${proc%-*} && return
 		                procs=$(procs ${proc}) ;;
 	esac
