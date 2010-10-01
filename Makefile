@@ -3538,6 +3538,9 @@ BFIN_BOARDS += bf537-minotaur bf537-srv1 bf561-acvilon blackstamp ip04
 # I-SYST Micromodule
 BFIN_BOARDS += ibf-dsp561
 
+# BCT electronic boards
+BFIN_BOARDS += bct-brettl2
+
 $(BFIN_BOARDS:%=%_config)	: unconfig
 	@$(MKCONFIG) $(@:_config=) blackfin blackfin $(@:_config=)
 
