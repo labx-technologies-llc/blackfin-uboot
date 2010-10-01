@@ -930,10 +930,10 @@ int submit_control_msg(struct usb_device *dev, unsigned long pipe, void *buffer,
 	dev->status = 0;
 	dev->act_len = len;
 
-#ifdef CONFIG_USB_BLACKFIN
+#ifdef MUSB_NO_MULTIPOINT
 	/* Set device address to USB_FADDR register */
 	if (setup->request == USB_REQ_SET_ADDRESS)
-		writew(dev->devnum, &musbr->faddr);
+		writeb(dev->devnum, &musbr->faddr);
 #endif
 
 	return len;
