@@ -496,6 +496,7 @@ U_BOOT_CMD(nand, CONFIG_SYS_MAXARGS, 1, do_nand,
 	"nand bad - show bad blocks\n"
 	"nand dump[.oob] off - dump page\n"
 	"nand scrub - really clean NAND erasing bad blocks (UNSAFE)\n"
+	"    takes the same options as erase\n"
 	"nand markbad off [...] - mark bad block(s) at offset (UNSAFE)\n"
 	"nand biterr off - make a bit error at offset (UNSAFE)"
 #ifdef CONFIG_CMD_NAND_LOCK_UNLOCK
