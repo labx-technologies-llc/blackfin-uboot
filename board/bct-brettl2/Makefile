@@ -29,7 +29,8 @@ include $(TOPDIR)/config.mk
 
 LIB	= $(obj)lib$(BOARD).a
 
-COBJS-y	:= $(BOARD).o gpio_cfi_flash.o cled.o smsc9303.o
+COBJS-y	:= $(BOARD).o gpio_cfi_flash.o cled.o
+COBJS-$(CONFIG_BFIN_MAC) += smsc9303.o
 
 SRCS	:= $(SOBJS-y:.o=.S) $(COBJS-y:.o=.c)
 OBJS	:= $(addprefix $(obj),$(COBJS-y))
