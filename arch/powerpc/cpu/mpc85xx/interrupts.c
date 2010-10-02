@@ -35,7 +35,7 @@
 
 int interrupt_init_cpu(unsigned int *decrementer_count)
 {
-	ccsr_pic_t __iomem *pic = (void *)CONFIG_SYS_MPC85xx_PIC_ADDR;
+	ccsr_pic_t __iomem *pic = (void *)CONFIG_SYS_MPC8xxx_PIC_ADDR;
 
 	out_be32(&pic->gcr, MPC85xx_PICGCR_RST);
 	while (in_be32(&pic->gcr) & MPC85xx_PICGCR_RST)
@@ -103,7 +103,7 @@ void timer_interrupt_cpu(struct pt_regs *regs)
 
 #if defined(CONFIG_CMD_IRQ)
 /* irqinfo - print information about PCI devices,not implemented. */
-int do_irqinfo(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
+int do_irqinfo(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 	return 0;
 }

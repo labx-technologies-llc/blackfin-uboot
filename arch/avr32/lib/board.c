@@ -33,6 +33,7 @@
 
 #include <asm/initcalls.h>
 #include <asm/sections.h>
+#include <asm/arch/mmu.h>
 
 #ifndef CONFIG_IDENT_STRING
 #define CONFIG_IDENT_STRING ""
@@ -102,7 +103,7 @@ static int init_baudrate(void)
 	char tmp[64];
 	int i;
 
-	i = getenv_r("baudrate", tmp, sizeof(tmp));
+	i = getenv_f("baudrate", tmp, sizeof(tmp));
 	if (i > 0) {
 		gd->baudrate = simple_strtoul(tmp, NULL, 10);
 	} else {
@@ -115,8 +116,9 @@ static int init_baudrate(void)
 static int display_banner (void)
 {
 	printf ("\n\n%s\n\n", version_string);
-	printf ("U-Boot code: %p -> %p  data: %p -> %p\n",
-		_text, _etext, _data, _end);
+	printf ("U-Boot code: %08lx -> %08lx  data: %08lx -> %08lx\n",
+		(unsigned long)_text, (unsigned long)_etext,
+		(unsigned long)_data, (unsigned long)_end);
 	return 0;
 }
 
@@ -263,6 +265,9 @@ void board_init_r(gd_t *new_gd, ulong dest_addr)
 
 	gd->flags |= GD_FLG_RELOC;
 	gd->reloc_off = dest_addr - CONFIG_SYS_MONITOR_BASE;
+
+	/* Enable the MMU so that we can keep u-boot simple */
+	mmu_init_r(dest_addr);
 
 	board_early_init_r();
 

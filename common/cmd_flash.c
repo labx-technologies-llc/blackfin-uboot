@@ -287,7 +287,7 @@ flash_fill_sect_ranges (ulong addr_first, ulong addr_last,
 }
 #endif /* CONFIG_SYS_NO_FLASH */
 
-int do_flinfo ( cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
+int do_flinfo ( cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 #ifndef CONFIG_SYS_NO_FLASH
 	ulong bank;
@@ -319,7 +319,7 @@ int do_flinfo ( cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	return 0;
 }
 
-int do_flerase (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
+int do_flerase (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 #ifndef CONFIG_SYS_NO_FLASH
 	flash_info_t *info;
@@ -332,10 +332,8 @@ int do_flerase (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 #endif
 	int rcode = 0;
 
-	if (argc < 2) {
-		cmd_usage(cmdtp);
-		return 1;
-	}
+	if (argc < 2)
+		return cmd_usage(cmdtp);
 
 	if (strcmp(argv[1], "all") == 0) {
 		for (bank=1; bank<=CONFIG_SYS_MAX_FLASH_BANKS; ++bank) {
@@ -383,10 +381,8 @@ int do_flerase (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	}
 #endif
 
-	if (argc != 3) {
-		cmd_usage(cmdtp);
-		return 1;
-	}
+	if (argc != 3)
+		return cmd_usage(cmdtp);
 
 	if (strcmp(argv[1], "bank") == 0) {
 		bank = simple_strtoul(argv[2], NULL, 16);
@@ -406,10 +402,8 @@ int do_flerase (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		return 1;
 	}
 
-	if (addr_first >= addr_last) {
-		cmd_usage(cmdtp);
-		return 1;
-	}
+	if (addr_first >= addr_last)
+		return cmd_usage(cmdtp);
 
 	rcode = flash_sect_erase(addr_first, addr_last);
 	return rcode;
@@ -461,7 +455,7 @@ int flash_sect_erase (ulong addr_first, ulong addr_last)
 }
 #endif /* CONFIG_SYS_NO_FLASH */
 
-int do_protect (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
+int do_protect (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 #ifndef CONFIG_SYS_NO_FLASH
 	flash_info_t *info;
@@ -482,19 +476,15 @@ int do_protect (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	int p;
 	int rcode = 0;
 
-	if (argc < 3) {
-		cmd_usage(cmdtp);
-		return 1;
-	}
+	if (argc < 3)
+		return cmd_usage(cmdtp);
 
-	if (strcmp(argv[1], "off") == 0) {
+	if (strcmp(argv[1], "off") == 0)
 		p = 0;
-	} else if (strcmp(argv[1], "on") == 0) {
+	else if (strcmp(argv[1], "on") == 0)
 		p = 1;
-	} else {
-		cmd_usage(cmdtp);
-		return 1;
-	}
+	else
+		return cmd_usage(cmdtp);
 
 #ifdef CONFIG_HAS_DATAFLASH
 	if ((strcmp(argv[2], "all") != 0) && (strcmp(argv[2], "bank") != 0)) {
@@ -592,10 +582,8 @@ int do_protect (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	}
 #endif
 
-	if (argc != 4) {
-		cmd_usage(cmdtp);
-		return 1;
-	}
+	if (argc != 4)
+		return cmd_usage(cmdtp);
 
 	if (strcmp(argv[2], "bank") == 0) {
 		bank = simple_strtoul(argv[3], NULL, 16);
@@ -634,10 +622,9 @@ int do_protect (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		return 1;
 	}
 
-	if (addr_first >= addr_last) {
-		cmd_usage(cmdtp);
-		return 1;
-	}
+	if (addr_first >= addr_last)
+		return cmd_usage(cmdtp);
+
 	rcode = flash_sect_protect (p, addr_first, addr_last);
 #endif /* CONFIG_SYS_NO_FLASH */
 	return rcode;
@@ -699,7 +686,7 @@ int flash_sect_protect (int p, ulong addr_first, ulong addr_last)
 #endif /* CONFIG_SYS_NO_FLASH */
 
 #if defined(CONFIG_CFI_FLASH_USE_WEAK_ACCESSORS) && !defined(CONFIG_SYS_NO_FLASH)
-int do_flread(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
+int do_flread(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 	ulong src, dst, size;
 	u8 *psrc, *pdst, *pend;

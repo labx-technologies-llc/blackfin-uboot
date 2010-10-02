@@ -14,8 +14,6 @@
 #include <asm/blackfin.h>
 #include <asm/gpio.h>
 
-#define POST_WORD_ADDR 0xFF903FFC
-
 /* Using sw10-PF5 as the hotkey */
 int post_hotkeys_pressed(void)
 {
@@ -47,18 +45,6 @@ int post_hotkeys_pressed(void)
 	}
 
 	gpio_free(GPIO_PF5);
-}
-
-void post_word_store(ulong a)
-{
-	volatile ulong *save_addr = (volatile ulong *)POST_WORD_ADDR;
-	*save_addr = a;
-}
-
-ulong post_word_load(void)
-{
-	volatile ulong *save_addr = (volatile ulong *)POST_WORD_ADDR;
-	return *save_addr;
 }
 
 int uart_post_test(int flags)

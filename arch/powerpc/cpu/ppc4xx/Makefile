@@ -45,12 +45,14 @@ COBJS	+= bedbug_405.o
 ifdef CONFIG_CMD_CHIP_CONFIG
 COBJS	+= cmd_chip_config.o
 endif
-COBJS	+= commproc.o
 COBJS	+= cpu.o
 COBJS	+= cpu_init.o
 COBJS	+= denali_data_eye.o
 COBJS	+= denali_spd_ddr2.o
 COBJS	+= ecc.o
+ifdef CONFIG_CMD_ECCTEST
+COBJS	+= cmd_ecctest.o
+endif
 COBJS	+= fdt.o
 COBJS	+= interrupts.o
 COBJS	+= iop480_uart.o

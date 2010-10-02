@@ -36,6 +36,26 @@ DECLARE_GLOBAL_DATA_PTR;
 #define CONFIG_SYS_PLL_RECONFIG	0
 #endif
 
+#if defined(CONFIG_440EPX) || \
+    defined(CONFIG_460EX) || defined(CONFIG_460GT)
+static void reset_with_rli(void)
+{
+	u32 reg;
+
+	/*
+	 * Set reload inhibit so configuration will persist across
+	 * processor resets
+	 */
+	mfcpr(CPR0_ICFG, reg);
+	reg |= CPR0_ICFG_RLI_MASK;
+	mtcpr(CPR0_ICFG, reg);
+
+	/* Reset processor if configuration changed */
+	__asm__ __volatile__ ("sync; isync");
+	mtspr(SPRN_DBCR0, 0x20000000);
+}
+#endif
+
 void reconfigure_pll(u32 new_cpu_freq)
 {
 #if defined(CONFIG_440EPX)
@@ -122,22 +142,28 @@ void reconfigure_pll(u32 new_cpu_freq)
 	 * modify it.
 	 */
 	if (temp == 1) {
-		mfcpr(CPR0_PLLD, reg);
-		/* Get current value of fbdv.  */
-		temp = (reg & PLLD_FBDV_MASK) >> 24;
-		fbdv = temp ? temp : 32;
-		/* Get current value of lfbdv. */
-		temp = (reg & PLLD_LFBDV_MASK);
-		lfbdv = temp ? temp : 64;
 		/*
 		 * Load register that contains current boot strapping option.
 		 */
 		mfcpr(CPR0_ICFG, reg);
-		/* Shift strapping option into low 3 bits.*/
-		reg = (reg >> 28);
+		/*
+		 * Strapping option bits (ICS) are already in correct position,
+		 * only masking needed.
+		 */
+		reg &= CPR0_ICFG_ICS_MASK;
 
 		if ((reg == BOOT_STRAP_OPTION_A) || (reg == BOOT_STRAP_OPTION_B) ||
 		    (reg == BOOT_STRAP_OPTION_D) || (reg == BOOT_STRAP_OPTION_E)) {
+			mfcpr(CPR0_PLLD, reg);
+
+			/* Get current value of fbdv.  */
+			temp = (reg & PLLD_FBDV_MASK) >> 24;
+			fbdv = temp ? temp : 32;
+
+			/* Get current value of lfbdv. */
+			temp = (reg & PLLD_LFBDV_MASK);
+			lfbdv = temp ? temp : 64;
+
 			/*
 			 * Get current value of FWDVA. Assign current FWDVA to
 			 * new FWDVB.
@@ -145,12 +171,14 @@ void reconfigure_pll(u32 new_cpu_freq)
 			mfcpr(CPR0_PLLD, reg);
 			target_fwdvb = (reg & PLLD_FWDVA_MASK) >> 16;
 			fwdvb = target_fwdvb ? target_fwdvb : 8;
+
 			/*
 			 * Get current value of FWDVB. Assign current FWDVB to
 			 * new FWDVA.
 			 */
 			target_fwdva = (reg & PLLD_FWDVB_MASK) >> 8;
 			fwdva = target_fwdva ? target_fwdva : 16;
+
 			/*
 			 * Update CPR0_PLLD with switched FWDVA and FWDVB.
 			 */
@@ -161,24 +189,34 @@ void reconfigure_pll(u32 new_cpu_freq)
 				((fbdv == 32 ? 0 : fbdv) << 24) |
 				(lfbdv == 64 ? 0 : lfbdv);
 			mtcpr(CPR0_PLLD, reg);
+
 			/* Acknowledge that a reset is required. */
 			reset_needed = 1;
 		}
 	}
 
-	if (reset_needed) {
-		/*
-		 * Set reload inhibit so configuration will persist across
-		 * processor resets
-		 */
-		mfcpr(CPR0_ICFG, reg);
-		reg &= ~CPR0_ICFG_RLI_MASK;
-		reg |= 1 << 31;
-		mtcpr(CPR0_ICFG, reg);
+	/* Now reset the CPU if needed */
+	if (reset_needed)
+		reset_with_rli();
+#endif
 
-		/* Reset processor if configuration changed */
-		__asm__ __volatile__ ("sync; isync");
-		mtspr(SPRN_DBCR0, 0x20000000);
+#if defined(CONFIG_460EX) || defined(CONFIG_460GT)
+	u32 reg;
+
+	/*
+	 * See "9.2.1.1 Booting with Option E" in the 460EX/GT
+	 * users manual
+	 */
+	mfcpr(CPR0_PLLC, reg);
+	if ((reg & (CPR0_PLLC_RST | CPR0_PLLC_ENG)) == CPR0_PLLC_RST) {
+		/*
+		 * Set engage bit
+		 */
+		reg = (reg & ~CPR0_PLLC_RST) | CPR0_PLLC_ENG;
+		mtcpr(CPR0_PLLC, reg);
+
+		/* Now reset the CPU */
+		reset_with_rli();
 	}
 #endif
 }

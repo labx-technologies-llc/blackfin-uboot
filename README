@@ -126,13 +126,17 @@ the string "u_boot" or on "U_BOOT". Example:
 Versioning:
 ===========
 
-U-Boot uses a 3 level version number containing a version, a
-sub-version, and a patchlevel: "U-Boot-2.34.5" means version "2",
-sub-version "34", and patchlevel "4".
+Starting with the release in October 2008, the names of the releases
+were changed from numerical release numbers without deeper meaning
+into a time stamp based numbering. Regular releases are identified by
+names consisting of the calendar year and month of the release date.
+Additional fields (if present) indicate release candidates or bug fix
+releases in "stable" maintenance trees.
 
-The patchlevel is used to indicate certain stages of development
-between released versions, i. e. officially released versions of
-U-Boot will always have a patchlevel of "0".
+Examples:
+	U-Boot v2009.11     - Release November 2009
+	U-Boot v2009.11.1   - Release 1 in version November 2009 stable tree
+	U-Boot v2010.09-rc1 - Release candiate 1 for September 2010 release
 
 
 Directory Hierarchy:
@@ -2577,7 +2581,7 @@ to save the current settings.
 
 Please note that the environment is read-only until the monitor
 has been relocated to RAM and a RAM copy of the environment has been
-created; also, when using EEPROM you will have to use getenv_r()
+created; also, when using EEPROM you will have to use getenv_f()
 until then to read environment variables.
 
 The environment is protected by a CRC32 checksum. Before the monitor
@@ -3163,10 +3167,10 @@ List of environment variables (most likely not complete):
 		  interface is currently active. For example you
 		  can do the following
 
-		  => setenv ethact FEC ETHERNET
-		  => ping 192.168.0.1 # traffic sent on FEC ETHERNET
-		  => setenv ethact SCC ETHERNET
-		  => ping 10.0.0.1 # traffic sent on SCC ETHERNET
+		  => setenv ethact FEC
+		  => ping 192.168.0.1 # traffic sent on FEC
+		  => setenv ethact SCC
+		  => ping 10.0.0.1 # traffic sent on SCC
 
   ethrotate	- When set to "no" U-Boot does not go through all
 		  available network interfaces.

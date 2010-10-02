@@ -90,7 +90,7 @@ bmp_image_t *gunzip_bmp(unsigned long addr, unsigned long *lenp)
 }
 #endif
 
-static int do_bmp_info(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
+static int do_bmp_info(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
 {
 	ulong addr;
 
@@ -102,14 +102,13 @@ static int do_bmp_info(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 		addr = simple_strtoul(argv[1], NULL, 16);
 		break;
 	default:
-		cmd_usage(cmdtp);
-		return 1;
+		return cmd_usage(cmdtp);
 	}
 
 	return (bmp_info(addr));
 }
 
-static int do_bmp_display(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
+static int do_bmp_display(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
 {
 	ulong addr;
 	int x = 0, y = 0;
@@ -127,8 +126,7 @@ static int do_bmp_display(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 	        y = simple_strtoul(argv[3], NULL, 10);
 	        break;
 	default:
-		cmd_usage(cmdtp);
-		return 1;
+		return cmd_usage(cmdtp);
 	}
 
 	 return (bmp_display(addr, x, y));
@@ -149,7 +147,7 @@ static cmd_tbl_t cmd_bmp_sub[] = {
  * Return:      None
  *
  */
-static int do_bmp(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
+static int do_bmp(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 	cmd_tbl_t *c;
 
@@ -159,12 +157,10 @@ static int do_bmp(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 
 	c = find_cmd_tbl(argv[0], &cmd_bmp_sub[0], ARRAY_SIZE(cmd_bmp_sub));
 
-	if (c) {
+	if (c)
 		return  c->cmd(cmdtp, flag, argc, argv);
-	} else {
-		cmd_usage(cmdtp);
-		return 1;
-	}
+	else
+		return cmd_usage(cmdtp);
 }
 
 U_BOOT_CMD(

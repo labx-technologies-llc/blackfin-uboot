@@ -63,7 +63,7 @@ DECLARE_GLOBAL_DATA_PTR;
 
 extern void timer_interrupt_init(void);
 extern void malloc_bin_reloc(void);
-extern int do_ambapp_print(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[]);
+extern int do_ambapp_print(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[]);
 extern int prom_init(void);
 
 #if defined(CONFIG__CMD_DOC)
@@ -88,7 +88,7 @@ ulong monitor_flash_len;
 static int init_baudrate(void)
 {
 	char tmp[64];		/* long enough for environment variables */
-	int i = getenv_r("baudrate", tmp, sizeof(tmp));
+	int i = getenv_f("baudrate", tmp, sizeof(tmp));
 
 	gd->baudrate = (i > 0)
 	    ? (int)simple_strtoul(tmp, NULL, 10)

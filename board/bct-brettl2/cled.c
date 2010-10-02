@@ -11,7 +11,7 @@
 #include <asm/blackfin.h>
 #include <asm/io.h>
 
-int do_cled(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
+int do_cled(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 	ulong addr = 0x20000000 + 0x200000; // AMS2
 	uchar data;

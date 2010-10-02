@@ -32,6 +32,7 @@ START	= start.o resetvec.o
 SOBJS-$(CONFIG_MP)	+= release.o
 SOBJS	= $(SOBJS-y)
 
+COBJS-$(CONFIG_CMD_ERRATA) += cmd_errata.o
 COBJS-$(CONFIG_CPM2)	+= commproc.o
 
 # supports ddr1
@@ -57,15 +58,26 @@ COBJS-$(CONFIG_P1021)	+= ddr-gen3.o
 COBJS-$(CONFIG_P1022)	+= ddr-gen3.o
 COBJS-$(CONFIG_P2010)	+= ddr-gen3.o
 COBJS-$(CONFIG_P2020)	+= ddr-gen3.o
+COBJS-$(CONFIG_PPC_P3041)	+= ddr-gen3.o
 COBJS-$(CONFIG_PPC_P4080)	+= ddr-gen3.o
+COBJS-$(CONFIG_PPC_P5020)	+= ddr-gen3.o
 
 COBJS-$(CONFIG_CPM2)	+= ether_fcc.o
 COBJS-$(CONFIG_OF_LIBFDT) += fdt.o
+COBJS-$(CONFIG_FSL_CORENET) += liodn.o
 COBJS-$(CONFIG_MP)	+= mp.o
 COBJS-$(CONFIG_MPC8536) += mpc8536_serdes.o
+COBJS-$(CONFIG_P1022)	+= p1022_serdes.o
 COBJS-$(CONFIG_PCI)	+= pci.o
+COBJS-$(CONFIG_FSL_CORENET) += portals.o
+
+# various SoC specific assignments
+COBJS-$(CONFIG_PPC_P4080) += p4080_ids.o
+
 COBJS-$(CONFIG_QE)	+= qe_io.o
 COBJS-$(CONFIG_CPM2)	+= serial_scc.o
+COBJS-$(CONFIG_FSL_CORENET) += fsl_corenet_serdes.o
+COBJS-$(CONFIG_PPC_P4080) += p4080_serdes.o
 
 COBJS	= $(COBJS-y)
 COBJS	+= cpu.o

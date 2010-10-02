@@ -567,7 +567,7 @@ void hw_watchdog_reset(void)
  * "led" Commando for the U-Boot shell
  *
  ************************************************************************/
-int do_led (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
+int do_led (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 	int	rcode = 0, i;
 	ulong	pattern = 0;
@@ -611,14 +611,13 @@ U_BOOT_CMD(
  * "sha1" Commando for the U-Boot shell
  *
  ************************************************************************/
-int do_sha1 (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
+int do_sha1 (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 	int	rcode = -1;
 
 	if (argc < 2) {
-  usage:
-		cmd_usage(cmdtp);
-		return 1;
+usage:
+		return cmd_usage(cmdtp);
 	}
 
 	if (argc >= 3) {

@@ -169,7 +169,7 @@ typedef int (init_fnc_t) (void);
 static int init_baudrate (void)
 {
 	char tmp[64];	/* long enough for environment variables */
-	int i = getenv_r ("baudrate", tmp, sizeof (tmp));
+	int i = getenv_f("baudrate", tmp, sizeof (tmp));
 
 	gd->baudrate = (i > 0)
 			? (int) simple_strtoul (tmp, NULL, 10)
@@ -442,7 +442,7 @@ void board_init_f (ulong bootflag)
 	/*
 	 * reserve protected RAM
 	 */
-	i = getenv_r ("pram", (char *)tmp, sizeof (tmp));
+	i = getenv_f("pram", (char *)tmp, sizeof (tmp));
 	reg = (i > 0) ? simple_strtoul ((const char *)tmp, NULL, 10) : CONFIG_PRAM;
 	addr -= (reg << 10);		/* size is in kB */
 	debug ("Reserving %ldk for protected RAM at %08lx\n", reg, addr);
@@ -783,6 +783,17 @@ void board_init_r (gd_t *id, ulong dest_addr)
 	nand_init();		/* go init the NAND */
 #endif
 
+#ifdef CONFIG_GENERIC_MMC
+/*
+ * MMC initialization is called before relocating env.
+ * Thus It is required that operations like pin multiplexer
+ * be put in board_init.
+ */
+	WATCHDOG_RESET ();
+	puts ("MMC:  ");
+	mmc_initialize (bd);
+#endif
+
 	/* relocate environment function pointers etc. */
 	env_relocate ();
 
@@ -790,7 +801,7 @@ void board_init_r (gd_t *id, ulong dest_addr)
 	 * Fill in missing fields of bd_info.
 	 * We do this here, where we have "normal" access to the
 	 * environment; we used to do this still running from ROM,
-	 * where had to use getenv_r(), which can be pretty slow when
+	 * where had to use getenv_f(), which can be pretty slow when
 	 * the environment is in EEPROM.
 	 */
 
@@ -937,12 +948,6 @@ void board_init_r (gd_t *id, ulong dest_addr)
 	WATCHDOG_RESET ();
 	puts ("SCSI:  ");
 	scsi_init ();
-#endif
-
-#ifdef CONFIG_GENERIC_MMC
-	WATCHDOG_RESET ();
-	puts ("MMC:  ");
-	mmc_initialize (bd);
 #endif
 
 #if defined(CONFIG_CMD_DOC)

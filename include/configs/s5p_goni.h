@@ -28,9 +28,9 @@
 #define __CONFIG_H
 
 /* High Level Configuration Options */
-#define CONFIG_ARMCORTEXA8	1	/* This is an ARM V7 CPU core */
+#define CONFIG_ARMV7		1	/* This is an ARM V7 CPU core */
 #define CONFIG_SAMSUNG		1	/* in a SAMSUNG core */
-#define CONFIG_S5PC1XX		1	/* which is in a S5PC1XX Family */
+#define CONFIG_S5P		1	/* which is in a S5P Family */
 #define CONFIG_S5PC110		1	/* which is in a S5PC110 */
 #define CONFIG_MACH_GONI	1	/* working with Goni */
 
@@ -67,6 +67,11 @@
 #define CONFIG_SERIAL_MULTI		1
 #define CONFIG_BAUDRATE			115200
 
+/* MMC */
+#define CONFIG_GENERIC_MMC		1
+#define CONFIG_MMC			1
+#define CONFIG_S5P_MMC			1
+
 /* It should define before config_cmd_default.h */
 #define CONFIG_SYS_NO_FLASH		1
 
@@ -82,6 +87,7 @@
 #define CONFIG_CMD_REGINFO
 #define CONFIG_CMD_ONENAND
 #define CONFIG_CMD_MTDPARTS
+#define CONFIG_CMD_MMC
 
 #define CONFIG_BOOTDELAY		1
 #define CONFIG_ZERO_BOOTDELAY_CHECK

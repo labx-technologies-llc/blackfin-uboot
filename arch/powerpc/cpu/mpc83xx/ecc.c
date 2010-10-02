@@ -98,7 +98,7 @@ void ecc_print_status(void)
 	       ddr->capture_attributes & ECC_CAPT_ATTR_VLD);
 }
 
-int do_ecc(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
+int do_ecc(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
 {
 	volatile immap_t *immap = (immap_t *) CONFIG_SYS_IMMR;
 	volatile ddr83xx_t *ddr = &immap->ddr;
@@ -118,10 +118,8 @@ int do_ecc(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 	writeback[0] = 0x01234567UL;
 	writeback[1] = 0x89abcdefUL;
 
-	if (argc > 4) {
-		cmd_usage(cmdtp);
-		return 1;
-	}
+	if (argc > 4)
+		return cmd_usage(cmdtp);
 
 	if (argc == 2) {
 		if (strcmp(argv[1], "status") == 0) {
@@ -350,8 +348,7 @@ int do_ecc(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 			return 0;
 		}
 	}
-	cmd_usage(cmdtp);
-	return 1;
+	return cmd_usage(cmdtp);
 }
 
 U_BOOT_CMD(ecc, 4, 0, do_ecc,

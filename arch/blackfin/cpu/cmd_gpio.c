@@ -20,7 +20,7 @@ enum {
 	GPIO_TOGGLE,
 };
 
-int do_gpio(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
+int do_gpio(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 	if (argc == 2 && !strcmp(argv[1], "status")) {
 		bfin_gpio_labels();

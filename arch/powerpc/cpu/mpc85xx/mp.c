@@ -38,7 +38,7 @@ u32 get_my_id()
 
 int cpu_reset(int nr)
 {
-	volatile ccsr_pic_t *pic = (void *)(CONFIG_SYS_MPC85xx_PIC_ADDR);
+	volatile ccsr_pic_t *pic = (void *)(CONFIG_SYS_MPC8xxx_PIC_ADDR);
 	out_be32(&pic->pir, 1 << nr);
 	/* the dummy read works around an errata on early 85xx MP PICs */
 	(void)in_be32(&pic->pir);
@@ -77,6 +77,13 @@ int cpu_disable(int nr)
 
 	return 0;
 }
+
+int is_core_disabled(int nr) {
+	ccsr_gur_t *gur = (void *)(CONFIG_SYS_MPC85xx_GUTS_ADDR);
+	u32 coredisrl = in_be32(&gur->coredisrl);
+
+	return (coredisrl & (1 << nr));
+}
 #else
 int cpu_disable(int nr)
 {
@@ -96,6 +103,22 @@ int cpu_disable(int nr)
 
 	return 0;
 }
+
+int is_core_disabled(int nr) {
+	ccsr_gur_t *gur = (void *)(CONFIG_SYS_MPC85xx_GUTS_ADDR);
+	u32 devdisr = in_be32(&gur->devdisr);
+
+	switch (nr) {
+	case 0:
+		return (devdisr & MPC85xx_DEVDISR_CPU0);
+	case 1:
+		return (devdisr & MPC85xx_DEVDISR_CPU1);
+	default:
+		printf("Invalid cpu number for disable %d\n", nr);
+	}
+
+	return 0;
+}
 #endif
 
 static u8 boot_entry_map[4] = {
@@ -105,7 +128,7 @@ static u8 boot_entry_map[4] = {
 	BOOT_ENTRY_R6_LOWER,
 };
 
-int cpu_release(int nr, int argc, char *argv[])
+int cpu_release(int nr, int argc, char * const argv[])
 {
 	u32 i, val, *table = (u32 *)get_spin_virt_addr() + nr * NUM_BOOT_ENTRY;
 	u64 boot_addr;
@@ -184,7 +207,7 @@ static void plat_mp_up(unsigned long bootpg)
 	gur = (void *)(CONFIG_SYS_MPC85xx_GUTS_ADDR);
 	ccm = (void *)(CONFIG_SYS_FSL_CORENET_CCM_ADDR);
 	rcpm = (void *)(CONFIG_SYS_FSL_CORENET_RCPM_ADDR);
-	pic = (void *)(CONFIG_SYS_MPC85xx_PIC_ADDR);
+	pic = (void *)(CONFIG_SYS_MPC8xxx_PIC_ADDR);
 
 	nr_cpus = ((in_be32(&pic->frr) >> 8) & 0xff) + 1;
 
@@ -249,7 +272,7 @@ static void plat_mp_up(unsigned long bootpg)
 	volatile u32 bpcr;
 	volatile ccsr_local_ecm_t *ecm = (void *)(CONFIG_SYS_MPC85xx_ECM_ADDR);
 	volatile ccsr_gur_t *gur = (void *)(CONFIG_SYS_MPC85xx_GUTS_ADDR);
-	volatile ccsr_pic_t *pic = (void *)(CONFIG_SYS_MPC85xx_PIC_ADDR);
+	volatile ccsr_pic_t *pic = (void *)(CONFIG_SYS_MPC8xxx_PIC_ADDR);
 	u32 devdisr;
 	int timeout = 10;
 

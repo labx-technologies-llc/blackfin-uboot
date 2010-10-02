@@ -633,12 +633,10 @@ static int set_lcd_brightness(char *brightness)
 }
 
 static int cmd_lcd_brightness(cmd_tbl_t *cmdtp, int flag,
-			      int argc, char *argv[])
+			      int argc, char * const argv[])
 {
-	if (argc < 2) {
-		cmd_usage(cmdtp);
-		return 1;
-	}
+	if (argc < 2)
+		return cmd_usage(cmdtp);
 
 	return set_lcd_brightness(argv[1]);
 }
