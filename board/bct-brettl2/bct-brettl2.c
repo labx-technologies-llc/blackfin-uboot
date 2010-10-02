@@ -36,7 +36,6 @@ static void board_init_enetaddr(uchar *mac_addr)
 	bfin_gen_rand_mac(mac_addr);
 	eth_setenv_enetaddr("ethaddr", mac_addr);
 }
-#endif
 
 int board_eth_init(bd_t *bis)
 {
@@ -45,13 +44,11 @@ int board_eth_init(bd_t *bis)
 
 	ret = bfin_EMAC_initialize(bis);
 
-#ifdef CONFIG_BFIN_MAC
 	uchar enetaddr[6];
 	if (eth_getenv_enetaddr("ethaddr", enetaddr)) {
 		printf("setting MAC %pM\n", enetaddr);
 	}
 	puts("       ");
-#endif
 
 	puts("initialize SMSC LAN9303i ethernet switch\n");
 
@@ -62,6 +59,7 @@ int board_eth_init(bd_t *bis)
 
 	return ret;
 }
+#endif
 
 static void init_tlv320aic31(void)
 {
