@@ -966,7 +966,7 @@ if { $TEST_JTAG_CONSOLE } {
         send "echo test\r"
         while 1 {
             expect {
-                -re "echo test\r\ntest\r\n$UBOOT_PROMPT" {
+                -re "echo test(\r\n|\n\r)test(\r\n|\n\r)$UBOOT_PROMPT" {
                     set jtag_console_result $TEST_PASS
                     break
                 }
