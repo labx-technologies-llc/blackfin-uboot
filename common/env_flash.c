@@ -271,6 +271,10 @@ int saveenv(void)
 		"sect_addr: %08lX  env_addr: %08lX  offset: %08lX\n",
 		flash_sect_addr, (ulong)flash_addr, flash_offset);
 
+#ifdef CONFIG_CFI_FLASH_USE_WEAK_ACCESSORS
+	/* make sure we force the first sector over */
+	flash_read8((u8 *)flash_sect_addr);
+#endif
 	/* copy old contents to temporary buffer */
 	memcpy (env_buffer, (void *)flash_sect_addr, CONFIG_ENV_SECT_SIZE);
 
