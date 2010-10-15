@@ -15,6 +15,7 @@
 #include <environment.h>
 #include <malloc.h>
 #include <mmc.h>
+#include <nand.h>
 #include <net.h>
 #include <timestamp.h>
 #include <status_led.h>
@@ -23,10 +24,6 @@
 #include <asm/cplb.h>
 #include <asm/mach-common/bits/mpu.h>
 #include <kgdb.h>
-
-#ifdef CONFIG_CMD_NAND
-#include <nand.h>	/* cannot even include nand.h if it isnt configured */
-#endif
 
 #ifdef CONFIG_BITBANGMII
 #include <miiphy.h>
@@ -345,10 +342,7 @@ void board_init_r(gd_t * id, ulong dest_addr)
 	bd->bi_flashoffset = 0;
 #endif
 
-#if defined(CONFIG_CMD_NAND) && !defined(CONFIG_SYS_NAND_DELAYED_INIT)
-	puts("NAND:  ");
-	nand_init();		/* go init the NAND */
-#endif
+	nand_early_init();
 
 #ifdef CONFIG_GENERIC_MMC
 	puts("MMC:   ");

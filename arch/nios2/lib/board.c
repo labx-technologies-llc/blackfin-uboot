@@ -36,9 +36,7 @@
 #if defined(CONFIG_SYS_NIOS_EPCSBASE)
 #include <nios2-epcs.h>
 #endif
-#ifdef CONFIG_CMD_NAND
-#include <nand.h>	/* cannot even include nand.h if it isnt configured */
-#endif
+#include <nand.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -130,10 +128,7 @@ void board_init (void)
 	bd->bi_flashsize = flash_init();
 #endif
 
-#ifdef CONFIG_CMD_NAND
-	puts("NAND:  ");
-	nand_init();
-#endif
+	nand_early_init();
 
 #ifdef CONFIG_GENERIC_MMC
 	puts("MMC:   ");

@@ -93,15 +93,11 @@
 #include <linux/err.h>
 #include <linux/mtd/mtd.h>
 
-#if defined(CONFIG_CMD_NAND)
 #include <linux/mtd/nand.h>
 #include <nand.h>
-#endif
 
-#if defined(CONFIG_CMD_ONENAND)
 #include <linux/mtd/onenand.h>
 #include <onenand_uboot.h>
-#endif
 
 /* special size referring to all the remaining space in a partition */
 #define SIZE_REMAINING		0xFFFFFFFF
@@ -1543,6 +1539,7 @@ int mtdparts_init(void)
 		memset(last_ids, 0, MTDIDS_MAXLEN);
 		memset(last_parts, 0, MTDPARTS_MAXLEN);
 		memset(last_partition, 0, PARTITION_MAXLEN);
+		nand_init();
 		initialized = 1;
 	}
 

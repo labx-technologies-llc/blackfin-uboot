@@ -24,11 +24,18 @@
 #ifndef _NAND_H_
 #define _NAND_H_
 
+#ifdef CONFIG_CMD_NAND
 extern void nand_init(void);
-#ifdef CONFIG_SYS_NAND_DELAYED_INIT
-# define nand_delayed_init() nand_init()
 #else
-# define nand_delayed_init() do { } while (0)
+static inline void nand_init(void)
+{
+}
+#endif
+
+#if defined(CONFIG_NAND_MAYBE_EARLY_INIT) || defined(CONFIG_NAND_EARLY_INIT)
+# define nand_early_init() nand_init()
+#else
+# define nand_early_init() do {} while (0)
 #endif
 
 #include <linux/mtd/compat.h>

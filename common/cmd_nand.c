@@ -309,7 +309,7 @@ int do_nand(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
 	if (argc < 2)
 		goto usage;
 
-	nand_delayed_init();
+	nand_init();
 
 	if (quiet_str)
 		quiet = simple_strtoul(quiet_str, NULL, 0) != 0;
@@ -717,7 +717,11 @@ int do_nandboot(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
 	struct mtd_device *dev;
 	struct part_info *part;
 	u8 pnum;
+#endif
 
+	nand_init();
+
+#if defined(CONFIG_CMD_MTDPARTS)
 	if (argc >= 2) {
 		char *p = (argc == 2) ? argv[1] : argv[2];
 		if (!(str2long(p, &addr)) && (mtdparts_init() == 0) &&

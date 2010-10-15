@@ -333,10 +333,7 @@ void start_armboot (void)
 	}
 #endif /* CONFIG_LCD */
 
-#if defined(CONFIG_CMD_NAND)
-	puts ("NAND:  ");
-	nand_init();		/* go init the NAND */
-#endif
+	nand_early_init();
 
 #if defined(CONFIG_CMD_ONENAND)
 	onenand_init();

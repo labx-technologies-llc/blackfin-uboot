@@ -7,6 +7,26 @@ file.
 
 ---------------------------
 
+What:	CONFIG_NAND_MAYBE_EARLY_INIT option
+When:	Release 2011-03
+
+Why:	U-boot's policy is to initialize hardware only when needed.  The
+	NAND code however predates this and explicitly initializes the hardware
+	during board init.  In order to transition to a sane default (only
+	initialize NAND when it is going to be used) without breaking existing
+	boards, this option has been introduced.  Board porters should select
+	one of two options in their board config:
+		(1) #undef CONFIG_NAND_MAYBE_EARLY_INIT (recommended)
+		(2) #define CONFIG_NAND_EARLY_INIT
+	This way people who wish to retain the old behavior may do so, but the
+	default for new boards follows the standard U-boot policy.  Boards which
+	have not made a decision will have one made for them when this option is
+	removed in the future.
+
+Who:	Mike Frysinger <vapier@gentoo.org>
+
+---------------------------
+
 What:	CONFIG_NET_MULTI option
 When:	Release 2009-11
 

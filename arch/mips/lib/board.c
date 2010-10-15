@@ -358,10 +358,7 @@ void board_init_r (gd_t *id, ulong dest_addr)
 	bd->bi_flashoffset = 0;
 #endif
 
-#ifdef CONFIG_CMD_NAND
-	puts ("NAND:  ");
-	nand_init ();		/* go init the NAND */
-#endif
+	nand_early_init();
 
 #if defined(CONFIG_CMD_ONENAND)
 	onenand_init();
