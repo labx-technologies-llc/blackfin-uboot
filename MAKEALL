@@ -689,7 +689,7 @@ board_cpu() {
 	awk '$1 == "CONFIG_BFIN_CPU" { print $NF }' board/$1/config.mk 2>/dev/null
 }
 procs() {
-	${no_cpu} && set -- default
+	${no_cpu} && echo default && return
 	case "$@" in
 		*bf51[2468]*)   procs=bf51{2,4,6,8};;
 		*bf52[234567]*) procs=bf52{2,3,4,5,6,7};;
