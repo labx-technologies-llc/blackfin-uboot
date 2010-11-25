@@ -45,6 +45,7 @@
 /*
  * Network Settings
  */
+#ifndef __ADSPBF534__
 #define CONFIG_IPADDR          10.100.100.21
 #define CONFIG_NETMASK         255.255.0.0
 #define CONFIG_GATEWAYIP       10.100.100.1
@@ -58,6 +59,7 @@
 
 #define CONFIG_CMD_MII
 #define CONFIG_CMD_PING
+#endif
 
 /*
  * Flash Settings
@@ -115,5 +117,10 @@
 
 /* this sets up the default list of enabled commands */
 #include <config_cmd_default.h>
+
+#ifndef CONFIG_BFIN_MAC
+# undef CONFIG_CMD_NET
+# undef CONFIG_CMD_NFS
+#endif
 
 #endif
