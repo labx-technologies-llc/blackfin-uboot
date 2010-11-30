@@ -1047,6 +1047,11 @@ Peter Meerwald <devel@bct-electronic.com>
 
 	bct-brettl2	BF536
 
+Haitao Zhang <hzhang@ucrobotics.com>
+Chong Huang <chuang@ucrobotics.com>
+
+	bf525-ucr2	BF525
+
 #########################################################################
 # End of MAINTAINERS list						#
 #########################################################################
