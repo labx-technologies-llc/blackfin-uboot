@@ -1440,7 +1440,6 @@ set measurement_matrix { \
 # The definitions below should be the details of a known uImage.
 set KERNEL_GZ_FILENAME      "uImage-beta"
 set KERNEL_GZ_NAME          "uCinux Kernel and Filesystem Image"
-set KERNEL_GZ_DATE          "2005\-04\-20  13:27:17 UTC"
 set KERNEL_GZ_TYPE          "Blackfin Linux Kernel Image"
 set KERNEL_GZ_SIZE          "1357674 Bytes"
 set KERNEL_GZ_ADDR          "00001000"
@@ -3077,13 +3076,10 @@ while 1 {
         -re "(Image Name: +)(\[0-9a-zA-Z.-]+)" {
             set KERNEL_GZ_NAME "$expect_out(2,string)"
         }
-        -re "(Created: +)(.*20\[0-9]{2,2})" {
-            set KERNEL_GZ_DATE "$expect_out(2,string)"
-        }
         -re "(Image Type: +)(.*\\\))" {
             set KERNEL_GZ_TYPE "$expect_out(2,string)"
         }
-        -re "(Data Size: +)(.*)Bytes.*kB.*MB" {
+        -re "(Data Size: +)(.*) Bytes.*MB" {
             set KERNEL_GZ_SIZE "$expect_out(2,string)"
         }
         -re "(Load Address: +)(0\[xX])?(\[0-9]+)" {
@@ -3153,7 +3149,6 @@ while 1 {
 }
 if {$temp_status_flag==$TEST_PASS} {
    set iminfo_name_result $TEST_FAIL
-   set iminfo_date_result $TEST_PASS
    set iminfo_type_result $TEST_FAIL
    set iminfo_size_result $TEST_FAIL
    set iminfo_addr_result $TEST_FAIL
@@ -3167,15 +3162,11 @@ if {$temp_status_flag==$TEST_PASS} {
             set iminfo_name_result $TEST_PASS
          }
 
-#         "Created:*$KERNEL_GZ_DATE" {
-#            set iminfo_date_result $TEST_PASS
-#         }
-
          "Image Type:*$KERNEL_GZ_TYPE" {
             set iminfo_type_result $TEST_PASS
          }
 
-         "Data Size:*$KERNEL_GZ_SIZE" {
+         "Data Size:*$KERNEL_GZ_SIZE Bytes" {
             set iminfo_size_result $TEST_PASS
          }
 
@@ -3201,7 +3192,7 @@ if {$temp_status_flag==$TEST_PASS} {
       }
    }
 
-   if {$iminfo_name_result==$TEST_PASS && $iminfo_date_result==$TEST_PASS \
+   if {$iminfo_name_result==$TEST_PASS \
    && $iminfo_type_result==$TEST_PASS && $iminfo_size_result==$TEST_PASS \
    && $iminfo_addr_result==$TEST_PASS && $iminfo_entry_result==$TEST_PASS \
    && $iminfo_checksum_result==$TEST_PASS} {
@@ -3209,7 +3200,6 @@ if {$temp_status_flag==$TEST_PASS} {
    } else {
       set iminfo_result $TEST_FAIL
       send_user "iminfo name: $iminfo_name_result\n"
-      send_user "iminfo date: $iminfo_date_result\n"
       send_user "iminfo type: $iminfo_type_result\n"
       send_user "iminfo size: $iminfo_size_result\n"
       send_user "iminfo addr: $iminfo_addr_result\n"
