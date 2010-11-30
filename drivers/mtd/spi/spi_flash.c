@@ -130,6 +130,11 @@ struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs,
 		flash = spi_flash_probe_spansion(spi, idcode);
 		break;
 #endif
+#ifdef CONFIG_SPI_FLASH_EON
+	case 0x1c:
+		flash = spi_flash_probe_eon(spi, idcode);
+		break;
+#endif
 #ifdef CONFIG_SPI_FLASH_ATMEL
 	case 0x1F:
 		flash = spi_flash_probe_atmel(spi, idcode);
