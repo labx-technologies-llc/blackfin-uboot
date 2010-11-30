@@ -1906,7 +1906,7 @@ void VLAN_to_string(ushort x, char *s)
 		sprintf(s, "%d", x & VLAN_IDMASK);
 }
 
-ushort string_to_VLAN(char *s)
+ushort string_to_VLAN(const char *s)
 {
 	ushort id;
 
