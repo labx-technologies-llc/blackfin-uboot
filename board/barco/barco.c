@@ -257,7 +257,6 @@ void barcobcd_boot (void)
 	char *bootm_args[2];
 	char *buf;
 	int cnt;
-	extern int do_bootm (cmd_tbl_t *, int, int, char *[]);
 
 	buf = (char *)(0x00800000);
 	/* make certain there are enough chars to print the command line here!
