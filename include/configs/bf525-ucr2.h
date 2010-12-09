@@ -88,7 +88,7 @@
 #define CONFIG_BOOTCOMMAND	"run sfboot"
 #define CONFIG_BOOTDELAY	5
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"sfboot= sf probe 1;" \
+	"sfboot=sf probe 1;" \
 		"sf read 0x1000000 0x20000 0x300000;" \
 		"bootm 0x1000000\0"
 
