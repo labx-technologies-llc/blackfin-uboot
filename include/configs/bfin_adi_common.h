@@ -205,6 +205,7 @@
 # define NETWORK_ENV_SETTINGS \
 	NETCONSOLE_ENV \
 	\
+	"autostart=no\0" \
 	"ubootfile=" UBOOT_ENV_FILE "\0" \
 	"update=" \
 		"tftp $(loadaddr) $(ubootfile);" \
