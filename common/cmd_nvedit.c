@@ -75,6 +75,8 @@ SPI_FLASH|MG_DISK|NVRAM|MMC|NOWHERE}
 /************************************************************************
 ************************************************************************/
 
+ulong load_addr = CONFIG_SYS_LOAD_ADDR;	/* Default Load Address */
+
 /*
  * Table with supported baudrates (defined in config_xyz.h)
  */
