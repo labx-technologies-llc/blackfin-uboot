@@ -67,7 +67,11 @@
 #endif
 
 static uint flash_offset_cfi[2] = { FLASH_OFFSET_CFI, FLASH_OFFSET_CFI_ALT };
+#ifdef CONFIG_FLASH_CFI_MTD
 static uint flash_verbose = 1;
+#else
+#define flash_verbose 1
+#endif
 
 /* use CONFIG_SYS_MAX_FLASH_BANKS_DETECT if defined */
 #ifdef CONFIG_SYS_MAX_FLASH_BANKS_DETECT
@@ -1997,10 +2001,12 @@ ulong flash_get_size (phys_addr_t base, int banknum)
 	return (info->size);
 }
 
+#ifdef CONFIG_FLASH_CFI_MTD
 void flash_set_verbose(uint v)
 {
 	flash_verbose = v;
 }
+#endif
 
 /*-----------------------------------------------------------------------
  */
