@@ -46,10 +46,6 @@
  * Network Settings
  */
 #ifndef __ADSPBF534__
-#define CONFIG_IPADDR          10.100.100.21
-#define CONFIG_NETMASK         255.255.0.0
-#define CONFIG_GATEWAYIP       10.100.100.1
-#define CONFIG_SERVERIP        10.100.100.12
 #define CONFIG_ROOTPATH        /romfs
 
 #define CONFIG_NET_MULTI        1
