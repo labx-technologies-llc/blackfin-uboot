@@ -116,7 +116,7 @@ static int ksz8893m_reset(struct spi_slave *slave)
 	return ret;
 }
 
-static int board_ksz_init(void)
+static bool board_ksz_init(void)
 {
 	static bool switch_is_alive = false;
 
@@ -133,17 +133,15 @@ static int board_ksz_init(void)
 		}
 	}
 
-	if (!switch_is_alive)
-		return -1;
-	else
-		return 0;
+	return switch_is_alive;
 }
 
 int board_eth_init(bd_t *bis)
 {
-	if (KSZ_POSSIBLE)
-		if (board_ksz_init() == -1)
+	if (KSZ_POSSIBLE) {
+		if (!board_ksz_init())
 			return 0;
+	}
 	return bfin_EMAC_initialize(bis);
 }
 #endif
