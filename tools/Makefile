@@ -24,6 +24,12 @@
 TOOLSUBDIRS =
 
 #
+# Include this after HOSTOS HOSTARCH check
+# so that we can act intelligently.
+#
+include $(TOPDIR)/config.mk
+
+#
 # toolchains targeting win32 generate .exe files
 #
 ifneq (,$(findstring WIN32 ,$(shell $(HOSTCC) -E -dM -xc /dev/null)))
@@ -31,12 +37,6 @@ SFX = .exe
 else
 SFX =
 endif
-
-#
-# Include this after HOSTOS HOSTARCH check
-# so that we can act intelligently.
-#
-include $(TOPDIR)/config.mk
 
 # Enable all the config-independent tools
 ifneq ($(HOST_TOOLS_ALL),)
@@ -52,7 +52,13 @@ endif
 BIN_FILES-$(CONFIG_LCD_LOGO) += bmp_logo$(SFX)
 BIN_FILES-$(CONFIG_VIDEO_LOGO) += bmp_logo$(SFX)
 BIN_FILES-$(CONFIG_ENV_IS_EMBEDDED) += envcrc$(SFX)
-BIN_FILES-$(CONFIG_BUILD_ENVCRC) += envcrc$(SFX)
+BIN_FILES-$(CONFIG_ENV_IS_IN_DATAFLASH) += envcrc$(SFX)
+BIN_FILES-$(CONFIG_ENV_IS_IN_EEPROM) += envcrc$(SFX)
+BIN_FILES-$(CONFIG_ENV_IS_IN_FLASH) += envcrc$(SFX)
+BIN_FILES-$(CONFIG_ENV_IS_IN_ONENAND) += envcrc$(SFX)
+BIN_FILES-$(CONFIG_ENV_IS_IN_NAND) += envcrc$(SFX)
+BIN_FILES-$(CONFIG_ENV_IS_IN_NVRAM) += envcrc$(SFX)
+BIN_FILES-$(CONFIG_ENV_IS_IN_SPI_FLASH) += envcrc$(SFX)
 BIN_FILES-$(CONFIG_CMD_NET) += gen_eth_addr$(SFX)
 BIN_FILES-$(CONFIG_CMD_LOADS) += img2srec$(SFX)
 BIN_FILES-$(CONFIG_INCA_IP) += inca-swap-bytes$(SFX)
@@ -71,8 +77,7 @@ EXT_OBJ_FILES-y += lib/sha1.o
 OBJ_FILES-$(CONFIG_LCD_LOGO) += bmp_logo.o
 OBJ_FILES-$(CONFIG_VIDEO_LOGO) += bmp_logo.o
 NOPED_OBJ_FILES-y += default_image.o
-OBJ_FILES-$(CONFIG_ENV_IS_EMBEDDED) += envcrc.o
-OBJ_FILES-$(CONFIG_BUILD_ENVCRC) += envcrc.o
+OBJ_FILES-y += envcrc.o
 NOPED_OBJ_FILES-y += fit_image.o
 OBJ_FILES-$(CONFIG_CMD_NET) += gen_eth_addr.o
 OBJ_FILES-$(CONFIG_CMD_LOADS) += img2srec.o
@@ -111,6 +116,9 @@ endif
 ifeq ($(VENDOR),esd)
 LOGO_BMP= logos/esd.bmp
 endif
+ifeq ($(VENDOR),freescale)
+LOGO_BMP= logos/freescale.bmp
+endif
 ifeq ($(VENDOR),ronetix)
 LOGO_BMP= logos/ronetix.bmp
 endif
@@ -137,7 +145,8 @@ HOSTCPPFLAGS =	-idirafter $(SRCTREE)/include \
 		-idirafter $(OBJTREE)/include \
 	        -I $(SRCTREE)/lib/libfdt \
 		-I $(SRCTREE)/tools \
-		-DTEXT_BASE=$(TEXT_BASE) -DUSE_HOSTCC \
+		-DCONFIG_SYS_TEXT_BASE=$(CONFIG_SYS_TEXT_BASE) \
+		-DUSE_HOSTCC \
 		-D__KERNEL_STRICT_NAMES
 
 

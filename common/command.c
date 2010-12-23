@@ -108,6 +108,8 @@ cmd_tbl_t *find_cmd_tbl (const char *cmd, cmd_tbl_t *table, int table_len)
 	int len;
 	int n_found = 0;
 
+	if (!cmd)
+		return NULL;
 	/*
 	 * Some commands allow length modifiers (like "cp.b");
 	 * compare command name only until first dot.
@@ -438,5 +440,42 @@ int cmd_get_data_size(char* arg, int default_size)
 		}
 	}
 	return default_size;
+}
+#endif
+
+#if defined(CONFIG_NEEDS_MANUAL_RELOC)
+DECLARE_GLOBAL_DATA_PTR;
+
+void fixup_cmdtable(cmd_tbl_t *cmdtp, int size)
+{
+	int	i;
+
+	if (gd->reloc_off == 0)
+		return;
+
+	for (i = 0; i < size; i++) {
+		ulong addr;
+
+		addr = (ulong) (cmdtp->cmd) + gd->reloc_off;
+#if DEBUG_COMMANDS
+		printf("Command \"%s\": 0x%08lx => 0x%08lx\n",
+		       cmdtp->name, (ulong) (cmdtp->cmd), addr);
+#endif
+		cmdtp->cmd =
+			(int (*)(struct cmd_tbl_s *, int, int, char * const []))addr;
+		addr = (ulong)(cmdtp->name) + gd->reloc_off;
+		cmdtp->name = (char *)addr;
+		if (cmdtp->usage) {
+			addr = (ulong)(cmdtp->usage) + gd->reloc_off;
+			cmdtp->usage = (char *)addr;
+		}
+#ifdef	CONFIG_SYS_LONGHELP
+		if (cmdtp->help) {
+			addr = (ulong)(cmdtp->help) + gd->reloc_off;
+			cmdtp->help = (char *)addr;
+		}
+#endif
+		cmdtp++;
+	}
 }
 #endif

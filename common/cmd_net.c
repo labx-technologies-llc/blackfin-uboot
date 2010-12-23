@@ -52,6 +52,7 @@ U_BOOT_CMD(
 	"[loadAddress] [[hostIPaddr:]bootfilename]"
 );
 
+#ifdef CONFIG_CMD_RARP
 int do_rarpb (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 	return netboot_common (RARP, cmdtp, argc, argv);
@@ -62,6 +63,7 @@ U_BOOT_CMD(
 	"boot image via network using RARP/TFTP protocol",
 	"[loadAddress] [[hostIPaddr:]bootfilename]"
 );
+#endif
 
 #if defined(CONFIG_CMD_DHCP)
 int do_dhcp (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])

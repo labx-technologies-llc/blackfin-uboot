@@ -992,9 +992,6 @@ static short mmc_spi_mmc_spi_get_card_old(struct mmc_spi_dev *pdev)
 #endif
 
 
-#ifndef CONFIG_SPI_MMC_DEFAULT_BUS
-# define CONFIG_SPI_MMC_DEFAULT_BUS 0
-#endif
 #ifndef CONFIG_SPI_MMC_DEFAULT_CS
 # define CONFIG_SPI_MMC_DEFAULT_CS 1
 #endif
@@ -1058,17 +1055,12 @@ static int spi_wait_read(unsigned char *buffer, unsigned int count, void *dummy)
 static int spi_mmc_init(void)
 {
 	char *s;
-	int bus, cs, hz, mode;
+	int cs, hz, mode;
 
 	if (slave) {
 		spi_release_bus(slave);
 		spi_free_slave(slave);
 	}
-
-	if ((s = getenv("mmc_bus")))
-		bus = simple_strtoul(s, NULL, 10);
-	else
-		bus = CONFIG_SPI_MMC_DEFAULT_BUS;
 
 	if ((s = getenv("mmc_cs")))
 		cs = simple_strtoul(s, NULL, 10);
@@ -1086,7 +1078,7 @@ static int spi_mmc_init(void)
 		mode = CONFIG_SPI_MMC_DEFAULT_MODE;
 
 	printf("using spi0.%i at %i hz with mode %x\n", cs, hz, mode);
-	slave = spi_setup_slave(bus, cs, hz, mode);
+	slave = spi_setup_slave(0, cs, hz, mode);
 	if (!slave)
 		return -1;
 	spi_claim_bus(slave);

@@ -293,7 +293,7 @@ static int onenand_dump(struct mtd_info *mtd, ulong off, int only_oob)
 	addr = (loff_t) off;
 	memset(&ops, 0, sizeof(ops));
 	ops.datbuf = datbuf;
-	ops.oobbuf = oobbuf; /* must exist, but oob data will be appended to ops.datbuf */
+	ops.oobbuf = oobbuf;
 	ops.len = mtd->writesize;
 	ops.ooblen = mtd->oobsize;
 	ops.retlen = 0;
@@ -319,6 +319,8 @@ static int onenand_dump(struct mtd_info *mtd, ulong off, int only_oob)
 	}
 	puts("OOB:\n");
 	i = mtd->oobsize >> 3;
+	p = oobbuf;
+
 	while (i--) {
 		printf("\t%02x %02x %02x %02x %02x %02x %02x %02x\n",
 		       p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7]);
@@ -525,9 +527,18 @@ static cmd_tbl_t cmd_onenand_sub[] = {
 	U_BOOT_CMD_MKENT(markbad, CONFIG_SYS_MAXARGS, 0, do_onenand_markbad, "", ""),
 };
 
+#ifdef CONFIG_NEEDS_MANUAL_RELOC
+void onenand_reloc(void) {
+	fixup_cmdtable(cmd_onenand_sub, ARRAY_SIZE(cmd_onenand_sub));
+}
+#endif
+
 static int do_onenand(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
 {
 	cmd_tbl_t *c;
+
+	if (argc < 2)
+		return cmd_usage(cmdtp);
 
 	mtd = &onenand_mtd;
 

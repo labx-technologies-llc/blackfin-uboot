@@ -1,5 +1,140 @@
 #!/bin/bash
 
+# Tool mainly for U-Boot Quality Assurance: build one or more board
+# configurations with minimal verbosity, showing only warnings and
+# errors.
+#
+# There are several ways to select which boards to build.
+#
+# Traditionally, architecture names (like "powerpc"), CPU family names
+# (like "mpc83xx") or board names can be specified on the command
+# line; without any arguments, MAKEALL defaults to building all Power
+# Architecture systems (i. e. same as for "MAKEALL powerpc").
+#
+# With the introduction of the board.cfg file, it has become possible
+# to provide additional selections.  We use standard command line
+# options for this:
+#
+# -a or --arch	:	Select architecture
+# -c or --cpu	:	Select CPU family
+# -s or --soc	:	Select SoC type
+# -v or --vendor:	Select board vendor
+#
+# Selections by these options are logically ANDed; if the same option
+# is used repeatedly, such selections are ORed.  So "-v FOO -v BAR"
+# will select all configurations where the vendor is either FOO or
+# BAR.  Any additional arguments specified on the command line are
+# always build additionally.
+#
+# Examples:
+#
+# - build all Power Architecture boards:
+#
+#	MAKEALL -a powerpc
+#   or
+#	MAKEALL --arch powerpc
+#   or
+#	MAKEALL powerpc
+#
+# - build all PowerPC boards manufactured by vendor "esd":
+#
+#	MAKEALL -a powerpc -v esd
+#
+# - build all PowerPC boards manufactured either by "keymile" or
+#   "siemens":
+#
+#	MAKEALL -a powerpc -v keymile -v siemens
+#
+# - build all Freescale boards with MPC83xx CPUs, plus all 4xx boards:
+#
+#	MAKEALL -c mpc83xx -v freescale 4xx
+#
+#########################################################################
+
+SHORT_OPTS="a:c:v:s:"
+LONG_OPTS="arch:,cpu:,vendor:,soc:"
+
+# Option processing based on util-linux-2.13/getopt-parse.bash
+
+# Note that we use `"$@"' to let each command-line parameter expand to a
+# separate word. The quotes around `$@' are essential!
+# We need TEMP as the `eval set --' would nuke the return value of
+# getopt.
+TEMP=`getopt -o ${SHORT_OPTS} --long ${LONG_OPTS} \
+     -n 'MAKEALL' -- "$@"`
+
+if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
+
+# Note the quotes around `$TEMP': they are essential!
+eval set -- "$TEMP"
+
+SELECTED=''
+
+while true ; do
+	case "$1" in
+	-a|--arch)
+		# echo "Option ARCH: argument \`$2'"
+		if [ "$opt_a" ] ; then
+			opt_a="${opt_a%)} || \$2 == \"$2\")"
+		else
+			opt_a="(\$2 == \"$2\")"
+		fi
+		SELECTED='y'
+		shift 2 ;;
+	-c|--cpu)
+		# echo "Option CPU: argument \`$2'"
+		if [ "$opt_c" ] ; then
+			opt_c="${opt_c%)} || \$3 == \"$2\")"
+		else
+			opt_c="(\$3 == \"$2\")"
+		fi
+		SELECTED='y'
+		shift 2 ;;
+	-s|--soc)
+		# echo "Option SoC: argument \`$2'"
+		if [ "$opt_s" ] ; then
+			opt_s="${opt_s%)} || \$6 == \"$2\")"
+		else
+			opt_s="(\$6 == \"$2\")"
+		fi
+		SELECTED='y'
+		shift 2 ;;
+	-v|--vendor)
+		# echo "Option VENDOR: argument \`$2'"
+		if [ "$opt_v" ] ; then
+			opt_v="${opt_v%)} || \$5 == \"$2\")"
+		else
+			opt_v="(\$5 == \"$2\")"
+		fi
+		SELECTED='y'
+		shift 2 ;;
+	--)
+		shift ; break ;;
+	*)
+		echo "Internal error!" >&2 ; exit 1 ;;
+	esac
+done
+# echo "Remaining arguments:"
+# for arg do echo '--> '"\`$arg'" ; done
+
+FILTER="\$1 !~ /^#/"
+[ "$opt_a" ] && FILTER="${FILTER} && $opt_a"
+[ "$opt_c" ] && FILTER="${FILTER} && $opt_c"
+[ "$opt_s" ] && FILTER="${FILTER} && $opt_s"
+[ "$opt_v" ] && FILTER="${FILTER} && $opt_v"
+
+if [ "$SELECTED" ] ; then
+	SELECTED=$(awk '('"$FILTER"') { print $1 }' boards.cfg)
+
+	# Make sure some boards from boards.cfg are actually found
+	if [ -z "$SELECTED" ] ; then
+		echo "Error: No boards selected, invalid arguments"
+		exit 1
+	fi
+fi
+
+#########################################################################
+
 # Print statistics when we exit
 trap exit 1 2 3 15
 trap print_stats 0
@@ -52,6 +187,7 @@ boards_by_field()
 }
 boards_by_arch() { boards_by_field 2 "$@" ; }
 boards_by_cpu()  { boards_by_field 3 "$@" ; }
+boards_by_soc()  { boards_by_field 6 "$@" ; }
 
 #########################################################################
 ## MPC5xx Systems
@@ -63,122 +199,25 @@ LIST_5xx="$(boards_by_cpu mpc5xx)"
 ## MPC5xxx Systems
 #########################################################################
 
-LIST_5xxx="$(boards_by_cpu mpc5xxx)
-	digsy_mtc	\
-	EVAL5200	\
-	fo300		\
-	galaxy5200	\
-	icecube_5200	\
-	lite5200b	\
-	mcc200		\
-	MVBC_P		\
-	MVSMR		\
-	pcm030		\
-	PM520		\
-	TB5200		\
-	Total5200	\
-	Total5200_Rev2	\
-	TQM5200		\
-	TQM5200_B	\
-	TQM5200S	\
-"
+LIST_5xxx="$(boards_by_cpu mpc5xxx)"
 
 #########################################################################
 ## MPC512x Systems
 #########################################################################
 
-LIST_512x="$(boards_by_cpu mpc512x)
-	mpc5121ads	\
-"
+LIST_512x="$(boards_by_cpu mpc512x)"
 
 #########################################################################
 ## MPC8xx Systems
 #########################################################################
 
-LIST_8xx="$(boards_by_cpu mpc8xx)
-	Adder87x	\
-	AdderII		\
-	ADS860		\
-	FADS823		\
-	FADS850SAR	\
-	FADS860T	\
-	FPS850L		\
-	GEN860T		\
-	GEN860T_SC	\
-	ICU862_100MHz	\
-	IVML24		\
-	IVML24_128	\
-	IVML24_256	\
-	IVMS8		\
-	IVMS8_128	\
-	IVMS8_256	\
-	MBX		\
-	MBX860T		\
-	MPC86xADS	\
-	MPC885ADS	\
-	NETPHONE	\
-	NETTA		\
-	NETTA2		\
-	NETTA_ISDN	\
-	NETVIA		\
-	NETVIA_V2	\
-	RPXlite_DW	\
-	SPD823TS	\
-	SXNI855T	\
-	TK885D		\
-	TQM823L		\
-	TQM823L_LCD	\
-	TQM850L		\
-	TQM855L		\
-	TQM860L		\
-	TQM885D		\
-	v37		\
-"
+LIST_8xx="$(boards_by_cpu mpc8xx)"
 
 #########################################################################
 ## PPC4xx Systems
 #########################################################################
 
-LIST_4xx="$(boards_by_cpu ppc4xx)
-	acadia_nand	\
-	arches		\
-	bamboo_nand	\
-	canyonlands	\
-	canyonlands_nand \
-	CPCI405		\
-	CPCI4052	\
-	CPCI405AB	\
-	CPCI405DT	\
-	devconcenter	\
-	fx12mm		\
-	glacier		\
-	haleakala	\
-	haleakala_nand	\
-	hcu4		\
-	hcu5		\
-	intip		\
-	kilauea		\
-	kilauea_nand	\
-	mcu25		\
-	MIP405T		\
-	ml507		\
-	ml507_flash	\
-	OCRTC		\
-	ORSG		\
-	PPChameleonEVB	\
-	rainier		\
-	sequoia		\
-	sequoia_nand	\
-	v5fx30teval	\
-	v5fx30teval_flash \
-	W7OLMC		\
-	W7OLMG		\
-	walnut		\
-	xilinx-ppc440-generic \
-	xilinx-ppc440-generic_flash \
-	yellowstone	\
-	yosemite	\
-"
+LIST_4xx="$(boards_by_cpu ppc4xx)"
 
 #########################################################################
 ## MPC8220 Systems
@@ -190,146 +229,37 @@ LIST_8220="$(boards_by_cpu mpc8220)"
 ## MPC824x Systems
 #########################################################################
 
-LIST_824x="$(boards_by_cpu mpc824x)
-	CPC45		\
-	eXalion		\
-	IDS8247		\
-	linkstation_HGLAN	\
-	Sandpoint8240	\
-	Sandpoint8245	\
-"
+LIST_824x="$(boards_by_cpu mpc824x)"
 
 #########################################################################
 ## MPC8260 Systems (includes 8250, 8255 etc.)
 #########################################################################
 
-LIST_8260="$(boards_by_cpu mpc8260)
-	cogent_mpc8260	\
-	CPU86		\
-	CPU87		\
-	ep8248		\
-	ISPAN		\
-	MPC8260ADS	\
-	MPC8272ADS	\
-	PM826		\
-	PM828		\
-	Rattler8248	\
-	TQM8260_AC	\
-	TQM8260_AD	\
-	TQM8260_AE	\
-"
+LIST_8260="$(boards_by_cpu mpc8260)"
 
 #########################################################################
 ## MPC83xx Systems (includes 8349, etc.)
 #########################################################################
 
-LIST_83xx="$(boards_by_cpu mpc83xx)
-	caddy2		\
-	MPC8313ERDB_33	\
-	MPC8313ERDB_NAND_66	\
-	MPC8315ERDB	\
-	MPC8315ERDB_NAND	\
-	MPC832XEMDS	\
-	MPC832XEMDS_ATM	\
-	MPC8349ITX	\
-	MPC8349ITXGP	\
-	MPC8360EMDS	\
-	MPC8360EMDS_ATM	\
-	MPC8360ERDK_33	\
-	MPC8360ERDK_66	\
-	MPC837XEMDS	\
-	sbc8349		\
-	SIMPC8313_LP	\
-	vme8349		\
-"
-
+LIST_83xx="$(boards_by_cpu mpc83xx)"
 
 #########################################################################
 ## MPC85xx Systems (includes 8540, 8560 etc.)
 #########################################################################
 
-LIST_85xx="$(boards_by_cpu mpc85xx)
-	MPC8536DS	\
-	MPC8536DS_NAND	\
-	MPC8536DS_SDCARD	\
-	MPC8536DS_SPIFLASH	\
-	MPC8536DS_36BIT	\
-	MPC8540EVAL	\
-	MPC8541CDS	\
-	MPC8548CDS	\
-	MPC8555CDS	\
-	MPC8569MDS	\
-	MPC8569MDS_ATM	\
-	MPC8569MDS_NAND \
-	MPC8572DS	\
-	MPC8572DS_36BIT	\
-	P2020DS		\
-	P2020DS_36BIT	\
-	P1011RDB	\
-	P1011RDB_NAND	\
-	P1011RDB_SDCARD	\
-	P1011RDB_SPIFLASH	\
-	P1020RDB	\
-	P1020RDB_NAND	\
-	P1020RDB_SDCARD	\
-	P1020RDB_SPIFLASH	\
-	P2010RDB	\
-	P2010RDB_NAND	\
-	P2010RDB_SDCARD	\
-	P2010RDB_SPIFLASH	\
-	P2020RDB	\
-	P2020RDB_NAND	\
-	P2020RDB_SDCARD	\
-	P2020RDB_SPIFLASH	\
-	sbc8540		\
-	sbc8548		\
-	sbc8548_PCI_33	\
-	sbc8548_PCI_66	\
-	sbc8548_PCI_33_PCIE \
-	sbc8548_PCI_66_PCIE \
-	sbc8560		\
-	stxssa		\
-	TQM8540		\
-	TQM8541		\
-	TQM8548		\
-	TQM8548_AG	\
-	TQM8548_BE	\
-	TQM8555		\
-	TQM8560		\
-"
+LIST_85xx="$(boards_by_cpu mpc85xx)"
 
 #########################################################################
 ## MPC86xx Systems
 #########################################################################
 
-LIST_86xx="$(boards_by_cpu mpc86xx)
-	MPC8641HPCN_36BIT \
-	MPC8641HPCN	\
-"
+LIST_86xx="$(boards_by_cpu mpc86xx)"
 
 #########################################################################
 ## 74xx/7xx Systems
 #########################################################################
 
-LIST_74xx="		\
-	DB64360		\
-	DB64460		\
-	EVB64260	\
-	mpc7448hpc2	\
-	P3G4		\
-	p3m7448		\
-	PCIPPC2		\
-	PCIPPC6		\
-	ZUMA		\
-"
-
-LIST_7xx="		\
-	BAB7xx		\
-	CPCI750		\
-	ELPPC		\
-	p3m750		\
-	ppmc7xx		\
-"
+LIST_74xx_7xx="$(boards_by_cpu 74xx_7xx)"
 
 #########################################################################
 ## PowerPC groups
@@ -353,8 +283,7 @@ LIST_powerpc="		\
 	${LIST_85xx}	\
 	${LIST_86xx}	\
 	${LIST_4xx}	\
-	${LIST_74xx}	\
-	${LIST_7xx}	\
+	${LIST_74xx_7xx}\
 "
 
 # Alias "ppc" -> "powerpc" to not break compatibility with older scripts
@@ -489,7 +418,10 @@ LIST_ARM11="			\
 #########################################################################
 LIST_ARMV7="		\
 	am3517_evm		\
+	ca9x4_ct_vxp		\
 	devkit8000		\
+	igep0020		\
+	igep0030		\
 	mx51evk			\
 	omap3_beagle		\
 	omap3_overo		\
@@ -508,11 +440,8 @@ LIST_ARMV7="		\
 ## AT91 Systems
 #########################################################################
 
-LIST_at91="			\
-	afeb9260		\
-	at91cap9adk		\
-	at91rm9200dk		\
-	at91rm9200ek		\
+LIST_at91="$(boards_by_soc at91)\
+	$(boards_by_soc at91rm9200)\
 	at91sam9260ek		\
 	at91sam9261ek		\
 	at91sam9263ek		\
@@ -520,19 +449,9 @@ LIST_at91="			\
 	at91sam9g20ek		\
 	at91sam9m10g45ek	\
 	at91sam9rlek		\
-	cmc_pu2			\
 	CPUAT91			\
 	CPU9260			\
 	CPU9G20			\
-	csb637			\
-	eb_cpux9k2		\
-	kb9202			\
-	meesc			\
-	mp2usb			\
-	m501sk			\
-	otc570			\
-	pm9261			\
-	pm9263			\
 	pm9g45			\
 	SBC35_A9G20		\
 	TNY_A9260		\
@@ -543,12 +462,7 @@ LIST_at91="			\
 ## Xscale Systems
 #########################################################################
 
-LIST_pxa="$(boards_by_cpu pxa)
-	polaris		\
-	trizepsiv	\
-	vpac270_nor	\
-	vpac270_onenand	\
-"
+LIST_pxa="$(boards_by_cpu pxa)"
 
 LIST_ixp="$(boards_by_cpu ixp)
 	pdnb3		\
@@ -679,9 +593,7 @@ LIST_avr32="$(boards_by_arch avr32)"
 ## Blackfin Systems
 #########################################################################
 
-LIST_blackfin="$(boards_by_arch blackfin)
-	bf527-ezkit-v2
-"
+LIST_blackfin="$(boards_by_arch blackfin)"
 
 board_cpu() {
 	awk '$1 == "CONFIG_BFIN_CPU" { print $NF }' board/$1/config.mk 2>/dev/null
@@ -717,31 +629,11 @@ bmodes() {
 ## SH Systems
 #########################################################################
 
-LIST_sh2="		\
-	rsk7203		\
-"
-LIST_sh3="		\
-	mpr2		\
-	ms7720se	\
-"
+LIST_sh2="$(boards_by_cpu sh2)"
+LIST_sh3="$(boards_by_cpu sh3)"
+LIST_sh4="$(boards_by_cpu sh4)"
 
-LIST_sh4="		\
-	ms7750se	\
-	ms7722se	\
-	MigoR		\
-	r7780mp		\
-	r2dplus		\
-	sh7763rdp	\
-	sh7785lcr	\
-	ap325rxa	\
-	espt		\
-"
-
-LIST_sh="		\
-	${LIST_sh2}	\
-	${LIST_sh3}	\
-	${LIST_sh4}	\
-"
+LIST_sh="$(boards_by_arch sh)"
 
 #########################################################################
 ## SPARC Systems
@@ -856,7 +748,8 @@ print_stats() {
 
 #-----------------------------------------------------------------------
 
-#----- for now, just run PowerPC by default -----
+# Build target groups selected by options, plus any command line args
+set -- ${SELECTED} "$@"
+# run PowerPC by default
 [ $# = 0 ] && set -- blackfin
-
 build_targets "$@"

@@ -54,7 +54,7 @@ static void nand_init_chip(struct mtd_info *mtd, struct nand_chip *nand,
 		if (nand_scan(mtd, maxchips) == 0) {
 			if (!mtd->name)
 				mtd->name = (char *)default_nand_name;
-#ifndef CONFIG_RELOC_FIXUP_WORKS
+#ifdef CONFIG_NEEDS_MANUAL_RELOC
 			else
 				mtd->name += gd->reloc_off;
 #endif
@@ -85,13 +85,6 @@ void nand_init(void)
 {
 	int i;
 	unsigned int size = 0;
-	static uint8_t initialized;
-
-	if (initialized)
-		return;
-	initialized = 1;
-	puts("NAND:  ");
-
 	for (i = 0; i < CONFIG_SYS_MAX_NAND_DEVICE; i++) {
 		nand_init_chip(&nand_info[i], &nand_chip[i], base_address[i]);
 		size += nand_info[i].size / 1024;

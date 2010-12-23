@@ -135,4 +135,7 @@ extern int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[]);
 #define U_BOOT_CMD(name,maxargs,rep,cmd,usage,help) \
 	U_BOOT_CMD_COMPLETE(name,maxargs,rep,cmd,usage,help,NULL)
 
+#if defined(CONFIG_NEEDS_MANUAL_RELOC)
+void fixup_cmdtable(cmd_tbl_t *cmdtp, int size);
+#endif
 #endif	/* __COMMAND_H */

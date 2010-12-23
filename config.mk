@@ -12,7 +12,7 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
@@ -53,7 +53,7 @@ HOSTSTRIP	= strip
 #
 # Mac OS X / Darwin's C preprocessor is Apple specific.  It
 # generates numerous errors and warnings.  We want to bypass it
-# and use GNU C's cpp.  To do this we pass the -traditional-cpp
+# and use GNU C's cpp.	To do this we pass the -traditional-cpp
 # option to the compiler.  Note that the -traditional-cpp flag
 # DOES NOT have the same semantics as GNU C's flag, all it does
 # is invoke the GNU preprocessor in stock ANSI/ISO C fashion.
@@ -166,8 +166,8 @@ gccincdir := $(shell $(CC) -print-file-name=include)
 
 CPPFLAGS := $(DBGFLAGS) $(OPTFLAGS) $(RELFLAGS)		\
 	-D__KERNEL__
-ifneq ($(TEXT_BASE),)
-CPPFLAGS += -DTEXT_BASE=$(TEXT_BASE)
+ifneq ($(CONFIG_SYS_TEXT_BASE),)
+CPPFLAGS += -DCONFIG_SYS_TEXT_BASE=$(CONFIG_SYS_TEXT_BASE)
 endif
 
 ifneq ($(RESET_VECTOR_ADDRESS),)
@@ -205,8 +205,8 @@ endif
 AFLAGS := $(AFLAGS_DEBUG) -D__ASSEMBLY__ $(CPPFLAGS)
 
 LDFLAGS += -Bstatic -T $(obj)u-boot.lds $(PLATFORM_LDFLAGS)
-ifneq ($(TEXT_BASE),)
-LDFLAGS += -Ttext $(TEXT_BASE)
+ifneq ($(CONFIG_SYS_TEXT_BASE),)
+LDFLAGS += -Ttext $(CONFIG_SYS_TEXT_BASE)
 endif
 
 # Location of a usable BFD library, where we define "usable" as
@@ -236,7 +236,7 @@ endif
 
 export	HOSTCC HOSTCFLAGS HOSTLDFLAGS PEDCFLAGS HOSTSTRIP CROSS_COMPILE \
 	AS LD CC CPP AR NM STRIP OBJCOPY OBJDUMP MAKE
-export	TEXT_BASE PLATFORM_CPPFLAGS PLATFORM_RELFLAGS CPPFLAGS CFLAGS AFLAGS
+export	CONFIG_SYS_TEXT_BASE PLATFORM_CPPFLAGS PLATFORM_RELFLAGS CPPFLAGS CFLAGS AFLAGS
 
 #########################################################################
 
@@ -254,5 +254,12 @@ $(obj)%.i:	%.c
 	$(CPP) $(ALL_CFLAGS) -o $@ $< -c
 $(obj)%.s:	%.c
 	$(CC)  $(ALL_CFLAGS) -o $@ $< -c -S
+
+#########################################################################
+
+# If the list of objects to link is empty, just create an empty built-in.o
+cmd_link_o_target = $(if $(strip $1),\
+		      $(LD) -r -o $@ $1 ,\
+		      rm -f $@; $(AR) rcs $@ )
 
 #########################################################################
