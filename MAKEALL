@@ -54,6 +54,10 @@
 SHORT_OPTS="a:c:v:s:"
 LONG_OPTS="arch:,cpu:,vendor:,soc:"
 
+no_cpu=false
+no_boot=false
+SHORT_OPTS="${SHORT_OPTS}CBq"
+
 # Option processing based on util-linux-2.13/getopt-parse.bash
 
 # Note that we use `"$@"' to let each command-line parameter expand to a
@@ -108,6 +112,9 @@ while true ; do
 		fi
 		SELECTED='y'
 		shift 2 ;;
+	-C) no_cpu=true; shift;;
+	-B) no_boot=true; shift;;
+	-q) no_cpu=true no_boot=true; shift;;
 	--)
 		shift ; break ;;
 	*)
@@ -596,7 +603,7 @@ LIST_avr32="$(boards_by_arch avr32)"
 LIST_blackfin="$(boards_by_arch blackfin)"
 
 board_cpu() {
-	awk '$1 == "CONFIG_BFIN_CPU" { print $NF }' board/$1/config.mk 2>/dev/null
+	awk '$2 == "CONFIG_BFIN_CPU" { print $3 }' include/configs/$1.h 2>/dev/null
 }
 procs() {
 	${no_cpu} && echo default && return
@@ -608,9 +615,10 @@ procs() {
 		*bf53[89]*)     procs=bf53{8,9};;
 		*bf54[24789]*)  procs=bf54{2,4,7,9,8};;
 		*bf561*)        procs=bf561;;
+		"")             exit 1;;
 		*)              proc=$(board_cpu "$@")
 		                ${no_cpu} && echo ${proc%-*} && return
-		                procs=$(procs ${proc}) ;;
+		                procs=$(procs "${proc}") ;;
 	esac
 	bash -c "echo ${procs}"
 }
@@ -643,38 +651,15 @@ LIST_sparc="$(boards_by_arch sparc)"
 
 #-----------------------------------------------------------------------
 
-usage() {
-	cat <<-EOF
-	Usage: MAKEALL [options] [targets]
-
-	Options:
-	  -C  skip cpu variants
-	  -B  skip boot variants
-	  -q  quick -- same as -C -B
-	EOF
-	exit 1
+set_bmode() {
+	bmode=$(echo $1 | LC_ALL=C tr '[:lower:]' '[:upper:]')
+	sed -i "/^#define[[:space:]]*CONFIG_BFIN_BOOT_MODE/s:BFIN_BOOT_[^[:space:]]*$:BFIN_BOOT_${bmode}:" include/configs/$target.h
 }
-
-no_cpu=false
-no_boot=false
-while [ -n "$1" ] ; do
-	case $1 in
-		-C) no_cpu=true;;
-		-B) no_boot=true;;
-		-q) no_cpu=true no_boot=true;;
-		-*) usage;;
-		*)  break;;
-	esac
-	shift
-done
-
-#-----------------------------------------------------------------------
 
 build_target() {
 	target=$1
 	cpu=$2
 	bmode=$3
-	bmodeU=$(echo ${bmode} | LC_ALL=C tr '[:lower:]' '[:upper:]')
 
 	echo "Testing build for $target ($cpu/$bmode) ..."
 
@@ -687,7 +672,7 @@ build_target() {
 	[ -n "${CPU}" ] && FLAGS="${FLAGS} CONFIG_BFIN_CPU=${CPU}"
 
 	if ! ${no_boot} && [ -e include/configs/$target.h ] ; then
-		sed -i "/^#define[[:space:]]*CONFIG_BFIN_BOOT_MODE/s:BFIN_BOOT_[^[:space:]]*$:BFIN_BOOT_${bmodeU}:" include/configs/$target.h
+		set_bmode ${bmode}
 	fi
 
 	${MAKE} ${FLAGS} -s ${target}_config >/dev/null
