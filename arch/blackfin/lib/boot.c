@@ -70,19 +70,3 @@ int do_bootm_linux(int flag, int argc, char * const argv[], bootm_headers_t *ima
 
 	return 1;
 }
-
-unsigned long do_go_exec(ulong (*entry)(int, char *[]), int argc, char *argv[])
-{
-	int d = dcache_status();
-	int i = icache_status();
-
-	dcache_disable();
-	icache_disable();
-
-	int ret = entry(argc, argv);
-
-	if (i) icache_enable();
-	if (d) dcache_enable();
-
-	return ret;
-}
