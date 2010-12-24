@@ -84,6 +84,11 @@
 #define CONFIG_ENV_OFFSET     0x00004000 /* (CONFIG_ENV_ADDR - CONFIG_FLASH_BASE) */
 
 #define ENV_IS_EMBEDDED
+#define LDS_BOARD_TEXT \
+	arch/blackfin/lib/libblackfin.o (.text*); \
+	arch/blackfin/cpu/libblackfin.o (.text*); \
+	. = DEFINED(env_offset) ? env_offset : .; \
+	common/env_embedded.o (.text*);
 
 /*
  * Misc Settings
@@ -105,7 +110,7 @@
 /* Convenience commands to update Linux in NOR flash */
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"fetchme=tftpboot 0x01000000 uImage;" \
-		"iminfo\0"\
+		"iminfo\0" \
 	"flashme=protect off 0x20030000 0x2003ffff;" \
 		"erase 0x20030000 0x202effff;" \
 		"cp.b 0x01000000 0x20030000 0x2c0000\0" \
