@@ -23,9 +23,6 @@
 # MA 02111-1307 USA
 #
 
-# This is not actually used for Blackfin boards so do not change it
-#TEXT_BASE = do-not-use-me
-
 CONFIG_BFIN_CPU = bf525-0.2
 
 # Set some default LDR flags based on boot mode.
