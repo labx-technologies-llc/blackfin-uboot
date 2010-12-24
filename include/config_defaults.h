@@ -18,6 +18,4 @@
 #define CONFIG_GZIP 1
 #define CONFIG_ZLIB 1
 
-#define CONFIG_NAND_MAYBE_EARLY_INIT 1
-
 #endif

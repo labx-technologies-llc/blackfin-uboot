@@ -592,10 +592,10 @@ void board_init_r (gd_t *id, ulong dest_addr)
 	doc_init ();
 #endif
 
-#if defined(CONFIG_CMD_NAND) && \
-    (defined(CONFIG_NAND_MAYBE_EARLY_INIT) || defined(CONFIG_NAND_EARLY_INIT))
+#if defined(CONFIG_CMD_NAND)
 	WATCHDOG_RESET ();
-	nand_early_init();
+	puts ("NAND:  ");
+	nand_init();		/* go init the NAND */
 #endif
 
 #ifdef CONFIG_BITBANGMII

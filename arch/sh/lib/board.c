@@ -51,8 +51,7 @@ static int sh_flash_init(void)
 	return 0;
 }
 
-#if defined(CONFIG_CMD_NAND) && \
-    (defined(CONFIG_NAND_MAYBE_EARLY_INIT) || defined(CONFIG_NAND_EARLY_INIT))
+#if defined(CONFIG_CMD_NAND)
 # include <nand.h>
 # define INIT_FUNC_NAND_INIT nand_init,
 #else

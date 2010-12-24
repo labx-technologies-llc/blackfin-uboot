@@ -77,10 +77,6 @@ static void nand_init_chip(struct mtd_info *mtd, struct nand_chip *nand,
 
 }
 
-#if defined(CONFIG_NAND_MAYBE_EARLY_INIT) && !defined(CONFIG_NAND_EARLY_INIT)
-# warning Read CONFIG_NAND_MAYBE_EARLY_INIT in doc/feature-removal-schedule.txt
-#endif
-
 void nand_init(void)
 {
 	int i;
