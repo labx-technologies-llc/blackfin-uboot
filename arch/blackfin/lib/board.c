@@ -248,7 +248,7 @@ void board_init_f(ulong bootflag)
 	memset((void *)bd, 0, GENERATED_BD_INFO_SIZE);
 
 	bd->bi_r_version = version_string;
-	bd->bi_cpu = BFIN_CPU;
+	bd->bi_cpu = MK_STR(CONFIG_BFIN_CPU);
 	bd->bi_board_name = BFIN_BOARD_NAME;
 	bd->bi_vco = get_vco();
 	bd->bi_cclk = get_cclk();
