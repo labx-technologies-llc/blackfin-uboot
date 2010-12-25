@@ -241,6 +241,8 @@ static void mmc_spi_set_ios(struct mmc *mmc)
 static int mmc_spi_init_p(struct mmc *mmc)
 {
 	struct spi_slave *spi = mmc->priv;
+	mmc->clock = 0;
+	spi_set_speed(spi, MMC_SPI_MIN_CLOCK);
 	spi_claim_bus(spi);
 	/* cs deactivated for 100+ clock */
 	spi_xfer(spi, 18 * 8, NULL, NULL, 0);
