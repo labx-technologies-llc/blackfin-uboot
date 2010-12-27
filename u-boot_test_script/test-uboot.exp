@@ -4468,41 +4468,17 @@ if { $TEST_MMC } {
     set mmc_interface mmc
     set mmc_dev 0
 
-    if { $board_type == "BF537-STAMP" } {
-        set timeout 10
-        send "set mmc_cs 4; set mmc_hz 20000000\r"
-        expect -re $UBOOT_PROMPT
-
-        send "save\r"
-        expect -re $UBOOT_PROMPT
-
-        send "printenv mmc_cs mmc_hz\r"
-        while 1 {
-            expect {
-                -re "=.*=.*$UBOOT_PROMPT" {
-                    set mmc_result $TEST_PASS
-                    break
-                }
-                timeout {
-                    send_user "ERROR: set mmc default CS and HZ failed\n"
-                    break
-                }
-            }
-        }
-    }
-
     set timeout 5
     if { $board_type == "BF537-STAMP" } {
-        send "mmc init\r"
+        send "mmc_spi 4\r"
         while 1 {
             expect {
-                -re "mmc1 is available.*$UBOOT_PROMPT" {
+                -re "MMC_SPI.*$UBOOT_PROMPT" {
                     set mmc_result $TEST_PASS
                     break
                 }
                 timeout {
-                    send_user "ERROR: init mmc failed\n"
-                    recover
+                    send_user "ERROR: setup mmc_spi device failed\n"
                     break
                 }
             }
@@ -4517,6 +4493,24 @@ if { $TEST_MMC } {
                 }
                 timeout {
                     send_user "ERROR: init mmc failed\n"
+                    recover
+                    break
+                }
+            }
+        }
+    }
+
+    if {$mmc_result == $TEST_PASS} {
+        set timeout 5
+        send "mmcinfo\r"
+        while 1 {
+            expect {
+                -re "Capacity.*$UBOOT_PROMPT" {
+                    set mmc_result $TEST_PASS
+                    break
+                }
+                timeout {
+                    set mmc_result $TEST_FAIL
                     recover
                     break
                 }
