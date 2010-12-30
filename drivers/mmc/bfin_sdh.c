@@ -114,14 +114,15 @@ static int sdh_setup_data(struct mmc *mmc, struct mmc_data *data)
 	u16 data_ctl = 0;
 	u16 dma_cfg = 0;
 	int ret = 0;
+	unsigned long data_size = data->blocksize * data->blocks;
 
 	/* Don't support write yet. */
 	if (data->flags & MMC_DATA_WRITE)
 		return UNUSABLE_ERR;
 	blackfin_dcache_flush_invalidate_range(data->dest,
-			data->dest + data->blocksize);
+			data->dest + data_size);
 	SSYNC();
-	data_ctl |= ((ffs(data->blocksize) - 1) << 4);
+	data_ctl |= ((ffs(data_size) - 1) << 4);
 	data_ctl |= DTX_DIR;
 	bfin_write_SDH_DATA_CTL(data_ctl);
 	SSYNC();
@@ -131,11 +132,11 @@ static int sdh_setup_data(struct mmc *mmc, struct mmc_data *data)
 	SSYNC();
 	/* configure DMA */
 	bfin_write_DMA_START_ADDR(data->dest);
-	bfin_write_DMA_X_COUNT(data->blocksize / 4);
+	bfin_write_DMA_X_COUNT(data_size / 4);
 	bfin_write_DMA_X_MODIFY(4);
 	bfin_write_DMA_CONFIG(dma_cfg);
 	SSYNC();
-	bfin_write_SDH_DATA_LGTH(data->blocksize);
+	bfin_write_SDH_DATA_LGTH(data_size);
 	SSYNC();
 	/* kick off transfer */
 	bfin_write_SDH_DATA_CTL(bfin_read_SDH_DATA_CTL() | DTX_DMA_E | DTX_E);
