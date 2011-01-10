@@ -128,7 +128,7 @@ static int sdh_setup_data(struct mmc *mmc, struct mmc_data *data)
 	SSYNC();
 	dma_cfg = WDSIZE_32 | RESTART | WNR | DMAEN;
 
-	bfin_write_SDH_DATA_TIMER(0xFFFFFFFF);
+	bfin_write_SDH_DATA_TIMER(-1);
 	SSYNC();
 	/* configure DMA */
 	bfin_write_DMA_START_ADDR(data->dest);
