@@ -103,6 +103,7 @@ cd ${uboot}
 
 allboards=""
 
+buildit bf506f-ezkit para spi_master uart
 buildit bf518f-ezbrd para spi_master uart
 buildit bf526-ezbrd nand para spi_master uart
 buildit bf527-ezkit nand para spi_master uart
