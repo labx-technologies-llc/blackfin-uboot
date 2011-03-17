@@ -10,5 +10,8 @@
 #define _CONFIG_CMD_DEFAULTS_H_
 
 #define CONFIG_CMD_BOOTM 1
+#define CONFIG_CMD_EXPORTENV 1
+#define CONFIG_CMD_GO 1
+#define CONFIG_CMD_IMPORTENV 1
 
 #endif
