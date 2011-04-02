@@ -114,14 +114,6 @@ buildit bf538f-ezkit bypass para
 buildit bf537-stamp bypass para spi_master uart
 buildit bf548-ezkit nand para spi_master uart
 buildit bf561-ezkit bypass para
-too_big=$(find ../ -maxdepth 1 -size +256k \
-	'(' '!' -name '*.tar.bz2' -a '!' -name '*.elf' ')')
-if [ -n "${too_big}" ] ; then
-	echo " *** WARNING *** "
-	echo " These files exceed 256KB:"
-	echo "${too_big}"
-	echo " *** WARNING *** "
-fi
 
 buildit cm-bf527 para uart
 buildit cm-bf533 bypass para
