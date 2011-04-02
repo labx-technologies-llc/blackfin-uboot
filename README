@@ -319,6 +319,11 @@ The following options need to be configured:
 			CONFIG_SYS_PQ2FADS	- PQ2FADS-ZU or PQ2FADS-VR
 			CONFIG_SYS_8272ADS	- MPC8272ADS
 
+- Marvell Family Member
+		CONFIG_SYS_MVFS		- define it if you want to enable
+					  multiple fs option at one time
+					  for marvell soc family
+
 - MPC824X Family Member (if CONFIG_MPC824X is defined)
 		Define exactly one of
 		CONFIG_MPC8240, CONFIG_MPC8245
@@ -679,7 +684,7 @@ The following options need to be configured:
 					  (requires CONFIG_CMD_I2C)
 		CONFIG_CMD_SETGETDCR	  Support for DCR Register access
 					  (4xx only)
-		CONFIG_CMD_SHA1		  print sha1 memory digest
+		CONFIG_CMD_SHA1SUM	  print sha1 memory digest
 					  (requires CONFIG_CMD_MEMORY)
 		CONFIG_CMD_SOURCE	  "source" command Support
 		CONFIG_CMD_SPI		* SPI serial bus support
@@ -749,6 +754,10 @@ The following options need to be configured:
 - GPIO Support:
 		CONFIG_PCA953X		- use NXP's PCA953X series I2C GPIO
 		CONFIG_PCA953X_INFO	- enable pca953x info command
+
+		The CONFIG_SYS_I2C_PCA953X_WIDTH option specifies a list of
+		chip-ngpio pairs that tell the PCA953X driver the number of
+		pins supported by a particular chip.
 
 		Note that if the GPIO device uses I2C, then the I2C interface
 		must also be configured. See I2C Support, below.
@@ -865,6 +874,18 @@ The following options need to be configured:
 			Define this to use i/o functions instead of macros
 			(some hardware wont work with macros)
 
+		CONFIG_FTGMAC100
+		Support for Faraday's FTGMAC100 Gigabit SoC Ethernet
+
+			CONFIG_FTGMAC100_EGIGA
+			Define this to use GE link update with gigabit PHY.
+			Define this if FTGMAC100 is connected to gigabit PHY.
+			If your system has 10/100 PHY only, it might not occur
+			wrong behavior. Because PHY usually return timeout or
+			useless data when polling gigabit status and gigabit
+			control registers. This behavior won't affect the
+			correctnessof 10/100 link speed update.
+
 		CONFIG_SMC911X
 		Support for SMSC's LAN911x and LAN921x chips
 
@@ -879,6 +900,18 @@ The following options need to be configured:
 			Define this if data bus is 16 bits. If your processor
 			automatically converts one 32 bit word to two 16 bit
 			words you may also try CONFIG_SMC911X_32_BIT.
+
+		CONFIG_SH_ETHER
+		Support for Renesas on-chip Ethernet controller
+
+			CONFIG_SH_ETHER_USE_PORT
+			Define the number of ports to be used
+
+			CONFIG_SH_ETHER_PHY_ADDR
+			Define the ETH PHY's address
+
+			CONFIG_SH_ETHER_CACHE_WRITEBACK
+			If this option is set, the driver enables cache flush.
 
 - USB Support:
 		At the moment only the UHCI host controller is
@@ -1635,6 +1668,11 @@ The following options need to be configured:
 		Enables SPI driver (so far only tested with
 		SPI EEPROM, also an instance works with Crystal A/D and
 		D/As on the SACSng board)
+
+		CONFIG_SH_SPI
+
+		Enables the driver for SPI controller on SuperH. Currently
+		only SH7757 is supported.
 
 		CONFIG_SPI_X
 
@@ -2779,6 +2817,24 @@ Low Level (hardware related) configuration options:
 - CONFIG_PCI_DISABLE_PCIE:
 		Disable PCI-Express on systems where it is supported but not
 		required.
+
+- CONFIG_SYS_SRIO:
+		Chip has SRIO or not
+
+- CONFIG_SRIO1:
+		Board has SRIO 1 port available
+
+- CONFIG_SRIO2:
+		Board has SRIO 2 port available
+
+- CONFIG_SYS_SRIOn_MEM_VIRT:
+		Virtual Address of SRIO port 'n' memory region
+
+- CONFIG_SYS_SRIOn_MEM_PHYS:
+		Physical Address of SRIO port 'n' memory region
+
+- CONFIG_SYS_SRIOn_MEM_SIZE:
+		Size of SRIO port 'n' memory region
 
 - CONFIG_SPD_EEPROM
 		Get DDR timing information from an I2C EEPROM. Common

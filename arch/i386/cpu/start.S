@@ -1,7 +1,7 @@
 /*
  *  U-boot - i386 Startup Code
  *
- *  Copyright (c) 2002	Omicron Ceti AB, Daniel Engstrï¿½m <denaiel@omicron.se>
+ *  Copyright (c) 2002	Omicron Ceti AB, Daniel Engström <denaiel@omicron.se>
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -26,6 +26,7 @@
 #include <config.h>
 #include <version.h>
 #include <asm/global_data.h>
+#include <asm/processor-flags.h>
 
 
 .section .text
@@ -46,7 +47,7 @@ _i386boot_start:
 
 	/* Turn of cache (this might require a 486-class CPU) */
 	movl	%cr0, %eax
-	orl	$0x60000000, %eax
+	orl	$(X86_CR0_NW | X86_CR0_CD), %eax
 	movl	%eax, %cr0
 	wbinvd
 
@@ -66,78 +67,68 @@ _start:
 	/* Clear the interupt vectors */
 	lidt	blank_idt_ptr
 
-	/* Skip low-level initialization if not starting from cold-reset */
-	movl	%ebx, %ecx
-	andl	$GD_FLG_COLD_BOOT, %ecx
-	jz	skip_mem_init
-
 	/* Early platform init (setup gpio, etc ) */
 	jmp	early_board_init
 .globl early_board_init_ret
 early_board_init_ret:
 
-	/* size memory */
-	jmp	mem_init
-.globl mem_init_ret
-mem_init_ret:
+	/* Initialise Cache-As-RAM */
+	jmp	car_init
+.globl car_init_ret
+car_init_ret:
+	/*
+	 * We now have CONFIG_SYS_CAR_SIZE bytes of Cache-As-RAM (or SRAM,
+	 * or fully initialised SDRAM - we really don't care which)
+	 * starting at CONFIG_SYS_CAR_ADDR to be used as a temporary stack
+	 */
+	movl	$CONFIG_SYS_INIT_SP_ADDR, %esp
+	movl	$CONFIG_SYS_INIT_GD_ADDR, %ebp
 
-skip_mem_init:
-	/* fetch memory size (into %eax) */
-	jmp	get_mem_size
-.globl get_mem_size_ret
-get_mem_size_ret:
+	/* Set Boot Flags in Global Data */
+	movl	%ebx, (GD_FLAGS * 4)(%ebp)
 
-#if CONFIG_SYS_SDRAM_ECC_ENABLE
-	/* Skip ECC initialization if not starting from cold-reset */
-	movl	%ebx, %ecx
-	andl	$GD_FLG_COLD_BOOT, %ecx
-	jz	init_ecc_ret
-	jmp	init_ecc
-
-.globl init_ecc_ret
-init_ecc_ret:
-#endif
-
-	/* Check we have enough memory for stack */
-	movl	$CONFIG_SYS_STACK_SIZE, %ecx
-	cmpl	%ecx, %eax
-	jb	die
-mem_ok:
-	/* Set stack pointer to upper memory limit*/
-	movl	%eax, %esp
-
-	/* Test the stack */
-	pushl	$0
-	popl	%ecx
-	cmpl	$0, %ecx
-	jne	die
-	push	$0x55aa55aa
-	popl	%ecx
-	cmpl	$0x55aa55aa, %ecx
-	jne	die
-
-	wbinvd
-
-	/* Determine our load offset */
+	/* Determine our load offset (and put in Global Data) */
 	call	1f
 1:	popl	%ecx
 	subl	$1b, %ecx
+	movl	%ecx, (GD_LOAD_OFF * 4)(%ebp)
 
-	/* Set the upper memory limit parameter */
-	subl	$CONFIG_SYS_STACK_SIZE, %eax
-
-	/* Reserve space for global data */
-	subl	$(GD_SIZE * 4), %eax
-
-	/* %eax points to the global data structure */
-	movl	%esp, (GD_RAM_SIZE * 4)(%eax)
-	movl	%ebx, (GD_FLAGS * 4)(%eax)
-	movl	%ecx, (GD_LOAD_OFF * 4)(%eax)
+	/* Set parameter to board_init_f() to boot flags */
+	movl	(GD_FLAGS * 4)(%ebp), %eax
 
 	call	board_init_f	/* Enter, U-boot! */
 
 	/* indicate (lack of) progress */
 	movw	$0x85, %ax
+	jmp	die
+
+.globl relocate_code
+.type relocate_code, @function
+relocate_code:
+	/*
+	 * SDRAM has been initialised, U-Boot code has been copied into
+	 * RAM, BSS has been cleared and relocation adjustments have been
+	 * made. It is now time to jump into the in-RAM copy of U-Boot
+	 *
+	 * %eax = Address of top of stack
+	 * %edx = Address of Global Data
+	 * %ecx = Base address of in-RAM copy of U-Boot
+	 */
+
+	/* Setup stack in RAM */
+	movl	%eax, %esp
+
+	/* Setup call address of in-RAM copy of board_init_r() */
+	movl	$board_init_r, %ebp
+	addl	(GD_RELOC_OFF * 4)(%edx), %ebp
+
+	/* Setup parameters to board_init_r() */
+	movl	%edx, %eax
+	movl	%ecx, %edx
+
+	/* Jump to in-RAM copy of board_init_r() */
+	call	*%ebp
+
 die:	hlt
 	jmp	die
 	hlt

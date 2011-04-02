@@ -1,5 +1,5 @@
 /*
- * Copyright 2009-2010 Freescale Semiconductor, Inc.
+ * Copyright 2009-2011 Freescale Semiconductor, Inc.
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -57,15 +57,21 @@
 #ifdef CONFIG_SDCARD
 #define CONFIG_RAMBOOT_SDCARD		1
 #define CONFIG_SYS_TEXT_BASE		0xf8f80000
+#define CONFIG_RESET_VECTOR_ADDRESS	0xf8fffffc
 #endif
 
 #ifdef CONFIG_SPIFLASH
 #define CONFIG_RAMBOOT_SPIFLASH		1
 #define CONFIG_SYS_TEXT_BASE		0xf8f80000
+#define CONFIG_RESET_VECTOR_ADDRESS	0xf8fffffc
 #endif
 
 #ifndef CONFIG_SYS_TEXT_BASE
 #define CONFIG_SYS_TEXT_BASE		0xeff80000
+#endif
+
+#ifndef CONFIG_RESET_VECTOR_ADDRESS
+#define CONFIG_RESET_VECTOR_ADDRESS	0xeffffffc
 #endif
 
 #ifndef CONFIG_SYS_MONITOR_BASE
@@ -77,17 +83,23 @@
 #define CONFIG_E500		1	/* BOOKE e500 family */
 #define CONFIG_MPC85xx		1	/* MPC8540/60/55/41/48/P1020/P2020,etc*/
 #define CONFIG_FSL_ELBC		1	/* Enable eLBC Support */
+
 #define CONFIG_PCI		1	/* Enable PCI/PCIE */
+#if defined(CONFIG_PCI)
 #define CONFIG_PCIE1		1	/* PCIE controler 1 (slot 1) */
 #define CONFIG_PCIE2		1	/* PCIE controler 2 (slot 2) */
 #define CONFIG_FSL_PCI_INIT	1	/* Use common FSL init code */
 #define CONFIG_FSL_PCIE_RESET	1	/* need PCIe reset errata */
 #define CONFIG_SYS_PCI_64BIT	1	/* enable 64-bit PCI resources */
+#endif /* #if defined(CONFIG_PCI) */
 #define CONFIG_FSL_LAW		1	/* Use common FSL init code */
 #define CONFIG_TSEC_ENET		/* tsec ethernet support */
 #define CONFIG_ENV_OVERWRITE
 
+#if defined(CONFIG_PCI)
 #define CONFIG_E1000		1	/*  E1000 pci Ethernet card*/
+#endif
+
 #ifndef __ASSEMBLY__
 extern unsigned long get_board_sys_clk(unsigned long dummy);
 #endif
@@ -146,7 +158,6 @@ extern unsigned long get_board_sys_clk(unsigned long dummy);
 #define CONFIG_FSL_DDR2
 #undef CONFIG_FSL_DDR_INTERACTIVE
 #undef CONFIG_SPD_EEPROM		/* Use SPD EEPROM for DDR setup */
-#undef CONFIG_DDR_DLL
 
 #define CONFIG_MEM_INIT_VALUE	0xDeadBeef
 
@@ -166,8 +177,8 @@ extern unsigned long get_board_sys_clk(unsigned long dummy);
  * Memory map
  *
  * 0x0000_0000	0x3fff_ffff	DDR			1G cacheablen
- * 0xa000_0000	0xbfff_ffff	PCI Express Mem		1G non-cacheable
- * 0xffc2_0000	0xffc5_ffff	PCI IO range		256K non-cacheable
+ * 0x8000_0000  0xbfff_ffff	PCI Express Mem		1G non-cacheable
+ * 0xffc0_0000  0xffc3_ffff	PCI IO range		256k non-cacheable
  *
  * Localbus cacheable (TBD)
  * 0xXXXX_XXXX	0xXXXX_XXXX	SRAM			YZ M Cacheable
@@ -333,7 +344,6 @@ extern unsigned long get_board_sys_clk(unsigned long dummy);
 #define CONFIG_I2C_MULTI_BUS
 #define CONFIG_I2C_CMD_TREE
 #define CONFIG_SYS_I2C_SPEED		400000	/* I2C speed and slave address*/
-#define CONFIG_SYS_I2C_EEPROM_ADDR	0x57
 #define CONFIG_SYS_I2C_SLAVE		0x7F
 #define CONFIG_SYS_I2C_NOPROBES	{{0,0x29}}	/* Don't probe these addrs */
 #define CONFIG_SYS_I2C_OFFSET		0x3000
@@ -346,7 +356,7 @@ extern unsigned long get_board_sys_clk(unsigned long dummy);
 #ifdef CONFIG_ID_EEPROM
 #define CONFIG_SYS_I2C_EEPROM_NXID
 #endif
-#define CONFIG_SYS_I2C_EEPROM_ADDR	0x57
+#define CONFIG_SYS_I2C_EEPROM_ADDR	0x52
 #define CONFIG_SYS_I2C_EEPROM_ADDR_LEN 1
 #define CONFIG_SYS_EEPROM_BUS_NUM	1
 
@@ -358,28 +368,29 @@ extern unsigned long get_board_sys_clk(unsigned long dummy);
  * Memory space is mapped 1-1, but I/O space must start from 0.
  */
 
+#if defined(CONFIG_PCI)
 /* controller 2, Slot 2, tgtid 2, Base address 9000 */
+#define CONFIG_SYS_PCIE2_NAME		"Slot 1"
 #define CONFIG_SYS_PCIE2_MEM_VIRT	0xa0000000
 #define CONFIG_SYS_PCIE2_MEM_BUS	0xa0000000
 #define CONFIG_SYS_PCIE2_MEM_PHYS	0xa0000000
 #define CONFIG_SYS_PCIE2_MEM_SIZE	0x20000000	/* 512M */
-#define CONFIG_SYS_PCIE2_IO_VIRT	0xffc20000
-#define CONFIG_SYS_PCIE2_IO_BUS	0x00000000
-#define CONFIG_SYS_PCIE2_IO_PHYS	0xffc20000
+#define CONFIG_SYS_PCIE2_IO_VIRT	0xffc10000
+#define CONFIG_SYS_PCIE2_IO_BUS		0x00000000
+#define CONFIG_SYS_PCIE2_IO_PHYS	0xffc10000
 #define CONFIG_SYS_PCIE2_IO_SIZE	0x00010000	/* 64k */
 
 /* controller 1, Slot 1, tgtid 1, Base address a000 */
-#define CONFIG_SYS_PCIE1_MEM_VIRT	0xc0000000
-#define CONFIG_SYS_PCIE1_MEM_BUS	0xc0000000
-#define CONFIG_SYS_PCIE1_MEM_PHYS	0xc0000000
+#define CONFIG_SYS_PCIE1_NAME		"Slot 2"
+#define CONFIG_SYS_PCIE1_MEM_VIRT	0x80000000
+#define CONFIG_SYS_PCIE1_MEM_BUS	0x80000000
+#define CONFIG_SYS_PCIE1_MEM_PHYS	0x80000000
 #define CONFIG_SYS_PCIE1_MEM_SIZE	0x20000000	/* 512M */
-#define CONFIG_SYS_PCIE1_IO_VIRT	0xffc30000
-#define CONFIG_SYS_PCIE1_IO_BUS	0x00000000
-#define CONFIG_SYS_PCIE1_IO_PHYS	0xffc30000
+#define CONFIG_SYS_PCIE1_IO_VIRT	0xffc00000
+#define CONFIG_SYS_PCIE1_IO_BUS		0x00000000
+#define CONFIG_SYS_PCIE1_IO_PHYS	0xffc00000
 #define CONFIG_SYS_PCIE1_IO_SIZE	0x00010000	/* 64k */
 
-#if defined(CONFIG_PCI)
-#define CONFIG_NET_MULTI
 #define CONFIG_PCI_PNP			/* do pci plug-and-play */
 
 #undef CONFIG_EEPRO100
@@ -398,11 +409,9 @@ extern unsigned long get_board_sys_clk(unsigned long dummy);
 
 #endif	/* CONFIG_PCI */
 
-#if defined(CONFIG_TSEC_ENET)
-#ifndef CONFIG_NET_MULTI
 #define CONFIG_NET_MULTI	1
-#endif
 
+#if defined(CONFIG_TSEC_ENET)
 #define CONFIG_MII		1	/* MII PHY management */
 #define CONFIG_MII_DEFAULT_TSEC	1	/* Allow unregistered phys */
 #define CONFIG_TSEC1	1
@@ -541,6 +550,7 @@ extern unsigned long get_board_sys_clk(unsigned long dummy);
  * the maximum mapped by the Linux kernel during initialization.
  */
 #define CONFIG_SYS_BOOTMAPSZ	(16 << 20)/* Initial Memory map for Linux*/
+#define CONFIG_SYS_BOOTM_LEN	(16 << 20)	/* Increase max gunzip size */
 
 #if defined(CONFIG_CMD_KGDB)
 #define CONFIG_KGDB_BAUDRATE	230400	/* speed to run kgdb serial port */

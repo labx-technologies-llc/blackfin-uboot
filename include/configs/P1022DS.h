@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Freescale Semiconductor, Inc.
+ * Copyright 2010-2011 Freescale Semiconductor, Inc.
  * Authors: Srikanth Srinivasan <srikanth.srinivasan@freescale.com>
  *          Timur Tabi <timur@freescale.com>
  *
@@ -26,6 +26,10 @@
 #define CONFIG_SYS_TEXT_BASE	0xeff80000
 #endif
 
+#ifndef CONFIG_RESET_VECTOR_ADDRESS
+#define CONFIG_RESET_VECTOR_ADDRESS	0xeffffffc
+#endif
+
 #define CONFIG_FSL_ELBC			/* Has Enhanced localbus controller */
 #define CONFIG_PCI			/* Enable PCI/PCIE */
 #define CONFIG_PCIE1			/* PCIE controler 1 (slot 1) */
@@ -34,7 +38,6 @@
 #define CONFIG_FSL_PCI_INIT		/* Use common FSL init code */
 #define CONFIG_FSL_PCIE_RESET		/* need PCIe reset errata */
 #define CONFIG_SYS_PCI_64BIT		/* enable 64-bit PCI resources */
-#define CONFIG_SYS_HAS_SERDES		/* has SERDES */
 
 #define CONFIG_PHYS_64BIT
 #define CONFIG_ENABLE_36BIT_PHYS
@@ -148,7 +151,7 @@
 #define CONFIG_SYS_OR2_PRELIM	(OR_AM_32KB | 0x6ff7)
 
 #define PIXIS_LBMAP_SWITCH	7
-#define PIXIS_LBMAP_MASK	0xE0
+#define PIXIS_LBMAP_MASK	0xF0
 #define PIXIS_LBMAP_ALTBANK	0x20
 
 #define CONFIG_SYS_INIT_RAM_LOCK
@@ -276,6 +279,7 @@
 /* SATA */
 #define CONFIG_LIBATA
 #define CONFIG_FSL_SATA
+#define CONFIG_FSL_SATA_V2
 
 #define CONFIG_SYS_SATA_MAX_DEVICE	2
 #define CONFIG_SATA1
@@ -356,6 +360,7 @@
 #define CONFIG_CMD_MII
 #define CONFIG_CMD_PING
 #define CONFIG_CMD_SETEXPR
+#define CONFIG_CMD_REGINFO
 
 #ifdef CONFIG_PCI
 #define CONFIG_CMD_PCI
@@ -400,6 +405,7 @@
  * the maximum mapped by the Linux kernel during initialization.
  */
 #define CONFIG_SYS_BOOTMAPSZ	(16 << 20)	/* Initial Memory map for Linux*/
+#define CONFIG_SYS_BOOTM_LEN	(16 << 20)	/* Increase max gunzip size */
 
 #ifdef CONFIG_CMD_KGDB
 #define CONFIG_KGDB_BAUDRATE	230400	/* speed to run kgdb serial port */

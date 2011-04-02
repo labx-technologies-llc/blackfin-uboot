@@ -35,6 +35,8 @@
 
 #include <common.h>
 #include <command.h>
+#include <asm/processor.h>
+#include <asm/processor-flags.h>
 #include <asm/interrupt.h>
 
 /* Constructor for a conventional segment GDT (or LDT) entry */
@@ -45,13 +47,6 @@
 	 (((limit) & 0x000f0000ULL) << (48-16)) |	\
 	 (((base)  & 0x00ffffffULL) << 16) |		\
 	 (((limit) & 0x0000ffffULL)))
-
-/* Simple and small GDT entries for booting only */
-
-#define GDT_ENTRY_32BIT_CS	2
-#define GDT_ENTRY_32BIT_DS	(GDT_ENTRY_32BIT_CS + 1)
-#define GDT_ENTRY_16BIT_CS	(GDT_ENTRY_32BIT_DS + 1)
-#define GDT_ENTRY_16BIT_DS	(GDT_ENTRY_16BIT_CS + 1)
 
 /*
  * Set up the GDT
@@ -92,26 +87,40 @@ static void reload_gdt(void)
 }
 
 
-int cpu_init_f(void)
+int x86_cpu_init_f(void)
 {
+	const u32 em_rst = ~X86_CR0_EM;
+	const u32 mp_ne_set = X86_CR0_MP | X86_CR0_NE;
+
 	/* initialize FPU, reset EM, set MP and NE */
 	asm ("fninit\n" \
-	     "movl %cr0, %eax\n" \
-	     "andl $~0x4, %eax\n" \
-	     "orl  $0x22, %eax\n" \
-	     "movl %eax, %cr0\n" );
+	     "movl %%cr0, %%eax\n" \
+	     "andl %0, %%eax\n" \
+	     "orl  %1, %%eax\n" \
+	     "movl %%eax, %%cr0\n" \
+	     : : "i" (em_rst), "i" (mp_ne_set) : "eax");
 
 	return 0;
 }
+int cpu_init_f(void) __attribute__((weak, alias("x86_cpu_init_f")));
 
-int cpu_init_r(void)
+int x86_cpu_init_r(void)
 {
+	const u32 nw_cd_rst = ~(X86_CR0_NW | X86_CR0_CD);
+
+	/* turn on the cache and disable write through */
+	asm("movl	%%cr0, %%eax\n"
+	    "andl	%0, %%eax\n"
+	    "movl	%%eax, %%cr0\n"
+	    "wbinvd\n" : : "i" (nw_cd_rst) : "eax");
+
 	reload_gdt();
 
 	/* Initialize core interrupt and exception functionality of CPU */
 	cpu_init_interrupts ();
 	return 0;
 }
+int cpu_init_r(void) __attribute__((weak, alias("x86_cpu_init_r")));
 
 int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {

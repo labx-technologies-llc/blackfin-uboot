@@ -22,6 +22,7 @@
 
 #include <common.h>
 #include <asm/processor.h>
+#include <asm/fsl_ddr_sdram.h>
 #include <asm/mmu.h>
 #include <asm/io.h>
 #include <fdt_support.h>
@@ -47,7 +48,7 @@ static void flash_cs_fixup(void)
 	 */
 	flash_sel = !((pca953x_get_val(CONFIG_SYS_I2C_PCA953X_ADDR0) &
 			CONFIG_SYS_PCA953X_C0_FLASH_PASS_CS));
-	printf("FLASH: Executed from FLASH%d\n", flash_sel ? 2 : 1);
+	printf("Flash: Executed from flash%d\n", flash_sel ? 2 : 1);
 
 	if (flash_sel) {
 		set_lbc_br(0, CONFIG_SYS_BR1_PRELIM);
@@ -69,6 +70,18 @@ int board_early_init_r(void)
 	flash_cs_fixup();
 
 	return 0;
+}
+
+phys_size_t initdram(int board_type)
+{
+	phys_size_t dram_size = fsl_ddr_sdram();
+
+#if defined(CONFIG_DDR_ECC) && !defined(CONFIG_ECC_INIT_VIA_DDRCONTROLLER)
+	/* Initialize and enable DDR ECC */
+	ddr_enable_ecc(dram_size);
+#endif
+
+	return dram_size;
 }
 
 #if defined(CONFIG_OF_BOARD_SETUP)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2004, 2007-2010 Freescale Semiconductor, Inc.
+ * Copyright 2004, 2007-2011 Freescale Semiconductor, Inc.
  * Copyright (C) 2003  Motorola,Inc.
  *
  * See file CREDITS for list of people who contributed to this
@@ -66,7 +66,7 @@
 #endif
 
 	GOT_ENTRY(__init_end)
-	GOT_ENTRY(_end)
+	GOT_ENTRY(__bss_end__)
 	GOT_ENTRY(__bss_start)
 	END_GOT
 
@@ -753,7 +753,7 @@ dcache_disable:
 	lis	r4,0
 	ori	r4,r4,L1CSR0_DCE
 	andc	r3,r3,r4
-	mtspr	L1CSR0,r0
+	mtspr	L1CSR0,r3
 	isync
 	blr
 
@@ -1050,7 +1050,7 @@ clear_bss:
 	 * Now clear BSS segment
 	 */
 	lwz	r3,GOT(__bss_start)
-	lwz	r4,GOT(_end)
+	lwz	r4,GOT(__bss_end__)
 
 	cmplw	0,r3,r4
 	beq	6f

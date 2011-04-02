@@ -1,6 +1,6 @@
 /*
  * (C) Copyright 2002
- * Daniel Engstrï¿½m, Omicron Ceti AB, daniel@omicron.se
+ * Daniel Engström, Omicron Ceti AB, daniel@omicron.se
  *
  * (C) Copyright 2002
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
@@ -45,7 +45,15 @@
 #include <miiphy.h>
 #endif
 
-DECLARE_GLOBAL_DATA_PTR;
+/*
+ * Pointer to initial global data area
+ *
+ * Here we initialize it.
+ */
+#undef	XTRN_DECLARE_GLOBAL_DATA_PTR
+#define XTRN_DECLARE_GLOBAL_DATA_PTR	/* empty = allocate here */
+DECLARE_GLOBAL_DATA_PTR = (gd_t *) (CONFIG_SYS_INIT_GD_ADDR);
+
 
 /* Exports from the Linker Script */
 extern ulong __text_start;
@@ -148,15 +156,33 @@ static void display_flash_config (ulong size)
  */
 typedef int (init_fnc_t) (void);
 
-init_fnc_t *init_sequence[] = {
+static int calculate_relocation_address(void);
+static int copy_uboot_to_ram(void);
+static int clear_bss(void);
+static int do_elf_reloc_fixups(void);
+
+init_fnc_t *init_sequence_f[] = {
+	cpu_init_f,
+	board_early_init_f,
+	env_init,
+	init_baudrate,
+	serial_init,
+	console_init_f,
+	dram_init_f,
+	calculate_relocation_address,
+	copy_uboot_to_ram,
+	clear_bss,
+	do_elf_reloc_fixups,
+
+	NULL,
+};
+
+init_fnc_t *init_sequence_r[] = {
 	cpu_init_r,		/* basic cpu dependent setup */
 	board_early_init_r,	/* basic board dependent setup */
 	dram_init,		/* configure available RAM banks */
 	interrupt_init,		/* set up exceptions */
 	timer_init,
-	env_init,		/* initialize environment */
-	init_baudrate,		/* initialze baudrate settings */
-	serial_init,		/* serial communications setup */
 	display_banner,
 	display_dram_config,
 
@@ -165,88 +191,101 @@ init_fnc_t *init_sequence[] = {
 
 gd_t *gd;
 
-/*
- * Load U-Boot into RAM, initialize BSS, perform relocation adjustments
- */
-void board_init_f (ulong gdp)
+static int calculate_relocation_address(void)
 {
 	void *text_start = &__text_start;
-	void *data_end = &__data_end;
-	void *rel_dyn_start = &__rel_dyn_start;
-	void *rel_dyn_end = &__rel_dyn_end;
-	void *bss_start = &__bss_start;
 	void *bss_end = &__bss_end;
-
-	ulong *dst_addr;
-	ulong *src_addr;
-	ulong *end_addr;
-
 	void *dest_addr;
 	ulong rel_offset;
-	Elf32_Rel *re_src;
-	Elf32_Rel *re_end;
 
 	/* Calculate destination RAM Address and relocation offset */
-	dest_addr  = (void *)gdp - (bss_end - text_start);
-	rel_offset = text_start - dest_addr;
+	dest_addr = (void *)gd->ram_size;
+	dest_addr -= CONFIG_SYS_STACK_SIZE;
+	dest_addr -= (bss_end - text_start);
+	rel_offset = dest_addr - text_start;
 
-	/* Perform low-level initialization only when cold booted */
-	if (((gd_t *)gdp)->flags & GD_FLG_COLD_BOOT) {
-		/* First stage CPU initialization */
-		if (cpu_init_f() != 0)
-			hang();
+	gd->start_addr_sp = gd->ram_size;
+	gd->relocaddr = (ulong)dest_addr;
+	gd->reloc_off = rel_offset;
 
-		/* First stage Board initialization */
-		if (board_early_init_f() != 0)
-			hang();
-	}
+	return 0;
+}
 
-	/* Copy U-Boot into RAM */
-	dst_addr = (ulong *)dest_addr;
-	src_addr = (ulong *)(text_start + ((gd_t *)gdp)->load_off);
-	end_addr = (ulong *)(data_end  + ((gd_t *)gdp)->load_off);
+static int copy_uboot_to_ram(void)
+{
+	ulong *dst_addr = (ulong *)gd->relocaddr;
+	ulong *src_addr = (ulong *)&__text_start;
+	ulong *end_addr = (ulong *)&__data_end;
 
 	while (src_addr < end_addr)
 		*dst_addr++ = *src_addr++;
 
-	/* Clear BSS */
-	dst_addr = (ulong *)(bss_start - rel_offset);
-	end_addr = (ulong *)(bss_end - rel_offset);
+	return 0;
+}
+
+static int clear_bss(void)
+{
+	void *bss_start = &__bss_start;
+	void *bss_end = &__bss_end;
+
+	ulong *dst_addr = (ulong *)(bss_start + gd->reloc_off);
+	ulong *end_addr = (ulong *)(bss_end + gd->reloc_off);;
 
 	while (dst_addr < end_addr)
 		*dst_addr++ = 0x00000000;
 
-	/* Perform relocation adjustments */
-	re_src = (Elf32_Rel *)(rel_dyn_start + ((gd_t *)gdp)->load_off);
-	re_end = (Elf32_Rel *)(rel_dyn_end + ((gd_t *)gdp)->load_off);
+	return 0;
+}
+
+static int do_elf_reloc_fixups(void)
+{
+	Elf32_Rel *re_src = (Elf32_Rel *)(&__rel_dyn_start);
+	Elf32_Rel *re_end = (Elf32_Rel *)(&__rel_dyn_end);
 
 	do {
 		if (re_src->r_offset >= CONFIG_SYS_TEXT_BASE)
-			if (*(Elf32_Addr *)(re_src->r_offset - rel_offset) >= CONFIG_SYS_TEXT_BASE)
-				*(Elf32_Addr *)(re_src->r_offset - rel_offset) -= rel_offset;
+			if (*(Elf32_Addr *)(re_src->r_offset + gd->reloc_off) >= CONFIG_SYS_TEXT_BASE)
+				*(Elf32_Addr *)(re_src->r_offset + gd->reloc_off) += gd->reloc_off;
 	} while (re_src++ < re_end);
 
-	((gd_t *)gdp)->reloc_off = rel_offset;
-	((gd_t *)gdp)->flags |= GD_FLG_RELOC;
+	return 0;
+}
+
+/*
+ * Load U-Boot into RAM, initialize BSS, perform relocation adjustments
+ */
+void board_init_f(ulong boot_flags)
+{
+	init_fnc_t **init_fnc_ptr;
+
+	for (init_fnc_ptr = init_sequence_f; *init_fnc_ptr; ++init_fnc_ptr) {
+		if ((*init_fnc_ptr)() != 0)
+			hang();
+	}
+
+	gd->flags |= GD_FLG_RELOC;
 
 	/* Enter the relocated U-Boot! */
-	(board_init_r - rel_offset)((gd_t *)gdp, (ulong)dest_addr);
+	relocate_code(gd->start_addr_sp, gd, gd->relocaddr);
 
-	/* NOTREACHED - board_init_f() does not return */
+	/* NOTREACHED - relocate_code() does not return */
 	while(1);
 }
 
 void board_init_r(gd_t *id, ulong dest_addr)
 {
 	char *s;
-	int i;
 	ulong size;
 	static bd_t bd_data;
+	static gd_t gd_data;
 	init_fnc_t **init_fnc_ptr;
 
 	show_boot_progress(0x21);
 
-	gd = id;
+	/* Global data pointer is now writable */
+	gd = &gd_data;
+	memcpy(gd, id, sizeof(gd_t));
+
 	/* compiler optimization barrier needed for GCC >= 3.4 */
 	__asm__ __volatile__("": : :"memory");
 
@@ -259,12 +298,9 @@ void board_init_r(gd_t *id, ulong dest_addr)
 	mem_malloc_init((((ulong)dest_addr - CONFIG_SYS_MALLOC_LEN)+3)&~3,
 			CONFIG_SYS_MALLOC_LEN);
 
-	for (init_fnc_ptr = init_sequence, i=0; *init_fnc_ptr; ++init_fnc_ptr, i++) {
-		show_boot_progress(0xa130|i);
-
-		if ((*init_fnc_ptr)() != 0) {
+	for (init_fnc_ptr = init_sequence_r; *init_fnc_ptr; ++init_fnc_ptr) {
+		if ((*init_fnc_ptr)() != 0)
 			hang ();
-		}
 	}
 	show_boot_progress(0x23);
 

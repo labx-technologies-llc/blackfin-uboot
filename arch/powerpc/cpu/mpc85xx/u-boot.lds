@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2009 Freescale Semiconductor, Inc.
+ * Copyright 2007-2009, 2011 Freescale Semiconductor, Inc.
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -20,7 +20,11 @@
  * MA 02111-1307 USA
  */
 
-#ifndef RESET_VECTOR_ADDRESS
+#include "config.h"	/* CONFIG_BOARDDIR */
+
+#ifdef CONFIG_RESET_VECTOR_ADDRESS
+#define RESET_VECTOR_ADDRESS	CONFIG_RESET_VECTOR_ADDRESS
+#else
 #define RESET_VECTOR_ADDRESS	0xfffffffc
 #endif
 
@@ -54,13 +58,14 @@ SECTIONS
   PROVIDE (erotext = .);
   .reloc   :
   {
-    KEEP(*(.got))
     _GOT2_TABLE_ = .;
     KEEP(*(.got2))
+    KEEP(*(.got))
+    PROVIDE(_GLOBAL_OFFSET_TABLE_ = . + 4);
     _FIXUP_TABLE_ = .;
     KEEP(*(.fixup))
   }
-  __got2_entries = (_FIXUP_TABLE_ - _GOT2_TABLE_) >> 2;
+  __got2_entries = ((_GLOBAL_OFFSET_TABLE_ - _GOT2_TABLE_) >> 2) - 1;
   __fixup_entries = (. - _FIXUP_TABLE_) >> 2;
 
   .data    :
@@ -120,6 +125,6 @@ SECTIONS
   } :bss
 
   . = ALIGN(4);
-  _end = . ;
+  __bss_end__ = . ;
   PROVIDE (end = .);
 }

@@ -76,7 +76,7 @@ static char *failed = "*** failed ***\n";
 #include <environment.h>
 
 extern ulong __init_end;
-extern ulong _end;
+extern ulong __bss_end__;
 
 extern	void timer_init(void);
 
@@ -252,7 +252,7 @@ board_init_f (ulong bootflag)
 	 *	- monitor code
 	 *	- board info struct
 	 */
-	len = (ulong)&_end - CONFIG_SYS_MONITOR_BASE;
+	len = (ulong)&__bss_end__ - CONFIG_SYS_MONITOR_BASE;
 
 	addr = CONFIG_SYS_SDRAM_BASE + gd->ram_size;
 
@@ -460,7 +460,7 @@ void board_init_r (gd_t *id, ulong dest_addr)
 	malloc_bin_reloc ();
 
 #if !defined(CONFIG_SYS_NO_FLASH)
-	puts ("FLASH: ");
+	puts ("Flash: ");
 
 	if ((flash_size = flash_init ()) > 0) {
 # ifdef CONFIG_SYS_FLASH_CHECKSUM

@@ -29,6 +29,8 @@
 
 #include <common.h>
 #include <asm/interrupt.h>
+#include <asm/io.h>
+#include <asm/processor-flags.h>
 
 #define DECLARE_INTERRUPT(x) \
 	".globl irq_"#x"\n" \
@@ -108,6 +110,7 @@ void dump_regs(struct irq_regs *regs)
 {
 	unsigned long cr0 = 0L, cr2 = 0L, cr3 = 0L, cr4 = 0L;
 	unsigned long d0, d1, d2, d3, d6, d7;
+	unsigned long sp;
 
 	printf("EIP: %04x:[<%08lx>] EFLAGS: %08lx\n",
 			(u16)regs->xcs, regs->eip, regs->eflags);
@@ -139,6 +142,20 @@ void dump_regs(struct irq_regs *regs)
 	d7 = get_debugreg(7);
 	printf("DR6: %08lx DR7: %08lx\n",
 			d6, d7);
+
+	printf("Stack:\n");
+	sp = regs->esp;
+
+	sp += 64;
+
+	while (sp > (regs->esp - 16)) {
+		if (sp == regs->esp)
+			printf("--->");
+		else
+			printf("    ");
+		printf("0x%8.8lx : 0x%8.8lx\n", sp, (ulong)readl(sp));
+		sp -= 4;
+	}
 }
 
 struct idt_entry {
@@ -221,7 +238,7 @@ int disable_interrupts(void)
 
 	asm volatile ("pushfl ; popl %0 ; cli\n" : "=g" (flags) : );
 
-	return (flags&0x200); /* IE flags is bit 9 */
+	return flags & X86_EFLAGS_IF; /* IE flags is bit 9 */
 }
 
 /* IRQ Low-Level Service Routine */

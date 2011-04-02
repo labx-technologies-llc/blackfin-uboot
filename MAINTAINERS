@@ -138,10 +138,15 @@ Jon Diekema <jon.diekema@smiths-aerospace.com>
 
 	sbc8260		MPC8260
 
+Alex Dubov <oakad@yahoo.com>
+
+	mpq101		MPC8548
+
 Dirk Eibach <eibach@gdsys.de>
 
 	devconcenter	PPC460EX
 	dlvision        PPC405EP
+	dlvision-10g	PPC405EP
 	gdppc440etx	PPC440EP/GR
 	intip		PPC460EX
 	io		PPC405EP
@@ -198,6 +203,14 @@ Siddarth Gore <gores@marvell.com>
 
 	guruplug	ARM926EJS (Kirkwood SoC)
 
+Paul Gortmaker <paul.gortmaker@windriver.com>
+
+	sbc8349		MPC8349
+	sbc8540		MPC8540
+	sbc8548		MPC8548
+	sbc8560		MPC8560
+	sbc8641d	MPC8641D
+
 Frank Gottschling <fgottschling@eltec.de>
 
 	MHPC		MPC8xx
@@ -211,11 +224,6 @@ Wolfgang Grandegger <wg@denx.de>
 	PN62		MPC8240
 	IPHASE4539	MPC8260
 	SCM		MPC8260
-
-Joe Hamman <joe.hamman@embeddedspecialties.com>
-
-	sbc8548		MPC8548
-	sbc8641d	MPC8641D
 
 Klaus Heydeck <heydeck@kieback-peter.de>
 
@@ -255,10 +263,6 @@ Sangmoon Kim <dogoil@etinsys.com>
 
 	debris		MPC8245
 	KVME080		MPC8245
-
-Robert Lazarski <robertlazarski@gmail.com>
-
-	ATUM8548	MPC8548
 
 The LEOX team <team@leox.org>
 
@@ -340,6 +344,10 @@ Denis Peter <d.peter@mpl.ch>
 	MIP405		PPC4xx
 	PIP405		PPC4xx
 
+Werner Pfister <Pfister_Werner@intercontrol.de>
+	digsy_mtc	mpc5200
+	digsy_mtc_rev5	mpc5200
+
 Kim Phillips <kim.phillips@freescale.com>
 
 	MPC8349EMDS	MPC8349
@@ -415,12 +423,11 @@ Georg Schardt <schardt@team-ctech.de>
 
 Heiko Schocher <hs@denx.de>
 
+	charon		MPC5200
 	ids8247		MPC8247
 	jupiter		MPC5200
 	kmeter1		MPC8360
-	kmsupx4		MPC852T
 	mgcoge		MPC8247
-	mgsuvd		MPC852
 	mucmc52		MPC5200
 	muas3001	MPC8270
 	municse		MPC5200
@@ -550,10 +557,16 @@ Rowel Atienza <rowel@diwalabs.com>
 
 Stefano Babic <sbabic@denx.de>
 
+	ea20		davinci
+	mx35pdk		i.MX35
+	mx51evk		i.MX51
 	polaris		xscale
 	trizepsiv	xscale
-	mx51evk		i.MX51
  	vision2		i.MX51
+
+Jason Liu <r64343@freescale.com>
+
+	mx53evk         i.MX53
 
 Enric Balletbo i Serra <eballetbo@iseebcn.com>
 
@@ -664,18 +677,15 @@ Matthias Kaehlcke <matthias@kaehlcke.net>
 Konstantin Kletschke <kletschke@synertronixx.de>
 	scb9328		ARM920T
 
-Simon Kagstrom <simon.kagstrom@netinsight.net>
-
-       openrd_base     ARM926EJS (Kirkwood SoC)
-
 Nishant Kamat <nskamat@ti.com>
 
 	omap1610h2	ARM926EJS
 
 Minkyu Kang <mk7.kang@samsung.com>
 
-	s5p_goni	ARM ARMV7 (S5PC110 SoC)
-	SMDKC100	ARM ARMV7 (S5PC100 SoC)
+	SMDKC100		ARM ARMV7 (S5PC100 SoC)
+	s5p_goni		ARM ARMV7 (S5PC110 SoC)
+	s5pc210_universal	ARM ARMV7 (S5PC210 SoC)
 
 Frederik Kriewitz <frederik@kriewitz.eu>
 
@@ -753,6 +763,10 @@ Stelian Pop <stelian.pop@leadtechdesign.com>
 	at91sam9263ek	ARM926EJS (AT91SAM9263 SoC)
 	at91sam9rlek	ARM926EJS (AT91SAM9RL SoC)
 
+Mike Rapoport <mike@compulab.co.il>
+
+	cm_t35		ARM ARMV7 (OMAP3xx SoC)
+
 Tom Rix <Tom.Rix@windriver.com>
 
 	omap3_zoom2	ARM ARMV7 (OMAP3xx SoC)
@@ -826,6 +840,7 @@ Marek Vasut <marek.vasut@gmail.com>
 	palmtc		xscale
 	vpac270		xscale
 	zipitz2		xscale
+ 	efikamx		i.MX51
 
 Hugo Villeneuve <hugo.villeneuve@lyrtech.com>
 
@@ -837,9 +852,20 @@ Matt Waddel <matt.waddel@linaro.org>
 
 Prafulla Wadaskar <prafulla@marvell.com>
 
+	aspenite	ARM926EJS (ARMADA100 88AP168 SoC)
 	mv88f6281gtw_ge	ARM926EJS (Kirkwood SoC)
+	openrd_base     ARM926EJS (Kirkwood SoC)
 	rd6281a		ARM926EJS (Kirkwood SoC)
 	sheevaplug	ARM926EJS (Kirkwood SoC)
+
+Tom Warren <twarren@nvidia.com>
+
+	harmony		Tegra2 (ARM7 & A9 Dual Core)
+	seaboard	Tegra2 (ARM7 & A9 Dual Core)
+
+Lei Wen <leiwen@marvell.com>
+
+	dkb		ARM926EJS (PANTHEON 88AP920 SOC)
 
 Matthias Weisser <weisserm@arcor.de>
 
@@ -853,6 +879,11 @@ Alex Züpke <azu@sysgo.de>
 
 	lart		SA1100
 	dnp1110		SA1110
+
+Syed Mohammed Khasim <sm.khasim@gmail.com>
+Sughosh Ganu <urwithsughosh@gmail.com>
+
+	hawkboard	ARM926EJS (OMAP-L138)
 
 -------------------------------------------------------------------------
 
@@ -1006,14 +1037,16 @@ Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
 	SH7763RDP	SH7763
 	RSK7203		SH7203
 	AP325RXA	SH7723
+	SHMIN		SH7706
 
 Mark Jonas <mark.jonas@de.bosch.com>
 
 	mpr2		SH7720
 
-Yoshihiro Shimoda <shimoda.yoshihiro@renesas.com>
+Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
 	MS7720SE	SH7720
+	R0P77570030RL	SH7757
 	R0P77850011RL	SH7785
 
 #########################################################################

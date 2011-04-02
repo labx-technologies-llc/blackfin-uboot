@@ -1,5 +1,5 @@
 /*
- * Copyright 2007,2010 Freescale Semiconductor, Inc
+ * Copyright 2007, 2010-2011 Freescale Semiconductor, Inc
  * Andy Fleming
  *
  * Based vaguely on the pxa mmc code:
@@ -79,6 +79,9 @@ uint esdhc_xfertyp(struct mmc_cmd *cmd, struct mmc_data *data)
 		if (data->blocks > 1) {
 			xfertyp |= XFERTYP_MSBSEL;
 			xfertyp |= XFERTYP_BCEN;
+#ifdef CONFIG_SYS_FSL_ERRATUM_ESDHC111
+			xfertyp |= XFERTYP_AC12EN;
+#endif
 		}
 
 		if (data->flags & MMC_DATA_READ)
@@ -207,7 +210,21 @@ static int esdhc_setup_data(struct mmc *mmc, struct mmc_data *data)
 	esdhc_write32(&regs->blkattr, data->blocks << 16 | data->blocksize);
 
 	/* Calculate the timeout period for data transactions */
-	timeout = fls(mmc->tran_speed/10) - 1;
+	/*
+	 * 1)Timeout period = (2^(timeout+13)) SD Clock cycles
+	 * 2)Timeout period should be minimum 0.250sec as per SD Card spec
+	 *  So, Number of SD Clock cycles for 0.25sec should be minimum
+	 *		(SD Clock/sec * 0.25 sec) SD Clock cycles
+	 *		= (mmc->tran_speed * 1/4) SD Clock cycles
+	 * As 1) >=  2)
+	 * => (2^(timeout+13)) >= mmc->tran_speed * 1/4
+	 * Taking log2 both the sides
+	 * => timeout + 13 >= log2(mmc->tran_speed/4)
+	 * Rounding up to next power of 2
+	 * => timeout + 13 = log2(mmc->tran_speed/4) + 1
+	 * => timeout + 13 = fls(mmc->tran_speed/4)
+	 */
+	timeout = fls(mmc->tran_speed/4);
 	timeout -= 13;
 
 	if (timeout > 14)
@@ -215,6 +232,11 @@ static int esdhc_setup_data(struct mmc *mmc, struct mmc_data *data)
 
 	if (timeout < 0)
 		timeout = 0;
+
+#ifdef CONFIG_SYS_FSL_ERRATUM_ESDHC_A001
+	if ((timeout == 4) || (timeout == 8) || (timeout == 12))
+		timeout++;
+#endif
 
 	esdhc_clrsetbits32(&regs->sysctl, SYSCTL_TIMEOUT_MASK, timeout << 16);
 
@@ -233,6 +255,11 @@ esdhc_send_cmd(struct mmc *mmc, struct mmc_cmd *cmd, struct mmc_data *data)
 	uint	irqstat;
 	struct fsl_esdhc_cfg *cfg = (struct fsl_esdhc_cfg *)mmc->priv;
 	volatile struct fsl_esdhc *regs = (struct fsl_esdhc *)cfg->esdhc_base;
+
+#ifdef CONFIG_SYS_FSL_ERRATUM_ESDHC111
+	if (cmd->cmdidx == MMC_CMD_STOP_TRANSMISSION)
+		return 0;
+#endif
 
 	esdhc_write32(&regs->irqstat, -1);
 
@@ -464,6 +491,11 @@ int fsl_esdhc_initialize(bd_t *bis, struct fsl_esdhc_cfg *cfg)
 
 	voltage_caps = 0;
 	caps = regs->hostcapblt;
+
+#ifdef CONFIG_SYS_FSL_ERRATUM_ESDHC135
+	caps = caps & ~(ESDHC_HOSTCAPBLT_SRS |
+			ESDHC_HOSTCAPBLT_VS18 | ESDHC_HOSTCAPBLT_VS30);
+#endif
 	if (caps & ESDHC_HOSTCAPBLT_VS18)
 		voltage_caps |= MMC_VDD_165_195;
 	if (caps & ESDHC_HOSTCAPBLT_VS30)
@@ -508,17 +540,19 @@ int fsl_esdhc_mmc_init(bd_t *bis)
 void fdt_fixup_esdhc(void *blob, bd_t *bd)
 {
 	const char *compat = "fsl,esdhc";
-	const char *status = "okay";
 
+#ifdef CONFIG_FSL_ESDHC_PIN_MUX
 	if (!hwconfig("esdhc")) {
-		status = "disabled";
-		goto out;
+		do_fixup_by_compat(blob, compat, "status", "disabled",
+				8 + 1, 1);
+		return;
 	}
+#endif
 
 	do_fixup_by_compat_u32(blob, compat, "clock-frequency",
 			       gd->sdhc_clk, 1);
-out:
-	do_fixup_by_compat(blob, compat, "status", status,
-			   strlen(status) + 1, 1);
+
+	do_fixup_by_compat(blob, compat, "status", "okay",
+			   4 + 1, 1);
 }
 #endif

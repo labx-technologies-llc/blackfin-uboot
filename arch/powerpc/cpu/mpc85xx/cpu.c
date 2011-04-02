@@ -1,5 +1,5 @@
 /*
- * Copyright 2004,2007-2010 Freescale Semiconductor, Inc.
+ * Copyright 2004,2007-2011 Freescale Semiconductor, Inc.
  * (C) Copyright 2002, 2003 Motorola Inc.
  * Xianghua Xiao (X.Xiao@motorola.com)
  *
@@ -34,6 +34,7 @@
 #include <asm/io.h>
 #include <asm/mmu.h>
 #include <asm/fsl_law.h>
+#include <asm/fsl_lbc.h>
 #include <post.h>
 #include <asm/processor.h>
 #include <asm/fsl_ddr_sdram.h>
@@ -165,12 +166,14 @@ int checkcpu (void)
 	}
 #endif
 
+#if defined(CONFIG_FSL_LBC)
 	if (sysinfo.freqLocalBus > LCRR_CLKDIV) {
 		printf("LBC:%-4s MHz\n", strmhz(buf1, sysinfo.freqLocalBus));
 	} else {
 		printf("LBC: unknown (LCRR[CLKDIV] = 0x%02lx)\n",
 		       sysinfo.freqLocalBus);
 	}
+#endif
 
 #ifdef CONFIG_CPM2
 	printf("CPM:   %s MHz\n", strmhz(buf1, sysinfo.freqSystemBus));
@@ -283,8 +286,64 @@ void mpc85xx_reginfo(void)
 {
 	print_tlbcam();
 	print_laws();
+#if defined(CONFIG_FSL_LBC)
 	print_lbc_regs();
+#endif
+
 }
+
+/* Common ddr init for non-corenet fsl 85xx platforms */
+#ifndef CONFIG_FSL_CORENET
+phys_size_t initdram(int board_type)
+{
+	phys_size_t dram_size = 0;
+
+#if defined(CONFIG_SYS_FSL_ERRATUM_DDR_MSYNC_IN)
+	{
+		ccsr_gur_t *gur = (void *)(CONFIG_SYS_MPC85xx_GUTS_ADDR);
+		unsigned int x = 10;
+		unsigned int i;
+
+		/*
+		 * Work around to stabilize DDR DLL
+		 */
+		out_be32(&gur->ddrdllcr, 0x81000000);
+		asm("sync;isync;msync");
+		udelay(200);
+		while (in_be32(&gur->ddrdllcr) != 0x81000100) {
+			setbits_be32(&gur->devdisr, 0x00010000);
+			for (i = 0; i < x; i++)
+				;
+			clrbits_be32(&gur->devdisr, 0x00010000);
+			x++;
+		}
+	}
+#endif
+
+#if defined(CONFIG_SPD_EEPROM) || defined(CONFIG_DDR_SPD)
+	dram_size = fsl_ddr_sdram();
+#else
+	dram_size = fixed_sdram();
+#endif
+	dram_size = setup_ddr_tlbs(dram_size / 0x100000);
+	dram_size *= 0x100000;
+
+#if defined(CONFIG_DDR_ECC) && !defined(CONFIG_ECC_INIT_VIA_DDRCONTROLLER)
+	/*
+	 * Initialize and enable DDR ECC.
+	 */
+	ddr_enable_ecc(dram_size);
+#endif
+
+#if defined(CONFIG_FSL_LBC)
+	/* Some boards also have sdram on the lbc */
+	lbc_sdram_init();
+#endif
+
+	puts("DDR: ");
+	return dram_size;
+}
+#endif
 
 #if CONFIG_POST & CONFIG_SYS_POST_MEMORY
 

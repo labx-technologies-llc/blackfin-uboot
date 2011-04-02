@@ -27,14 +27,9 @@
 #include <asm/io.h>
 #include <asm/ppc4xx-gpio.h>
 
-#include "../common/fpga.h"
-#include "../common/osd.h"
+#include <gdsys_fpga.h>
 
-enum {
-	REG_VERSIONS = 0x0002,
-	REG_FPGA_VERSION = 0x0004,
-	REG_FPGA_FEATURES = 0x0006,
-};
+#include "../common/osd.h"
 
 enum {
 	UNITTYPE_MAIN_SERVER = 0,
@@ -74,10 +69,11 @@ enum {
  */
 int checkboard(void)
 {
+	ihs_fpga_t *fpga = (ihs_fpga_t *) CONFIG_SYS_FPGA_BASE(0);
 	char *s = getenv("serial#");
-	u16 versions = fpga_get_reg(REG_VERSIONS);
-	u16 fpga_version = fpga_get_reg(REG_FPGA_VERSION);
-	u16 fpga_features = fpga_get_reg(REG_FPGA_FEATURES);
+	u16 versions = in_le16(&fpga->versions);
+	u16 fpga_version = in_le16(&fpga->fpga_version);
+	u16 fpga_features = in_le16(&fpga->fpga_features);
 	unsigned unit_type;
 	unsigned hardware_version;
 	unsigned feature_compression;
@@ -214,7 +210,7 @@ int checkboard(void)
 
 int last_stage_init(void)
 {
-	return osd_probe();
+	return osd_probe(0);
 }
 
 /*
@@ -222,15 +218,15 @@ int last_stage_init(void)
  */
 void fpga_gpio_set(int pin)
 {
-	out_le16((void *)(CONFIG_SYS_FPGA_BASE + 0x18), pin);
+	out_le16((void *)(CONFIG_SYS_FPGA0_BASE + 0x18), pin);
 }
 
 void fpga_gpio_clear(int pin)
 {
-	out_le16((void *)(CONFIG_SYS_FPGA_BASE + 0x16), pin);
+	out_le16((void *)(CONFIG_SYS_FPGA0_BASE + 0x16), pin);
 }
 
 int fpga_gpio_get(int pin)
 {
-	return in_le16((void *)(CONFIG_SYS_FPGA_BASE + 0x14)) & pin;
+	return in_le16((void *)(CONFIG_SYS_FPGA0_BASE + 0x14)) & pin;
 }
