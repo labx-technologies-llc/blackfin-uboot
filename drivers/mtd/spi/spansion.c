@@ -64,17 +64,6 @@ struct spansion_spi_flash_params {
 	const char *name;
 };
 
-struct spansion_spi_flash {
-	struct spi_flash flash;
-	const struct spansion_spi_flash_params *params;
-};
-
-static inline struct spansion_spi_flash *to_spansion_spi_flash(struct spi_flash
-							     *flash)
-{
-	return container_of(flash, struct spansion_spi_flash, flash);
-}
-
 static const struct spansion_spi_flash_params spansion_spi_flash_table[] = {
 	{
 		.idcode1 = SPSN_ID_S25FL008A,
@@ -157,7 +146,7 @@ static int spansion_erase(struct spi_flash *flash, u32 offset, size_t len)
 struct spi_flash *spi_flash_probe_spansion(struct spi_slave *spi, u8 *idcode)
 {
 	const struct spansion_spi_flash_params *params;
-	struct spansion_spi_flash *spsn;
+	struct spi_flash *flash;
 	unsigned int i;
 	unsigned short jedec, ext_jedec;
 
@@ -177,22 +166,21 @@ struct spi_flash *spi_flash_probe_spansion(struct spi_slave *spi, u8 *idcode)
 		return NULL;
 	}
 
-	spsn = malloc(sizeof(struct spansion_spi_flash));
-	if (!spsn) {
+	flash = malloc(sizeof(*flash));
+	if (!flash) {
 		debug("SF: Failed to allocate memory\n");
 		return NULL;
 	}
 
-	spsn->params = params;
-	spsn->flash.spi = spi;
-	spsn->flash.name = params->name;
+	flash->spi = spi;
+	flash->name = params->name;
 
-	spsn->flash.write = spansion_write;
-	spsn->flash.erase = spansion_erase;
-	spsn->flash.read = spi_flash_cmd_read_fast;
-	spsn->flash.page_size = params->page_size;
-	spsn->flash.sector_size = params->page_size * params->pages_per_sector;
-	spsn->flash.size = spsn->flash.sector_size * params->nr_sectors;
+	flash->write = spansion_write;
+	flash->erase = spansion_erase;
+	flash->read = spi_flash_cmd_read_fast;
+	flash->page_size = params->page_size;
+	flash->sector_size = params->page_size * params->pages_per_sector;
+	flash->size = flash->sector_size * params->nr_sectors;
 
-	return &spsn->flash;
+	return flash;
 }
