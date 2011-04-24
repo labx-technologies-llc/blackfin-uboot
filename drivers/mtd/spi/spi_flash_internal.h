@@ -46,6 +46,13 @@ int spi_flash_cmd_write(struct spi_slave *spi, const u8 *cmd, size_t cmd_len,
 		const void *data, size_t data_len);
 
 /*
+ * Write the requested data out breaking it up into multiple write
+ * commands as needed per the write size.
+ */
+int spi_flash_cmd_write_multi(struct spi_flash *flash, u8 write_cmd,
+			u32 offset, size_t len, const void *buf);
+
+/*
  * Enable writing on the SPI flash.
  */
 static inline int spi_flash_cmd_write_enable(struct spi_flash *flash)
