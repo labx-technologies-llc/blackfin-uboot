@@ -113,13 +113,6 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 	},
 };
 
-static int stmicro_write(struct spi_flash *flash,
-			 u32 offset, size_t len, const void *buf)
-{
-	return spi_flash_cmd_write_multi(flash, CMD_M25PXX_PP,
-		offset, len, buf);
-}
-
 static int stmicro_erase(struct spi_flash *flash, u32 offset, size_t len)
 {
 	return spi_flash_cmd_erase(flash, CMD_M25PXX_SE, offset, len);
@@ -165,7 +158,7 @@ struct spi_flash *spi_flash_probe_stmicro(struct spi_slave *spi, u8 * idcode)
 	flash->spi = spi;
 	flash->name = params->name;
 
-	flash->write = stmicro_write;
+	flash->write = spi_flash_cmd_write_multi;
 	flash->erase = stmicro_erase;
 	flash->read = spi_flash_cmd_read_fast;
 	flash->page_size = params->page_size;

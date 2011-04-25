@@ -65,8 +65,8 @@ int spi_flash_cmd_write(struct spi_slave *spi, const u8 *cmd, size_t cmd_len,
 	return spi_flash_read_write(spi, cmd, cmd_len, data, NULL, data_len);
 }
 
-int spi_flash_cmd_write_multi(struct spi_flash *flash, u8 write_cmd,
-			u32 offset, size_t len, const void *buf)
+int spi_flash_cmd_write_multi(struct spi_flash *flash, u32 offset,
+		size_t len, const void *buf)
 {
 	unsigned long page_addr, byte_addr, page_size;
 	size_t chunk_len, actual;
@@ -83,10 +83,10 @@ int spi_flash_cmd_write_multi(struct spi_flash *flash, u8 write_cmd,
 		return ret;
 	}
 
+	cmd[0] = CMD_PAGE_PROGRAM;
 	for (actual = 0; actual < len; actual += chunk_len) {
 		chunk_len = min(len - actual, page_size - byte_addr);
 
-		cmd[0] = write_cmd;
 		cmd[1] = page_addr >> 8;
 		cmd[2] = page_addr;
 		cmd[3] = byte_addr;
@@ -115,8 +115,8 @@ int spi_flash_cmd_write_multi(struct spi_flash *flash, u8 write_cmd,
 		byte_addr = 0;
 	}
 
-	debug("SF: successfully programmed %zu bytes @ %#x\n",
-	      len, offset);
+	debug("SF: program %s %zu bytes @ %#x\n",
+	      ret ? "failure" : "success", len, offset);
 
 	spi_release_bus(flash->spi);
 	return ret;

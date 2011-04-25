@@ -131,13 +131,6 @@ static const struct spansion_spi_flash_params spansion_spi_flash_table[] = {
 	},
 };
 
-static int spansion_write(struct spi_flash *flash,
-			 u32 offset, size_t len, const void *buf)
-{
-	return spi_flash_cmd_write_multi(flash, CMD_S25FLXX_PP,
-		offset, len, buf);
-}
-
 static int spansion_erase(struct spi_flash *flash, u32 offset, size_t len)
 {
 	return spi_flash_cmd_erase(flash, CMD_S25FLXX_SE, offset, len);
@@ -175,7 +168,7 @@ struct spi_flash *spi_flash_probe_spansion(struct spi_slave *spi, u8 *idcode)
 	flash->spi = spi;
 	flash->name = params->name;
 
-	flash->write = spansion_write;
+	flash->write = spi_flash_cmd_write_multi;
 	flash->erase = spansion_erase;
 	flash->read = spi_flash_cmd_read_fast;
 	flash->page_size = params->page_size;

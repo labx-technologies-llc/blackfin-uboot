@@ -117,13 +117,6 @@ static const struct macronix_spi_flash_params macronix_spi_flash_table[] = {
 	},
 };
 
-static int macronix_write(struct spi_flash *flash,
-			  u32 offset, size_t len, const void *buf)
-{
-	return spi_flash_cmd_write_multi(flash, CMD_MX25XX_PP,
-		offset, len, buf);
-}
-
 static int macronix_erase(struct spi_flash *flash, u32 offset, size_t len)
 {
 	return spi_flash_cmd_erase(flash, CMD_MX25XX_BE, offset, len);
@@ -156,7 +149,7 @@ struct spi_flash *spi_flash_probe_macronix(struct spi_slave *spi, u8 *idcode)
 	flash->spi = spi;
 	flash->name = params->name;
 
-	flash->write = macronix_write;
+	flash->write = spi_flash_cmd_write_multi;
 	flash->erase = macronix_erase;
 	flash->read = spi_flash_cmd_read_fast;
 	flash->page_size = params->page_size;
