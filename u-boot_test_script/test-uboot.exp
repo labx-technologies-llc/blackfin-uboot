@@ -65,7 +65,7 @@ set TEST_SOURCE                          1
 set TEST_BASE                            1
 set TEST_BDINFO                          1
 set TEST_IMINFO                          1
-set TEST_BOOTELF                         1
+set TEST_BOOTELF                         0
 set TEST_BOOT_BIG_KERNEL_IMG		 1
 set TEST_BOOTM				 1
 set TEST_PROTECT                         1
@@ -2075,7 +2075,7 @@ while 1 {
 	    set tftpboot_help $TEST_PASS
 	}
 
-	-re  "version\[ ]+- print monitor version" {
+	-re  "version\[ ]+- print .* version" {
 	    set version_help $TEST_PASS
 	}
 
