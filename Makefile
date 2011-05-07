@@ -1141,7 +1141,8 @@ clean:
 	       $(obj)board/trab/trab_fkt   $(obj)board/voiceblue/eeprom   \
 	       $(obj)board/armltd/{integratorap,integratorcp}/u-boot.lds  \
 	       $(obj)u-boot.lds						  \
-	       $(obj)arch/blackfin/cpu/bootrom-asm-offsets.[chs]
+	       $(obj)arch/blackfin/cpu/bootrom-asm-offsets.[chs]	  \
+	       $(obj)arch/blackfin/cpu/init.{lds,elf}
 	@rm -f $(obj)include/bmp_logo.h
 	@rm -f $(obj)lib/asm-offsets.s
 	@rm -f $(obj)nand_spl/{u-boot.lds,u-boot-spl,u-boot-spl.map,System.map}
