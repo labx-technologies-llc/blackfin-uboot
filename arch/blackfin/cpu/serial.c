@@ -126,7 +126,7 @@ static int uart_getc(uint32_t uart_base)
 
 #ifdef CONFIG_DEBUG_SERIAL
 	/* grab & clear the LSR */
-	uint16_t uart_lsr_val = uart_lsr_read();
+	uint16_t uart_lsr_val = uart_lsr_read(uart_base);
 
 	cached_lsr[cache_count] = uart_lsr_val;
 	cached_rbr[cache_count] = uart_rbr_val;
