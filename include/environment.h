@@ -71,6 +71,9 @@
 #  error "do not define CONFIG_ENV_IS_EMBEDDED in your board config"
 #  error "it is calculated automatically for you"
 # endif
+# if (CONFIG_ENV_OFFSET & (CONFIG_ENV_SECT_SIZE - 1))
+#  error env offset not sector aligned
+# endif
 #endif	/* CONFIG_ENV_IS_IN_FLASH */
 
 #if defined(CONFIG_ENV_IS_IN_NAND)
