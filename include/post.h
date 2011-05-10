@@ -78,12 +78,12 @@
 
 static inline ulong post_word_load (void)
 {
-	return in_le32((volatile void *)(_POST_WORD_ADDR));
+	return inl((volatile void *)(_POST_WORD_ADDR));
 }
 
 static inline void post_word_store (ulong value)
 {
-	out_le32((volatile void *)(_POST_WORD_ADDR), value);
+	outl(value, (volatile void *)(_POST_WORD_ADDR));
 }
 #endif /* defined (CONFIG_POST) || defined(CONFIG_LOGBUFFER) */
 #endif /* __ASSEMBLY__ */
