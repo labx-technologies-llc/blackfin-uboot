@@ -7,6 +7,7 @@
  */
 
 #include <common.h>
+#include <malloc.h>
 #include <post.h>
 #include <flash.h>
 
@@ -31,17 +32,21 @@
 
 extern flash_info_t flash_info[];
 
-static void *seed_src_data(ulong *old_len, ulong new_len)
+static void *seed_src_data(void *ptr, ulong *old_len, ulong new_len)
 {
-	unsigned char *ret = (void *)CONFIG_SYS_SDRAM_BASE;
+	unsigned char *p;
 	ulong i;
 
+	p = ptr = realloc(ptr, new_len);
+	if (!ptr)
+		return ptr;
+
 	for (i = *old_len; i < new_len; ++i)
-		ret[i] = i;
+		p[i] = i;
 
 	*old_len = new_len;
 
-	return ret;
+	return ptr;
 }
 
 int flash_post_test(int flags)
@@ -55,6 +60,7 @@ int flash_post_test(int flags)
 	puts("\n");
 
 	len = 0;
+	src = NULL;
 	info = &flash_info[CONFIG_SYS_POST_FLASH_NUM];
 	n_start = CONFIG_SYS_POST_FLASH_START;
 	n_end = CONFIG_SYS_POST_FLASH_END;
@@ -66,10 +72,13 @@ int flash_post_test(int flags)
 		s_len = flash_sector_size(info, n);
 		s_off = s_start - info->start[0];
 
-		src = seed_src_data(&len, s_len);
+		src = seed_src_data(src, &len, s_len);
+		if (!src) {
+			printf("malloc(%#lx) failed\n", s_len);
+			return 1;
+		}
 
-		printf("\tsector %i: %#lx +%#lx",
-			n, s_start, s_len);
+		printf("\tsector %i: %#lx +%#lx", n, s_start, s_len);
 
 		ret = flash_erase(info, n, n + 1);
 		if (ret) {
@@ -89,6 +98,8 @@ int flash_post_test(int flags)
 			break;
 		}
 	}
+
+	free(src);
 
 	return ret;
 }
