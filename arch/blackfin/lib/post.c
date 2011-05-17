@@ -18,18 +18,21 @@ int led_post_test(int flags)
 	unsigned leds[] = { CONFIG_POST_BSPEC1_GPIO_LEDS };
 	int i;
 
+	/* First turn them all off */
 	for (i = 0; i < ARRAY_SIZE(leds); ++i) {
 		if (gpio_request(leds[i], "post")) {
 			printf("could not request gpio %u\n", leds[i]);
 			continue;
 		}
 		gpio_direction_output(leds[i], 0);
+	}
 
+	/* Now turn them on one by one */
+	for (i = 0; i < ARRAY_SIZE(leds); ++i) {
 		printf("LED%i on", i + 1);
 		gpio_set_value(leds[i], 1);
 		udelay(1000000);
 		printf("\b\b\b\b\b\b\b");
-
 		gpio_free(leds[i]);
 	}
 
