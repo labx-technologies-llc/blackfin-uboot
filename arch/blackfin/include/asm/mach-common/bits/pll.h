@@ -20,6 +20,8 @@
 #define SPORT_HYST		0
 #endif
 
+#define MSEL_P			9
+
 /* PLL_DIV Masks */
 #define SSEL			0x000F		/* System Select */
 #define CSEL			0x0030		/* Core Select */
@@ -32,6 +34,9 @@
 #define CCLK_DIV2		CSEL_DIV2
 #define CCLK_DIV4		CSEL_DIV4
 #define CCLK_DIV8		CSEL_DIV8
+
+#define SSEL_P			0
+#define CSEL_P			4
 
 /* PLL_STAT Masks */
 #define ACTIVE_PLLENABLED	0x0001		/* Processor In Active Mode With PLL Enabled */

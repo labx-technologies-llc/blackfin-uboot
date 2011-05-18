@@ -16,17 +16,21 @@
 #include <asm/mach-common/bits/bootrom.h>
 #include <asm/mach-common/bits/core.h>
 #include <asm/mach-common/bits/ebiu.h>
-#include <asm/mach-common/bits/pll.h>
-#include <asm/mach-common/bits/uart.h>
+
+#define BUG() while (1) { asm volatile("emuexcpt;"); }
 
 #define BUG() while (1) { asm volatile("emuexcpt;"); }
 
 #include "serial.h"
 
+#if 0
+
+#include <asm/mach-common/bits/pll.h>
+
 __attribute__((always_inline))
 static inline void serial_init(void)
 {
-	uint32_t uart_base = UART_DLL;
+	uint32_t uart_base = UART_BASE;
 
 #ifdef __ADSPBF54x__
 # ifdef BFIN_BOOT_UART_USE_RTS
@@ -68,13 +72,13 @@ static inline void serial_init(void)
 #endif
 
 	if (BFIN_DEBUG_EARLY_SERIAL) {
-		int ucen = bfin_read16(&pUART->gctl) & UCEN;
+		int enabled = serial_early_enabled(uart_base);
 		serial_early_init(uart_base);
 
 		/* If the UART is off, that means we need to program
 		 * the baud rate ourselves initially.
 		 */
-		if (ucen != UCEN)
+		if (!enabled)
 			serial_early_set_baud(uart_base, CONFIG_BAUDRATE);
 	}
 }
@@ -83,7 +87,7 @@ __attribute__((always_inline))
 static inline void serial_deinit(void)
 {
 #ifdef __ADSPBF54x__
-	uint32_t uart_base = UART_DLL;
+	uint32_t uart_base = UART_BASE;
 
 	if (BFIN_UART_USE_RTS && CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART) {
 		/* clear forced RTS rather than relying on auto RTS */
@@ -95,7 +99,7 @@ static inline void serial_deinit(void)
 __attribute__((always_inline))
 static inline void serial_putc(char c)
 {
-	uint32_t uart_base = UART_DLL;
+	uint32_t uart_base = UART_BASE;
 
 	if (!BFIN_DEBUG_EARLY_SERIAL)
 		return;
@@ -105,7 +109,7 @@ static inline void serial_putc(char c)
 
 	bfin_write16(&pUART->thr, c);
 
-	while (!(bfin_read16(&pUART->lsr) & TEMT))
+	while (!(_lsr_read(pUART) & TEMT))
 		continue;
 }
 
@@ -316,6 +320,7 @@ program_early_devices(ADI_BOOT_DATA *bs, uint *sdivB, uint *divB, uint *vcoB)
 	 * boot.  Once we switch over to u-boot's SPI flash driver, we'll
 	 * increase the speed appropriately.
 	 */
+#ifdef SPI_BAUD
 	if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER) {
 		serial_putc('h');
 		if (BOOTROM_SUPPORTS_SPI_FAST_READ && CONFIG_SPI_BAUD_INITBLOCK < 4)
@@ -323,6 +328,7 @@ program_early_devices(ADI_BOOT_DATA *bs, uint *sdivB, uint *divB, uint *vcoB)
 		bfin_write_SPI_BAUD(CONFIG_SPI_BAUD_INITBLOCK);
 		serial_putc('i');
 	}
+#endif
 
 	serial_putc('j');
 }
@@ -433,7 +439,7 @@ program_clocks(ADI_BOOT_DATA *bs, bool put_into_srfs)
 #elif defined(SICA_IWR0)
 		bfin_write_SICA_IWR0(1);
 		bfin_write_SICA_IWR1(0);
-#else
+#elif defined(SIC_IWR)
 		bfin_write_SIC_IWR(1);
 #endif
 
@@ -482,7 +488,7 @@ program_clocks(ADI_BOOT_DATA *bs, bool put_into_srfs)
 #elif defined(SICA_IWR0)
 		bfin_write_SICA_IWR0(-1);
 		bfin_write_SICA_IWR1(-1);
-#else
+#elif defined(SIC_IWR)
 		bfin_write_SIC_IWR(-1);
 #endif
 
@@ -518,7 +524,7 @@ update_serial_clocks(ADI_BOOT_DATA *bs, uint sdivB, uint divB, uint vcoB)
 		unsigned int quotient;
 		for (quotient = 0; dividend > 0; ++quotient)
 			dividend -= divisor;
-		serial_early_put_div(UART_DLL, quotient - ANOMALY_05000230);
+		serial_early_put_div(UART_BASE, quotient - ANOMALY_05000230);
 		serial_putc('c');
 	}
 
@@ -693,3 +699,28 @@ void initcode(ADI_BOOT_DATA *bs)
 
 	serial_deinit();
 }
+
+#else
+
+#include <asm/mach-common/bits/cgu.h>
+
+#ifndef CONFIG_CGU_CTL_VAL
+# define CONFIG_CGU_CTL_VAL ((CONFIG_VCO_MULT << 8) | CONFIG_CLKIN_HALF)
+#endif
+
+#ifndef CONFIG_CGU_DIV_VAL
+# define CONFIG_CGU_DIV_VAL \
+	((CONFIG_CCLK_DIV   << CSEL_P)   | \
+	 (CONFIG_SCLK0_DIV  << S0SEL_P)  | \
+	 (CONFIG_SYSCLK_DIV << SYSSEL_P) | \
+	 (CONFIG_SCLK1_DIV  << S1SEL_P)  | \
+	 (CONFIG_DCLK_DIV   << DSEL_P)   | \
+	 (CONFIG_OCLK_DIV   << OSEL_P))
+#endif
+
+BOOTROM_CALLED_FUNC_ATTR
+void initcode(ADI_BOOT_DATA *bs)
+{
+}
+
+#endif

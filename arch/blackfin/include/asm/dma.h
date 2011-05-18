@@ -8,68 +8,77 @@
 #ifndef _BLACKFIN_DMA_H_
 #define _BLACKFIN_DMA_H_
 
+#include <linux/types.h>
+#ifdef __ADSPBF60x__
+#include <asm/mach-common/bits/dde.h>
+#else
 #include <asm/mach-common/bits/dma.h>
+#endif
 
 struct dmasg_large {
 	void *next_desc_addr;
-	unsigned long start_addr;
-	unsigned short cfg;
-	unsigned short x_count;
-	short x_modify;
-	unsigned short y_count;
-	short y_modify;
+	u32 start_addr;
+	u16 cfg;
+	u16 x_count;
+	s16 x_modify;
+	u16 y_count;
+	s16 y_modify;
 } __attribute__((packed));
 
 struct dmasg {
-	unsigned long start_addr;
-	unsigned short cfg;
-	unsigned short x_count;
-	short x_modify;
-	unsigned short y_count;
-	short y_modify;
+	u32 start_addr;
+	u16 cfg;
+	u16 x_count;
+	s16 x_modify;
+	u16 y_count;
+	s16 y_modify;
 } __attribute__((packed));
 
+/*
+ * All Blackfin system MMRs are padded to 32bits even if the register
+ * itself is only 16bits.  So use a helper macro to streamline this.
+ */
+#define __BFP(m) m; u16 __pad_##m
 struct dma_register {
-	void *next_desc_ptr;	/* DMA Next Descriptor Pointer register */
-	unsigned long start_addr;	/* DMA Start address  register */
-
-	unsigned short cfg;	/* DMA Configuration register */
-	unsigned short dummy1;	/* DMA Configuration register */
-
-	unsigned long reserved;
-
-	unsigned short x_count;	/* DMA x_count register */
-	unsigned short dummy2;
-
-	short x_modify;	/* DMA x_modify register */
-	unsigned short dummy3;
-
-	unsigned short y_count;	/* DMA y_count register */
-	unsigned short dummy4;
-
-	short y_modify;	/* DMA y_modify register */
-	unsigned short dummy5;
-
-	void *curr_desc_ptr;	/* DMA Current Descriptor Pointer
-					   register */
-	unsigned long curr_addr_ptr;	/* DMA Current Address Pointer
-						   register */
-	unsigned short irq_status;	/* DMA irq status register */
-	unsigned short dummy6;
-
-	unsigned short peripheral_map;	/* DMA peripheral map register */
-	unsigned short dummy7;
-
-	unsigned short curr_x_count;	/* DMA Current x-count register */
-	unsigned short dummy8;
-
-	unsigned long reserved2;
-
-	unsigned short curr_y_count;	/* DMA Current y-count register */
-	unsigned short dummy9;
-
-	unsigned long reserved3;
-
+#ifdef __ADSPBF60x__
+	void *next_desc_ptr;
+	u32 start_addr;
+	u32 config;
+	u32 x_count;
+	s32 x_modify;
+	u32 y_count;
+	s32 y_modify;
+	u32 __pad0[2];
+	void *curr_desc_ptr;
+	void *prev_desc_ptr;
+	void *curr_addr;
+	u32 status;
+	u32 curr_x_count;
+	u32 curr_y_count;
+	u32 __pad1[2];
+	u32 bw_limit;
+	u32 curr_bw_limit;
+	u32 bw_monitor;
+	u32 curr_bw_monitor;
+#else
+	void *next_desc_ptr;
+	u32 start_addr;
+	u16 __BFP(config);
+	u32 __pad0;
+	u16 __BFP(x_count);
+	s16 __BFP(x_modify);
+	u16 __BFP(y_count);
+	s16 __BFP(y_modify);
+	void *curr_desc_ptr;
+	u32 curr_addr_ptr;
+	u16 __BFP(status);
+	u16 __BFP(peripheral_map);
+	u16 __BFP(curr_x_count);
+	u32 __pad1;
+	u16 __BFP(curr_y_count);
+	u32 __pad2;
+#endif
 };
+#undef __BFP
 
 #endif

@@ -34,6 +34,7 @@
 
 #define DMAEN_P			0	/* Channel Enable */
 #define WNR_P			1	/* Channel Direction (W/R*) */
+#define WDSIZE_P		2	/* Transfer Word Size */
 #define DMA2D_P			4	/* 2D/1D* Mode */
 #define RESTART_P		5	/* Restart */
 #define DI_SEL_P		6	/* Data Interrupt Select */
