@@ -349,4 +349,42 @@ void serial_loop(int state)
 
 #endif
 
+#elif defined(CONFIG_UART_MEM)
+
+char serial_logbuf[CONFIG_UART_MEM];
+char *serial_logbuf_head = serial_logbuf;
+
+int serial_init(void)
+{
+	serial_logbuf_head = serial_logbuf;
+	return 0;
+}
+
+void serial_setbrg(void)
+{
+}
+
+int serial_tstc(void)
+{
+	return 0;
+}
+
+int serial_getc(void)
+{
+	return 0;
+}
+
+void serial_putc(const char c)
+{
+	*serial_logbuf_head = c;
+	if (++serial_logbuf_head == serial_logbuf + CONFIG_UART_MEM)
+		serial_logbuf_head = serial_logbuf;
+}
+
+void serial_puts(const char *s)
+{
+	while (*s)
+		serial_putc(*s++);
+}
+
 #endif
