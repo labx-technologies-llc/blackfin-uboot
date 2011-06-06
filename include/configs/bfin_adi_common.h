@@ -277,6 +277,7 @@
  * Flash Settings
  */
 #define CONFIG_FLASH_SHOW_PROGRESS 45
+#define CONFIG_SYS_FLASH_USE_BUFFER_WRITE
 
 /*
  * SPI Settings
