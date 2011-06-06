@@ -274,6 +274,11 @@
 #endif
 
 /*
+ * Flash Settings
+ */
+#define CONFIG_FLASH_SHOW_PROGRESS 45
+
+/*
  * SPI Settings
  */
 #ifdef CONFIG_SPI_FLASH_ALL
