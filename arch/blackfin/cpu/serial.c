@@ -64,7 +64,7 @@ static size_t cache_count;
 static uint16_t uart_lsr_save;
 static uint16_t uart_lsr_read(uint32_t uart_base)
 {
-	uint16_t lsr = bfin_read16(&pUART->lsr);
+	uint16_t lsr = bfin_read(&pUART->lsr);
 	uart_lsr_save |= (lsr & (OE|PE|FE|BI));
 	return lsr | uart_lsr_save;
 }
@@ -72,7 +72,7 @@ static uint16_t uart_lsr_read(uint32_t uart_base)
 static void uart_lsr_clear(uint32_t uart_base)
 {
 	uart_lsr_save = 0;
-	bfin_write16(&pUART->lsr, bfin_read16(&pUART->lsr) | -1);
+	bfin_write(&pUART->lsr, bfin_read(&pUART->lsr) | -1);
 }
 #else
 /* When debugging is disabled, we only care about the DR bit, so if other
@@ -81,11 +81,11 @@ static void uart_lsr_clear(uint32_t uart_base)
  */
 static inline uint16_t uart_lsr_read(uint32_t uart_base)
 {
-	return bfin_read16(&pUART->lsr);
+	return bfin_read(&pUART->lsr);
 }
 static void uart_lsr_clear(uint32_t uart_base)
 {
-	bfin_write16(&pUART->lsr, bfin_read16(&pUART->lsr) | -1);
+	bfin_write(&pUART->lsr, bfin_read(&pUART->lsr) | -1);
 }
 #endif
 
@@ -102,7 +102,7 @@ static void uart_putc(uint32_t uart_base, const char c)
 		continue;
 
 	/* queue the character for transmission */
-	bfin_write16(&pUART->thr, c);
+	bfin_write(&pUART->thr, c);
 	SSYNC();
 
 	WATCHDOG_RESET();
@@ -123,7 +123,7 @@ static int uart_getc(uint32_t uart_base)
 		continue;
 
 	/* grab the new byte */
-	uart_rbr_val = bfin_read16(&pUART->rbr);
+	uart_rbr_val = bfin_read(&pUART->rbr);
 
 #ifdef CONFIG_DEBUG_SERIAL
 	/* grab & clear the LSR */
@@ -137,8 +137,8 @@ static int uart_getc(uint32_t uart_base)
 		uint16_t dll, dlh;
 		printf("\n[SERIAL ERROR]\n");
 		ACCESS_LATCH();
-		dll = bfin_read16(&pUART->dll);
-		dlh = bfin_read16(&pUART->dlh);
+		dll = bfin_read(&pUART->dll);
+		dlh = bfin_read(&pUART->dlh);
 		ACCESS_PORT_IER();
 		printf("\tDLL=0x%x DLH=0x%x\n", dll, dlh);
 		do {
@@ -169,12 +169,12 @@ static void uart_loop(uint32_t uart_base, int state)
 	while (!(uart_lsr_read(uart_base) & TEMT))
 		continue;
 
-	mcr = bfin_read16(&pUART->mcr);
+	mcr = bfin_read(&pUART->mcr);
 	if (state)
 		mcr |= LOOP_ENA | MRTS;
 	else
 		mcr &= ~(LOOP_ENA | MRTS);
-	bfin_write16(&pUART->mcr, mcr);
+	bfin_write(&pUART->mcr, mcr);
 }
 )
 
