@@ -111,8 +111,10 @@
 #ifndef CONFIG_BAUDRATE
 # define CONFIG_BAUDRATE	57600
 #endif
-#define CONFIG_SERIAL_MULTI
-#define CONFIG_SYS_BFIN_UART
+#ifndef CONFIG_DEBUG_EARLY_SERIAL
+# define CONFIG_SERIAL_MULTI
+# define CONFIG_SYS_BFIN_UART
+#endif
 
 /*
  * Debug Settings
