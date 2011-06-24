@@ -562,9 +562,7 @@ LIST_x86="$(boards_by_arch i386)"
 ## Nios-II Systems
 #########################################################################
 
-LIST_nios2="$(boards_by_arch nios2)
-	nios2-generic	\
-"
+LIST_nios2="$(boards_by_arch nios2)"
 
 #########################################################################
 ## MicroBlaze Systems
