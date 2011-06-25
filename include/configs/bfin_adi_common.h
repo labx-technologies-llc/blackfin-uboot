@@ -203,7 +203,8 @@
 	"nc=" \
 		"set ncip ${serverip};" \
 		"set stdin nc;" \
-		"set stdout nc" \
+		"set stdout nc;" \
+		"set stderr nc" \
 		"\0"
 # else
 #  define NETCONSOLE_ENV
