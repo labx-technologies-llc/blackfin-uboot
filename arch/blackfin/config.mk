@@ -23,7 +23,7 @@
 
 CROSS_COMPILE ?= bfin-uclinux-
 
-STANDALONE_LOAD_ADDR = 0x1000 -m elf32bfin
+CONFIG_STANDALONE_LOAD_ADDR ?= 0x1000 -m elf32bfin
 
 ifeq ($(CONFIG_BFIN_CPU),)
 CONFIG_BFIN_CPU := \
@@ -75,10 +75,6 @@ LDR_FLAGS += $(LDR_FLAGS-y)
 
 # Set some default LDR flags based on boot mode.
 LDR_FLAGS += $(LDR_FLAGS-$(CONFIG_BFIN_BOOT_MODE))
-
-ifeq ($(wildcard $(TOPDIR)/board/$(BOARD)/u-boot.lds*),)
-LDSCRIPT = $(obj)arch/$(ARCH)/lib/u-boot.lds.S
-endif
 
 ifneq ($(CONFIG_SYS_TEXT_BASE),)
 $(error do not set CONFIG_SYS_TEXT_BASE for Blackfin boards)

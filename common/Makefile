@@ -51,6 +51,9 @@ COBJS-y += env_common.o
 COBJS-$(CONFIG_ENV_IS_IN_DATAFLASH) += env_dataflash.o
 COBJS-$(CONFIG_ENV_IS_IN_EEPROM) += env_eeprom.o
 XCOBJS-$(CONFIG_ENV_IS_EMBEDDED) += env_embedded.o
+COBJS-$(CONFIG_ENV_IS_IN_EEPROM) += env_embedded.o
+XCOBJS-$(CONFIG_ENV_IS_IN_FLASH) += env_embedded.o
+COBJS-$(CONFIG_ENV_IS_IN_NVRAM) += env_embedded.o
 COBJS-$(CONFIG_ENV_IS_IN_FLASH) += env_flash.o
 COBJS-$(CONFIG_ENV_IS_IN_MG_DISK) += env_mgdisk.o
 COBJS-$(CONFIG_ENV_IS_IN_MMC) += env_mmc.o
@@ -114,7 +117,11 @@ COBJS-$(CONFIG_CMD_MFSL) += cmd_mfsl.o
 COBJS-$(CONFIG_CMD_MG_DISK) += cmd_mgdisk.o
 COBJS-$(CONFIG_MII) += miiphyutil.o
 COBJS-$(CONFIG_CMD_MII) += miiphyutil.o
+COBJS-$(CONFIG_PHYLIB) += miiphyutil.o
 COBJS-$(CONFIG_CMD_MII) += cmd_mii.o
+ifdef CONFIG_PHYLIB
+COBJS-$(CONFIG_CMD_MII) += cmd_mdio.o
+endif
 COBJS-$(CONFIG_CMD_MISC) += cmd_misc.o
 COBJS-$(CONFIG_CMD_MMC) += cmd_mmc.o
 COBJS-$(CONFIG_CMD_MMC_SPI) += cmd_mmc_spi.o
@@ -153,7 +160,6 @@ COBJS-$(CONFIG_USB_STORAGE) += usb_storage.o
 endif
 COBJS-$(CONFIG_CMD_XIMG) += cmd_ximg.o
 COBJS-$(CONFIG_YAFFS2) += cmd_yaffs2.o
-COBJS-$(CONFIG_VFD) += cmd_vfd.o
 
 # others
 COBJS-$(CONFIG_DDR_SPD) += ddr_spd.o

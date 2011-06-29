@@ -51,10 +51,18 @@
 # if defined(CONFIG_ENV_ADDR_REDUND) && !defined(CONFIG_ENV_SIZE_REDUND)
 #  define CONFIG_ENV_SIZE_REDUND	CONFIG_ENV_SIZE
 # endif
+# if (CONFIG_ENV_ADDR >= CONFIG_SYS_MONITOR_BASE) && \
+     ((CONFIG_ENV_ADDR + CONFIG_ENV_SIZE) <= (CONFIG_SYS_MONITOR_BASE + CONFIG_SYS_MONITOR_LEN))
+#  define ENV_IS_EMBEDDED	1
+# endif
 # if defined(CONFIG_ENV_ADDR_REDUND) || defined(CONFIG_ENV_OFFSET_REDUND)
 #  define CONFIG_SYS_REDUNDAND_ENVIRONMENT	1
 # endif
 #endif	/* CONFIG_ENV_IS_IN_FLASH */
+
+#if defined(ENV_IS_EMBEDDED) && !defined(CONFIG_BUILD_ENVCRC)
+# define CONFIG_BUILD_ENVCRC 1
+#endif
 
 #ifdef CONFIG_SYS_REDUNDAND_ENVIRONMENT
 # define ENV_HEADER_SIZE	(sizeof(uint32_t) + 1)
@@ -67,11 +75,14 @@
 
 extern uint32_t crc32 (uint32_t, const unsigned char *, unsigned int);
 
+#ifdef CONFIG_BUILD_ENVCRC
 extern unsigned int env_size;
 extern unsigned char environment;
+#endif	/* CONFIG_BUILD_ENVCRC */
 
 int main (int argc, char **argv)
 {
+#ifdef CONFIG_BUILD_ENVCRC
 	unsigned char pad = 0x00;
 	uint32_t crc;
 	unsigned char *envptr = &environment,
@@ -126,6 +137,8 @@ int main (int argc, char **argv)
 	} else {
 		printf ("0x%08X\n", crc);
 	}
-
+#else
+	printf ("0\n");
+#endif
 	return EXIT_SUCCESS;
 }
