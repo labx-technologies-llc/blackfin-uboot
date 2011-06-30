@@ -52,7 +52,7 @@ static void bfin_reset(void)
 	/* The BF526 ROM will crash during reset */
 #if defined(__ADSPBF522__) || defined(__ADSPBF524__) || defined(__ADSPBF526__)
 	/* Seems to be fixed with newer parts though ... */
-	if (__SILICON_REVISION__ < 2 && bfin_revid() < 2)
+	if (__SILICON_REVISION__ < 1 && bfin_revid() < 1)
 		bfin_read_SWRST();
 #endif
 
