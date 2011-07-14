@@ -57,4 +57,4 @@ cd $UBOOT_SCRIPTS/logs
 mkdir -p $UBOOT_SCRIPTS/logs/$TIMESTAMP
 cp -fr *log test_results uboot.diff /tftpboot/u-boot.bin.* /tftpboot/u-boot.ldr.* $UBOOT_SCRIPTS/logs/$TIMESTAMP
 cp -f summary $UBOOT_SCRIPTS/logs/$TIMESTAMP/summary
-rm $UBOOT_SRC/u-boot.bin $UBOOT_SRC/u-boot.ldr
+rm $UBOOT_SRC/u-boot.bin $UBOOT_SRC/u-boot.ldr        >/dev/null  2>&1

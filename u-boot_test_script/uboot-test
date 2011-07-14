@@ -50,7 +50,10 @@ if [ $# -gt 2 ] ; then
 fi
 
 export PATH=/opt/uClinux/bfin-uclinux/bin:/opt/uClinux/bfin-elf/bin:/opt/uClinux/bfin-linux-uclibc/bin:$PATH
-rm /tftpboot/u-boot.bin
+if [ -e /tftpboot/u-boot.bin ] || [ -e /tftpboot/u-boot.ldr ] ; then
+  rm /tftpboot/u-boot.bin /tftpboot/u-boot.ldr
+fi
+                         
 
 echo "Start building u-boot of $1 . Clock config is $2 ."
 cd $CHECKOUT/u-boot/
