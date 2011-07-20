@@ -27,7 +27,7 @@
  *	SCLK1 = SCLK / SCLK1_DIV
  */
 /* CONFIG_CLKIN_HZ is any value in Hz					*/
-#define CONFIG_CLKIN_HZ			40000000
+#define CONFIG_CLKIN_HZ			50000000
 /* CLKIN_HALF controls the DF bit in PLL_CTL      0 = CLKIN		*/
 /*                                                1 = CLKIN / 2		*/
 #define CONFIG_CLKIN_HALF		0
@@ -78,6 +78,7 @@
 /*
  * Network Settings
  */
+#if 0
 #define CONFIG_CMD_NET
 #define CONFIG_NET_MULTI
 #define CONFIG_DESIGNWARE_ETH
@@ -85,6 +86,7 @@
 #define CONFIG_DW_AUTONEG
 /*#define CONFIG_DW_SEARCH_PHY*/
 #define CONFIG_HOSTNAME		(bf609-ezkit)
+#endif
 
 
 /*
@@ -122,9 +124,11 @@
 #undef CONFIG_BOOTM_RTEMS
 #undef CONFIG_BOOTM_LINUX
 
+#if 0
 #define CONFIG_UART_MEM 1024
 #undef CONFIG_UART_CONSOLE
 #undef CONFIG_JTAG_CONSOLE
 #undef CONFIG_UART_CONSOLE_IS_JTAG
+#endif
 
 #endif
