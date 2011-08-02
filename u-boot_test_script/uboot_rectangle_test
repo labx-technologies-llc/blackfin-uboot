@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 USER=/home/test/work/cruise
 CHECKOUT=$USER/checkouts

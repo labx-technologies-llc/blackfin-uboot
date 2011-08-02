@@ -563,7 +563,7 @@ exec svn info /home/$user/checkouts/u-boot >> $logfile
 
 
 step "Spawn bash on host"
-spawn /bin/sh
+spawn /bin/bash
 set host_spawn_id $spawn_id
 set timeout 5
 send "export PATH=/opt/uClinux/bfin-uclinux/bin:/opt/uClinux/bfin-elf/bin:/opt/uClinux/bfin-linux-uclibc/bin:\$PATH\n"
@@ -792,7 +792,7 @@ if { $TEST_JTAG_CONSOLE } {
     }
 
 #start test
-    spawn /bin/sh
+    spawn /bin/bash
     set root_spawn_id $spawn_id
     set timeout 8
     expect -re $HOST_KERNEL_PROMPT
@@ -846,7 +846,7 @@ if { $TEST_JTAG_CONSOLE } {
     }
 
     step "gdb_spawn_id: run bfin-uclinux-gdb"
-    spawn /bin/sh
+    spawn /bin/bash
     set gdb_spawn_id $spawn_id
     set timeout 8
     expect -re $HOST_KERNEL_PROMPT
@@ -885,7 +885,7 @@ if { $TEST_JTAG_CONSOLE } {
     }
 
     step "netcat_spawn_id: run netcat as jtag console window"
-    spawn /bin/sh
+    spawn /bin/bash
     set netcat_spawn_id $spawn_id
     set timeout 5
     expect -re $HOST_KERNEL_PROMPT
