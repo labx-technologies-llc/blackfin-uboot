@@ -230,7 +230,7 @@ proc ethtool_tftp { speed status } {
     sleep 1.5
     while 1 {
         expect {
-            "Password:" {
+            "assword" {
                 send "$password\r"
                 break
             }
@@ -276,7 +276,7 @@ proc ethtool_tftp { speed status } {
     set timeout 5
     while 1 {
         expect {
-            -re  "\[Pp]assword:" {
+            -re  "\[Pp]assword" {
                 send "$password\r"
                 break
             }
@@ -770,7 +770,7 @@ proc all_done { } {
     cd $starting_dir
     log_file -noappend $summary_logfile
     send_user "\ntest started $test_started\n\n"
-    send_user "Test Results\n"
+    send_user "Test Results (cclk:$core_clk Mhz,sclk:$system_clk Mhz,icache:$icache_status,dcache:$dcache_status)\n"
     send_user "=====================================\n"
 
     send_user "  Total Tests   :   $total_tests\n"
@@ -841,7 +841,10 @@ proc all_done { } {
 
 # End of results
     log_file
-    exec /home/test/work/cruise/test_scripts/u-boot/summary.sh $summary_logfile
+    
+    if {[ catch { exec /home/test/work/cruise/test_scripts/u-boot/summary.sh $summary_logfile } errmsg ]} {
+                send_user "\nsummary_logfile has some error!\n"
+    } 
 
     log_file $logfile
 
@@ -1741,7 +1744,6 @@ for {set i 0} {$i < $RESET_RETRIES} {incr i} {
 #  time it takes to get from 7 down to 6.  If we never see a 7, then
 #  the bootdelay is too low; it needs to be at least 7.
 #
-
 
 step "Test countdown time period"
 set temp_status_flag $TEST_PASS

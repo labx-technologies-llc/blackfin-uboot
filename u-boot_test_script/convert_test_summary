@@ -1,0 +1,95 @@
+#!/bin/bash 
+THIS_LOG=`pwd`
+testsuite_name="testsuite_name"
+class_name="class_name"
+test_time=0
+testsuite_status=1
+icache_status=none
+dcache_status=none
+core_clock=none
+system_clock=none
+
+if [ -n "$1" ] ; then
+    THIS_LOG=$1
+fi
+result_xml=result.xml
+
+if [ -n "$2" ] ; then
+    testsuite_status=$2
+fi
+
+
+if [ ! -d test_summary ] ; then
+    mkdir test_summary
+fi
+
+rm -fr $result_xml
+
+
+#################### Function declaration ####################
+
+# Usage of function gen_testcase:
+# gen_testcase "$result" "$class_name" "$case_name" "$test_time" "$result_xml" "$err_msg"
+gen_testcase () {
+    if [ $1 == "PASS" ] ; then
+        echo -e "<testcase classname=\"$2\" name=\"$3\" time=\"$4\"></testcase>" >>$5
+    elif [ $1 == "FAIL" ] || [ $1 == "STATUS" ] ; then
+        echo -e "<testcase classname=\"$2\" name=\"$3\" time=\"$4\">\n<failure message=\"test fail\">\n$6\n</failure>\n</testcase>" >> $5
+    else
+        echo -e "<testcase classname=\"$2\" name=\"$3\" time=\"$4\">\n<failure message=\"N/A\">\nUnknow result!\n</failure>\n</testcase>" >>$5
+    fi
+}
+
+# Usage of function complete_xml:
+# complete_xml "$testsuite_name" "$err_num" "$failure_num" "$skip_num" "$test_num" "$overall_time" "$result_xml"
+complete_xml () {
+    sed -i '1i\<?xml version=\"1.0\" encoding=\"utf-8\"?>' $7
+    sed -i "2i\<testsuite name=\"$1\" errors=\"$2\" failures=\"$3\" skips=\"$4\" tests=\"$5\" time=\"$6\">" $7
+    sed -i '$a\</testsuite>' $7
+}
+
+
+if [ $testsuite_status == 0 ] ; then
+    result=PASS
+else
+    result=FAIL
+fi
+    case_name=uboot.diff
+    err_msg=`sed -n '1,$p' uboot.diff `
+    class_name="uboot"
+    ((fail_num += 1))
+    gen_testcase "$result" "$class_name" "$case_name" "$test_time" "$result_xml" "$err_msg"
+
+# generate xml content for failed test log
+#test_fail_log="`grep -nr 'test started' *log* --binary-files=text` "
+cp summary summary_bak
+n=`grep -c "Test Results" summary`
+
+for i in `seq 0 $((n - 1))`
+do
+    result=FAIL
+    m=`sed -n '/^$/{n;/^$/=;}' summary | head -1`
+    err_msg=`sed -n '1,'$m'p' summary `
+    echo "$err_msg" > err_file
+    sed -n ''$m',$p' summary > summary_remain
+    icache_status=`grep  "icache_status" err_file | awk '{print$3}'`
+    dcache_status=`grep  "dcache_status" err_file | awk '{print$3}'`
+    core_clock=`grep  "Core Clock" err_file | awk '{print$4}'`
+    system_clock=`grep "System Clock" err_file | awk '{print$4}'`
+    class_name="uboot"
+    case_name="cclk($core_clock)-sclk($system_clock)-icache($icache_status)-dcache($dcache_status)"
+    ((fail_num += 1))
+    cp summary_remain summary
+    gen_testcase "$result" "$class_name" "$case_name" "$test_time" "$result_xml" "$err_msg"
+done
+
+
+# generate complete result.xml
+err_num=0
+skip_num=0
+test_num=$((fail_num + pass_num))
+overall_time=0
+complete_xml "$testsuite_name" "$err_num" "$fail_num" "$skip_num" "$test_num" "$overall_time" "$result_xml"
+
+
+cp summary_bak summary
