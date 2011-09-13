@@ -792,7 +792,7 @@ proc all_done { } {
     }
 
     send_user "\n"
-    send_user "Passing Tests\n"
+    send_user "Passed Tests\n"
     send_user "=====================================\n"
     for {set i [expr [llength $result_matrix]-1]} {$i>=0} {incr i -1} {
         set x [lindex $result_matrix $i]
