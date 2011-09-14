@@ -8,7 +8,8 @@ UBOOT_SRC_ROOT=$CHECKOUT/u-boot
 source $UBOOT_SCRIPTS/host_config.sh
 
 UBOOT_SRC=$CHECKOUT/u-boot/
-TIMESTAMP=`date +%Y_%m_%d_%H_%M`
+#TIMESTAMP=`date +%Y_%m_%d_%H_%M`
+TIMESTAMP=$1
 
 cd $UBOOT_SCRIPTS/logs
 rm -f *log test_results uboot.diff /tftpboot/u-boot.bin.* /tftpboot/u-boot.ldr.*
@@ -41,7 +42,8 @@ if [ $e != 0 ] ; then
     svn info $UBOOT_SRC |grep "Revision" >> summary
 fi
 $UBOOT_SCRIPTS/compare_uboot_results lastrun-summary  summary > uboot.diff
-if [ $? = 0 ] ; then
+test_status=$?
+if [ $test_status = 0 ] ; then
     echo  "success"  > test_results
     cat uboot.diff
     # echo  "Don't send email of uboot test."
@@ -55,6 +57,8 @@ fi
 
 cd $UBOOT_SCRIPTS/logs
 mkdir -p $UBOOT_SCRIPTS/logs/$TIMESTAMP
+$UBOOT_SCRIPTS/convert_test_summary summary $TIMESTAMP $test_status 
+
 cp -fr *log test_results uboot.diff /tftpboot/u-boot.bin.* /tftpboot/u-boot.ldr.* $UBOOT_SCRIPTS/logs/$TIMESTAMP
 cp -f summary $UBOOT_SCRIPTS/logs/$TIMESTAMP/summary
 rm -f $UBOOT_SRC/u-boot.bin $UBOOT_SRC/u-boot.ldr       
