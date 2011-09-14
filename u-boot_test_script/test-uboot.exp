@@ -1694,7 +1694,7 @@ for {set i 0} {$i < $RESET_RETRIES} {incr i} {
     set timeout 25
     expect {
 
-        -re "Clock.*VCO: (\[0-9.]+) MHz, Core: (\[0-9.]+) MHz, System: (\[0-9.]+) MHz" {
+        -re "Clock.*VCO: (\[0-9]+)\[.]*\[0-9]* MHz, Core: (\[0-9]+)\[.]*\[0-9]* MHz, System: (\[0-9]+)\[.]*\[0-9]* MHz" {
                 set vco_clk $expect_out(1,string)
                 set core_clk $expect_out(2,string)
                 set system_clk $expect_out(3,string)
