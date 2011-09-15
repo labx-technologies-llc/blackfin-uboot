@@ -195,6 +195,7 @@ ENTRY(_start)
 	call _memcpy_ASM;
 #endif
 
+.Lnorelocate:
 	/* Initialize BSS section ... we know that memset() does not
 	 * use the BSS, so it is safe to call here.  The bootrom LDR
 	 * takes care of clearing things for us.
@@ -206,8 +207,6 @@ ENTRY(_start)
 	r2.l = __bss_len;
 	r2.h = __bss_len;
 	call _memset;
-
-.Lnorelocate:
 
 	/* Setup the actual stack in external memory */
 	sp.h = HI(CONFIG_STACKBASE);
