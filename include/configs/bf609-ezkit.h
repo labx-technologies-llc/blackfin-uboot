@@ -15,7 +15,7 @@
 #define __ADSPBF609__ 1
 #undef __ADSPBF592__
 #undef __ADSPBF59x__
-#define CONFIG_BFIN_CPU             (bf592-0.0)
+#define CONFIG_BFIN_CPU             bf609-0.0
 #define CONFIG_BFIN_BOOT_MODE       BFIN_BOOT_PARA
 
 
