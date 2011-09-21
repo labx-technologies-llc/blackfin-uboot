@@ -23,16 +23,18 @@
 
 #include "serial.h"
 
-#if 0
-
+#ifndef __ADSPBF60x__
+#include <asm/mach-common/bits/cgu.h>
+#else
 #include <asm/mach-common/bits/pll.h>
+#endif
 
 __attribute__((always_inline))
 static inline void serial_init(void)
 {
 	uint32_t uart_base = UART_BASE;
 
-#ifdef __ADSPBF54x__
+#if defined(__ADSPBF54x__) || defined(__ADSPBF60x__)
 # ifdef BFIN_BOOT_UART_USE_RTS
 #  define BFIN_UART_USE_RTS 1
 # else
@@ -42,7 +44,11 @@ static inline void serial_init(void)
 		size_t i;
 
 		/* force RTS rather than relying on auto RTS */
+#if BFIN_UART_HW_VER < 4
 		bfin_write16(&pUART->mcr, bfin_read16(&pUART->mcr) | FCPOL);
+#else
+		bfin_write32(&pUART->control, bfin_read32(&pUART->control) | FCPOL);
+#endif
 
 		/* Wait for the line to clear up.  We cannot rely on UART
 		 * registers as none of them reflect the status of the RSR.
@@ -86,12 +92,16 @@ static inline void serial_init(void)
 __attribute__((always_inline))
 static inline void serial_deinit(void)
 {
-#ifdef __ADSPBF54x__
+#if defined(__ADSPBF54x__) || defined(__ADSPBF60x__)
 	uint32_t uart_base = UART_BASE;
 
 	if (BFIN_UART_USE_RTS && CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART) {
 		/* clear forced RTS rather than relying on auto RTS */
+#if BFIN_UART_HW_VER < 4
 		bfin_write16(&pUART->mcr, bfin_read16(&pUART->mcr) & ~FCPOL);
+#else
+		bfin_write32(&pUART->control, bfin_read32(&pUART->control) & ~FCPOL);
+#endif
 	}
 #endif
 }
@@ -107,7 +117,7 @@ static inline void serial_putc(char c)
 	if (c == '\n')
 		serial_putc('\r');
 
-	bfin_write16(&pUART->thr, c);
+	bfin_write(&pUART->thr, c);
 
 	while (!(_lsr_read(pUART) & TEMT))
 		continue;
@@ -155,6 +165,24 @@ program_nmi_handler(void)
 #ifdef SPI0_BAUD
 # define bfin_write_SPI_BAUD bfin_write_SPI0_BAUD
 #endif
+
+#ifdef __ADSPBF60x__
+
+#ifndef CONFIG_CGU_CTL_VAL
+# define CONFIG_CGU_CTL_VAL ((CONFIG_VCO_MULT << 8) | CONFIG_CLKIN_HALF)
+#endif
+
+#ifndef CONFIG_CGU_DIV_VAL
+# define CONFIG_CGU_DIV_VAL \
+	((CONFIG_CCLK_DIV   << CSEL_P)   | \
+	 (CONFIG_SCLK0_DIV  << S0SEL_P)  | \
+	 (CONFIG_SYSCLK_DIV << SYSSEL_P) | \
+	 (CONFIG_SCLK1_DIV  << S1SEL_P)  | \
+	 (CONFIG_DCLK_DIV   << DSEL_P)   | \
+	 (CONFIG_OCLK_DIV   << OSEL_P))
+#endif
+
+#else /* __ADSPBF60x__ */
 
 /* PLL_DIV defines */
 #ifndef CONFIG_PLL_DIV_VAL
@@ -279,6 +307,8 @@ program_nmi_handler(void)
 # endif
 #endif
 
+#endif /*  __ADSPBF60x__ */
+
 __attribute__((always_inline)) static inline void
 program_early_devices(ADI_BOOT_DATA *bs, uint *sdivB, uint *divB, uint *vcoB)
 {
@@ -287,8 +317,12 @@ program_early_devices(ADI_BOOT_DATA *bs, uint *sdivB, uint *divB, uint *vcoB)
 	/* Save the clock pieces that are used in baud rate calculation */
 	if (BFIN_DEBUG_EARLY_SERIAL || CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART) {
 		serial_putc('b');
+#ifdef __ADSPBF60x__
+
+#else
 		*sdivB = bfin_read_PLL_DIV() & 0xf;
 		*vcoB = (bfin_read_PLL_CTL() >> 9) & 0x3f;
+#endif
 		*divB = serial_early_get_div();
 		serial_putc('c');
 	}
@@ -341,6 +375,10 @@ maybe_self_refresh(ADI_BOOT_DATA *bs)
 	if (!CONFIG_MEM_SIZE)
 		return false;
 
+#ifdef __ADSPBF60x__
+
+#else /* __ADSPBF60x__ */
+
 	/* If external memory is enabled, put it into self refresh first. */
 #if defined(EBIU_RSTCTL)
 	if (bfin_read_EBIU_RSTCTL() & DDR_SRESET) {
@@ -356,6 +394,7 @@ maybe_self_refresh(ADI_BOOT_DATA *bs)
 	}
 #endif
 
+#endif /* __ADSPBF60x__ */
 	serial_putc('c');
 
 	return false;
@@ -367,6 +406,10 @@ program_clocks(ADI_BOOT_DATA *bs, bool put_into_srfs)
 	u16 vr_ctl;
 
 	serial_putc('a');
+
+#ifdef __ADSPBF60x__
+
+#else /* __ADSPBF60x__ */
 
 	vr_ctl = bfin_read_VR_CTL();
 
@@ -499,6 +542,8 @@ program_clocks(ADI_BOOT_DATA *bs, bool put_into_srfs)
 	SPORT_NOISE_HYSTERESIS();
 #endif
 
+#endif /* __ADSPBF60x__ */
+
 	serial_putc('o');
 
 	return vr_ctl;
@@ -517,14 +562,18 @@ update_serial_clocks(ADI_BOOT_DATA *bs, uint sdivB, uint divB, uint vcoB)
 	if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART) {
 		serial_putc('b');
 		unsigned int sdivR, vcoR;
+#ifdef __ADSPBF60x__
+
+#else
 		sdivR = bfin_read_PLL_DIV() & 0xf;
 		vcoR = (bfin_read_PLL_CTL() >> 9) & 0x3f;
+#endif
 		int dividend = sdivB * divB * vcoR;
 		int divisor = vcoB * sdivR;
 		unsigned int quotient;
 		for (quotient = 0; dividend > 0; ++quotient)
 			dividend -= divisor;
-		serial_early_put_div(UART_BASE, quotient - ANOMALY_05000230);
+		serial_early_put_div(quotient - ANOMALY_05000230);
 		serial_putc('c');
 	}
 
@@ -540,6 +589,10 @@ program_memory_controller(ADI_BOOT_DATA *bs, bool put_into_srfs)
 		return;
 
 	serial_putc('b');
+
+#ifdef __ADSPBF60x__
+
+#else /* __ADSPBF60x__ */
 
 	/* Program the external memory controller before we come out of
 	 * self-refresh.  This only works with our SDRAM controller.
@@ -593,6 +646,7 @@ program_memory_controller(ADI_BOOT_DATA *bs, bool put_into_srfs)
 # endif
 #endif
 
+#endif /* __ADSPBF60x__ */
 	serial_putc('e');
 }
 
@@ -700,27 +754,3 @@ void initcode(ADI_BOOT_DATA *bs)
 	serial_deinit();
 }
 
-#else
-
-#include <asm/mach-common/bits/cgu.h>
-
-#ifndef CONFIG_CGU_CTL_VAL
-# define CONFIG_CGU_CTL_VAL ((CONFIG_VCO_MULT << 8) | CONFIG_CLKIN_HALF)
-#endif
-
-#ifndef CONFIG_CGU_DIV_VAL
-# define CONFIG_CGU_DIV_VAL \
-	((CONFIG_CCLK_DIV   << CSEL_P)   | \
-	 (CONFIG_SCLK0_DIV  << S0SEL_P)  | \
-	 (CONFIG_SYSCLK_DIV << SYSSEL_P) | \
-	 (CONFIG_SCLK1_DIV  << S1SEL_P)  | \
-	 (CONFIG_DCLK_DIV   << DSEL_P)   | \
-	 (CONFIG_OCLK_DIV   << OSEL_P))
-#endif
-
-BOOTROM_CALLED_FUNC_ATTR
-void initcode(ADI_BOOT_DATA *bs)
-{
-}
-
-#endif

@@ -15,6 +15,8 @@
 # define serial_putc(c)
 #endif
 
+#ifndef __ADSPBF60x__
+
 #ifndef CONFIG_EBIU_RSTCTL_VAL
 # define CONFIG_EBIU_RSTCTL_VAL 0 /* only MDDRENABLE is useful */
 #endif
@@ -30,6 +32,8 @@
 # error invalid EBIU_DDRQUE value: must not set reserved bits
 #endif
 
+#endif /* __ADSPBF60x__ */
+
 __attribute__((always_inline)) static inline void
 program_async_controller(ADI_BOOT_DATA *bs)
 {
@@ -44,6 +48,10 @@ program_async_controller(ADI_BOOT_DATA *bs)
 #endif
 
 	serial_putc('a');
+
+#ifdef __ADSPBF60x__
+
+#else /* __ADSPBF60x__ */
 
 	/* Program the async banks controller. */
 #ifdef EBIU_AMGCTL
@@ -112,6 +120,7 @@ program_async_controller(ADI_BOOT_DATA *bs)
 # endif
 #endif
 
+#endif /* __ADSPBF60x__ */
 	serial_putc('d');
 }
 

@@ -459,4 +459,12 @@
 #define bfin_read_MDMA_D1_CURR_Y_COUNT() bfin_read16(MDMA_D1_CURR_Y_COUNT)
 #define bfin_write_MDMA_D1_CURR_Y_COUNT(val) bfin_write16(MDMA_D1_CURR_Y_COUNT, val)
 
+
+#define bfin_read_WDOG_CNT() bfin_read32(WDOG0_CNT)
+#define bfin_write_WDOG_CNT(val) bfin_write32(WDOG0_CNT, val)
+#define bfin_read_WDOG_CTL() bfin_read32(WDOG0_CTL)
+#define bfin_write_WDOG_CTL(val) bfin_write32(WDOG0_CTL, val)
+#define bfin_read_SPI_BAUD() bfin_read32(SPI0_CLK)
+#define bfin_write_SPI_BAUD(val) bfin_write32(SPI0_CLK, val)
+
 #endif /* __BFIN_CDEF_ADSP_BF504_proc__ */

@@ -212,6 +212,25 @@ static inline void serial_early_set_baud(uint32_t uart_base, uint32_t baud)
 }
 
 __attribute__((always_inline))
+static inline void serial_early_put_div(uint16_t divisor)
+{
+	uint32_t uart_base = UART_BASE;
+
+	/* Set DLAB in LCR to Access DLL and DLH */
+	ACCESS_LATCH();
+	SSYNC();
+
+	/* Program the divisor to get the baud rate we want */
+	bfin_write(&pUART->dll, LOB(divisor));
+	bfin_write(&pUART->dlh, HIB(divisor));
+	SSYNC();
+
+	/* Clear DLAB in LCR to Access THR RBR IER */
+	ACCESS_PORT_IER();
+	SSYNC();
+}
+
+__attribute__((always_inline))
 static inline uint16_t serial_early_get_div(void)
 {
 	uint32_t uart_base = UART_BASE;

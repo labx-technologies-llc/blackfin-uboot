@@ -102,7 +102,14 @@ static inline void serial_early_set_baud(uint32_t uart_base, uint32_t baud)
 }
 
 __attribute__((always_inline))
-static inline uint16_t serial_early_get_div(void)
+static inline void serial_early_put_div(uint32_t divisor)
+{
+	uint32_t uart_base = UART_BASE;
+	bfin_write(&pUART->clock, divisor);
+}
+
+__attribute__((always_inline))
+static inline uint32_t serial_early_get_div(void)
 {
 	uint32_t uart_base = UART_BASE;
 	return bfin_read(&pUART->clock);
