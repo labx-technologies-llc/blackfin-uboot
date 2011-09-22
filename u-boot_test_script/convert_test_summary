@@ -1,4 +1,4 @@
-#!/bin/bash -x  
+#!/bin/bash   
 this_log=`pwd`
 testsuite_name="uboot"
 class_name="uboot"
@@ -31,6 +31,8 @@ if [ ! -d test_summary ] ; then
     mkdir test_summary
 fi
 
+#cd $timestamp
+
 rm -fr $result_xml
 touch $result_xml
 
@@ -42,9 +44,9 @@ gen_testcase () {
     if [ $1 == "PASS" ] ; then
         echo -e "<testcase classname=\"$2\" name=\"$3\" time=\"$4\"></testcase>" >>$5
     elif [ $1 == "FAIL" ] ; then
-        echo -e "<testcase classname=\"$2\" name=\"$3\" time=\"$4\">\n<failure message=\"$6\">\n$6\n</failure>\n</testcase>" >> $5
+        echo -e "<testcase classname=\"$2\" name=\"$3\" time=\"$4\">\n<failure message=\"$6\">\n$7\n</failure>\n</testcase>" >> $5
     elif [ $1 == "SKIP" ] ; then
-        echo -e "<testcase classname=\"$2\" name=\"$3\" time=\"0\"></testcase>" >> $5
+        echo -e "<testcase classname=\"$2\" name=\"$3\" time=\"0\">\n<skipped>\n$6\n</skipped>\n</testcase>" >> $5
     else
         echo -e "<testcase classname=\"$2\" name=\"$3\" time=\"$4\">\n<failure message=\"N/A\">\nUnknow result!\n</failure>\n</testcase>" >>$5
     fi
@@ -59,16 +61,16 @@ complete_xml () {
 }
 
 
-if [ $testsuite_status == 0 ] ; then
-    result=PASS
-else
-    result=FAIL
-fi
-    case_name=uboot.diff
-    part_msg=`sed -n '1,$p' uboot.diff `
-    class_name="uboot"
-    err_msg=`cat uboot.diff`
-    gen_testcase "$result" "$class_name" "$case_name" "$test_time" "$result_xml" "$err_msg"
+#if [ $testsuite_status == 0 ] ; then
+#    result=PASS
+#else
+#    result=FAIL
+#fi
+ #   case_name=uboot.diff
+#    part_msg=`sed -n '1,$p' uboot.diff `
+ #   class_name="uboot"
+ #   ((fail_num += 1))
+  #  gen_testcase "$result" "$class_name" "$case_name" "$test_time" "$result_xml" "$err_msg"
 
 # generate xml content for failed test log
 #test_fail_log="`grep -nr 'test started' *log* --binary-files=text` "
@@ -91,6 +93,7 @@ do
     line_head=`sed -n '/^Test Results/='  part_file |head -1`
     line_end=`sed -n "$line_head,$ {/^$/= }" part_file |head -1`
 
+    echo "eeeeeeee $line_head rrrrrrr $line_end \n"
     t=$((line_end - line_head))
     l=0
     for j in `seq $((line_head + 2))  $((line_end - 1 )) `
@@ -102,6 +105,7 @@ do
    ((l += 1))
     done
    # cd $this_log/logs/
+    #log_file=`grep -rl "icache $icache_status" "$timestamp" -m 1 | xargs grep -rl "dcache $dcache_status"  -m 1 | xargs  grep -l "Core" -m 1  `
     folder="$this_log/$timestamp"
     log_file=`grep -rl "icache $icache_status" "$this_log/$timestamp" -m 1 | xargs grep -rl "dcache $dcache_status"  -m 1 |head -1`
 
@@ -114,6 +118,7 @@ for i in `seq 0 $((l - 1))`
 do
     case_status[$i]=` echo ${case_status[$i]} | tr -d ''`
     err_msg=''
+    err_msg_full=''
 
     if [ "${case_status[$i]}" == "Tests Not Run" ] ; then
     result=SKIP
@@ -130,20 +135,23 @@ do
     line_head=`sed -n "/^${case_status[$i]}/="  part_file |head -1`
     line_end=`sed -n "$line_head,$ {/^$/= }" part_file |head -1`
 
+   # echo "eeeeeeee $line_head rrrrrrr $line_end \n"
     t=$((line_end - line_head))
     for j in `seq $((line_head + 2 )) $((line_end - 1 ))`
     do
     case_name=`sed -n ''$j'p' part_file |sed -e  's/-//' -e 's/[[:space:]]*//' | awk ' {print$0}'`
 
     if [ "${case_status[$i]}" == "Failed Tests" ] ; then
-    err_msg=`grep -r "Recording result: $case_name" -B10 $log_file | sed -e 's/<//g' -e 's/&//g'`
+    err_msg=`grep -r "Recording result: $case_name" -B10 $log_file | sed -e 's/<//g' -e 's/&//g'| tr -d "\010" ` # tr command is used to delete Ctrl+ H \010.
+    err_msg_full=`grep -r "Recording result: $case_name" -B40 $log_file | sed -e 's/<//g' -e 's/&//g'| tr -d "\010" ` # tr command is used to delete Ctrl+ H \010.
     echo -e "\n********* ${case_status[$i]}($case_name):  \n$err_msg "
     fi
 
 #   echo "$case_name  "
-    gen_testcase "$result" "$class_name" "$case_name" "$test_time" "$result_xml" "$err_msg"
+    gen_testcase "$result" "$class_name" "$case_name" "$test_time" "$result_xml" "$err_msg" "$err_msg_full"
     done
    
+
     cp summary_remain summary
 done
 

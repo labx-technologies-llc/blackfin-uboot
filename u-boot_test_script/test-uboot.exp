@@ -838,6 +838,7 @@ proc all_done { } {
     send_user "  icache_status = $icache_status\n"
     send_user "  dcache_status = $dcache_status\n"
     send_user "\n"
+    send_user "\n"
 
 # End of results
     log_file
