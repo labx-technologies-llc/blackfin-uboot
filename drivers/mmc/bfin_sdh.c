@@ -114,7 +114,7 @@ static int sdh_setup_data(struct mmc *mmc, struct mmc_data *data)
 	u16 data_ctl = 0;
 	u16 dma_cfg = 0;
 	int ret = 0;
-	unsigned long data_size = data->blocksize * data->blocks;
+	unsigned long data_size = data->blocksize;
 
 	/* Don't support write yet. */
 	if (data->flags & MMC_DATA_WRITE)
