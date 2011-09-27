@@ -27,52 +27,54 @@
  *	SCLK1 = SCLK / SCLK1_DIV
  */
 /* CONFIG_CLKIN_HZ is any value in Hz					*/
-#define CONFIG_CLKIN_HZ			50000000
+#define CONFIG_CLKIN_HZ			25000000
 /* CLKIN_HALF controls the DF bit in PLL_CTL      0 = CLKIN		*/
 /*                                                1 = CLKIN / 2		*/
 #define CONFIG_CLKIN_HALF		0
-/* PLL_BYPASS controls the BYPASS bit in PLL_CTL  0 = do not bypass	*/
-/*                                                1 = bypass PLL	*/
-#define CONFIG_PLL_BYPASS		0
+
 /* VCO_MULT controls the MSEL (multiplier) bits in PLL_CTL		*/
 /* Values can range from 0-127 (where 0 means 128)			*/
 #define CONFIG_VCO_MULT			16
+
 /* CCLK_DIV controls the core clock divider				*/
 /* Values can range from 0-31 (where 0 means 32)			*/
 #define CONFIG_CCLK_DIV			1
 /* SCLK_DIV controls the system clock divider				*/
 /* Values can range from 0-31 (where 0 means 32)			*/
-#define CONFIG_SYSCLK_DIV		5
+#define CONFIG_SYSCLK_DIV		2
 /* Values can range from 0-7 (where 0 means 8)				*/
-#define CONFIG_SCLK0_DIV		5
-#define CONFIG_SCLK1_DIV		5
+#define CONFIG_SCLK0_DIV		2
+#define CONFIG_SCLK1_DIV		2
 /* DCLK_DIV controls the DDR clock divider				*/
 /* Values can range from 0-31 (where 0 means 32)			*/
-#define CONFIG_DCLK_DIV			5
+#define CONFIG_DCLK_DIV			2
 /* OCLK_DIV controls the output clock divider				*/
 /* Values can range from 0-127 (where 0 means 128)			*/
-#define CONFIG_OCLK_DIV			5
+#define CONFIG_OCLK_DIV			16
 
 #define CONFIG_BFIN_GET_VCO CONFIG_CLKIN_HZ
-#define CONFIG_BFIN_GET_CCLK (get_vco() / 6)
-#define CONFIG_BFIN_GET_SCLK (get_cclk() / 4)
-#define CONFIG_BFIN_GET_SCLK0 (get_cclk() / 4)
-#define CONFIG_BFIN_GET_SCLK1 (get_cclk() / 4)
+#define CONFIG_PLL_CLK  (get_vco()*CONFIG_VCO_MULT)
+
+#define CONFIG_BFIN_GET_CCLK (CONFIG_PLL_CLK/CONFIG_CCLK_DIV)
+#define CONFIG_CCLK_HZ CONFIG_BFIN_GET_CCLK
+
+#define CONFIG_BFIN_GET_SCLK (CONFIG_PLL_CLK/CONFIG_SYSCLK_DIV)
+#define CONFIG_BFIN_GET_SCLK0 (get_sclk()/CONFIG_SCLK0_DIV)
+/* #define CONFIG_BFIN_GET_SCLK1 (get_cclk() / 4) */
 
 
 /*
  * Memory Settings
  */
-#define CONFIG_MEM_SIZE		0
+#define CONFIG_MEM_SIZE		32
 
 #define CONFIG_SMC_GCTL_VAL	0x00000010
 #define CONFIG_SMC_B1CTL_VAL	0x01002001
 #define CONFIG_SMC_B1TIM_VAL	0x08070977
 #define CONFIG_SMC_B1ETIM_VAL	0x00092231
 
-#define CONFIG_SYS_MONITOR_BASE (L1_DATA_A_SRAM_END)
-#define CONFIG_SYS_MONITOR_LEN	(4 * 1024)
-#define CONFIG_SYS_MALLOC_LEN	(4 * 1024)
+#define CONFIG_SYS_MONITOR_LEN	(256 * 1024)
+#define CONFIG_SYS_MALLOC_LEN	(256 * 1024)
 
 
 /*
