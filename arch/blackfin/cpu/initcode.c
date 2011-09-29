@@ -24,9 +24,9 @@
 #include "serial.h"
 
 #ifndef __ADSPBF60x__
-#include <asm/mach-common/bits/cgu.h>
-#else
 #include <asm/mach-common/bits/pll.h>
+#else
+#include <asm/mach-common/bits/cgu.h>
 #endif
 
 __attribute__((always_inline))
@@ -409,6 +409,8 @@ program_clocks(ADI_BOOT_DATA *bs, bool put_into_srfs)
 
 #ifdef __ADSPBF60x__
 
+	bfin_write_CGU_CTL(CONFIG_CGU_CTL_VAL);
+	bfin_write_CGU_DIV(CONFIG_CGU_DIV_VAL);
 #else /* __ADSPBF60x__ */
 
 	vr_ctl = bfin_read_VR_CTL();
