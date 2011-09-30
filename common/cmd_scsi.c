@@ -46,7 +46,7 @@
 #define SCSI_VEND_ID 0x10b9
 #define SCSI_DEV_ID  0x5288
 
-#else
+#elif !defined(CONFIG_SCSI_AHCI_PLAT)
 #error no scsi device defined
 #endif
 
@@ -174,7 +174,7 @@ removable:
 		scsi_curr_dev = -1;
 }
 
-
+#ifdef CONFIG_PCI
 void scsi_init(void)
 {
 	int busdevfunc;
@@ -192,12 +192,14 @@ void scsi_init(void)
 	scsi_low_level_init(busdevfunc);
 	scsi_scan(1);
 }
+#endif
 
+#ifdef CONFIG_PARTITIONS
 block_dev_desc_t * scsi_get_dev(int dev)
 {
 	return (dev < CONFIG_SYS_SCSI_MAX_DEVICE) ? &scsi_dev_desc[dev] : NULL;
 }
-
+#endif
 
 /******************************************************************************
  * scsi boot command intepreter. Derived from diskboot
