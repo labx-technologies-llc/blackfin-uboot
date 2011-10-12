@@ -8,13 +8,8 @@ UBOOT_SRC_ROOT=$CHECKOUT/u-boot
 source $UBOOT_SCRIPTS/host_config.sh
 
 UBOOT_SRC=$CHECKOUT/u-boot/
-if [ $# -gt 0 ] ; then
+#TIMESTAMP=`date +%Y_%m_%d_%H_%M`
 TIMESTAMP=$1
-else
-TIMESTAMP=`date +%Y_%m_%d_%H_%M`
-fi
-
-echo "##### TIMESTAMP: $TIMESTAMP."
 
 cd $UBOOT_SCRIPTS/logs
 rm -f *log test_results uboot.diff /tftpboot/u-boot.bin.* /tftpboot/u-boot.ldr.*
