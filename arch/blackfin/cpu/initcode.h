@@ -15,9 +15,6 @@
 # define serial_putc(c)
 #endif
 
-#ifndef BFIN_IN_INITCODE
-#define serial_putc(c)
-#endif
 #ifndef __ADSPBF60x__
 
 #ifndef CONFIG_EBIU_RSTCTL_VAL
