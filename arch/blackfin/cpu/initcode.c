@@ -411,6 +411,9 @@ program_clocks(ADI_BOOT_DATA *bs, bool put_into_srfs)
 
 	bfin_write_CGU_CTL(CONFIG_CGU_CTL_VAL);
 	bfin_write_CGU_DIV(CONFIG_CGU_DIV_VAL);
+	while (!((bfin_read_CGU_STAT() & 0xC) == 0x4))
+		continue;
+
 #else /* __ADSPBF60x__ */
 
 	vr_ctl = bfin_read_VR_CTL();
