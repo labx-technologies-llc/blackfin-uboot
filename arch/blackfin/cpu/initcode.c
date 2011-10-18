@@ -174,6 +174,7 @@ program_nmi_handler(void)
 
 #ifndef CONFIG_CGU_DIV_VAL
 # define CONFIG_CGU_DIV_VAL \
+	(1 << UPDT_P) | \
 	((CONFIG_CCLK_DIV   << CSEL_P)   | \
 	 (CONFIG_SCLK0_DIV  << S0SEL_P)  | \
 	 (CONFIG_SYSCLK_DIV << SYSSEL_P) | \
