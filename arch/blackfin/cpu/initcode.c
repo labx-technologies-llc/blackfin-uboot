@@ -183,6 +183,28 @@ program_nmi_handler(void)
 	 (CONFIG_OCLK_DIV   << OSEL_P))
 #endif
 
+#ifndef CONFIG_DMC_DDRCTL
+# define CONFIG_DMC_DDRCTL (0x00000404)
+#endif
+#ifndef CONFIG_DMC_DDRCFG
+# define CONFIG_DMC_DDRCFG (0x00000422)
+#endif
+#ifndef CONFIG_DMC_DDRTR0
+# define CONFIG_DMC_DDRTR0 (0x20b08323)
+#endif
+#ifndef CONFIG_DMC_DDRTR1
+# define CONFIG_DMC_DDRTR1 (0x201a061a)
+#endif
+#ifndef CONFIG_DMC_DDRTR2
+# define CONFIG_DMC_DDRTR2 (0x0032020a)
+#endif
+#ifndef CONFIG_DMC_DDRMR
+# define CONFIG_DMC_DDRMR  (0x00000642)
+#endif
+#ifndef CONFIG_DMC_DDREMR1
+# define CONFIG_DMC_DDREMR1 (0x0)
+#endif
+
 #else /* __ADSPBF60x__ */
 
 /* PLL_DIV defines */
@@ -412,7 +434,7 @@ program_clocks(ADI_BOOT_DATA *bs, bool put_into_srfs)
 
 	bfin_write_CGU_CTL(CONFIG_CGU_CTL_VAL);
 	bfin_write_CGU_DIV(CONFIG_CGU_DIV_VAL);
-	while (!(bfin_read_CGU_STAT() & CLKSALGN))
+	while (bfin_read_CGU_STAT() & CLKSALGN)
 		continue;
 
 #else /* __ADSPBF60x__ */
@@ -590,13 +612,33 @@ __attribute__((always_inline)) static inline void
 program_memory_controller(ADI_BOOT_DATA *bs, bool put_into_srfs)
 {
 	serial_putc('a');
-
+/*
 	if (!CONFIG_MEM_SIZE)
 		return;
-
+*/
 	serial_putc('b');
 
 #ifdef __ADSPBF60x__
+	int dlldatacycle;
+	int dll_ctl;
+
+	bfin_write_DDR0_CFG(CONFIG_DMC_DDRCFG);
+	bfin_write_DDR0_TR0(CONFIG_DMC_DDRTR0);
+	bfin_write_DDR0_TR1(CONFIG_DMC_DDRTR1);
+	bfin_write_DDR0_TR2(CONFIG_DMC_DDRTR2);
+	bfin_write_DDR0_MR(CONFIG_DMC_DDRMR);
+	bfin_write_DDR0_EMR1(CONFIG_DMC_DDREMR1);
+	bfin_write_DDR0_CTL(CONFIG_DMC_DDRCTL);
+
+	while (!(bfin_read_DDR0_STAT() & 0x4))
+		continue;
+
+	dlldatacycle = (bfin_read_DDR0_STAT() & 0x00f00000) >> 20;
+	dll_ctl = bfin_read_DDR0_DLLCTL();
+	dll_ctl &= 0x0ff;
+	bfin_write_DDR0_DLLCTL(dll_ctl | (dlldatacycle << 8));
+
+	serial_putc('!');
 
 #else /* __ADSPBF60x__ */
 

@@ -47,7 +47,7 @@
 #define CONFIG_SCLK1_DIV		2
 /* DCLK_DIV controls the DDR clock divider				*/
 /* Values can range from 0-31 (where 0 means 32)			*/
-#define CONFIG_DCLK_DIV			2
+#define CONFIG_DCLK_DIV			3
 /* OCLK_DIV controls the output clock divider				*/
 /* Values can range from 0-127 (where 0 means 128)			*/
 #define CONFIG_OCLK_DIV			16
