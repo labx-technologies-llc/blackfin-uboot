@@ -52,10 +52,10 @@ static inline void serial_early_do_portmux(void)
 	switch (CONFIG_UART_CONSOLE) {
 	case 0:
 		DO_MUX(D, 7, 8, 2);
-		break; /* Port E; PE7 and PE8 */
+		break; /* Port D; PD7 and PD8; function 2 */
 	case 1:
 		DO_MUX(G, 15, 14, 1);
-		break; /* Port H; PH0 and PH1 */
+		break; /* Port G; PG15 and PH14; function 1 */
 	}
 	SSYNC();
 #else
