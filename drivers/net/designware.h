@@ -53,6 +53,7 @@ struct eth_mac_regs {
 };
 
 /* MAC configuration register definitions */
+#define CRC_STRIP		(1 << 25)
 #define FRAMEBURSTENABLE	(1 << 21)
 #define MII_PORTSELECT		(1 << 15)
 #define FES_100			(1 << 14)
@@ -86,7 +87,9 @@ struct eth_dma_regs {
 	u32 status;		/* 0x14 */
 	u32 opmode;		/* 0x18 */
 	u32 intenable;		/* 0x1c */
-	u8 reserved[40];
+	u32 reserved1[2];
+	u32 axibus;		/* 0x28 */
+	u32 reserved2[7];
 	u32 currhosttxdesc;	/* 0x48 */
 	u32 currhostrxdesc;	/* 0x4c */
 	u32 currhosttxbuffaddr;	/* 0x50 */
@@ -96,6 +99,7 @@ struct eth_dma_regs {
 #define DW_DMA_BASE_OFFSET	(0x1000)
 
 /* Bus mode register definitions */
+#define RXDMA_PBL8	        (8 << 17)
 #define FIXEDBURST		(1 << 16)
 #define PRIORXTX_41		(3 << 14)
 #define PRIORXTX_31		(2 << 14)
@@ -117,8 +121,14 @@ struct eth_dma_regs {
 #define STOREFORWARD		(1 << 21)
 #define FLUSHTXFIFO		(1 << 20)
 #define TXSTART			(1 << 13)
+#define FEF			(1 << 7)
+#define FUF			(1 << 6)
 #define TXSECONDFRAME		(1 << 2)
 #define RXSTART			(1 << 1)
+
+/* AXI bus mode register */
+#define BLEN4                   (1 << 1)
+#define UNDEF                   (1 << 0)
 
 /* Descriptior related definitions */
 #define MAC_MAX_FRAME_SZ	(2048)

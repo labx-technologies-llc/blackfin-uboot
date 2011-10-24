@@ -148,13 +148,14 @@ static int dw_eth_init(struct eth_device *dev, bd_t *bis)
 	if (mac_reset(dev) < 0)
 		return -1;
 
-	writel(FIXEDBURST | PRIORXTX_41 | BURST_16,
-			&dma_p->busmode);
+	writel(RXDMA_PBL8, &dma_p->busmode);
 
-	writel(FLUSHTXFIFO | readl(&dma_p->opmode), &dma_p->opmode);
-	writel(STOREFORWARD | TXSECONDFRAME, &dma_p->opmode);
+	writel(FUF | FEF, &dma_p->opmode);
+	writel(BLEN4 | UNDEF, &dma_p->axibus);
+	writel(0x80000015, &mac_p->framefilt);
+	writel(0x6, &mac_p->flowcontrol);
 
-	conf = FRAMEBURSTENABLE | DISABLERXOWN;
+	conf = FRAMEBURSTENABLE | FES_100 | CRC_STRIP;
 
 	if (priv->speed != SPEED_1000M)
 		conf |= MII_PORTSELECT;

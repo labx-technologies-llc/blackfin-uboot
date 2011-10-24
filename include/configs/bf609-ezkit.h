@@ -80,16 +80,23 @@
 /*
  * Network Settings
  */
-#if 0
 #define CONFIG_CMD_NET
 #define CONFIG_NET_MULTI
 #define CONFIG_DESIGNWARE_ETH
-#define CONFIG_DW_PORTS		3
+#define CONFIG_DW_PORTS		1
 #define CONFIG_DW_AUTONEG
 /*#define CONFIG_DW_SEARCH_PHY*/
-#define CONFIG_HOSTNAME		(bf609-ezkit)
-#endif
+#define CONFIG_HOSTNAME		bf609-ezkit
+#define CONFIG_CMD_PING
+#define CONFIG_NETMASK		255.255.255.0
+#define CONFIG_IPADDR		10.100.4.50
+#define CONFIG_SERVERIP	        10.100.4.174
+#define CONFIG_CMD_MII
+#define CONFIG_MII
+#define CONFIG_ETHADDR	        00:E0:22:FE:BD:B8
+#define CONFIG_DW_ALTDESCRIPTOR
 
+/* i2c Settings */
 #define CONFIG_BFIN_TWI_I2C	1
 #define CONFIG_HARD_I2C		1
 #define CONFIG_CMD_I2C

@@ -32,14 +32,24 @@ int board_early_init_f(void)
 }
 
 #ifdef CONFIG_DESIGNWARE_ETH
+#define TWI_ADDR 0x20
 int board_eth_init(bd_t *bis)
 {
 	int ret = 0;
+	uchar idira = 0x0;
+	uchar lata = 0xff;
 
 	if (CONFIG_DW_PORTS & 1) {
 		static const unsigned short pins[] = P_RMII0;
-		if (!peripheral_request_list(pins, "emac0"))
-			ret += designware_initialize(0, EMAC0_MACCFG, 1);
+		if (!peripheral_request_list(pins, "emac0")) {
+			/* enable phy clk */
+			ret = i2c_write(TWI_ADDR, 0x0, 1, &idira, 1);
+			if (!ret) {
+				ret = i2c_write(TWI_ADDR, 0x14, 1, &lata, 1);
+				if (!ret)
+					ret += designware_initialize(0, EMAC0_MACCFG, 1);
+			}
+		}
 	}
 
 	if (CONFIG_DW_PORTS & 2) {
