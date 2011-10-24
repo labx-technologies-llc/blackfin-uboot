@@ -43,6 +43,8 @@ typedef uint32_t uart_lsr_t;
 __attribute__((always_inline))
 static inline void serial_early_do_portmux(void)
 {
+	bfin_write((int *)0xFFC03180, 0x180);
+	bfin_write((int *)0xFFC031b0, 0x14000);
 }
 
 __attribute__((always_inline))
