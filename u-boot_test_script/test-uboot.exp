@@ -1793,8 +1793,6 @@ if {$temp_status_flag==$TEST_PASS} {
     }
 }
 
-
-##############################################################################################
 ##############################################################################################
 
 if { $TEST_VERSION } {
@@ -2740,16 +2738,33 @@ record_test_measurement $ave_saveenv_time_loc $saveenv_time_ave
 record_test_result $savenv_loc $saveenv_result
 record_test_result $printenv_loc $printenv_result
 
+wait_for_uboot
+# Reboot out of the kernel and back to u-boot.
+send -s "reset\r"
+set timeout 20
+    while 1 {
+        expect {
+            "Hit any key" {
+             sleep 2
+             send "\r"
+             break
+            }
+            timeout {
+                send_user "ERROR: u-boot failed to reset\n"
+                #recover
+                break
+            }
+        }
+    }
 
 }
+
 
 #############################################################################################
 
 if {  $TEST_PING } {
 
 expect ">"
-send "\r"
-wait_for_uboot
 
 step "ping test"
 set timeout 80
@@ -2759,8 +2774,11 @@ set max_ping_cmd_time 0
 set min_ping_cmd_time $timeout
 set sum_ping_cmd_time 0
 
+set send_slow {1 0.5}
 for {set i 0} {$i < $PING_ITERATIONS} { incr i } {
    set ping_status $TEST_FAIL
+   send "\r"
+   wait_for_uboot
    send -s "ping $host_ipaddr\r"
 
    set temp_time [time {
@@ -2768,7 +2786,7 @@ for {set i 0} {$i < $PING_ITERATIONS} { incr i } {
          expect {
 
             "is alive" {
-               send_user "got a good ping response\n"
+               send_user "got a good ping response: the $i time!\n"
                set ping_status $TEST_PASS
                incr ping_successes
             }
@@ -2816,7 +2834,6 @@ record_test_result $ping_loc $ping_result
 
 
 }
-
 #############################################################################################
 
 if { $TEST_SOURCE } {
