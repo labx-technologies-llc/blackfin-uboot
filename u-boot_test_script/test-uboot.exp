@@ -636,7 +636,7 @@ proc record_test_result { test_num result } {
         if {[ catch { eval exec grep -nrl {"===== Recording result: $y is pass"} [glob $log_dir/\*/\*$search_log] } errmsg ]} {
             send_user "Fail to find last passed $y result!\n\n"
         } else {
-            set pass_files [ eval exec grep -nrl {"===== Recording result: $y is pass"} [glob $log_dir/\*/\*$search_log] ]
+            set pass_files [ eval exec grep -nrl {"===== Recording result: $y is pass"} [glob $log_dir/\*/\*$search_log] | sort | tail -1 ]
             set last_pass_dir [exec echo $pass_files | awk -F/ {{print $9}} | sort -u | tail -n 1 ]
 
             if {[ catch { exec grep -E "Revision: \[0-9]+" $log_dir/$last_pass_dir/summary } errmsg ]} {
@@ -3027,7 +3027,7 @@ if { $TEST_BDINFO } {
             -re "flashsize += 0x[format "%08x" [expr $BDINFO_FLASHSIZE]]" {
                 set flashsize_result $TEST_PASS
             }
-            -re "ethaddr += \[A-F0-9]\[A-F0-9]:\[A-F0-9]\[A-F0-9]:\[A-F0-9]\[A-F0-9]:\[A-F0-9]\[A-F0-9]:\[A-F0-9]\[A-F0-9]:\[A-F0-9]\[A-F0-9]" {
+            -re "ethaddr += \[a-fA-F0-9]\[a-fA-F0-9]:\[a-fA-F0-9]\[a-fA-F0-9]:\[a-fA-F0-9]\[a-fA-F0-9]:\[a-fA-F0-9]\[a-fA-F0-9]:\[a-fA-F0-9]\[a-fA-F0-9]:\[a-fA-F0-9]\[a-fA-F0-9]" {
                 set ethaddr_result $TEST_PASS
             }
             -re "ip_addr += \[A-F0-9]+\.\[A-F0-9]+\.\[A-F0-9]+\.\[A-F0-9]+" {
