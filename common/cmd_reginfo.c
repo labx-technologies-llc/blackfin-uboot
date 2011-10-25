@@ -190,7 +190,7 @@ int do_reginfo (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 
 #elif defined(CONFIG_BLACKFIN)
 	puts("\nSystem Configuration registers\n");
-
+#ifndef __ADSPBF60x__
 	puts("\nPLL Registers\n");
 	printf("\tPLL_DIV:   0x%04x   PLL_CTL:      0x%04x\n",
 		bfin_read_PLL_DIV(), bfin_read_PLL_CTL());
@@ -226,7 +226,7 @@ int do_reginfo (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	printf("\tEBIU_SDSTAT:  0x%04x   EBIU_SDGCTL:  0x%08x\n",
 		bfin_read_EBIU_SDSTAT(), bfin_read_EBIU_SDGCTL());
 # endif
-
+#endif
 #endif /* CONFIG_BLACKFIN */
 
 	return 0;

@@ -80,29 +80,22 @@
 /*
  * Network Settings
  */
-#define CONFIG_CMD_NET
-#define CONFIG_NET_MULTI
+#define ADI_CMDS_NETWORK	1
+#define CONFIG_NETCONSOLE	1
+#define CONFIG_NET_MULTI	1
+#define CONFIG_HOSTNAME		bf609-ezkit
 #define CONFIG_DESIGNWARE_ETH
 #define CONFIG_DW_PORTS		1
 #define CONFIG_DW_AUTONEG
-/*#define CONFIG_DW_SEARCH_PHY*/
-#define CONFIG_HOSTNAME		bf609-ezkit
-#define CONFIG_CMD_PING
-#define CONFIG_NETMASK		255.255.255.0
-#define CONFIG_IPADDR		10.100.4.50
-#define CONFIG_SERVERIP	        10.100.4.174
+#define CONFIG_DW_ALTDESCRIPTOR
+#define CONFIG_CMD_NET
 #define CONFIG_CMD_MII
 #define CONFIG_MII
-#define CONFIG_ETHADDR	        00:E0:22:FE:BD:B8
-#define CONFIG_DW_ALTDESCRIPTOR
+#define CONFIG_ETHADDR	02:80:ad:20:31:e8
 
 /* i2c Settings */
 #define CONFIG_BFIN_TWI_I2C	1
 #define CONFIG_HARD_I2C		1
-#define CONFIG_CMD_I2C
-#define CONFIG_SOFT_I2C_READ_REPEATED_START
-#define CONFIG_SYS_I2C_SPEED 50000
-#define CONFIG_SYS_I2C_SLAVE 0
 
 /*
  * Flash Settings
@@ -117,7 +110,7 @@
  * Env Storage Settings
  */
 #define CONFIG_ENV_IS_NOWHERE
-#define CONFIG_ENV_SIZE 0x400
+#define CONFIG_ENV_SIZE 0x600
 #undef CONFIG_CMD_EXPORTENV
 #undef CONFIG_CMD_IMPORTENV
 
@@ -133,11 +126,6 @@
 #define CONFIG_KALLSYMS		1
 
 #define CONFIG_CMD_MEMORY
-#undef CONFIG_GZIP
-#undef CONFIG_ZLIB
-#undef CONFIG_CMD_BOOTM
-#undef CONFIG_BOOTM_RTEMS
-#undef CONFIG_BOOTM_LINUX
 
 #if 0
 #define CONFIG_UART_MEM 1024
@@ -146,4 +134,8 @@
 #undef CONFIG_UART_CONSOLE_IS_JTAG
 #endif
 
+/*
+ * Pull in common ADI header for remaining command/environment setup
+ */
+#include <configs/bfin_adi_common.h>
 #endif
