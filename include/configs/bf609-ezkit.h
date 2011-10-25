@@ -62,11 +62,10 @@
 #define CONFIG_BFIN_GET_SCLK0 (get_sclk()/CONFIG_SCLK0_DIV)
 /* #define CONFIG_BFIN_GET_SCLK1 (get_cclk() / 4) */
 
-
 /*
  * Memory Settings
  */
-#define CONFIG_MEM_SIZE		32
+#define CONFIG_MEM_SIZE		128
 
 #define CONFIG_SMC_GCTL_VAL	0x00000010
 #define CONFIG_SMC_B1CTL_VAL	0x01002001
