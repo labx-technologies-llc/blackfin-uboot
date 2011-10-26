@@ -1948,7 +1948,7 @@ wait_for_uboot
 step "Wait 60 seconds, reset board, and check date again"
 sleep 60
 send -s "reset\r"
-
+sleep 3
 step "Wait for uboot countdown"
 while 1 {
     expect {
