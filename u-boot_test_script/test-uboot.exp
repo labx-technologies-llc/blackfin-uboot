@@ -1671,6 +1671,7 @@ if { $where_are_we == "uboot" } {
     expect $UBOOT_PROMPT
     send_user "sending reset\n"
     send -s "reset\r"
+    sleep 3
 } else {
     if { $where_are_we == "kernel" } {
 	set timeout 16
@@ -2532,7 +2533,6 @@ record_test_result $mm_loc $temp_status_flag
 #############################################################################################
 
 if {  $TEST_RESET } {
-
 send "\r"
 wait_for_uboot
 
@@ -2544,7 +2544,7 @@ for {set i 0} { $i<$RESET_ITERATIONS} {incr i} {
    set temp_status_flag $TEST_FAIL
 
    send -s "reset\r"
-
+  sleep 5
    while 1 {
       expect {
 
@@ -2676,6 +2676,7 @@ for {set i 0} {$i < $SAVEENV_ITERATIONS} {incr i} {
     set timeout 15
     wait_for_uboot
     send -s "reset\r"
+    sleep 3
     while 1 {
 	expect {
 
@@ -2741,6 +2742,7 @@ record_test_result $printenv_loc $printenv_result
 wait_for_uboot
 # Reboot out of the kernel and back to u-boot.
 send -s "reset\r"
+sleep 3
 set timeout 20
     while 1 {
         expect {
@@ -3697,6 +3699,7 @@ the cp and cmp test\n"
 
 # Reboot out of the kernel and back to u-boot.
 send -s "reset\r"
+sleep 3
 set timeout 20
     while 1 {
         expect {
@@ -4004,6 +4007,7 @@ if {  $TEST_JFFS2 } {
     }
 
     send -s "reset\r"
+    sleep 3
     set timeout 20
     while 1 {
         expect {
@@ -4100,6 +4104,7 @@ if {  $TEST_JFFS2 } {
     record_test_result $jffs2_loc $jffs2_result
 
     send -s "reset\r"
+    sleep 3
     set timeout 20
     while 1 {
         expect {
@@ -4198,6 +4203,7 @@ if {  $TEST_BOOTM } {
     }
 
     send -s " reset\r"
+    sleep 3
     set timeout 20
     while 1 {
         expect {
@@ -4454,6 +4460,7 @@ if {  $TEST_DMA } {
     sleep 1
 
     send -s "reset\r"
+    sleep 3
     set timeout 20
     while 1 {
         expect {
@@ -4606,6 +4613,7 @@ if { $TEST_MMC } {
     #Reboot out of the kernel and back to u-boot.
     if { $mmc_result == $TEST_PASS } {
         send "reboot\r"
+        sleep 3
     } else {
         recover
     }
@@ -5027,6 +5035,7 @@ if {  $TEST_TFTP } {
 
             step "Reset the board and boot from flash"
             send -s "reset\r"
+            sleep 3
             set timeout 20
             while 1 {
                 expect {
@@ -5086,6 +5095,7 @@ if {  $TEST_TFTP } {
 
                 step "Reboot"
                 send -s "reboot\r"
+                sleep 3
 
                 set timeout 10
                 while 1 {
