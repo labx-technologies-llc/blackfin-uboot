@@ -2244,6 +2244,7 @@
 #define DMA20_BWLCNT_CUR            0xFFC073C4         /* DMA20 Bandwidth Limit Count Current */
 #define DMA20_BWMCNT                0xFFC073C8         /* DMA20 Bandwidth Monitor Count */
 #define DMA20_BWMCNT_CUR            0xFFC073CC         /* DMA20 Bandwidth Monitor Count Current */
+#define MDMA_S0_NEXT_DESC_PTR DMA21_DSCPTR_NXT
 #define DMA21_DSCPTR_NXT            0xFFC09000         /* DMA21 Pointer to Next Initial Descriptor */
 #define DMA21_ADDRSTART             0xFFC09004         /* DMA21 Start Address of Current Buffer */
 #define DMA21_CFG                   0xFFC09008         /* DMA21 Configuration Register */
@@ -2261,6 +2262,7 @@
 #define DMA21_BWLCNT_CUR            0xFFC09044         /* DMA21 Bandwidth Limit Count Current */
 #define DMA21_BWMCNT                0xFFC09048         /* DMA21 Bandwidth Monitor Count */
 #define DMA21_BWMCNT_CUR            0xFFC0904C         /* DMA21 Bandwidth Monitor Count Current */
+#define MDMA_D0_NEXT_DESC_PTR DMA22_DSCPTR_NXT
 #define DMA22_DSCPTR_NXT            0xFFC09080         /* DMA22 Pointer to Next Initial Descriptor */
 #define DMA22_ADDRSTART             0xFFC09084         /* DMA22 Start Address of Current Buffer */
 #define DMA22_CFG                   0xFFC09088         /* DMA22 Configuration Register */
@@ -2278,7 +2280,6 @@
 #define DMA22_BWLCNT_CUR            0xFFC090C4         /* DMA22 Bandwidth Limit Count Current */
 #define DMA22_BWMCNT                0xFFC090C8         /* DMA22 Bandwidth Monitor Count */
 #define DMA22_BWMCNT_CUR            0xFFC090CC         /* DMA22 Bandwidth Monitor Count Current */
-#define MDMA_S0_NEXT_DESC_PTR DMA27_DSCPTR_NXT
 #define DMA23_DSCPTR_NXT            0xFFC09100         /* DMA23 Pointer to Next Initial Descriptor */
 #define DMA23_ADDRSTART             0xFFC09104         /* DMA23 Start Address of Current Buffer */
 #define DMA23_CFG                   0xFFC09108         /* DMA23 Configuration Register */
@@ -2296,7 +2297,6 @@
 #define DMA23_BWLCNT_CUR            0xFFC09144         /* DMA23 Bandwidth Limit Count Current */
 #define DMA23_BWMCNT                0xFFC09148         /* DMA23 Bandwidth Monitor Count */
 #define DMA23_BWMCNT_CUR            0xFFC0914C         /* DMA23 Bandwidth Monitor Count Current */
-#define MDMA_D0_NEXT_DESC_PTR DMA28_DSCPTR_NXT
 #define DMA24_DSCPTR_NXT            0xFFC09180         /* DMA24 Pointer to Next Initial Descriptor */
 #define DMA24_ADDRSTART             0xFFC09184         /* DMA24 Start Address of Current Buffer */
 #define DMA24_CFG                   0xFFC09188         /* DMA24 Configuration Register */

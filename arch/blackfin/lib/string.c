@@ -190,7 +190,7 @@ void dma_memcpy_nocache(void *dst, const void *src, size_t count)
 
 	/* Enable source DMA */
 	bfin_write(&mdma_s0->config, dsize | DMAEN);
-	bfin_write(&mdma_d0->config, dsize | DMAEN | WNR | DI_EN);
+	bfin_write(&mdma_d0->config, dsize | DMAEN | WNR | DI_XCOUNT_EN);
 	SSYNC();
 
 	while (!(bfin_read(&mdma_d0->status) & DMA_DONE))
