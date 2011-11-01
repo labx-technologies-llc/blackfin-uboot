@@ -270,7 +270,7 @@ int bfin_mmc_init(bd_t *bis)
 	mmc->f_min = mmc->f_max >> 9;
 	mmc->block_dev.part_type = PART_TYPE_DOS;
 
-	mmc->b_max = 0;
+	mmc->b_max = 1;
 
 	mmc_register(mmc);
 
