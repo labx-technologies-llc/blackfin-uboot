@@ -2029,13 +2029,6 @@ ulong flash_get_size (phys_addr_t base, int banknum)
 				case CFI_CMDSET_INTEL_PROG_REGIONS:
 				case CFI_CMDSET_INTEL_EXTENDED:
 				case CFI_CMDSET_INTEL_STANDARD:
-					/*
-					 * Set flash to read-id mode. Otherwise
-					 * reading protected status is not
-					 * guaranteed.
-					 */
-					flash_write_cmd(info, sect_cnt, 0,
-							FLASH_CMD_READ_ID);
 					info->protect[sect_cnt] =
 						flash_isset (info, sect_cnt,
 							     FLASH_OFFSET_PROTECT,
