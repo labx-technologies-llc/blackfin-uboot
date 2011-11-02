@@ -188,13 +188,15 @@ ENTRY(_start)
 	 * it yet (see "lower to 15" below).
 	 */
 	serial_early_puts("Relocate");
-	ssync;
+	/* without this nop, r1 will be loaded a wrong value instead of r5, it
+	 * might be a hardware anomaly.
+	 */
+	nop;
 	r0 = r4;
 	r1 = r5;
 	r2.l = LO(CONFIG_SYS_MONITOR_LEN);
 	r2.h = HI(CONFIG_SYS_MONITOR_LEN);
 	call _memcpy_ASM;
-	ssync;
 #endif
 
 .Lnorelocate:
