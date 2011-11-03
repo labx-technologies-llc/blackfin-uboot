@@ -171,7 +171,9 @@ void init_cplbtables(void)
 	++i;
 #endif
 
+#if defined(__ADSPBF60x__)
 	cplb_page_size = (16 * 1024 * 1024);
+#endif
 	while (i < 16 && extern_memory < (CONFIG_SYS_MONITOR_BASE & cplb_page_mask)) {
 		icplb_add(extern_memory, SDRAM_IGENERIC);
 		dcplb_add(extern_memory, SDRAM_DGENERIC);
