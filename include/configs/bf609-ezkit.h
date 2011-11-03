@@ -34,16 +34,16 @@
 
 /* VCO_MULT controls the MSEL (multiplier) bits in PLL_CTL		*/
 /* Values can range from 0-127 (where 0 means 128)			*/
-#define CONFIG_VCO_MULT			16
+#define CONFIG_VCO_MULT			15
 
 /* CCLK_DIV controls the core clock divider				*/
 /* Values can range from 0-31 (where 0 means 32)			*/
 #define CONFIG_CCLK_DIV			1
 /* SCLK_DIV controls the system clock divider				*/
 /* Values can range from 0-31 (where 0 means 32)			*/
-#define CONFIG_SYSCLK_DIV		2
+#define CONFIG_SYSCLK_DIV		3
 /* Values can range from 0-7 (where 0 means 8)				*/
-#define CONFIG_SCLK0_DIV		2
+#define CONFIG_SCLK0_DIV		1
 #define CONFIG_SCLK1_DIV		2
 /* DCLK_DIV controls the DDR clock divider				*/
 /* Values can range from 0-31 (where 0 means 32)			*/
@@ -75,6 +75,10 @@
 #define CONFIG_SYS_MONITOR_LEN	(256 * 1024)
 #define CONFIG_SYS_MALLOC_LEN	(256 * 1024)
 
+#if 1
+#define CONFIG_ICACHE_OFF
+#define CONFIG_DCACHE_OFF
+#endif
 
 /*
  * Network Settings
@@ -99,11 +103,15 @@
 /*
  * Flash Settings
  */
-#define CONFIG_SYS_NO_FLASH
 #undef CONFIG_CMD_IMLS
 #undef CONFIG_CMD_JFFS2
-#undef CONFIG_CMD_FLASH
-
+#define CONFIG_SYS_FLASH_CFI_WIDTH     2
+#define CONFIG_FLASH_CFI_DRIVER
+#define CONFIG_SYS_FLASH_BASE          0xb0000000
+#define CONFIG_SYS_FLASH_CFI
+#define CONFIG_SYS_FLASH_PROTECTION
+#define CONFIG_SYS_MAX_FLASH_BANKS     1
+#define CONFIG_SYS_MAX_FLASH_SECT      259
 
 /*
  * Env Storage Settings
