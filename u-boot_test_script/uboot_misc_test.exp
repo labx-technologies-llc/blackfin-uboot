@@ -131,6 +131,7 @@ proc update_uboot {} {
 
     set timeout 20
     send -s "reset\r"
+    sleep 3
     while 1 {
         expect {
             "Hit any key " {
@@ -685,6 +686,7 @@ if { $where_are_we == "uboot" } {
     expect $UBOOT_PROMPT
     send_user "sending reset\n"
     send -s "reset\r"
+    sleep 3
 } else {
     if { $where_are_we == "kernel" } {
 	set timeout 16
@@ -715,6 +717,7 @@ while 1 {
 	$UBOOT_PROMPT {
 	    send_user "oops, gotta reset again\n"
 	    send -s "reset\r"
+            sleep 3
 	}
 	timeout {
 	    send_user "timeout waiting for autoboot prompt\n"
