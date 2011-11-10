@@ -1549,7 +1549,7 @@ log_file $logfile
 send_user "Running u-boot testing on $test_started\n"
 send_user "logfile=$logfile\n"
 
-exec svn info /home/$user/checkouts/u-boot >> $logfile
+#exec svn info /home/$user/checkouts/u-boot >> $logfile
 
 step "Start up kermit on port $ttydev"
 

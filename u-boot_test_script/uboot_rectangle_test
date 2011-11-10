@@ -44,7 +44,7 @@ cd $UBOOT_SCRIPTS/logs
 e=`ls *-summary-* | wc -l`
 if [ $e != 0 ] ; then
     cat *-summary-* > summary
-    svn info $UBOOT_SRC |grep "Revision" >> summary
+#    svn info $UBOOT_SRC |grep "Revision" >> summary
 fi
 $UBOOT_SCRIPTS/compare_uboot_results lastrun-summary  summary > uboot.diff
 test_status=$?
