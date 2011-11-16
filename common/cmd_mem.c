@@ -121,13 +121,6 @@ int do_mem_md ( cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 #else
 
 # if defined(CONFIG_BLACKFIN)
-#if defined(__ADSPBF60x__)
-	if ((addr >= 0xb0000000) && (addr <= 0xb0000000 + 0x1000000)) {
-		int temp;
-		temp = bfin_read_SMC_B0CTL();
-		bfin_write_SMC_B0CTL(temp & ~0x2000);
-	}
-#endif
 	/* See if we're trying to display L1 inst */
 	if (addr_bfin_on_chip_mem(addr)) {
 		char linebuf[DISP_LINE_LEN];
