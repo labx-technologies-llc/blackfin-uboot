@@ -132,7 +132,12 @@ void init_cplbtables(void)
 	icplb_add(0xFFA00000, L1_IMEMORY);
 	dcplb_add(0xFF800000, L1_DMEMORY);
 	++i;
-
+#if defined(__ADSPBF60x__)
+	icplb_add(0x0, 0x0);
+	dcplb_add(CONFIG_SYS_FLASH_BASE, PAGE_SIZE_16MB | CPLB_DIRTY | CPLB_SUPV_WR |
+			CPLB_USER_WR | CPLB_USER_RD | CPLB_VALID);
+	++i;
+#endif
 	cplb_page_size = (4 * 1024 * 1024);
 	cplb_page_mask = (~(cplb_page_size - 1));
 

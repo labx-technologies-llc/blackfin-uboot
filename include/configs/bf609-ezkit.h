@@ -75,11 +75,6 @@
 #define CONFIG_SYS_MONITOR_LEN	(256 * 1024)
 #define CONFIG_SYS_MALLOC_LEN	(256 * 1024)
 
-#if 1
-#define CONFIG_ICACHE_OFF
-#define CONFIG_DCACHE_OFF
-#endif
-
 /*
  * Network Settings
  */
