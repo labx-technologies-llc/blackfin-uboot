@@ -111,7 +111,7 @@
 #define CONFIG_SYS_FLASH_CFI
 #define CONFIG_SYS_FLASH_PROTECTION
 #define CONFIG_SYS_MAX_FLASH_BANKS     1
-#define CONFIG_SYS_MAX_FLASH_SECT      259
+#define CONFIG_SYS_MAX_FLASH_SECT      131
 
 /*
  * Env Storage Settings
