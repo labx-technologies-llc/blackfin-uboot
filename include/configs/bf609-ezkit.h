@@ -111,17 +111,27 @@
 /*
  * Env Storage Settings
  */
-#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_PARA)
-#define CONFIG_ENV_IS_IN_FLASH
-#define CONFIG_ENV_OFFSET 	0xfe0000
-#define CONFIG_ENV_ADDR 	(CONFIG_SYS_FLASH_BASE + CONFIG_ENV_OFFSET)
-#define CONFIG_ENV_SIZE 	0x20000
-#define CONFIG_ENV_SECT_SIZE 	0x20000
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_SPI_MASTER)
+#define CONFIG_ENV_IS_IN_SPI_FLASH
+#define CONFIG_ENV_OFFSET       0x10000
+#define CONFIG_ENV_SIZE         0x2000
+#define CONFIG_ENV_SECT_SIZE    0x10000
+#define CONFIG_ENV_IS_EMBEDDED_IN_LDR
+#elif (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_NAND)
+#define CONFIG_ENV_IS_IN_NAND
+#define CONFIG_ENV_OFFSET       0x60000
+#define CONFIG_ENV_SIZE         0x20000
 #else
-#define CONFIG_ENV_IS_NOWHERE
-#define CONFIG_ENV_SIZE 0x600
-#undef CONFIG_CMD_EXPORTENV
-#undef CONFIG_CMD_IMPORTENV
+#define CONFIG_ENV_IS_IN_FLASH
+#define CONFIG_ENV_ADDR         (CONFIG_SYS_FLASH_BASE + CONFIG_ENV_OFFSET)
+#define CONFIG_ENV_OFFSET       0x8000
+#define CONFIG_ENV_SIZE         0x8000
+#define CONFIG_ENV_SECT_SIZE    0x8000
+#define CONFIG_ENV_IS_EMBEDDED_IN_LDR
+#define UBOOT_ENV_UPDATE \
+                "protect off 0xB0000000 +$(filesize);" \
+                "erase 0xB0000000 +$(filesize);" \
+                "cp.b $(loadaddr) 0xB0000000 $(filesize)"
 #endif
 
 /*
@@ -135,6 +145,8 @@
 #define CONFIG_KALLSYMS		1
 
 #define CONFIG_CMD_MEMORY
+
+#define FLASHBOOT_ENV_SETTINGS "flashboot=bootm 0xB0100000\0"
 
 #if 0
 #define CONFIG_UART_MEM 1024

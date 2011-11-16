@@ -193,10 +193,12 @@
 		"nand erase 0 0x40000;" \
 		"nand write $(loadaddr) 0 0x40000"
 # else
-#  define UBOOT_ENV_UPDATE \
+#  ifndef UBOOT_ENV_UPDATE
+#   define UBOOT_ENV_UPDATE \
 		"protect off 0x20000000 +$(filesize);" \
 		"erase 0x20000000 +$(filesize);" \
 		"cp.b $(loadaddr) 0x20000000 $(filesize)"
+#  endif
 # endif
 # ifdef CONFIG_NETCONSOLE
 #  define NETCONSOLE_ENV \
