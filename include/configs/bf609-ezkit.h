@@ -134,6 +134,8 @@
                 "cp.b $(loadaddr) 0xB0000000 $(filesize)"
 #endif
 
+#define FLASHBOOT_ENV_SETTINGS "flashboot=bootm 0xB0100000\0"
+
 /*
  * Misc Settings
  */
@@ -145,8 +147,6 @@
 #define CONFIG_KALLSYMS		1
 
 #define CONFIG_CMD_MEMORY
-
-#define FLASHBOOT_ENV_SETTINGS "flashboot=bootm 0xB0100000\0"
 
 #if 0
 #define CONFIG_UART_MEM 1024
