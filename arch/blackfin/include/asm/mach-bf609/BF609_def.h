@@ -17,37 +17,38 @@
 #define CNT_MAX                     0xFFC00418         /* CNT0 Maximum Count Register */
 #define CNT_MIN                     0xFFC0041C         /* CNT0 Minimum Count Register */
 
-#define RSI_CTL                     0xFFC00604         /* RSI0 Clock Control Register */
-#define RSI_ARG                     0xFFC00608         /* RSI0 Argument Register */
-#define RSI_CMD                     0xFFC0060C         /* RSI0 Command Register */
+#define RSI_CLK_CONTROL             0xFFC00604         /* RSI0 Clock Control Register */
+#define RSI_ARGUMENT                0xFFC00608         /* RSI0 Argument Register */
+#define RSI_COMMAND                 0xFFC0060C         /* RSI0 Command Register */
 #define RSI_RESP_CMD                0xFFC00610         /* RSI0 Response Command Register */
-#define RSI_RESP0                   0xFFC00614         /* RSI0 Response 0 Register */
-#define RSI_RESP1                   0xFFC00618         /* RSI0 Response 1 Register */
-#define RSI_RESP2                   0xFFC0061C         /* RSI0 Response 2 Register */
-#define RSI_RESP3                   0xFFC00620         /* RSI0 Response 3 Register */
-#define RSI_DATA_TMR                0xFFC00624         /* RSI0 Data Timer Register */
-#define RSI_DATA_LEN                0xFFC00628         /* RSI0 Data Length Register */
-#define RSI_DATA_CTL                0xFFC0062C         /* RSI0 Data Control Register */
+#define RSI_RESPONSE0               0xFFC00614         /* RSI0 Response 0 Register */
+#define RSI_RESPONSE1               0xFFC00618         /* RSI0 Response 1 Register */
+#define RSI_RESPONSE2               0xFFC0061C         /* RSI0 Response 2 Register */
+#define RSI_RESPONSE3               0xFFC00620         /* RSI0 Response 3 Register */
+#define RSI_DATA_TIMER              0xFFC00624         /* RSI0 Data Timer Register */
+#define RSI_DATA_LGTH               0xFFC00628         /* RSI0 Data Length Register */
+#define RSI_DATA_CONTROL            0xFFC0062C         /* RSI0 Data Control Register */
 #define RSI_DATA_CNT                0xFFC00630         /* RSI0 Data Count Register */
-#define RSI_XFRSTAT                 0xFFC00634         /* RSI0 Status Register */
-#define RSI_XFRSTAT_CLR             0xFFC00638         /* RSI0 Status Clear Register */
-#define RSI_XFR_IMSK0               0xFFC0063C         /* RSI0 Interrupt 0 Mask Register */
-#define RSI_XFR_IMSK1               0xFFC00640         /* RSI0 Interrupt 1 Mask Register */
+#define RSI_STATUS                  0xFFC00634         /* RSI0 Status Register */
+#define RSI_STATUSCL                0xFFC00638         /* RSI0 Status Clear Register */
+#define RSI_IMSK0                   0xFFC0063C         /* RSI0 Interrupt 0 Mask Register */
+#define RSI_IMSK1                   0xFFC00640         /* RSI0 Interrupt 1 Mask Register */
 #define RSI_FIFO_CNT                0xFFC00648         /* RSI0 FIFO Counter Register */
-#define RSI_CEATA                   0xFFC0064C         /* RSI0 This register contains bit to dis CCS gen */
+#define RSI_CEATA_CONTROL           0xFFC0064C         /* RSI0 This register contains bit to dis CCS gen */
 #define RSI_BOOT_TCNTR              0xFFC00650         /* RSI0 Boot Timing Counter Register */
 #define RSI_BACK_TOUT               0xFFC00654         /* RSI0 Boot Acknowledge Timeout Register */
 #define RSI_SLP_WKUP_TOUT           0xFFC00658         /* RSI0 Sleep Wakeup Timeout Register */
 #define RSI_BLKSZ                   0xFFC0065C         /* RSI0 Block Size Register */
 #define RSI_FIFO                    0xFFC00680         /* RSI0 Data FIFO Register */
-#define RSI_STAT0                   0xFFC006C0         /* RSI0 Exception Status Register */
-#define RSI_IMSK0                   0xFFC006C4         /* RSI0 Exception Mask Register */
-#define RSI_CFG                     0xFFC006C8         /* RSI0 Configuration Register */
-#define RSI_RD_WAIT                 0xFFC006CC         /* RSI0 Read Wait Enable Register */
+#define RSI_ESTAT                   0xFFC006C0         /* RSI0 Exception Status Register */
+#define RSI_EIMSK                   0xFFC006C4         /* RSI0 Exception Mask Register */
+#define RSI_CONFIG                  0xFFC006C8         /* RSI0 Configuration Register */
+#define RSI_RD_WAIT_EN              0xFFC006CC         /* RSI0 Read Wait Enable Register */
 #define RSI_PID0                    0xFFC006D0         /* RSI0 Peripheral Identification Register */
 #define RSI_PID1                    0xFFC006D4         /* RSI0 Peripheral Identification Register */
 #define RSI_PID2                    0xFFC006D8         /* RSI0 Peripheral Identification Register */
 #define RSI_PID3                    0xFFC006DC         /* RSI0 Peripheral Identification Register */
+
 #define CAN0_MC1                    0xFFC00A00         /* CAN0 Mailbox Configuration Register 1 */
 #define CAN0_MD1                    0xFFC00A04         /* CAN0 Mailbox Direction Register 1 */
 #define CAN0_TRS1                   0xFFC00A08         /* CAN0 Transmission Request Set Register 1 */

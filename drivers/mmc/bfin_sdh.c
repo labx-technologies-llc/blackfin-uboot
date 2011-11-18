@@ -19,7 +19,7 @@
 #include <asm/mach-common/bits/sdh.h>
 #include <asm/mach-common/bits/dma.h>
 
-#if defined(__ADSPBF50x__) || defined(__ADSPBF51x__)
+#if defined(__ADSPBF50x__) || defined(__ADSPBF51x__) || defined(__ADSPBF60x__)
 # define bfin_read_SDH_PWR_CTL		bfin_read_RSI_PWR_CONTROL
 # define bfin_write_SDH_PWR_CTL		bfin_write_RSI_PWR_CONTROL
 # define bfin_read_SDH_CLK_CTL		bfin_read_RSI_CLK_CONTROL
@@ -38,10 +38,17 @@
 # define bfin_write_SDH_STATUS_CLR 	bfin_write_RSI_STATUSCL
 # define bfin_read_SDH_CFG		bfin_read_RSI_CONFIG
 # define bfin_write_SDH_CFG		bfin_write_RSI_CONFIG
+# if  defined(__ADSPBF60x__)
+# define bfin_write_DMA_START_ADDR	bfin_write_DMA10_START_ADDR
+# define bfin_write_DMA_X_COUNT		bfin_write_DMA10_X_COUNT
+# define bfin_write_DMA_X_MODIFY	bfin_write_DMA10_X_MODIFY
+# define bfin_write_DMA_CONFIG		bfin_write_DMA10_CONFIG
+# else
 # define bfin_write_DMA_START_ADDR	bfin_write_DMA4_START_ADDR
 # define bfin_write_DMA_X_COUNT		bfin_write_DMA4_X_COUNT
 # define bfin_write_DMA_X_MODIFY	bfin_write_DMA4_X_MODIFY
 # define bfin_write_DMA_CONFIG		bfin_write_DMA4_CONFIG
+# endif
 # define PORTMUX_PINS \
 	{ P_RSI_DATA0, P_RSI_DATA1, P_RSI_DATA2, P_RSI_DATA3, P_RSI_CMD, P_RSI_CLK, 0 }
 #elif defined(__ADSPBF54x__)
@@ -126,7 +133,7 @@ static int sdh_setup_data(struct mmc *mmc, struct mmc_data *data)
 	data_ctl |= DTX_DIR;
 	bfin_write_SDH_DATA_CTL(data_ctl);
 	SSYNC();
-	dma_cfg = WDSIZE_32 | RESTART | WNR | DMAEN;
+	dma_cfg = WDSIZE_32 | PSIZE_32 | RESTART | WNR | DMAEN;
 
 	bfin_write_SDH_DATA_TIMER(-1);
 	SSYNC();
@@ -245,7 +252,9 @@ static int bfin_sdh_init(struct mmc *mmc)
 	SSYNC();
 	pwr_ctl |= ROD_CTL;
 	pwr_ctl |= PWR_ON;
+#ifndef __ADSPBF60x__
 	bfin_write_SDH_PWR_CTL(pwr_ctl);
+#endif
 	SSYNC();
 	return 0;
 }

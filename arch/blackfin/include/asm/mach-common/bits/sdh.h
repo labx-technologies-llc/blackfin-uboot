@@ -23,7 +23,7 @@
 #define                     CLK_E  0x100      /* MC_CLK Bus Clock Enable */
 #define                  PWR_SV_E  0x200      /* Power Save Enable */
 #define             CLKDIV_BYPASS  0x400      /* Bypass Divisor */
-#define                  WIDE_BUS  0x800      /* Wide Bus Mode Enable */
+#define                  WIDE_BUS  0x1800     /* Wide Bus Mode Enable */
 
 /* Bit masks for SDH_RESP_CMD */
 #define                  RESP_CMD  0x3f       /* Response Command */
@@ -105,7 +105,7 @@
 
 /* Bit masks for SDH_E_MASK */
 #define                  SDIO_MSK  0x2        /* Mask SDIO Int Detected */
-#define                   SCD_MSK  0x40       /* Mask Card Detect */
+#define                   SCD_MSK  0x10       /* Mask Card Detect */
 
 /* Bit masks for SDH_CFG */
 #define                   CLKS_EN  0x1        /* Clocks Enable */

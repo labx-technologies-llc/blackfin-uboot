@@ -72,7 +72,7 @@
 #define CONFIG_SMC_B1TIM_VAL	0x08070977
 #define CONFIG_SMC_B1ETIM_VAL	0x00092231
 
-#define CONFIG_SYS_MONITOR_LEN	(256 * 1024)
+#define CONFIG_SYS_MONITOR_LEN	(512 * 1024)
 #define CONFIG_SYS_MALLOC_LEN	(256 * 1024)
 
 /*
@@ -135,6 +135,13 @@
 #endif
 
 #define FLASHBOOT_ENV_SETTINGS "flashboot=bootm 0xB0100000\0"
+
+/*
+ * SDH Settings
+ */
+#define CONFIG_GENERIC_MMC
+#define CONFIG_MMC
+#define CONFIG_BFIN_SDH
 
 /*
  * Misc Settings
