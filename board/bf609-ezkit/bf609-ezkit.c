@@ -61,3 +61,10 @@ int board_eth_init(bd_t *bis)
 	return ret;
 }
 #endif
+
+#ifdef CONFIG_BFIN_SDH
+int board_mmc_init(bd_t *bis)
+{
+	return bfin_mmc_init(bis);
+}
+#endif
