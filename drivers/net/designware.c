@@ -147,15 +147,22 @@ static int dw_eth_init(struct eth_device *dev, bd_t *bis)
 	/* Reset ethernet hardware */
 	if (mac_reset(dev) < 0)
 		return -1;
+#ifndef CONFIG_BLACKFIN
+	writel(FIXEDBURST | PRIORXTX_41 | BURST_16,
+			&dma_p->busmode);
+	writel(FLUSHTXFIFO | readl(&dma_p->opmode), &dma_p->opmode);
+	writel(STOREFORWARD | TXSECONDFRAME, &dma_p->opmode);
 
+	conf = FRAMEBURSTENABLE | DISABLERXOWN;
+#else
 	writel(RXDMA_PBL8, &dma_p->busmode);
 
 	writel(FUF | FEF, &dma_p->opmode);
 	writel(BLEN4 | UNDEF, &dma_p->axibus);
 	writel(0x80000015, &mac_p->framefilt);
-	writel(0x6, &mac_p->flowcontrol);
 
 	conf = FRAMEBURSTENABLE | FES_100 | CRC_STRIP;
+#endif
 
 	if (priv->speed != SPEED_1000M)
 		conf |= MII_PORTSELECT;
@@ -500,11 +507,12 @@ int designware_initialize(u32 id, ulong base_addr, u32 phy_addr)
 
 	memset(dev, 0, sizeof(struct eth_device));
 	memset(priv, 0, sizeof(struct dw_eth_dev));
-
+#ifdef CONFIG_BLACKFIN
 	priv->txbuffs = L1_DATA_A_SRAM;
 	priv->rxbuffs = priv->txbuffs + TX_TOTAL_BUFSIZE;
 	priv->tx_mac_descrtable = (struct dmamacdescr *)(priv->rxbuffs + RX_TOTAL_BUFSIZE);
 	priv->rx_mac_descrtable = (struct dmamacdescr *)(priv->tx_mac_descrtable + CONFIG_TX_DESCR_NUM*sizeof(struct dmamacdescr));
+#endif
 	sprintf(dev->name, "mii%d", id);
 	dev->iobase = (int)base_addr;
 	dev->priv = priv;

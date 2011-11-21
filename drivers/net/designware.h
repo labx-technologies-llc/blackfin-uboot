@@ -24,8 +24,13 @@
 #ifndef _DW_ETH_H
 #define _DW_ETH_H
 
+#ifndef CONFIG_BLACKFIN
+#define CONFIG_TX_DESCR_NUM	16
+#define CONFIG_RX_DESCR_NUM	16
+#else
 #define CONFIG_TX_DESCR_NUM	3
 #define CONFIG_RX_DESCR_NUM	3
+#endif
 #define CONFIG_ETH_BUFSIZE	2048
 #define TX_TOTAL_BUFSIZE	(CONFIG_ETH_BUFSIZE * CONFIG_TX_DESCR_NUM)
 #define RX_TOTAL_BUFSIZE	(CONFIG_ETH_BUFSIZE * CONFIG_RX_DESCR_NUM)
@@ -249,12 +254,17 @@ struct dw_eth_dev {
 	u32 tx_currdescnum;
 	u32 rx_currdescnum;
 	u32 padding;
-
+#ifndef CONFIG_BLACKFIN
+	struct dmamacdescr tx_mac_descrtable[CONFIG_TX_DESCR_NUM];
+	struct dmamacdescr rx_mac_descrtable[CONFIG_RX_DESCR_NUM];
+	char txbuffs[TX_TOTAL_BUFSIZE];
+	char rxbuffs[RX_TOTAL_BUFSIZE];
+#else
 	struct dmamacdescr *tx_mac_descrtable;
 	struct dmamacdescr *rx_mac_descrtable;
-
 	char *txbuffs;
 	char *rxbuffs;
+#endif
 
 	struct eth_mac_regs *mac_regs_p;
 	struct eth_dma_regs *dma_regs_p;
