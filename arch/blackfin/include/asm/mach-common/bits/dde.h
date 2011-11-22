@@ -37,7 +37,11 @@
 #define NDSIZE_5		(4 << NDSIZE_P)
 #define NDSIZE_6		(5 << NDSIZE_P)
 #define NDSIZE_7		(6 << NDSIZE_P)
-#define INT			(3 << INT_P)	/* Generate Interrupt */
+#define DI_EN_X                 (1 << INT_P)
+#define DI_EN_Y                 (2 << INT_P)
+#define DI_EN_P			(3 << INT_P)
+#define DI_EN			(DI_EN_X)
+#define DI_XCOUNT_EN            (1 << INT_P)    /* xcount expires interrupt */
 #define TRIG			(3 << TRIG_P)	/* Generate Trigger */
 #define TOVEN			(1 << TOVEN_P)
 #define DESCIDCPY		(1 << DESCIDCPY_P)
