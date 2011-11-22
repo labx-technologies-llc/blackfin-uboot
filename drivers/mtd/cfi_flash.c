@@ -121,7 +121,19 @@ static void __flash_write8(u8 value, void *addr)
 
 static void __flash_write16(u16 value, void *addr)
 {
+#if defined(__ADSPBF60x__)
+	int temp;
+	temp = bfin_read_SMC_B0CTL();
+	bfin_write_SMC_B0CTL(temp | 0x2000);
+	sync();
+#endif
 	__raw_writew(value, addr);
+
+#if defined(__ADSPBF60x__)
+	temp = bfin_read_SMC_B0CTL();
+	bfin_write_SMC_B0CTL(temp & ~0x2000);
+	sync();
+#endif
 }
 
 static void __flash_write32(u32 value, void *addr)
@@ -1548,7 +1560,11 @@ static void cmdset_intel_read_jedec_ids(flash_info_t *info)
 	udelay(1);
 	flash_write_cmd(info, 0, 0, FLASH_CMD_READ_ID);
 	udelay(1000); /* some flash are slow to respond */
+#if defined(__ADSPBF60x__)
+	info->manufacturer_id = flash_read_word (info,
+#else
 	info->manufacturer_id = flash_read_uchar (info,
+#endif
 					FLASH_OFFSET_MANUFACTURER_ID);
 	info->device_id = (info->chipwidth == FLASH_CFI_16BIT) ?
 			flash_read_word (info, FLASH_OFFSET_DEVICE_ID) :
@@ -1916,7 +1932,9 @@ ulong flash_get_size (phys_addr_t base, int banknum)
 
 	if (flash_detect_cfi (info, &qry)) {
 		info->vendor = le16_to_cpu(qry.p_id);
+#ifndef __ADSPBF60x__
 		info->ext_addr = le16_to_cpu(qry.p_adr);
+#endif
 		num_erase_regions = qry.num_erase_regions;
 
 		if (info->ext_addr) {
