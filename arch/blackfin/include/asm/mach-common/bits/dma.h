@@ -22,7 +22,7 @@
 #define WDSIZE_128		0x00000400	/* Transfer Word Size = 32 */
 #define WDSIZE_256		0x00000500	/* Transfer Word Size = 32 */
 #define DMA2D			0x04000000	/* DMA Mode (2D/1D*) */
-#define RESTART			0x00000002	/* DMA Buffer Clear SYNC */
+#define RESTART			0x00000004	/* DMA Buffer Clear SYNC */
 #define DI_EN_X			0x00100000	/* Data Interrupt Enable in X count */
 #define DI_EN_Y			0x00200000	/* Data Interrupt Enable in Y count */
 #define DI_EN_P			0x00300000	/* Data Interrupt Enable in Peripheral */
