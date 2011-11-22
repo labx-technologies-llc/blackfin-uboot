@@ -60,7 +60,7 @@
 
 #define CONFIG_BFIN_GET_SCLK (CONFIG_PLL_CLK/CONFIG_SYSCLK_DIV)
 #define CONFIG_BFIN_GET_SCLK0 (get_sclk()/CONFIG_SCLK0_DIV)
-/* #define CONFIG_BFIN_GET_SCLK1 (get_cclk() / 4) */
+#define CONFIG_BFIN_GET_SCLK1 (get_sclk()/CONFIG_SCLK1_DIV)
 
 /*
  * Memory Settings
