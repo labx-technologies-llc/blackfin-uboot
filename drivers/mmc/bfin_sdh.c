@@ -20,8 +20,6 @@
 #include <asm/mach-common/bits/dma.h>
 
 #if defined(__ADSPBF50x__) || defined(__ADSPBF51x__) || defined(__ADSPBF60x__)
-# define bfin_read_SDH_PWR_CTL		bfin_read_RSI_PWR_CONTROL
-# define bfin_write_SDH_PWR_CTL		bfin_write_RSI_PWR_CONTROL
 # define bfin_read_SDH_CLK_CTL		bfin_read_RSI_CLK_CONTROL
 # define bfin_write_SDH_CLK_CTL		bfin_write_RSI_CLK_CONTROL
 # define bfin_write_SDH_ARGUMENT	bfin_write_RSI_ARGUMENT
@@ -38,12 +36,16 @@
 # define bfin_write_SDH_STATUS_CLR 	bfin_write_RSI_STATUSCL
 # define bfin_read_SDH_CFG		bfin_read_RSI_CONFIG
 # define bfin_write_SDH_CFG		bfin_write_RSI_CONFIG
-# if  defined(__ADSPBF60x__)
+# if defined(__ADSPBF60x__)
+# define bfin_read_SDH_BLK_SIZE		bfin_read_RSI_BLKSZ
+# define bfin_write_SDH_BLK_SIZE	bfin_write_RSI_BLKSZ
 # define bfin_write_DMA_START_ADDR	bfin_write_DMA10_START_ADDR
 # define bfin_write_DMA_X_COUNT		bfin_write_DMA10_X_COUNT
 # define bfin_write_DMA_X_MODIFY	bfin_write_DMA10_X_MODIFY
 # define bfin_write_DMA_CONFIG		bfin_write_DMA10_CONFIG
 # else
+# define bfin_read_SDH_PWR_CTL		bfin_read_RSI_PWR_CONTROL
+# define bfin_write_SDH_PWR_CTL		bfin_write_RSI_PWR_CONTROL
 # define bfin_write_DMA_START_ADDR	bfin_write_DMA4_START_ADDR
 # define bfin_write_DMA_X_COUNT		bfin_write_DMA4_X_COUNT
 # define bfin_write_DMA_X_MODIFY	bfin_write_DMA4_X_MODIFY
@@ -129,7 +131,11 @@ static int sdh_setup_data(struct mmc *mmc, struct mmc_data *data)
 	blackfin_dcache_flush_invalidate_range(data->dest,
 			data->dest + data_size);
 	SSYNC();
+#ifndef RSI_BLKSZ
 	data_ctl |= ((ffs(data_size) - 1) << 4);
+#else
+	bfin_write_SDH_BLK_SIZE(data_size);
+#endif
 	data_ctl |= DTX_DIR;
 	bfin_write_SDH_DATA_CTL(data_ctl);
 	SSYNC();
@@ -161,6 +167,8 @@ static int bfin_sdh_request(struct mmc *mmc, struct mmc_cmd *cmd,
 
 	ret = sdh_send_cmd(mmc, cmd);
 	if (ret) {
+		bfin_write_SDH_COMMAND(0);
+		SSYNC();
 		printf("sending CMD%d failed\n", cmd->cmdidx);
 		return ret;
 	}
@@ -181,6 +189,8 @@ static int bfin_sdh_request(struct mmc *mmc, struct mmc_cmd *cmd,
 			reg |= DAT_BLK_END_STAT | DAT_END_STAT;
 
 		bfin_write_SDH_STATUS_CLR(reg);
+		bfin_write_DMA_CONFIG(0);
+		bfin_write_SDH_DATA_CTL(0);
 		SSYNC();
 		if (ret) {
 			printf("tranfering data failed\n");
@@ -224,10 +234,12 @@ static void bfin_sdh_set_ios(struct mmc *mmc)
 
 	if (mmc->bus_width == 4) {
 		cfg = bfin_read_SDH_CFG();
-		cfg &= ~0x80;
-		cfg |= 0x40;
+#ifndef RSI_BLKSZ
+		cfg &= ~PD_SDDAT3;
+#endif
+		cfg |= PUP_SDDAT3;
 		bfin_write_SDH_CFG(cfg);
-		clk_ctl |= WIDE_BUS;
+		clk_ctl |= WIDE_BUS_4;
 	}
 	bfin_write_SDH_CLK_CTL(clk_ctl);
 	SSYNC();
@@ -237,10 +249,12 @@ static void bfin_sdh_set_ios(struct mmc *mmc)
 static int bfin_sdh_init(struct mmc *mmc)
 {
 	const unsigned short pins[] = PORTMUX_PINS;
-	u16 pwr_ctl = 0;
+	int ret;
 
 	/* Initialize sdh controller */
-	peripheral_request_list(pins, "bfin_sdh");
+	ret = peripheral_request_list(pins, "bfin_sdh");
+	if (ret < 0)
+		return ret;
 #if defined(__ADSPBF54x__)
 	bfin_write_DMAC1_PERIMUX(bfin_read_DMAC1_PERIMUX() | 0x1);
 #endif
@@ -250,10 +264,10 @@ static int bfin_sdh_init(struct mmc *mmc)
 	/* Disable card detect pin */
 	bfin_write_SDH_CFG((bfin_read_SDH_CFG() & 0x1F) | 0x60);
 	SSYNC();
-	pwr_ctl |= ROD_CTL;
-	pwr_ctl |= PWR_ON;
-#ifndef __ADSPBF60x__
-	bfin_write_SDH_PWR_CTL(pwr_ctl);
+#ifndef RSI_BLKSZ
+	bfin_write_SDH_PWR_CTL(PWR_ON | ROD_CTL);
+#else
+	bfin_write_SDH_CFG(bfin_read_SDH_CFG() | PWR_ON);
 #endif
 	SSYNC();
 	return 0;
