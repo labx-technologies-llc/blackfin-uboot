@@ -144,7 +144,7 @@ void init_cplbtables(void)
 	if (CONFIG_MEM_SIZE) {
 		uint32_t mbase = CONFIG_SYS_MONITOR_BASE;
 		uint32_t mend  = mbase + CONFIG_SYS_MONITOR_LEN;
-		mbase &= cplb_page_size;
+		mbase &= cplb_page_mask;
 		mend &= cplb_page_mask;
 
 		icplb_add(mbase, SDRAM_IKERNEL);
@@ -162,6 +162,12 @@ void init_cplbtables(void)
 			++i;
 		}
 	}
+
+#ifndef __ADSPBF60x__
+	icplb_add(0x20000000, SDRAM_INON_CHBL);
+	dcplb_add(0x20000000, SDRAM_EBIU);
+	++i;
+#endif
 
 	/* Add entries for the rest of external RAM up to the bootrom */
 	extern_memory = 0;
