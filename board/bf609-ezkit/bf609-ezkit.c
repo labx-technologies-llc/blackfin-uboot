@@ -11,6 +11,7 @@
 #include <asm/blackfin.h>
 #include <asm/io.h>
 #include <asm/portmux.h>
+#include "soft_switch.h"
 
 int checkboard(void)
 {
@@ -32,23 +33,18 @@ int board_early_init_f(void)
 }
 
 #ifdef CONFIG_DESIGNWARE_ETH
-#define TWI_ADDR 0x20
 int board_eth_init(bd_t *bis)
 {
 	int ret = 0;
-	uchar idira = 0x0;
-	uchar lata = 0xff;
 
 	if (CONFIG_DW_PORTS & 1) {
 		static const unsigned short pins[] = P_RMII0;
 		if (!peripheral_request_list(pins, "emac0")) {
 			/* enable phy clk */
-			ret = i2c_write(TWI_ADDR, 0x0, 1, &idira, 1);
-			if (!ret) {
-				ret = i2c_write(TWI_ADDR, 0x14, 1, &lata, 1);
-				if (!ret)
-					ret += designware_initialize(0, EMAC0_MACCFG, 1);
-			}
+			ret = setup_soft_switch(SW_RMII_CLK_EN, 1);
+			if (!ret)
+				ret += designware_initialize(0, EMAC0_MACCFG, 1);
+
 		}
 	}
 
@@ -65,6 +61,26 @@ int board_eth_init(bd_t *bis)
 #ifdef CONFIG_BFIN_SDH
 int board_mmc_init(bd_t *bis)
 {
+	int ret;
+
+	ret = setup_soft_switch(SW_SD_CD_EN, 1);
+	if (ret)
+		return ret;
 	return bfin_mmc_init(bis);
 }
 #endif
+
+/* miscellaneous platform dependent initialisations */
+int misc_init_r(void)
+{
+	printf("other init\n");
+	setup_soft_switch(SW_CNT0UD_EN, 0);
+	setup_soft_switch(SW_CNT0DG_EN, 0);
+	setup_soft_switch(SW_CNT0ZM_EN, 0);
+
+	setup_soft_switch(SW_CAN_EN, 1);
+	setup_soft_switch(SW_CAN_STS, 0);
+	setup_soft_switch(SW_CAN0_ERR_EN, 0);
+	setup_soft_switch(SW_CAN0RX_EN, 0);
+	return 0;
+}

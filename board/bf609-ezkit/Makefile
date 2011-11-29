@@ -30,6 +30,7 @@ include $(TOPDIR)/config.mk
 LIB	= $(obj)lib$(BOARD).o
 
 COBJS-y	:= $(BOARD).o
+COBJS-$(CONFIG_BFIN_SOFT_SWITCH)   += soft_switch.o
 
 SRCS	:= $(SOBJS-y:.o=.S) $(COBJS-y:.o=.c)
 OBJS	:= $(addprefix $(obj),$(COBJS-y))
