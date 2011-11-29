@@ -1852,6 +1852,7 @@
 #define SPORT2_RXPRI_B              0xFFC402C4         /* SPORT2 'B' Primary Channel Receive Buffer Register */
 #define SPORT2_TXSEC_B              0xFFC402C8         /* SPORT2 'B' Secondary Channel Transmit Buffer Register */
 #define SPORT2_RXSEC_B              0xFFC402CC         /* SPORT2 'B' Secondary Channel Receive Buffer Register */
+#define SPI0_REGBASE                0xFFC40400
 #define SPI0_CTL                    0xFFC40404         /* SPI0 Control Register */
 #define SPI0_RXCTL                  0xFFC40408         /* SPI0 RX Control Register */
 #define SPI0_TXCTL                  0xFFC4040C         /* SPI0 TX Control Register */
@@ -1870,6 +1871,7 @@
 #define SPI0_ILAT_CLR               0xFFC40448         /* SPI0 Masked Interrupt Clear Register */
 #define SPI0_RFIFO                  0xFFC40450         /* SPI0 Receive FIFO Data Register */
 #define SPI0_TFIFO                  0xFFC40458         /* SPI0 Transmit FIFO Data Register */
+#define SPI1_REGBASE                0xFFC40500
 #define SPI1_CTL                    0xFFC40504         /* SPI1 Control Register */
 #define SPI1_RXCTL                  0xFFC40508         /* SPI1 RX Control Register */
 #define SPI1_TXCTL                  0xFFC4050C         /* SPI1 TX Control Register */
