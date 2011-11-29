@@ -62,10 +62,6 @@
 #define CONFIG_BFIN_GET_SCLK0 (get_sclk()/CONFIG_SCLK0_DIV)
 #define CONFIG_BFIN_GET_SCLK1 (get_sclk()/CONFIG_SCLK1_DIV)
 
-#define CONFIG_ICACHE_OFF
-#define CONFIG_DCACHE_OFF
-
-
 /*
  * Memory Settings
  */
