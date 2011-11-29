@@ -114,10 +114,10 @@ static inline int serial_early_enabled(uint32_t uart_base)
 __attribute__((always_inline))
 static inline void serial_early_set_baud(uint32_t uart_base, uint32_t baud)
 {
-	uint32_t divisor = uart_sclk() / baud;
+	uint32_t divisor = uart_sclk() / (baud * 16);
 
 	/* Program the divisor to get the baud rate we want */
-	bfin_write(&pUART->clock, divisor | 0x80000000);
+	bfin_write(&pUART->clock, divisor);
 	SSYNC();
 }
 
