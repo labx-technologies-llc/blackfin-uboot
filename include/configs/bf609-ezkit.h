@@ -44,7 +44,7 @@
 #define CONFIG_SYSCLK_DIV		3
 /* Values can range from 0-7 (where 0 means 8)				*/
 #define CONFIG_SCLK0_DIV		1
-#define CONFIG_SCLK1_DIV		2
+#define CONFIG_SCLK1_DIV		1
 /* DCLK_DIV controls the DDR clock divider				*/
 /* Values can range from 0-31 (where 0 means 32)			*/
 #define CONFIG_DCLK_DIV			3
@@ -61,6 +61,10 @@
 #define CONFIG_BFIN_GET_SCLK (CONFIG_PLL_CLK/CONFIG_SYSCLK_DIV)
 #define CONFIG_BFIN_GET_SCLK0 (get_sclk()/CONFIG_SCLK0_DIV)
 #define CONFIG_BFIN_GET_SCLK1 (get_sclk()/CONFIG_SCLK1_DIV)
+
+#define CONFIG_ICACHE_OFF
+#define CONFIG_DCACHE_OFF
+
 
 /*
  * Memory Settings
@@ -154,6 +158,8 @@
 #define CONFIG_KALLSYMS		1
 
 #define CONFIG_CMD_MEMORY
+
+#define CONFIG_BFIN_SOFT_SWITCH
 
 #if 0
 #define CONFIG_UART_MEM 1024
