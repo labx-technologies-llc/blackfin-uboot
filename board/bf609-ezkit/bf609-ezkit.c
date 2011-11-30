@@ -61,11 +61,6 @@ int board_eth_init(bd_t *bis)
 #ifdef CONFIG_BFIN_SDH
 int board_mmc_init(bd_t *bis)
 {
-	int ret;
-
-	ret = setup_soft_switch(SW_SD_CD_EN, 1);
-	if (ret)
-		return ret;
 	return bfin_mmc_init(bis);
 }
 #endif
