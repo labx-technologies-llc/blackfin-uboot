@@ -79,7 +79,7 @@ u_long get_cclk(void)
 /* Get the System clock */
 #ifdef CGU_DIV
 
-static u_long cached_sclk_pll_div, cached_sclk, cached_sclk0, cached_sclk1;
+static u_long cached_sclk_pll_div, cached_sclk, cached_sclk0, cached_sclk1, cached_dclk;
 static u_long _get_sclk(u_long *cache)
 {
 	u_long div, ssel;
@@ -132,6 +132,14 @@ u_long get_sclk1(void)
 #endif
 }
 
+u_long get_dclk(void)
+{
+#ifndef CONFIG_BFIN_GET_DCLK
+	return _get_sclk(&cached_dclk);
+#else
+	return CONFIG_BFIN_GET_DCLK;
+#endif
+}
 #else
 
 u_long get_sclk(void)
