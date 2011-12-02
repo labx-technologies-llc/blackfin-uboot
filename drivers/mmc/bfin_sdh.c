@@ -79,6 +79,9 @@ sdh_send_cmd(struct mmc *mmc, struct mmc_cmd *mmc_cmd)
 		sdh_cmd |= CMD_RSP;
 	if (flags & MMC_RSP_136)
 		sdh_cmd |= CMD_L_RSP;
+#ifdef RSI_BLKSZ
+	sdh_cmd |= CMD_DATA0_BUSY;
+#endif
 
 	bfin_write_SDH_ARGUMENT(arg);
 	bfin_write_SDH_COMMAND(sdh_cmd);
@@ -113,6 +116,12 @@ sdh_send_cmd(struct mmc *mmc, struct mmc_cmd *mmc_cmd)
 
 	bfin_write_SDH_STATUS_CLR(CMD_SENT_STAT | CMD_RESP_END_STAT |
 				CMD_TIMEOUT_STAT | CMD_CRC_FAIL_STAT);
+#ifdef RSI_BLKSZ
+	/* wait till card ready */
+	while (!(bfin_read_RSI_ESTAT() & SD_CARD_READY))
+		;
+	bfin_write_RSI_ESTAT(SD_CARD_READY);
+#endif
 
 	return ret;
 }
@@ -122,7 +131,6 @@ static int sdh_setup_data(struct mmc *mmc, struct mmc_data *data)
 {
 	u16 data_ctl = 0;
 	u16 dma_cfg = 0;
-	int ret = 0;
 	unsigned long data_size = data->blocksize;
 
 	/* Don't support write yet. */
@@ -154,7 +162,7 @@ static int sdh_setup_data(struct mmc *mmc, struct mmc_data *data)
 	/* kick off transfer */
 	bfin_write_SDH_DATA_CTL(bfin_read_SDH_DATA_CTL() | DTX_DMA_E | DTX_E);
 	SSYNC();
-	return ret;
+	return 0;
 }
 
 
@@ -165,15 +173,23 @@ static int bfin_sdh_request(struct mmc *mmc, struct mmc_cmd *cmd,
 	int ret = 0;
 	u16 reg = 0;
 
+	if (data) {
+		ret = sdh_setup_data(mmc, data);
+		if (ret)
+			return ret;
+	}
+
 	ret = sdh_send_cmd(mmc, cmd);
 	if (ret) {
 		bfin_write_SDH_COMMAND(0);
+		bfin_write_DMA_CONFIG(0);
+		bfin_write_SDH_DATA_CTL(0);
 		SSYNC();
 		printf("sending CMD%d failed\n", cmd->cmdidx);
 		return ret;
 	}
+
 	if (data) {
-		ret = sdh_setup_data(mmc, data);
 		do {
 			udelay(1);
 			status = bfin_read_SDH_STATUS();
