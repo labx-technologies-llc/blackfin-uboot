@@ -34,20 +34,20 @@
 
 /* VCO_MULT controls the MSEL (multiplier) bits in PLL_CTL		*/
 /* Values can range from 0-127 (where 0 means 128)			*/
-#define CONFIG_VCO_MULT			15
+#define CONFIG_VCO_MULT			20
 
 /* CCLK_DIV controls the core clock divider				*/
 /* Values can range from 0-31 (where 0 means 32)			*/
 #define CONFIG_CCLK_DIV			1
 /* SCLK_DIV controls the system clock divider				*/
 /* Values can range from 0-31 (where 0 means 32)			*/
-#define CONFIG_SYSCLK_DIV		3
+#define CONFIG_SYSCLK_DIV		4
 /* Values can range from 0-7 (where 0 means 8)				*/
 #define CONFIG_SCLK0_DIV		1
 #define CONFIG_SCLK1_DIV		1
 /* DCLK_DIV controls the DDR clock divider				*/
 /* Values can range from 0-31 (where 0 means 32)			*/
-#define CONFIG_DCLK_DIV			3
+#define CONFIG_DCLK_DIV			4
 /* OCLK_DIV controls the output clock divider				*/
 /* Values can range from 0-127 (where 0 means 128)			*/
 #define CONFIG_OCLK_DIV			16
