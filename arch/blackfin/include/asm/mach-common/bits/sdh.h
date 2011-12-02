@@ -125,6 +125,9 @@
 /* Bit masks for SDH_E_STATUS */
 #define              SDIO_INT_DET  0x2        /* SDIO Int Detected */
 #define               SD_CARD_DET  0x10       /* SD Card Detect */
+#define          SD_CARD_BUSYMODE  0x80000000 /* Card is in Busy mode */
+#define           SD_CARD_SLPMODE  0x40000000 /* Card in Sleep Mode */
+#define             SD_CARD_READY  0x00020000 /* Card Ready */
 
 /* Bit masks for SDH_E_MASK */
 #define                  SDIO_MSK  0x2        /* Mask SDIO Int Detected */
