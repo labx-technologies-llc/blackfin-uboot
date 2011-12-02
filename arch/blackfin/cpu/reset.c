@@ -70,8 +70,12 @@ static void bfin_reset(void)
 #endif
 
 	while (1)
+#if defined(__ADSPBF60x__)
+		bfin_write_RCU0_CTL(0x1);
+#else
 		/* Issue core reset */
 		asm("raise 1");
+#endif
 }
 
 /* We need to trampoline ourselves up into L1 since our linker

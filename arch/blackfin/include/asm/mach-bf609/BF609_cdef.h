@@ -14,6 +14,9 @@
 #define bfin_read_CGU_DIV() bfin_read32(CGU_DIV)
 #define bfin_write_CGU_DIV(val) bfin_write32(CGU_DIV, val)
 
+#define bfin_read_RCU0_CTL() bfin_read32(RCU0_CTL)
+#define bfin_write_RCU0_CTL(val) bfin_write32(RCU0_CTL, val)
+
 #define bfin_read_DDR0_CFG() bfin_read32(DDR0_CFG)
 #define bfin_write_DDR0_CFG(val) bfin_write32(DDR0_CFG, val)
 #define bfin_read_DDR0_TR0() bfin_read32(DDR0_TR0)
