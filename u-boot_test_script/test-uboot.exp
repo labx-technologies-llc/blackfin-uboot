@@ -79,7 +79,7 @@ set TEST_AUTOBOOT_SECONDS                1
 set TEST_JFFS2				 1
 set TEST_PASS_PARAM			 1
 set TEST_DMA    			 1
-set TEST_SPI_FLASH			 1
+set TEST_SPI_FLASH			 0
 set TEST_TFTP_WITH_ETHTOOL               1
 set TEST_MMC                             0
 set TEST_ATAPI                           0
@@ -146,11 +146,12 @@ set BDINFO_MEMSIZE           32*1024*1024
 
 } elseif { $board_type == "BF548-EZKIT" } {
 
-#set TEST_SPI_FLASH                       0
 set TEST_MMC                             1
 set TEST_ATAPI                           1
 set TEST_USB                             1
+set TEST_SPI_FLASH                       1 
 
+set SPI_FLASH_BUS              1
 set NUMBER_OF_FLASH_SECTORS    131
 set BDINFO_FLASHSIZE           "0x01000000"
 set KERNEL_FLASH_LOC           "0x20100000"
@@ -163,9 +164,10 @@ set BDINFO_MEMSIZE           64*1024*1024
 
 } elseif { $board_type == "BF527-EZKIT" } {
 
-#set TEST_SPI_FLASH                       0
 set TEST_USB                             1
+set TEST_SPI_FLASH                       1 
 
+set SPI_FLASH_BUS              1
 set NUMBER_OF_FLASH_SECTORS    71
 set BDINFO_FLASHSIZE           "0x00400000"
 set KERNEL_FLASH_LOC           "0x20100000"
@@ -179,7 +181,9 @@ set BDINFO_MEMSIZE           64*1024*1024
 } elseif { $board_type == "BF518F-EZBRD" } {
 
 set TEST_MMC                             1
+set TEST_SPI_FLASH                       1 
 
+set SPI_FLASH_BUS              2
 set NUMBER_OF_FLASH_SECTORS    71
 set BDINFO_FLASHSIZE           "0x00400000"
 set KERNEL_FLASH_LOC           "0x20100000"
@@ -1270,6 +1274,109 @@ proc copy_test {from_loc from_type to_loc to_type size flash_from_erase_start \
     # end of procedure
 }
 
+
+proc sf_comp_test {} {
+
+        global UBOOT_PROMPT
+        global SPI_FLASH_BUS 
+        global TEST_FAIL
+        global TEST_PASS
+
+        send_user "We're copying from spi flash\n"
+        set sf_probe_flag $TEST_FAIL
+        set sf_fail_count 0
+        set sf_success_count 0
+        
+        set timeout 120
+
+        send -s "sf probe $SPI_FLASH_BUS\r"
+        while 1 {
+            expect {
+                "Detected" {
+                    set sf_probe_flag $TEST_PASS 
+                }
+                $UBOOT_PROMPT {
+                    break
+                }
+                timeout {
+                    send_user "ERROR: sf probe error!\n"
+                    recover
+                    break
+                }
+            }
+        }
+
+for {set i 0 } {$i< 50} {incr i } {
+
+        set sf_comp_flag $TEST_FAIL 
+        set sf_addr 0x[format "%x" [expr 0x10000 + $i ]]
+        send_user "The testing sf address is $sf_addr  \n"
+        send -s "sf read 0x1000000 0x4000 $sf_addr\r"
+        while 1 {
+            expect {
+                $UBOOT_PROMPT {
+                    break
+                }
+                timeout {
+                    send_user "ERROR: Uboot locked up during sf read!\n"
+                    recover
+                    break
+                }
+            }
+        }
+
+        send -s "sf read 0x2000000 0x4000 $sf_addr\r"
+        while 1 {
+            expect {
+                $UBOOT_PROMPT {
+                    break
+                }
+                timeout {
+                    send_user "ERROR: Uboot locked up during sf read!\n"
+                    recover
+                    break
+                }
+            }
+        }
+
+        send -s "cmp.b 0x1000000 0x2000000 0x4000\r"
+        while 1 {
+            expect {
+                "!=" {
+                    send_user "\n#### sf compare fails at $sf_addr \n"
+                    set sf_comp_flag $TEST_FAIL
+                }
+                "Total of 16384 bytes were the same" {
+                    set sf_comp_flag $TEST_PASS
+                }
+                $UBOOT_PROMPT {
+                    break
+                }
+                timeout {
+                    send_user "ERROR: Uboot locked up during tftp\n"
+                    recover
+                    break
+                }
+            }
+        }
+
+        if { $sf_comp_flag == $TEST_FAIL } {
+            incr sf_fail_count 1 
+        } else {
+            incr sf_success_count 1
+        }
+}
+
+        
+        send_user "Total: sf compare fail count $sf_fail_count, pass count $sf_success_count.\n"
+        if { $sf_success_count == 50 } {
+        set sf_flag pass      
+        } else {
+        set sf_flag fail      
+        }
+        return $sf_flag
+
+}
 
 #
 #
@@ -4895,6 +5002,21 @@ if { $TEST_USB } {
     }
 }
 
+##############################################################################################
+
+if { $TEST_SPI_FLASH } {
+
+expect ">"
+send "\r"
+wait_for_uboot
+
+set sp_result $TEST_FAIL
+
+step "SPI_flash"
+set sf_result [sf_comp_test ]
+record_test_result $SPI_flash_loc $sp_result
+
+}
 ###############################################################################################################################
 
 if {  $TEST_TFTP } {
