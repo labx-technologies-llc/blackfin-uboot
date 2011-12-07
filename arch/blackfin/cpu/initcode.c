@@ -183,28 +183,89 @@ program_nmi_handler(void)
 	 (CONFIG_OCLK_DIV   << OSEL_P))
 #endif
 
-#ifndef CONFIG_DMC_DDRCTL
-# define CONFIG_DMC_DDRCTL (0x00000404)
-#endif
-#ifndef CONFIG_DMC_DDRCFG
-# define CONFIG_DMC_DDRCFG (0x00000422)
-#endif
-#ifndef CONFIG_DMC_DDRTR0
-# define CONFIG_DMC_DDRTR0 (0x20b08323)
-#endif
-#ifndef CONFIG_DMC_DDRTR1
-# define CONFIG_DMC_DDRTR1 (0x201a061a)
-#endif
-#ifndef CONFIG_DMC_DDRTR2
-# define CONFIG_DMC_DDRTR2 (0x0032020a)
-#endif
-#ifndef CONFIG_DMC_DDRMR
-# define CONFIG_DMC_DDRMR  (0x00000642)
-#endif
-#ifndef CONFIG_DMC_DDREMR1
-# define CONFIG_DMC_DDREMR1 (0x0)
-#endif
+struct ddr_config {
+	u32 ddr_clk;
+	u32 dmc_ddrctl;
+	u32 dmc_ddrcfg;
+	u32 dmc_ddrtr0;
+	u32 dmc_ddrtr1;
+	u32 dmc_ddrtr2;
+	u32 dmc_ddrmr;
+	u32 dmc_ddrmr1;
+};
 
+static struct ddr_config ddr_config_table[] = {
+	[0] = {
+		.ddr_clk    = 125000000, 	/* 125MHz */
+		.dmc_ddrctl = 0x00000404,
+		.dmc_ddrcfg = 0x00000422,
+		.dmc_ddrtr0 = 0x20b08323,
+		.dmc_ddrtr1 = 0x201a061a,
+		.dmc_ddrtr2 = 0x0032020a,
+		.dmc_ddrmr  = 0x00000642,
+		.dmc_ddrmr1 = 0x0,
+	},
+	[1] = {
+		.ddr_clk    = 133000000, 	/* 133MHz */
+		.dmc_ddrctl = 0x00000404,
+		.dmc_ddrcfg = 0x00000422,
+		.dmc_ddrtr0 = 0x20b08323,
+		.dmc_ddrtr1 = 0x201a061a,
+		.dmc_ddrtr2 = 0x0032020a,
+		.dmc_ddrmr  = 0x00000642,
+		.dmc_ddrmr1 = 0x0,
+	},
+	[2] = {
+		.ddr_clk    = 150000000, 	/* 150MHz */
+		.dmc_ddrctl = 0x00000404,
+		.dmc_ddrcfg = 0x00000422,
+		.dmc_ddrtr0 = 0x20b08323,
+		.dmc_ddrtr1 = 0x201a061a,
+		.dmc_ddrtr2 = 0x0032020a,
+		.dmc_ddrmr  = 0x00000642,
+		.dmc_ddrmr1 = 0x0,
+	},
+	[3] = {
+		.ddr_clk    = 166000000, 	/* 166MHz */
+		.dmc_ddrctl = 0x00000404,
+		.dmc_ddrcfg = 0x00000422,
+		.dmc_ddrtr0 = 0x20b08323,
+		.dmc_ddrtr1 = 0x201a061a,
+		.dmc_ddrtr2 = 0x0032020a,
+		.dmc_ddrmr  = 0x00000642,
+		.dmc_ddrmr1 = 0x0,
+	},
+	[4] = {
+		.ddr_clk    = 200000000, 	/* 200MHz */
+		.dmc_ddrctl = 0x00000404,
+		.dmc_ddrcfg = 0x00000422,
+		.dmc_ddrtr0 = 0x20b08323,
+		.dmc_ddrtr1 = 0x201a061a,
+		.dmc_ddrtr2 = 0x0032020a,
+		.dmc_ddrmr  = 0x00000642,
+		.dmc_ddrmr1 = 0x0,
+	},
+	[5] = {
+		.ddr_clk    = 225000000, 	/* 225MHz */
+		.dmc_ddrctl = 0x00000404,
+		.dmc_ddrcfg = 0x00000422,
+		.dmc_ddrtr0 = 0x20b08323,
+		.dmc_ddrtr1 = 0x201a061a,
+		.dmc_ddrtr2 = 0x0032020a,
+		.dmc_ddrmr  = 0x00000642,
+		.dmc_ddrmr1 = 0x0,
+	},
+	[6] = {
+		.ddr_clk    = 250000000, 	/* 250MHz */
+		.dmc_ddrctl = 0x00000404,
+		.dmc_ddrcfg = 0x00000422,
+		.dmc_ddrtr0 = 0x20b08323,
+		.dmc_ddrtr1 = 0x201a061a,
+		.dmc_ddrtr2 = 0x0032020a,
+		.dmc_ddrmr  = 0x00000642,
+		.dmc_ddrmr1 = 0x0,
+	},
+};
 #else /* __ADSPBF60x__ */
 
 /* PLL_DIV defines */
@@ -621,14 +682,46 @@ program_memory_controller(ADI_BOOT_DATA *bs, bool put_into_srfs)
 #ifdef __ADSPBF60x__
 	int dlldatacycle;
 	int dll_ctl;
+	int i;
+	for (i = 0; i < ARRAY_SIZE(ddr_config_table); i++)
+		if (CONFIG_BFIN_GET_DCLK == ddr_config_table[i].ddr_clk)
+			break;
 
+#ifndef CONFIG_DMC_DDRCFG
+	bfin_write_DDR0_CFG(ddr_config_table[i].dmc_ddrcfg);
+#else
 	bfin_write_DDR0_CFG(CONFIG_DMC_DDRCFG);
+#endif
+#ifndef CONFIG_DMC_DDRTR0
+	bfin_write_DDR0_TR0(ddr_config_table[i].dmc_ddrtr0);
+#else
 	bfin_write_DDR0_TR0(CONFIG_DMC_DDRTR0);
+#endif
+#ifndef CONFIG_DMC_DDRTR1
+	bfin_write_DDR0_TR1(ddr_config_table[i].dmc_ddrtr1);
+#else
 	bfin_write_DDR0_TR1(CONFIG_DMC_DDRTR1);
+#endif
+#ifndef CONFIG_DMC_DDRTR2
+	bfin_write_DDR0_TR2(ddr_config_table[i].dmc_ddrtr2);
+#else
 	bfin_write_DDR0_TR2(CONFIG_DMC_DDRTR2);
+#endif
+#ifndef CONFIG_DMC_DDRMR
+	bfin_write_DDR0_MR(ddr_config_table[i].dmc_ddrmr);
+#else
 	bfin_write_DDR0_MR(CONFIG_DMC_DDRMR);
+#endif
+#ifndef CONFIG_DMC_DDREMR1
+	bfin_write_DDR0_EMR1(ddr_config_table[i].dmc_ddrmr1);
+#else
 	bfin_write_DDR0_EMR1(CONFIG_DMC_DDREMR1);
+#endif
+#ifndef CONFIG_DMC_DDRCTL
+	bfin_write_DDR0_CTL(ddr_config_table[i].dmc_ddrctl);
+#else
 	bfin_write_DDR0_CTL(CONFIG_DMC_DDRCTL);
+#endif
 
 	while (!(bfin_read_DDR0_STAT() & 0x4))
 		continue;
@@ -639,7 +732,6 @@ program_memory_controller(ADI_BOOT_DATA *bs, bool put_into_srfs)
 	bfin_write_DDR0_DLLCTL(dll_ctl | (dlldatacycle << 8));
 
 	serial_putc('!');
-
 #else /* __ADSPBF60x__ */
 
 	/* Program the external memory controller before we come out of
