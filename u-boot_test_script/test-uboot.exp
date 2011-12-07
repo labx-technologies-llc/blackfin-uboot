@@ -1369,10 +1369,10 @@ for {set i 0 } {$i< 50} {incr i } {
 
         
         send_user "Total: sf compare fail count $sf_fail_count, pass count $sf_success_count.\n"
-        if { $sf_success_count == 50 } {
-        set sf_flag pass      
+        if { $sf_success_count == "50" } {
+        set sf_flag $TEST_PASS      
         } else {
-        set sf_flag fail      
+        set sf_flag $TEST_FAIL      
         }
         return $sf_flag
 
@@ -5013,10 +5013,11 @@ wait_for_uboot
 set sp_result $TEST_FAIL
 
 step "SPI_flash"
-set sf_result [sf_comp_test ]
+set sp_result [sf_comp_test ]
 record_test_result $SPI_flash_loc $sp_result
 
 }
+
 ###############################################################################################################################
 
 if {  $TEST_TFTP } {
