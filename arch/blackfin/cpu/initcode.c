@@ -29,6 +29,106 @@
 #include <asm/mach-common/bits/cgu.h>
 #endif
 
+#ifdef __ADSPBF60x__
+#define CONFIG_BFIN_GET_DCLK_M 		(CONFIG_BFIN_GET_DCLK/1000000)
+
+#ifndef CONFIG_DMC_DDRCFG
+#if ((CONFIG_BFIN_GET_DCLK_M != 125) && \
+	(CONFIG_BFIN_GET_DCLK_M != 133) && \
+	(CONFIG_BFIN_GET_DCLK_M != 150) && \
+	(CONFIG_BFIN_GET_DCLK_M != 166) && \
+	(CONFIG_BFIN_GET_DCLK_M != 200) && \
+	(CONFIG_BFIN_GET_DCLK_M != 225) && \
+	(CONFIG_BFIN_GET_DCLK_M != 250))
+#error "DDR2 CLK must be in (125, 133, 150, 166, 200, 225, 250)MHz"
+#endif
+#endif
+
+struct ddr_config {
+	u32 ddr_clk;
+	u32 dmc_ddrctl;
+	u32 dmc_ddrcfg;
+	u32 dmc_ddrtr0;
+	u32 dmc_ddrtr1;
+	u32 dmc_ddrtr2;
+	u32 dmc_ddrmr;
+	u32 dmc_ddrmr1;
+};
+
+static struct ddr_config ddr_config_table[] = {
+	[0] = {
+		.ddr_clk    = 125, 	/* 125MHz */
+		.dmc_ddrctl = 0x00000904,
+		.dmc_ddrcfg = 0x00000422,
+		.dmc_ddrtr0 = 0x20705212,
+		.dmc_ddrtr1 = 0x201003CF,
+		.dmc_ddrtr2 = 0x00320107,
+		.dmc_ddrmr  = 0x00000422,
+		.dmc_ddrmr1 = 0x4,
+	},
+	[1] = {
+		.ddr_clk    = 133, 	/* 133MHz */
+		.dmc_ddrctl = 0x00000904,
+		.dmc_ddrcfg = 0x00000422,
+		.dmc_ddrtr0 = 0x20806313,
+		.dmc_ddrtr1 = 0x2013040D,
+		.dmc_ddrtr2 = 0x00320108,
+		.dmc_ddrmr  = 0x00000632,
+		.dmc_ddrmr1 = 0x4,
+	},
+	[2] = {
+		.ddr_clk    = 150, 	/* 150MHz */
+		.dmc_ddrctl = 0x00000904,
+		.dmc_ddrcfg = 0x00000422,
+		.dmc_ddrtr0 = 0x20A07323,
+		.dmc_ddrtr1 = 0x20160492,
+		.dmc_ddrtr2 = 0x00320209,
+		.dmc_ddrmr  = 0x00000632,
+		.dmc_ddrmr1 = 0x4,
+	},
+	[3] = {
+		.ddr_clk    = 166, 	/* 166MHz */
+		.dmc_ddrctl = 0x00000904,
+		.dmc_ddrcfg = 0x00000422,
+		.dmc_ddrtr0 = 0x20A07323,
+		.dmc_ddrtr1 = 0x2016050E,
+		.dmc_ddrtr2 = 0x00320209,
+		.dmc_ddrmr  = 0x00000632,
+		.dmc_ddrmr1 = 0x4,
+	},
+	[4] = {
+		.ddr_clk    = 200, 	/* 200MHz */
+		.dmc_ddrctl = 0x00000904,
+		.dmc_ddrcfg = 0x00000422,
+		.dmc_ddrtr0 = 0x20b08323,
+		.dmc_ddrtr1 = 0x201A0618,
+		.dmc_ddrtr2 = 0x0032020a,
+		.dmc_ddrmr  = 0x00000632,
+		.dmc_ddrmr1 = 0x4,
+	},
+	[5] = {
+		.ddr_clk    = 225, 	/* 225MHz */
+		.dmc_ddrctl = 0x00000904,
+		.dmc_ddrcfg = 0x00000422,
+		.dmc_ddrtr0 = 0x20E0A424,
+		.dmc_ddrtr1 = 0x302006DB,
+		.dmc_ddrtr2 = 0x0032020D,
+		.dmc_ddrmr  = 0x00000842,
+		.dmc_ddrmr1 = 0x4,
+	},
+	[6] = {
+		.ddr_clk    = 250, 	/* 250MHz */
+		.dmc_ddrctl = 0x00000904,
+		.dmc_ddrcfg = 0x00000422,
+		.dmc_ddrtr0 = 0x20E0A424,
+		.dmc_ddrtr1 = 0x3020079E,
+		.dmc_ddrtr2 = 0x0032020D,
+		.dmc_ddrmr  = 0x00000842,
+		.dmc_ddrmr1 = 0x4,
+	},
+};
+#endif
+
 __attribute__((always_inline))
 static inline void serial_init(void)
 {
@@ -183,89 +283,6 @@ program_nmi_handler(void)
 	 (CONFIG_OCLK_DIV   << OSEL_P))
 #endif
 
-struct ddr_config {
-	u32 ddr_clk;
-	u32 dmc_ddrctl;
-	u32 dmc_ddrcfg;
-	u32 dmc_ddrtr0;
-	u32 dmc_ddrtr1;
-	u32 dmc_ddrtr2;
-	u32 dmc_ddrmr;
-	u32 dmc_ddrmr1;
-};
-
-static struct ddr_config ddr_config_table[] = {
-	[0] = {
-		.ddr_clk    = 125000000, 	/* 125MHz */
-		.dmc_ddrctl = 0x00000404,
-		.dmc_ddrcfg = 0x00000422,
-		.dmc_ddrtr0 = 0x20b08323,
-		.dmc_ddrtr1 = 0x201a061a,
-		.dmc_ddrtr2 = 0x0032020a,
-		.dmc_ddrmr  = 0x00000642,
-		.dmc_ddrmr1 = 0x0,
-	},
-	[1] = {
-		.ddr_clk    = 133000000, 	/* 133MHz */
-		.dmc_ddrctl = 0x00000404,
-		.dmc_ddrcfg = 0x00000422,
-		.dmc_ddrtr0 = 0x20b08323,
-		.dmc_ddrtr1 = 0x201a061a,
-		.dmc_ddrtr2 = 0x0032020a,
-		.dmc_ddrmr  = 0x00000642,
-		.dmc_ddrmr1 = 0x0,
-	},
-	[2] = {
-		.ddr_clk    = 150000000, 	/* 150MHz */
-		.dmc_ddrctl = 0x00000404,
-		.dmc_ddrcfg = 0x00000422,
-		.dmc_ddrtr0 = 0x20b08323,
-		.dmc_ddrtr1 = 0x201a061a,
-		.dmc_ddrtr2 = 0x0032020a,
-		.dmc_ddrmr  = 0x00000642,
-		.dmc_ddrmr1 = 0x0,
-	},
-	[3] = {
-		.ddr_clk    = 166000000, 	/* 166MHz */
-		.dmc_ddrctl = 0x00000404,
-		.dmc_ddrcfg = 0x00000422,
-		.dmc_ddrtr0 = 0x20b08323,
-		.dmc_ddrtr1 = 0x201a061a,
-		.dmc_ddrtr2 = 0x0032020a,
-		.dmc_ddrmr  = 0x00000642,
-		.dmc_ddrmr1 = 0x0,
-	},
-	[4] = {
-		.ddr_clk    = 200000000, 	/* 200MHz */
-		.dmc_ddrctl = 0x00000404,
-		.dmc_ddrcfg = 0x00000422,
-		.dmc_ddrtr0 = 0x20b08323,
-		.dmc_ddrtr1 = 0x201a061a,
-		.dmc_ddrtr2 = 0x0032020a,
-		.dmc_ddrmr  = 0x00000642,
-		.dmc_ddrmr1 = 0x0,
-	},
-	[5] = {
-		.ddr_clk    = 225000000, 	/* 225MHz */
-		.dmc_ddrctl = 0x00000404,
-		.dmc_ddrcfg = 0x00000422,
-		.dmc_ddrtr0 = 0x20b08323,
-		.dmc_ddrtr1 = 0x201a061a,
-		.dmc_ddrtr2 = 0x0032020a,
-		.dmc_ddrmr  = 0x00000642,
-		.dmc_ddrmr1 = 0x0,
-	},
-	[6] = {
-		.ddr_clk    = 250000000, 	/* 250MHz */
-		.dmc_ddrctl = 0x00000404,
-		.dmc_ddrcfg = 0x00000422,
-		.dmc_ddrtr0 = 0x20b08323,
-		.dmc_ddrtr1 = 0x201a061a,
-		.dmc_ddrtr2 = 0x0032020a,
-		.dmc_ddrmr  = 0x00000642,
-		.dmc_ddrmr1 = 0x0,
-	},
-};
 #else /* __ADSPBF60x__ */
 
 /* PLL_DIV defines */
@@ -682,10 +699,28 @@ program_memory_controller(ADI_BOOT_DATA *bs, bool put_into_srfs)
 #ifdef __ADSPBF60x__
 	int dlldatacycle;
 	int dll_ctl;
-	int i;
+	int i = 0;
+
+	if (CONFIG_BFIN_GET_DCLK_M ==  125)
+		i = 0;
+	else if (CONFIG_BFIN_GET_DCLK_M ==  133)
+		i = 1;
+	else if (CONFIG_BFIN_GET_DCLK_M ==  150)
+		i = 2;
+	else if (CONFIG_BFIN_GET_DCLK_M ==  166)
+		i = 3;
+	else if (CONFIG_BFIN_GET_DCLK_M ==  200)
+		i = 4;
+	else if (CONFIG_BFIN_GET_DCLK_M ==  225)
+		i = 5;
+	else if (CONFIG_BFIN_GET_DCLK_M ==  250)
+		i = 6;
+
+#if 0
 	for (i = 0; i < ARRAY_SIZE(ddr_config_table); i++)
-		if (CONFIG_BFIN_GET_DCLK == ddr_config_table[i].ddr_clk)
+		if (CONFIG_BFIN_GET_DCLK_M == ddr_config_table[i].ddr_clk)
 			break;
+#endif
 
 #ifndef CONFIG_DMC_DDRCFG
 	bfin_write_DDR0_CFG(ddr_config_table[i].dmc_ddrcfg);

@@ -46,7 +46,7 @@
 #define CONFIG_SCLK1_DIV		(1)
 /* DCLK_DIV controls the DDR clock divider				*/
 /* Values can range from 0-31 (where 0 means 32)			*/
-#define CONFIG_DCLK_DIV			(4)
+#define CONFIG_DCLK_DIV			(2)
 /* OCLK_DIV controls the output clock divider				*/
 /* Values can range from 0-127 (where 0 means 128)			*/
 #define CONFIG_OCLK_DIV			(16)
@@ -61,18 +61,6 @@
 #define CONFIG_BFIN_GET_SCLK0 		(get_sclk()/CONFIG_SCLK0_DIV)
 #define CONFIG_BFIN_GET_SCLK1 		(get_sclk()/CONFIG_SCLK1_DIV)
 #define CONFIG_BFIN_GET_DCLK 		((CONFIG_CLKIN_HZ*CONFIG_VCO_MULT)/CONFIG_DCLK_DIV)
-
-#ifndef CONFIG_DMC_DDRCFG
-#if ((CONFIG_BFIN_GET_DCLK != 125000000) && \
-	(CONFIG_BFIN_GET_DCLK != 133000000) && \
-	(CONFIG_BFIN_GET_DCLK != 150000000) && \
-	(CONFIG_BFIN_GET_DCLK != 166000000) && \
-	(CONFIG_BFIN_GET_DCLK != 200000000) && \
-	(CONFIG_BFIN_GET_DCLK != 225000000) && \
-	(CONFIG_BFIN_GET_DCLK != 250000000))
-#error "DDR2 CLK must be in (125, 133, 150, 166, 200, 225, 250)MHz"
-#endif
-#endif
 
 /*
  * Memory Settings
