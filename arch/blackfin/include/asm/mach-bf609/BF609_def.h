@@ -41,7 +41,7 @@
 #define RSI_BLKSZ                   0xFFC0065C         /* RSI0 Block Size Register */
 #define RSI_FIFO                    0xFFC00680         /* RSI0 Data FIFO Register */
 #define RSI_ESTAT                   0xFFC006C0         /* RSI0 Exception Status Register */
-#define RSI_EIMSK                   0xFFC006C4         /* RSI0 Exception Mask Register */
+#define RSI_EMASK                   0xFFC006C4         /* RSI0 Exception Mask Register */
 #define RSI_CONFIG                  0xFFC006C8         /* RSI0 Configuration Register */
 #define RSI_RD_WAIT_EN              0xFFC006CC         /* RSI0 Read Wait Enable Register */
 #define RSI_PID0                    0xFFC006D0         /* RSI0 Peripheral Identification Register */
