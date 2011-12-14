@@ -419,7 +419,9 @@ program_early_devices(ADI_BOOT_DATA *bs, uint *sdivB, uint *divB, uint *vcoB)
 	if (BFIN_DEBUG_EARLY_SERIAL || CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART) {
 		serial_putc('b');
 #ifdef __ADSPBF60x__
-
+		*sdivB = bfin_read_CGU_DIV();
+		*sdivB = ((*sdivB >> 8) & 0x1f) * ((*sdivB >> 5) & 0x7);
+		*vcoB = (bfin_read_CGU_CTL() >> 8) & 0x7f;
 #else
 		*sdivB = bfin_read_PLL_DIV() & 0xf;
 		*vcoB = (bfin_read_PLL_CTL() >> 9) & 0x3f;
@@ -669,7 +671,9 @@ update_serial_clocks(ADI_BOOT_DATA *bs, uint sdivB, uint divB, uint vcoB)
 		serial_putc('b');
 		unsigned int sdivR, vcoR;
 #ifdef __ADSPBF60x__
-
+		sdivR = bfin_read_CGU_DIV();
+		sdivR = ((sdivR >> 8) & 0x1f) * ((sdivR >> 5) & 0x7);
+		vcoR = (bfin_read_CGU_CTL() >> 8) & 0x7f;
 #else
 		sdivR = bfin_read_PLL_DIV() & 0xf;
 		vcoR = (bfin_read_PLL_CTL() >> 9) & 0x3f;
