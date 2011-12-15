@@ -500,7 +500,7 @@ proc recover {} {
                     send_user "Recovered\n"
                     return 0
                 }
-                -re "\[Ll]inux" {
+                -re "kernel" {
                     send_user "We were in the kernel shell\n"
                     send -s "reboot\r"
                     break
@@ -3969,32 +3969,19 @@ wait_for_uboot
 
 step "mtest"
 set timeout 120
-set counter_1 0
-set counter_2 0
-set MTEST_ITERATIONS 32
+set mtest_result $TEST_FAIL
+set MTEST_ITERATIONS 200
 set random_ram_loc  [format "%08x" [expr $CFG_LOAD_ADDR + 0x5120]]
-send -s "mtest $CFG_LOAD_ADDR $random_ram_loc 0xFFFF\r"
+send -s "mtest $CFG_LOAD_ADDR $random_ram_loc 0xFFFF $MTEST_ITERATIONS\r"
 while 1 {
-
-   if { $counter_1 > $MTEST_ITERATIONS } {
-      break
-   }
-   if { $counter_2 > $MTEST_ITERATIONS } {
-      break
-   }
 
    expect {
 
-      -re "Pattern 000.{7}Writing.{25}Reading" {
-         incr counter_1
-      }
-
-      -re "Pattern FFF.{7}Writing.{25}Reading" {
-         incr counter_2
+      -re "with 0 errors" {
+         set mtest_result $TEST_PASS
       }
 
       $UBOOT_PROMPT {
-         send_user "mtest jumped back to the uboot prompt before $timeout seconds\n"
          break
       }
 
@@ -4004,17 +3991,7 @@ while 1 {
       }
    }
 }
-if { $counter_1 < $MTEST_ITERATIONS || $counter_2 < $MTEST_ITERATIONS } {
-   set mtest_result $TEST_FAIL
-   send_user "normal pattern cycles=$counter_1, compliment pattern cycles=$counter_2\n"
-} else {
-   set mtest_result $TEST_PASS
-}
 record_test_result $mtest_loc $mtest_result
-
-
-# Send a control-C to stop the mtest.
-send "\3"
 
 }
 
@@ -4026,8 +4003,6 @@ send "\3"
 ######################################################################################
 if {  $TEST_JFFS2 } {
 
-    expect ">"
-    send "\r"
     wait_for_uboot
 
     step "Check JFFS2 function"
