@@ -444,6 +444,18 @@ program_early_devices(ADI_BOOT_DATA *bs, uint *sdivB, uint *divB, uint *vcoB)
 	 */
 	if (CONFIG_BFIN_BOOT_MODE != BFIN_BOOT_BYPASS) {
 		serial_putc('e');
+#ifdef __ADSPBF60x__
+		int i;
+		bfin_write_SEC_GCTL(0x2);
+		while (i++ < 100000);
+		bfin_write_SEC_FCTL(0xc1);
+		bfin_write_SEC_SCTL(2, bfin_read_SEC_SCTL(2) | 0x6);
+
+		bfin_write_SEC_CCTL(0x2);
+		while (i++ < 100000);
+		bfin_write_SEC_GCTL(0x1);
+		bfin_write_SEC_CCTL(0x1);
+#endif
 		bfin_write_WDOG_CNT(MSEC_TO_SCLK(CONFIG_HW_WATCHDOG_TIMEOUT_INITCODE));
 		bfin_write_WDOG_CTL(0);
 		serial_putc('f');

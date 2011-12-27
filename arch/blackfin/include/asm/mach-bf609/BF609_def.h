@@ -836,9 +836,9 @@
 #define SMC_B3CTL                  0xFFC1603C         /* SMC0 SMC BANK3 Control Register */
 #define SMC_B3TIM                  0xFFC16040         /* SMC0 SMC BANK3 Timing Register */
 #define SMC_B3ETIM                 0xFFC16044         /* SMC0 SMC BANK3 Extended Timing Register */
-#define WDOG0_CTL                   0xFFC17000         /* WDOG0 Control Register */
-#define WDOG0_CNT                   0xFFC17004         /* WDOG0 Count Register */
-#define WDOG0_STAT                  0xFFC17008         /* WDOG0 Watchdog Timer Status Register */
+#define WDOG_CTL                   0xFFC17000         /* WDOG0 Control Register */
+#define WDOG_CNT                   0xFFC17004         /* WDOG0 Count Register */
+#define WDOG_STAT                  0xFFC17008         /* WDOG0 Watchdog Timer Status Register */
 #define WDOG1_CTL                   0xFFC17800         /* WDOG1 Control Register */
 #define WDOG1_CNT                   0xFFC17804         /* WDOG1 Count Register */
 #define WDOG1_STAT                  0xFFC17808         /* WDOG1 Watchdog Timer Status Register */

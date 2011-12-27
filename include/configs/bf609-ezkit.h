@@ -40,7 +40,7 @@
 #define CONFIG_CCLK_DIV			(1)
 /* SCLK_DIV controls the system clock divider				*/
 /* Values can range from 0-31 (where 0 means 32)			*/
-#define CONFIG_SYSCLK_DIV		(4)
+#define CONFIG_SYSCLK_DIV		(5)
 /* Values can range from 0-7 (where 0 means 8)				*/
 #define CONFIG_SCLK0_DIV		(1)
 #define CONFIG_SCLK1_DIV		(1)
@@ -75,6 +75,7 @@
 #define CONFIG_SYS_MONITOR_LEN	(512 * 1024)
 #define CONFIG_SYS_MALLOC_LEN	(256 * 1024)
 
+#define CONFIG_HW_WATCHDOG
 /*
  * Network Settings
  */

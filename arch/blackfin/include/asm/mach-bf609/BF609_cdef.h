@@ -36,6 +36,16 @@
 #define bfin_read_DDR0_DLLCTL() bfin_read32(DDR0_DLLCTL)
 #define bfin_write_DDR0_DLLCTL(val) bfin_write32(DDR0_DLLCTL, val)
 
+#define bfin_read_SEC_CCTL()		bfin_read32(SEC0_CCTL0)
+#define bfin_write_SEC_CCTL(val)	bfin_write32(SEC0_CCTL0, val)
+#define bfin_read_SEC_GCTL()		bfin_read32(SEC0_GCTL)
+#define bfin_write_SEC_GCTL(val)	bfin_write32(SEC0_GCTL, val)
+
+#define bfin_read_SEC_FCTL()		bfin_read32(SEC0_FCTL)
+#define bfin_write_SEC_FCTL(val)	bfin_write32(SEC0_FCTL, val)
+#define bfin_read_SEC_SCTL(sid)		bfin_read32((SEC0_SCTL0 + (sid) * 8))
+#define bfin_write_SEC_SCTL(sid, val)	bfin_write32((SEC0_SCTL0 + (sid) * 8), val)
+
 #define bfin_read_SMC_GCTL() bfin_read32(SMC_GCTL)
 #define bfin_write_SMC_GCTL(val) bfin_write32(SMC_GCTL, val)
 #define bfin_read_SMC_GSTAT() bfin_read32(SMC_GSTAT)
@@ -449,10 +459,12 @@
 #define bfin_read_MDMA_D1_CURR_Y_COUNT() bfin_read32(MDMA_D1_YCNT_CUR)
 #define bfin_write_MDMA_D1_CURR_Y_COUNT(val) bfin_write32(MDMA_D1_YCNT_CUR, val)
 
-#define bfin_read_WDOG_CNT() bfin_read32(WDOG0_CNT)
-#define bfin_write_WDOG_CNT(val) bfin_write32(WDOG0_CNT, val)
-#define bfin_read_WDOG_CTL() bfin_read32(WDOG0_CTL)
-#define bfin_write_WDOG_CTL(val) bfin_write32(WDOG0_CTL, val)
+#define bfin_read_WDOG_CNT() bfin_read32(WDOG_CNT)
+#define bfin_write_WDOG_CNT(val) bfin_write32(WDOG_CNT, val)
+#define bfin_read_WDOG_CTL() bfin_read32(WDOG_CTL)
+#define bfin_write_WDOG_CTL(val) bfin_write32(WDOG_CTL, val)
+#define bfin_read_WDOG_STAT() bfin_read32(WDOG_STAT)
+#define bfin_write_WDOG_STAT(val) bfin_write32(WDOG_STAT, val)
 #define bfin_read_SPI_BAUD() bfin_read32(SPI0_CLK)
 #define bfin_write_SPI_BAUD(val) bfin_write32(SPI0_CLK, val)
 
