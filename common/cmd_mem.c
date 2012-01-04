@@ -917,8 +917,9 @@ int do_mem_mtest (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 			return errs != 0;
 		}
 		++iterations;
-
-		printf ("\rPattern %08lX  Writing..."
+#if 1
+		/* 4bytes tset */
+		printf ("\r4:Pattern %08lX  Writing..."
 			"%12s"
 			"\b\b\b\b\b\b\b\b\b\b",
 			pattern, "");
@@ -946,7 +947,73 @@ int do_mem_mtest (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 			}
 			val += incr;
 		}
+		/* 2bytes test */
+		printf ("\r2:Pattern %08lX  Writing..."
+			"%12s"
+			"\b\b\b\b\b\b\b\b\b\b",
+			pattern, "");
+		unsigned short *addr1;
+		unsigned short val1;
+		unsigned short readback1;
+		for (addr1 = start, val1 = pattern; addr1 < end; addr1++) {
+			WATCHDOG_RESET();
+			*addr1 = val1;
+			val1  += incr;
+		}
 
+		puts ("Reading...");
+
+		for (addr1 = start, val1 = pattern; addr1 < end; addr1++) {
+			WATCHDOG_RESET();
+			readback1 = *addr1;
+			if (readback1 != val1) {
+				printf ("\nMem error @ 0x%08X: "
+					"found %08lX, expected %08lX\n",
+					(uint)addr1, readback1, val1);
+				errs++;
+				if (ctrlc()) {
+					putc ('\n');
+					return 1;
+				}
+			}
+			val1 += incr;
+		}
+
+#endif
+#if 1
+		/* byte test */
+		printf ("\r1:Pattern %08lX  Writing..."
+			"%12s"
+			"\b\b\b\b\b\b\b\b\b\b",
+			pattern, "");
+
+		unsigned char *addr0;
+		unsigned char val0;
+		unsigned char readback0;
+		for (addr0 = start, val0 = pattern; addr0 < end; addr0++) {
+			WATCHDOG_RESET();
+			*addr0 = val0;
+			val0  += incr;
+		}
+
+		puts ("Reading...");
+
+		for (addr0 = start, val0 = pattern; addr0 < end; addr0++) {
+			WATCHDOG_RESET();
+			readback0 = *addr0;
+			if (readback0 != val0) {
+				printf ("\nMem error @ 0x%08X: "
+					"found %08lX, expected %08lX\n",
+					(uint)addr0, readback0, val0);
+				errs++;
+				if (ctrlc()) {
+					putc ('\n');
+					return 1;
+				}
+			}
+			val0 += incr;
+		}
+#endif
 		/*
 		 * Flip the pattern each time to make lots of zeros and
 		 * then, the next time, lots of ones.  We decrement
