@@ -489,6 +489,10 @@ program_clocks(ADI_BOOT_DATA *bs, bool put_into_srfs)
 		serial_putc('n');
 	}
 
+#if defined(ANOMALY_05000265) && defined(PORTF_HYSTERESIS)
+	bfin_write_PORTF_HYSTERESIS(0x105);
+#endif
+
 	serial_putc('o');
 
 	return vr_ctl;

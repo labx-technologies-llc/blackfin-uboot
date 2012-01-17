@@ -14,7 +14,11 @@
 #define OUT_DELAY		0x0080		/* Add 200ps Delay To EBIU Output Signals */
 #define BYPASS			0x0100		/* Bypass the PLL */
 #define MSEL			0x7E00		/* Multiplier Select For CCLK/VCO Factors */
+#if defined(ANOMALY_05000265) && !defined(PORTF_HYSTERESIS)
 #define SPORT_HYST		0x8000		/* Enable Additional Hysteresis on SPORT Input Pins */
+#else
+#define SPORT_HYST		0
+#endif
 
 /* PLL_DIV Masks */
 #define SSEL			0x000F		/* System Select */
