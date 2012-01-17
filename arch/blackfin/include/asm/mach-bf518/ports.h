@@ -5,6 +5,10 @@
 #ifndef __BFIN_PERIPHERAL_PORT__
 #define __BFIN_PERIPHERAL_PORT__
 
+#if defined(ANOMALY_05000265)
+#define SPORT_NOISE_HYSTERESIS()        bfin_write_PORTG_HYSTERESIS(0x44);bfin_write_PORTH_HYSTERESIS(0x1)
+#endif
+
 /* PORTx_MUX Masks */
 #define PORT_x_MUX_0_MASK	0x0003
 #define PORT_x_MUX_1_MASK	0x000C
