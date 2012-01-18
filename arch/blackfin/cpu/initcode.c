@@ -277,7 +277,7 @@ program_nmi_handler(void)
 	(1 << UPDT_P) | \
 	((CONFIG_CCLK_DIV   << CSEL_P)   | \
 	 (CONFIG_SCLK0_DIV  << S0SEL_P)  | \
-	 (CONFIG_SYSCLK_DIV << SYSSEL_P) | \
+	 (CONFIG_SCLK_DIV << SYSSEL_P) | \
 	 (CONFIG_SCLK1_DIV  << S1SEL_P)  | \
 	 (CONFIG_DCLK_DIV   << DSEL_P)   | \
 	 (CONFIG_OCLK_DIV   << OSEL_P))

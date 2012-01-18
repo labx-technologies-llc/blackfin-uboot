@@ -40,7 +40,7 @@
 #define CONFIG_CCLK_DIV			(1)
 /* SCLK_DIV controls the system clock divider				*/
 /* Values can range from 0-31 (where 0 means 32)			*/
-#define CONFIG_SYSCLK_DIV		(5)
+#define CONFIG_SCLK_DIV			(5)
 /* Values can range from 0-7 (where 0 means 8)				*/
 #define CONFIG_SCLK0_DIV		(1)
 #define CONFIG_SCLK1_DIV		(1)
@@ -57,7 +57,7 @@
 #define CONFIG_BFIN_GET_CCLK 		(CONFIG_PLL_CLK/CONFIG_CCLK_DIV)
 #define CONFIG_CCLK_HZ 			(CONFIG_BFIN_GET_CCLK)
 
-#define CONFIG_BFIN_GET_SCLK 		(CONFIG_PLL_CLK/CONFIG_SYSCLK_DIV)
+#define CONFIG_BFIN_GET_SCLK 		(CONFIG_PLL_CLK/CONFIG_SCLK_DIV)
 #define CONFIG_BFIN_GET_SCLK0 		(get_sclk()/CONFIG_SCLK0_DIV)
 #define CONFIG_BFIN_GET_SCLK1 		(get_sclk()/CONFIG_SCLK1_DIV)
 #define CONFIG_BFIN_GET_DCLK 		((CONFIG_CLKIN_HZ*CONFIG_VCO_MULT)/CONFIG_DCLK_DIV)

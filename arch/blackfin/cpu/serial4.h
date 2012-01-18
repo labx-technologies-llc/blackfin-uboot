@@ -70,7 +70,7 @@ static inline uint32_t uart_sclk(void)
 {
 #if defined(BFIN_IN_INITCODE) || defined(CONFIG_DEBUG_EARLY_SERIAL)
 	/* We cannot use get_sclk() early on as it uses caches in external memory */
-	return (CONFIG_CLKIN_HZ * CONFIG_VCO_MULT / CONFIG_SYSCLK_DIV / CONFIG_SCLK0_DIV);
+	return CONFIG_CLKIN_HZ * CONFIG_VCO_MULT / CONFIG_SCLK_DIV / CONFIG_SCLK0_DIV;
 #else
 	return get_sclk0();
 #endif
