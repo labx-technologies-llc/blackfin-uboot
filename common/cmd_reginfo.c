@@ -226,6 +226,23 @@ int do_reginfo (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	printf("\tEBIU_SDSTAT:  0x%04x   EBIU_SDGCTL:  0x%08x\n",
 		bfin_read_EBIU_SDSTAT(), bfin_read_EBIU_SDGCTL());
 # endif
+#else
+	puts("\nCGU Registers\n");
+	printf("\tCGU_DIV:   0x%08x   CGU_CTL:      0x%08x\n",
+		bfin_read_CGU_DIV(), bfin_read_CGU_CTL());
+	printf("\tCGU_STAT:  0x%08x   CGU_LOCKCNT:  0x%08x\n",
+		bfin_read_CGU_STAT(), bfin_read_CGU_CLKOUTSEL());
+
+	puts("\nSMC DDR Registers\n");
+	printf("\tDDR_CFG:   0x%08x   DDR_TR0:      0x%08x\n",
+		bfin_read_DDR0_CFG(), bfin_read_DDR0_TR0());
+	printf("\tDDR_TR1:   0x%08x   DDR_TR2:      0x%08x\n",
+		bfin_read_DDR0_TR1(), bfin_read_DDR0_TR2());
+	printf("\tDDR_MR:    0x%08x   DDR_EMR1:     0x%08x\n",
+		bfin_read_DDR0_MR(), bfin_read_DDR0_EMR1());
+	printf("\tDDR_CTL:   0x%08x   DDR_STAT:     0x%08x\n",
+		bfin_read_DDR0_CTL(), bfin_read_DDR0_STAT());
+	printf("\tDDR_DLLCTL:0x%08x\n", bfin_read_DDR0_DLLCTL());
 #endif
 #endif /* CONFIG_BLACKFIN */
 

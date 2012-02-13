@@ -9,6 +9,7 @@
 #include "../mach-common/ADSP-EDN-core_cdef.h"
 
 #define bfin_read_CGU_STAT() bfin_read32(CGU_STAT)
+#define bfin_read_CGU_CLKOUTSEL() bfin_read32(CGU_CLKOUTSEL)
 #define bfin_read_CGU_CTL() bfin_read32(CGU_CTL)
 #define bfin_write_CGU_CTL(val) bfin_write32(CGU_CTL, val)
 #define bfin_read_CGU_DIV() bfin_read32(CGU_DIV)
