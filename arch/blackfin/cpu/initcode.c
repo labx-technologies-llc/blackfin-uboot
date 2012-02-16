@@ -100,9 +100,9 @@ static struct ddr_config ddr_config_table[] = {
 		.ddr_clk    = 200, 	/* 200MHz */
 		.dmc_ddrctl = 0x00000904,
 		.dmc_ddrcfg = 0x00000422,
-		.dmc_ddrtr0 = 0x20b08323,
-		.dmc_ddrtr1 = 0x201A0618,
-		.dmc_ddrtr2 = 0x0032020a,
+		.dmc_ddrtr0 = 0x20a07323,
+		.dmc_ddrtr1 = 0x2016050f,
+		.dmc_ddrtr2 = 0x00320509,
 		.dmc_ddrmr  = 0x00000632,
 		.dmc_ddrmr1 = 0x4,
 	},
