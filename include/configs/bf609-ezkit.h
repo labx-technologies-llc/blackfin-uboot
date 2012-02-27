@@ -76,6 +76,7 @@
 #define CONFIG_SYS_MALLOC_LEN	(256 * 1024)
 
 #define CONFIG_HW_WATCHDOG
+
 /*
  * Network Settings
  */
@@ -117,6 +118,12 @@
 #define CONFIG_SF_DEFAULT_SPEED	30000000
 #define CONFIG_SPI_FLASH
 #define CONFIG_SPI_FLASH_ALL
+
+#define CONFIG_USB
+#define CONFIG_MUSB_HCD
+#define CONFIG_USB_BLACKFIN
+#define CONFIG_USB_STORAGE
+#define CONFIG_MUSB_TIMEOUT 100000
 
 /*
  * Env Storage Settings

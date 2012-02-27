@@ -3410,333 +3410,333 @@
 #define EFS0_PGM6                   0xFFCC0040         /* EFS0 Program Register 6 */
 #define EFS0_PGM7                   0xFFCC0044         /* EFS0 Program Register 7 */
 #define EFS0_PGM_TIMING             0xFFCC007C         /* EFS0 Timing configuration register */
-#define USB0_FADDR                  0xFFCC1000         /* USB0 Device Address in Peripheral Mode */
-#define USB0_POWER                  0xFFCC1001         /* USB0 Power and Device Control */
-#define USB0_INTRTX                 0xFFCC1002         /* USB0 Transmit Interrupt */
-#define USB0_INTRRX                 0xFFCC1004         /* USB0 Receive Interrupts */
-#define USB0_INTRTXE                0xFFCC1006         /* USB0 Transmit Interrupt Enable */
-#define USB0_INTRRXE                0xFFCC1008         /* USB0 Receive Interrupt Enable */
-#define USB0_IRQ                    0xFFCC100A         /* USB0 USB Interrupts */
-#define USB0_IEN                    0xFFCC100B         /* USB0 USB Interrupt Enable */
-#define USB0_FRAME                  0xFFCC100C         /* USB0 Frame Number */
-#define USB0_INDEX                  0xFFCC100E         /* USB0 Index */
-#define USB0_TESTMODE               0xFFCC100F         /* USB0 Testmodes */
-#define USB0_EPI_TXMAXP0            0xFFCC1010         /* USB0 Transmit Maximum Packet Length */
-#define USB0_EP0I_CSR0_H            0xFFCC1012         /* USB0 Config and Status EP0 */
-#define USB0_EPI_TXCSR0_H           0xFFCC1012         /* USB0 Transmit Configuration and Status */
-#define USB0_EP0I_CSR0_P            0xFFCC1012         /* USB0 Config and Status EP0 */
-#define USB0_EPI_TXCSR0_P           0xFFCC1012         /* USB0 Transmit Configuration and Status */
-#define USB0_EPI_RXMAXP0            0xFFCC1014         /* USB0 Receive Maximum Packet Length */
-#define USB0_EPI_RXCSR0_H           0xFFCC1016         /* USB0 Receive Configuration and Status Register */
-#define USB0_EPI_RXCSR0_P           0xFFCC1016         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP0I_CNT0              0xFFCC1018         /* USB0 Number of Received Bytes for Endpoint 0 */
-#define USB0_EPI_RXCNT0             0xFFCC1018         /* USB0 Number of Byte Received */
-#define USB0_EP0I_TYPE0             0xFFCC101A         /* USB0 Speed for Endpoint 0 */
-#define USB0_EPI_TXTYPE0            0xFFCC101A         /* USB0 Transmit Type */
-#define USB0_EP0I_NAKLIMIT0         0xFFCC101B         /* USB0 NAK Response Timeout for Endpoint 0 */
-#define USB0_EPI_TXINTERVAL0        0xFFCC101B         /* USB0 Transmit Polling Interval */
-#define USB0_EPI_RXTYPE0            0xFFCC101C         /* USB0 Receive Type */
-#define USB0_EPI_RXINTERVAL0        0xFFCC101D         /* USB0 Receive Polling Interval */
-#define USB0_EP0I_CFGDATA0          0xFFCC101F         /* USB0 Configuration Information */
-#define USB0_FIFOB0                 0xFFCC1020         /* USB0 FIFO Data */
-#define USB0_FIFOB1                 0xFFCC1024         /* USB0 FIFO Data */
-#define USB0_FIFOB2                 0xFFCC1028         /* USB0 FIFO Data */
-#define USB0_FIFOB3                 0xFFCC102C         /* USB0 FIFO Data */
-#define USB0_FIFOB4                 0xFFCC1030         /* USB0 FIFO Data */
-#define USB0_FIFOB5                 0xFFCC1034         /* USB0 FIFO Data */
-#define USB0_FIFOB6                 0xFFCC1038         /* USB0 FIFO Data */
-#define USB0_FIFOB7                 0xFFCC103C         /* USB0 FIFO Data */
-#define USB0_FIFOB8                 0xFFCC1040         /* USB0 FIFO Data */
-#define USB0_FIFOB9                 0xFFCC1044         /* USB0 FIFO Data */
-#define USB0_FIFOB10                0xFFCC1048         /* USB0 FIFO Data */
-#define USB0_FIFOB11                0xFFCC104C         /* USB0 FIFO Data */
-#define USB0_FIFOH0                 0xFFCC1020         /* USB0 FIFO Data */
-#define USB0_FIFOH1                 0xFFCC1024         /* USB0 FIFO Data */
-#define USB0_FIFOH2                 0xFFCC1028         /* USB0 FIFO Data */
-#define USB0_FIFOH3                 0xFFCC102C         /* USB0 FIFO Data */
-#define USB0_FIFOH4                 0xFFCC1030         /* USB0 FIFO Data */
-#define USB0_FIFOH5                 0xFFCC1034         /* USB0 FIFO Data */
-#define USB0_FIFOH6                 0xFFCC1038         /* USB0 FIFO Data */
-#define USB0_FIFOH7                 0xFFCC103C         /* USB0 FIFO Data */
-#define USB0_FIFOH8                 0xFFCC1040         /* USB0 FIFO Data */
-#define USB0_FIFOH9                 0xFFCC1044         /* USB0 FIFO Data */
-#define USB0_FIFOH10                0xFFCC1048         /* USB0 FIFO Data */
-#define USB0_FIFOH11                0xFFCC104C         /* USB0 FIFO Data */
-#define USB0_FIFO0                  0xFFCC1020         /* USB0 FIFO Data */
-#define USB0_FIFO1                  0xFFCC1024         /* USB0 FIFO Data */
-#define USB0_FIFO2                  0xFFCC1028         /* USB0 FIFO Data */
-#define USB0_FIFO3                  0xFFCC102C         /* USB0 FIFO Data */
-#define USB0_FIFO4                  0xFFCC1030         /* USB0 FIFO Data */
-#define USB0_FIFO5                  0xFFCC1034         /* USB0 FIFO Data */
-#define USB0_FIFO6                  0xFFCC1038         /* USB0 FIFO Data */
-#define USB0_FIFO7                  0xFFCC103C         /* USB0 FIFO Data */
-#define USB0_FIFO8                  0xFFCC1040         /* USB0 FIFO Data */
-#define USB0_FIFO9                  0xFFCC1044         /* USB0 FIFO Data */
-#define USB0_FIFO10                 0xFFCC1048         /* USB0 FIFO Data */
-#define USB0_FIFO11                 0xFFCC104C         /* USB0 FIFO Data */
-#define USB0_DEV_CTL                0xFFCC1060         /* USB0 Device Control */
-#define USB0_TXFIFOSZ               0xFFCC1062         /* USB0 Transmit FIFO Size */
-#define USB0_RXFIFOSZ               0xFFCC1063         /* USB0 Receive FIFO Size */
-#define USB0_TXFIFOADDR             0xFFCC1064         /* USB0 Transmit FIFO Address */
-#define USB0_RXFIFOADDR             0xFFCC1066         /* USB0 Receive FIFO Address */
-#define USB0_VENDSTAT               0xFFCC1068         /* USB0 Vendor Status */
-#define USB0_HWVERS                 0xFFCC106C         /* USB0 Hardware Version */
-#define USB0_EPINFO                 0xFFCC1078         /* USB0 Endpoint Info */
-#define USB0_RAMINFO                0xFFCC1079         /* USB0 Ram Information */
-#define USB0_LINKINFO               0xFFCC107A         /* USB0 Programmable Delay Values */
-#define USB0_VPLEN                  0xFFCC107B         /* USB0 VBus Pulse Duration */
-#define USB0_HS_EOF1                0xFFCC107C         /* USB0 High Speed End of Frame Remaining */
-#define USB0_FS_EOF1                0xFFCC107D         /* USB0 Full Speed End of Frame Remaining */
-#define USB0_LS_EOF1                0xFFCC107E         /* USB0 Low Speed End of Frame Remaining */
-#define USB0_SOFT_RST               0xFFCC107F         /* USB0 Software Reset */
-#define USB0_TXFUNCADDR0            0xFFCC1080         /* USB0 Transmit Function Address */
-#define USB0_TXFUNCADDR1            0xFFCC1088         /* USB0 Transmit Function Address */
-#define USB0_TXFUNCADDR2            0xFFCC1090         /* USB0 Transmit Function Address */
-#define USB0_TXFUNCADDR3            0xFFCC1098         /* USB0 Transmit Function Address */
-#define USB0_TXFUNCADDR4            0xFFCC10A0         /* USB0 Transmit Function Address */
-#define USB0_TXFUNCADDR5            0xFFCC10A8         /* USB0 Transmit Function Address */
-#define USB0_TXFUNCADDR6            0xFFCC10B0         /* USB0 Transmit Function Address */
-#define USB0_TXFUNCADDR7            0xFFCC10B8         /* USB0 Transmit Function Address */
-#define USB0_TXFUNCADDR8            0xFFCC10C0         /* USB0 Transmit Function Address */
-#define USB0_TXFUNCADDR9            0xFFCC10C8         /* USB0 Transmit Function Address */
-#define USB0_TXFUNCADDR10           0xFFCC10D0         /* USB0 Transmit Function Address */
-#define USB0_TXFUNCADDR11           0xFFCC10D8         /* USB0 Transmit Function Address */
-#define USB0_TXHUBADDR0             0xFFCC1082         /* USB0 Transmit Hub Address */
-#define USB0_TXHUBADDR1             0xFFCC108A         /* USB0 Transmit Hub Address */
-#define USB0_TXHUBADDR2             0xFFCC1092         /* USB0 Transmit Hub Address */
-#define USB0_TXHUBADDR3             0xFFCC109A         /* USB0 Transmit Hub Address */
-#define USB0_TXHUBADDR4             0xFFCC10A2         /* USB0 Transmit Hub Address */
-#define USB0_TXHUBADDR5             0xFFCC10AA         /* USB0 Transmit Hub Address */
-#define USB0_TXHUBADDR6             0xFFCC10B2         /* USB0 Transmit Hub Address */
-#define USB0_TXHUBADDR7             0xFFCC10BA         /* USB0 Transmit Hub Address */
-#define USB0_TXHUBADDR8             0xFFCC10C2         /* USB0 Transmit Hub Address */
-#define USB0_TXHUBADDR9             0xFFCC10CA         /* USB0 Transmit Hub Address */
-#define USB0_TXHUBADDR10            0xFFCC10D2         /* USB0 Transmit Hub Address */
-#define USB0_TXHUBADDR11            0xFFCC10DA         /* USB0 Transmit Hub Address */
-#define USB0_TXHUBPORT0             0xFFCC1083         /* USB0 Transmit Hub Port */
-#define USB0_TXHUBPORT1             0xFFCC108B         /* USB0 Transmit Hub Port */
-#define USB0_TXHUBPORT2             0xFFCC1093         /* USB0 Transmit Hub Port */
-#define USB0_TXHUBPORT3             0xFFCC109B         /* USB0 Transmit Hub Port */
-#define USB0_TXHUBPORT4             0xFFCC10A3         /* USB0 Transmit Hub Port */
-#define USB0_TXHUBPORT5             0xFFCC10AB         /* USB0 Transmit Hub Port */
-#define USB0_TXHUBPORT6             0xFFCC10B3         /* USB0 Transmit Hub Port */
-#define USB0_TXHUBPORT7             0xFFCC10BB         /* USB0 Transmit Hub Port */
-#define USB0_TXHUBPORT8             0xFFCC10C3         /* USB0 Transmit Hub Port */
-#define USB0_TXHUBPORT9             0xFFCC10CB         /* USB0 Transmit Hub Port */
-#define USB0_TXHUBPORT10            0xFFCC10D3         /* USB0 Transmit Hub Port */
-#define USB0_TXHUBPORT11            0xFFCC10DB         /* USB0 Transmit Hub Port */
-#define USB0_RXFUNCADDR0            0xFFCC1084         /* USB0 Receive Function Address */
-#define USB0_RXFUNCADDR1            0xFFCC108C         /* USB0 Receive Function Address */
-#define USB0_RXFUNCADDR2            0xFFCC1094         /* USB0 Receive Function Address */
-#define USB0_RXFUNCADDR3            0xFFCC109C         /* USB0 Receive Function Address */
-#define USB0_RXFUNCADDR4            0xFFCC10A4         /* USB0 Receive Function Address */
-#define USB0_RXFUNCADDR5            0xFFCC10AC         /* USB0 Receive Function Address */
-#define USB0_RXFUNCADDR6            0xFFCC10B4         /* USB0 Receive Function Address */
-#define USB0_RXFUNCADDR7            0xFFCC10BC         /* USB0 Receive Function Address */
-#define USB0_RXFUNCADDR8            0xFFCC10C4         /* USB0 Receive Function Address */
-#define USB0_RXFUNCADDR9            0xFFCC10CC         /* USB0 Receive Function Address */
-#define USB0_RXFUNCADDR10           0xFFCC10D4         /* USB0 Receive Function Address */
-#define USB0_RXFUNCADDR11           0xFFCC10DC         /* USB0 Receive Function Address */
-#define USB0_RXHUBADDR0             0xFFCC1086         /* USB0 Receive Hub Address */
-#define USB0_RXHUBADDR1             0xFFCC108E         /* USB0 Receive Hub Address */
-#define USB0_RXHUBADDR2             0xFFCC1096         /* USB0 Receive Hub Address */
-#define USB0_RXHUBADDR3             0xFFCC109E         /* USB0 Receive Hub Address */
-#define USB0_RXHUBADDR4             0xFFCC10A6         /* USB0 Receive Hub Address */
-#define USB0_RXHUBADDR5             0xFFCC10AE         /* USB0 Receive Hub Address */
-#define USB0_RXHUBADDR6             0xFFCC10B6         /* USB0 Receive Hub Address */
-#define USB0_RXHUBADDR7             0xFFCC10BE         /* USB0 Receive Hub Address */
-#define USB0_RXHUBADDR8             0xFFCC10C6         /* USB0 Receive Hub Address */
-#define USB0_RXHUBADDR9             0xFFCC10CE         /* USB0 Receive Hub Address */
-#define USB0_RXHUBADDR10            0xFFCC10D6         /* USB0 Receive Hub Address */
-#define USB0_RXHUBADDR11            0xFFCC10DE         /* USB0 Receive Hub Address */
-#define USB0_RXHUBPORT0             0xFFCC1087         /* USB0 Receive Hub Port */
-#define USB0_RXHUBPORT1             0xFFCC108F         /* USB0 Receive Hub Port */
-#define USB0_RXHUBPORT2             0xFFCC1097         /* USB0 Receive Hub Port */
-#define USB0_RXHUBPORT3             0xFFCC109F         /* USB0 Receive Hub Port */
-#define USB0_RXHUBPORT4             0xFFCC10A7         /* USB0 Receive Hub Port */
-#define USB0_RXHUBPORT5             0xFFCC10AF         /* USB0 Receive Hub Port */
-#define USB0_RXHUBPORT6             0xFFCC10B7         /* USB0 Receive Hub Port */
-#define USB0_RXHUBPORT7             0xFFCC10BF         /* USB0 Receive Hub Port */
-#define USB0_RXHUBPORT8             0xFFCC10C7         /* USB0 Receive Hub Port */
-#define USB0_RXHUBPORT9             0xFFCC10CF         /* USB0 Receive Hub Port */
-#define USB0_RXHUBPORT10            0xFFCC10D7         /* USB0 Receive Hub Port */
-#define USB0_RXHUBPORT11            0xFFCC10DF         /* USB0 Receive Hub Port */
-#define USB0_EP0_CSR0_H             0xFFCC1102         /* USB0 Config and Status EP0 */
-#define USB0_EP0_CSR0_P             0xFFCC1102         /* USB0 Config and Status EP0 */
-#define USB0_EP0_CNT0               0xFFCC1108         /* USB0 Number of Received Bytes for Endpoint 0 */
-#define USB0_EP0_TYPE0              0xFFCC110A         /* USB0 Speed for Endpoint 0 */
-#define USB0_EP0_NAKLIMIT0          0xFFCC110B         /* USB0 NAK Response Timeout for Endpoint 0 */
-#define USB0_EP0_CFGDATA0           0xFFCC110F         /* USB0 Configuration Information */
-#define USB0_EP_TXMAXP0             0xFFCC1110         /* USB0 Transmit Maximum Packet Length */
-#define USB0_EP_TXMAXP1             0xFFCC1120         /* USB0 Transmit Maximum Packet Length */
-#define USB0_EP_TXMAXP2             0xFFCC1130         /* USB0 Transmit Maximum Packet Length */
-#define USB0_EP_TXMAXP3             0xFFCC1140         /* USB0 Transmit Maximum Packet Length */
-#define USB0_EP_TXMAXP4             0xFFCC1150         /* USB0 Transmit Maximum Packet Length */
-#define USB0_EP_TXMAXP5             0xFFCC1160         /* USB0 Transmit Maximum Packet Length */
-#define USB0_EP_TXMAXP6             0xFFCC1170         /* USB0 Transmit Maximum Packet Length */
-#define USB0_EP_TXMAXP7             0xFFCC1180         /* USB0 Transmit Maximum Packet Length */
-#define USB0_EP_TXMAXP8             0xFFCC1190         /* USB0 Transmit Maximum Packet Length */
-#define USB0_EP_TXMAXP9             0xFFCC11A0         /* USB0 Transmit Maximum Packet Length */
-#define USB0_EP_TXMAXP10            0xFFCC11B0         /* USB0 Transmit Maximum Packet Length */
-#define USB0_EP_TXCSR0_H            0xFFCC1112         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR1_H            0xFFCC1122         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR2_H            0xFFCC1132         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR3_H            0xFFCC1142         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR4_H            0xFFCC1152         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR5_H            0xFFCC1162         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR6_H            0xFFCC1172         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR7_H            0xFFCC1182         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR8_H            0xFFCC1192         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR9_H            0xFFCC11A2         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR10_H           0xFFCC11B2         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR0_P            0xFFCC1112         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR1_P            0xFFCC1122         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR2_P            0xFFCC1132         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR3_P            0xFFCC1142         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR4_P            0xFFCC1152         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR5_P            0xFFCC1162         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR6_P            0xFFCC1172         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR7_P            0xFFCC1182         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR8_P            0xFFCC1192         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR9_P            0xFFCC11A2         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_TXCSR10_P           0xFFCC11B2         /* USB0 Transmit Configuration and Status */
-#define USB0_EP_RXMAXP0             0xFFCC1114         /* USB0 Receive Maximum Packet Length */
-#define USB0_EP_RXMAXP1             0xFFCC1124         /* USB0 Receive Maximum Packet Length */
-#define USB0_EP_RXMAXP2             0xFFCC1134         /* USB0 Receive Maximum Packet Length */
-#define USB0_EP_RXMAXP3             0xFFCC1144         /* USB0 Receive Maximum Packet Length */
-#define USB0_EP_RXMAXP4             0xFFCC1154         /* USB0 Receive Maximum Packet Length */
-#define USB0_EP_RXMAXP5             0xFFCC1164         /* USB0 Receive Maximum Packet Length */
-#define USB0_EP_RXMAXP6             0xFFCC1174         /* USB0 Receive Maximum Packet Length */
-#define USB0_EP_RXMAXP7             0xFFCC1184         /* USB0 Receive Maximum Packet Length */
-#define USB0_EP_RXMAXP8             0xFFCC1194         /* USB0 Receive Maximum Packet Length */
-#define USB0_EP_RXMAXP9             0xFFCC11A4         /* USB0 Receive Maximum Packet Length */
-#define USB0_EP_RXMAXP10            0xFFCC11B4         /* USB0 Receive Maximum Packet Length */
-#define USB0_EP_RXCSR0_H            0xFFCC1116         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR1_H            0xFFCC1126         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR2_H            0xFFCC1136         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR3_H            0xFFCC1146         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR4_H            0xFFCC1156         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR5_H            0xFFCC1166         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR6_H            0xFFCC1176         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR7_H            0xFFCC1186         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR8_H            0xFFCC1196         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR9_H            0xFFCC11A6         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR10_H           0xFFCC11B6         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR0_P            0xFFCC1116         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR1_P            0xFFCC1126         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR2_P            0xFFCC1136         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR3_P            0xFFCC1146         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR4_P            0xFFCC1156         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR5_P            0xFFCC1166         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR6_P            0xFFCC1176         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR7_P            0xFFCC1186         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR8_P            0xFFCC1196         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR9_P            0xFFCC11A6         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCSR10_P           0xFFCC11B6         /* USB0 Receive Configuration and Status Register */
-#define USB0_EP_RXCNT0              0xFFCC1118         /* USB0 Number of Byte Received */
-#define USB0_EP_RXCNT1              0xFFCC1128         /* USB0 Number of Byte Received */
-#define USB0_EP_RXCNT2              0xFFCC1138         /* USB0 Number of Byte Received */
-#define USB0_EP_RXCNT3              0xFFCC1148         /* USB0 Number of Byte Received */
-#define USB0_EP_RXCNT4              0xFFCC1158         /* USB0 Number of Byte Received */
-#define USB0_EP_RXCNT5              0xFFCC1168         /* USB0 Number of Byte Received */
-#define USB0_EP_RXCNT6              0xFFCC1178         /* USB0 Number of Byte Received */
-#define USB0_EP_RXCNT7              0xFFCC1188         /* USB0 Number of Byte Received */
-#define USB0_EP_RXCNT8              0xFFCC1198         /* USB0 Number of Byte Received */
-#define USB0_EP_RXCNT9              0xFFCC11A8         /* USB0 Number of Byte Received */
-#define USB0_EP_RXCNT10             0xFFCC11B8         /* USB0 Number of Byte Received */
-#define USB0_EP_TXTYPE0             0xFFCC111A         /* USB0 Transmit Type */
-#define USB0_EP_TXTYPE1             0xFFCC112A         /* USB0 Transmit Type */
-#define USB0_EP_TXTYPE2             0xFFCC113A         /* USB0 Transmit Type */
-#define USB0_EP_TXTYPE3             0xFFCC114A         /* USB0 Transmit Type */
-#define USB0_EP_TXTYPE4             0xFFCC115A         /* USB0 Transmit Type */
-#define USB0_EP_TXTYPE5             0xFFCC116A         /* USB0 Transmit Type */
-#define USB0_EP_TXTYPE6             0xFFCC117A         /* USB0 Transmit Type */
-#define USB0_EP_TXTYPE7             0xFFCC118A         /* USB0 Transmit Type */
-#define USB0_EP_TXTYPE8             0xFFCC119A         /* USB0 Transmit Type */
-#define USB0_EP_TXTYPE9             0xFFCC11AA         /* USB0 Transmit Type */
-#define USB0_EP_TXTYPE10            0xFFCC11BA         /* USB0 Transmit Type */
-#define USB0_EP_TXINTERVAL0         0xFFCC111B         /* USB0 Transmit Polling Interval */
-#define USB0_EP_TXINTERVAL1         0xFFCC112B         /* USB0 Transmit Polling Interval */
-#define USB0_EP_TXINTERVAL2         0xFFCC113B         /* USB0 Transmit Polling Interval */
-#define USB0_EP_TXINTERVAL3         0xFFCC114B         /* USB0 Transmit Polling Interval */
-#define USB0_EP_TXINTERVAL4         0xFFCC115B         /* USB0 Transmit Polling Interval */
-#define USB0_EP_TXINTERVAL5         0xFFCC116B         /* USB0 Transmit Polling Interval */
-#define USB0_EP_TXINTERVAL6         0xFFCC117B         /* USB0 Transmit Polling Interval */
-#define USB0_EP_TXINTERVAL7         0xFFCC118B         /* USB0 Transmit Polling Interval */
-#define USB0_EP_TXINTERVAL8         0xFFCC119B         /* USB0 Transmit Polling Interval */
-#define USB0_EP_TXINTERVAL9         0xFFCC11AB         /* USB0 Transmit Polling Interval */
-#define USB0_EP_TXINTERVAL10        0xFFCC11BB         /* USB0 Transmit Polling Interval */
-#define USB0_EP_RXTYPE0             0xFFCC111C         /* USB0 Receive Type */
-#define USB0_EP_RXTYPE1             0xFFCC112C         /* USB0 Receive Type */
-#define USB0_EP_RXTYPE2             0xFFCC113C         /* USB0 Receive Type */
-#define USB0_EP_RXTYPE3             0xFFCC114C         /* USB0 Receive Type */
-#define USB0_EP_RXTYPE4             0xFFCC115C         /* USB0 Receive Type */
-#define USB0_EP_RXTYPE5             0xFFCC116C         /* USB0 Receive Type */
-#define USB0_EP_RXTYPE6             0xFFCC117C         /* USB0 Receive Type */
-#define USB0_EP_RXTYPE7             0xFFCC118C         /* USB0 Receive Type */
-#define USB0_EP_RXTYPE8             0xFFCC119C         /* USB0 Receive Type */
-#define USB0_EP_RXTYPE9             0xFFCC11AC         /* USB0 Receive Type */
-#define USB0_EP_RXTYPE10            0xFFCC11BC         /* USB0 Receive Type */
-#define USB0_EP_RXINTERVAL0         0xFFCC111D         /* USB0 Receive Polling Interval */
-#define USB0_EP_RXINTERVAL1         0xFFCC112D         /* USB0 Receive Polling Interval */
-#define USB0_EP_RXINTERVAL2         0xFFCC113D         /* USB0 Receive Polling Interval */
-#define USB0_EP_RXINTERVAL3         0xFFCC114D         /* USB0 Receive Polling Interval */
-#define USB0_EP_RXINTERVAL4         0xFFCC115D         /* USB0 Receive Polling Interval */
-#define USB0_EP_RXINTERVAL5         0xFFCC116D         /* USB0 Receive Polling Interval */
-#define USB0_EP_RXINTERVAL6         0xFFCC117D         /* USB0 Receive Polling Interval */
-#define USB0_EP_RXINTERVAL7         0xFFCC118D         /* USB0 Receive Polling Interval */
-#define USB0_EP_RXINTERVAL8         0xFFCC119D         /* USB0 Receive Polling Interval */
-#define USB0_EP_RXINTERVAL9         0xFFCC11AD         /* USB0 Receive Polling Interval */
-#define USB0_EP_RXINTERVAL10        0xFFCC11BD         /* USB0 Receive Polling Interval */
-#define USB0_DMA_IRQ                0xFFCC1200         /* USB0 Interrupt Register */
-#define USB0_DMA_CTL0               0xFFCC1204         /* USB0 DMA Control */
-#define USB0_DMA_CTL1               0xFFCC1214         /* USB0 DMA Control */
-#define USB0_DMA_CTL2               0xFFCC1224         /* USB0 DMA Control */
-#define USB0_DMA_CTL3               0xFFCC1234         /* USB0 DMA Control */
-#define USB0_DMA_CTL4               0xFFCC1244         /* USB0 DMA Control */
-#define USB0_DMA_CTL5               0xFFCC1254         /* USB0 DMA Control */
-#define USB0_DMA_CTL6               0xFFCC1264         /* USB0 DMA Control */
-#define USB0_DMA_CTL7               0xFFCC1274         /* USB0 DMA Control */
-#define USB0_DMA_ADDR0              0xFFCC1208         /* USB0 DMA Address */
-#define USB0_DMA_ADDR1              0xFFCC1218         /* USB0 DMA Address */
-#define USB0_DMA_ADDR2              0xFFCC1228         /* USB0 DMA Address */
-#define USB0_DMA_ADDR3              0xFFCC1238         /* USB0 DMA Address */
-#define USB0_DMA_ADDR4              0xFFCC1248         /* USB0 DMA Address */
-#define USB0_DMA_ADDR5              0xFFCC1258         /* USB0 DMA Address */
-#define USB0_DMA_ADDR6              0xFFCC1268         /* USB0 DMA Address */
-#define USB0_DMA_ADDR7              0xFFCC1278         /* USB0 DMA Address */
-#define USB0_DMA_CNT0               0xFFCC120C         /* USB0 DMA Count */
-#define USB0_DMA_CNT1               0xFFCC121C         /* USB0 DMA Count */
-#define USB0_DMA_CNT2               0xFFCC122C         /* USB0 DMA Count */
-#define USB0_DMA_CNT3               0xFFCC123C         /* USB0 DMA Count */
-#define USB0_DMA_CNT4               0xFFCC124C         /* USB0 DMA Count */
-#define USB0_DMA_CNT5               0xFFCC125C         /* USB0 DMA Count */
-#define USB0_DMA_CNT6               0xFFCC126C         /* USB0 DMA Count */
-#define USB0_DMA_CNT7               0xFFCC127C         /* USB0 DMA Count */
-#define USB0_RQPKTCNT0              0xFFCC1300         /* USB0 Request Packet Count */
-#define USB0_RQPKTCNT1              0xFFCC1304         /* USB0 Request Packet Count */
-#define USB0_RQPKTCNT2              0xFFCC1308         /* USB0 Request Packet Count */
-#define USB0_RQPKTCNT3              0xFFCC130C         /* USB0 Request Packet Count */
-#define USB0_RQPKTCNT4              0xFFCC1310         /* USB0 Request Packet Count */
-#define USB0_RQPKTCNT5              0xFFCC1314         /* USB0 Request Packet Count */
-#define USB0_RQPKTCNT6              0xFFCC1318         /* USB0 Request Packet Count */
-#define USB0_RQPKTCNT7              0xFFCC131C         /* USB0 Request Packet Count */
-#define USB0_RQPKTCNT8              0xFFCC1320         /* USB0 Request Packet Count */
-#define USB0_RQPKTCNT9              0xFFCC1324         /* USB0 Request Packet Count */
-#define USB0_RQPKTCNT10             0xFFCC1328         /* USB0 Request Packet Count */
-#define USB0_CT_UCH                 0xFFCC1344         /* USB0 Chirp Timeout */
-#define USB0_CT_HHSRTN              0xFFCC1346         /* USB0 High Speed Resume Return to Normal */
-#define USB0_CT_HSBT                0xFFCC1348         /* USB0 High Speed Timeout */
-#define USB0_LPM_ATTR               0xFFCC1360         /* USB0 LPM Attribute */
-#define USB0_LPM_CTL                0xFFCC1362         /* USB0 LPM Control */
-#define USB0_LPM_IEN                0xFFCC1363         /* USB0 LPM Interrupt Enable */
-#define USB0_LPM_IRQ                0xFFCC1364         /* USB0 LPM Interrupt */
-#define USB0_LPM_FADDR              0xFFCC1365         /* USB0 LPM Function Address */
-#define USB0_VBUS_CTL               0xFFCC1380         /* USB0 VBus Control */
-#define USB0_BAT_CHG                0xFFCC1381         /* USB0 Battery Charging */
-#define USB0_PHY_CTL                0xFFCC1394         /* USB0 PHY Control */
-#define USB0_TESTCTL                0xFFCC1397         /* USB0 Test Control */
-#define USB0_PLL_OSC                0xFFCC1398         /* USB0 PLL and Oscillator Control */
+#define USB_FADDR                  0xFFCC1000         /* USB Device Address in Peripheral Mode */
+#define USB_POWER                  0xFFCC1001         /* USB Power and Device Control */
+#define USB_INTRTX                 0xFFCC1002         /* USB Transmit Interrupt */
+#define USB_INTRRX                 0xFFCC1004         /* USB Receive Interrupts */
+#define USB_INTRTXE                0xFFCC1006         /* USB Transmit Interrupt Enable */
+#define USB_INTRRXE                0xFFCC1008         /* USB Receive Interrupt Enable */
+#define USB_IRQ                    0xFFCC100A         /* USB USB Interrupts */
+#define USB_IEN                    0xFFCC100B         /* USB USB Interrupt Enable */
+#define USB_FRAME                  0xFFCC100C         /* USB Frame Number */
+#define USB_INDEX                  0xFFCC100E         /* USB Index */
+#define USB_TESTMODE               0xFFCC100F         /* USB Testmodes */
+#define USB_EPI_TXMAXP0            0xFFCC1010         /* USB Transmit Maximum Packet Length */
+#define USB_EP0I_CSR0_H            0xFFCC1012         /* USB Config and Status EP0 */
+#define USB_EPI_TXCSR0_H           0xFFCC1012         /* USB Transmit Configuration and Status */
+#define USB_EP0I_CSR0_P            0xFFCC1012         /* USB Config and Status EP0 */
+#define USB_EPI_TXCSR0_P           0xFFCC1012         /* USB Transmit Configuration and Status */
+#define USB_EPI_RXMAXP0            0xFFCC1014         /* USB Receive Maximum Packet Length */
+#define USB_EPI_RXCSR0_H           0xFFCC1016         /* USB Receive Configuration and Status Register */
+#define USB_EPI_RXCSR0_P           0xFFCC1016         /* USB Receive Configuration and Status Register */
+#define USB_EP0I_CNT0              0xFFCC1018         /* USB Number of Received Bytes for Endpoint 0 */
+#define USB_EPI_RXCNT0             0xFFCC1018         /* USB Number of Byte Received */
+#define USB_EP0I_TYPE0             0xFFCC101A         /* USB Speed for Endpoint 0 */
+#define USB_EPI_TXTYPE0            0xFFCC101A         /* USB Transmit Type */
+#define USB_EP0I_NAKLIMIT0         0xFFCC101B         /* USB NAK Response Timeout for Endpoint 0 */
+#define USB_EPI_TXINTERVAL0        0xFFCC101B         /* USB Transmit Polling Interval */
+#define USB_EPI_RXTYPE0            0xFFCC101C         /* USB Receive Type */
+#define USB_EPI_RXINTERVAL0        0xFFCC101D         /* USB Receive Polling Interval */
+#define USB_EP0I_CFGDATA0          0xFFCC101F         /* USB Configuration Information */
+#define USB_FIFOB0                 0xFFCC1020         /* USB FIFO Data */
+#define USB_FIFOB1                 0xFFCC1024         /* USB FIFO Data */
+#define USB_FIFOB2                 0xFFCC1028         /* USB FIFO Data */
+#define USB_FIFOB3                 0xFFCC102C         /* USB FIFO Data */
+#define USB_FIFOB4                 0xFFCC1030         /* USB FIFO Data */
+#define USB_FIFOB5                 0xFFCC1034         /* USB FIFO Data */
+#define USB_FIFOB6                 0xFFCC1038         /* USB FIFO Data */
+#define USB_FIFOB7                 0xFFCC103C         /* USB FIFO Data */
+#define USB_FIFOB8                 0xFFCC1040         /* USB FIFO Data */
+#define USB_FIFOB9                 0xFFCC1044         /* USB FIFO Data */
+#define USB_FIFOB10                0xFFCC1048         /* USB FIFO Data */
+#define USB_FIFOB11                0xFFCC104C         /* USB FIFO Data */
+#define USB_FIFOH0                 0xFFCC1020         /* USB FIFO Data */
+#define USB_FIFOH1                 0xFFCC1024         /* USB FIFO Data */
+#define USB_FIFOH2                 0xFFCC1028         /* USB FIFO Data */
+#define USB_FIFOH3                 0xFFCC102C         /* USB FIFO Data */
+#define USB_FIFOH4                 0xFFCC1030         /* USB FIFO Data */
+#define USB_FIFOH5                 0xFFCC1034         /* USB FIFO Data */
+#define USB_FIFOH6                 0xFFCC1038         /* USB FIFO Data */
+#define USB_FIFOH7                 0xFFCC103C         /* USB FIFO Data */
+#define USB_FIFOH8                 0xFFCC1040         /* USB FIFO Data */
+#define USB_FIFOH9                 0xFFCC1044         /* USB FIFO Data */
+#define USB_FIFOH10                0xFFCC1048         /* USB FIFO Data */
+#define USB_FIFOH11                0xFFCC104C         /* USB FIFO Data */
+#define USB_FIFO0                  0xFFCC1020         /* USB FIFO Data */
+#define USB_FIFO1                  0xFFCC1024         /* USB FIFO Data */
+#define USB_FIFO2                  0xFFCC1028         /* USB FIFO Data */
+#define USB_FIFO3                  0xFFCC102C         /* USB FIFO Data */
+#define USB_FIFO4                  0xFFCC1030         /* USB FIFO Data */
+#define USB_FIFO5                  0xFFCC1034         /* USB FIFO Data */
+#define USB_FIFO6                  0xFFCC1038         /* USB FIFO Data */
+#define USB_FIFO7                  0xFFCC103C         /* USB FIFO Data */
+#define USB_FIFO8                  0xFFCC1040         /* USB FIFO Data */
+#define USB_FIFO9                  0xFFCC1044         /* USB FIFO Data */
+#define USB_FIFO10                 0xFFCC1048         /* USB FIFO Data */
+#define USB_FIFO11                 0xFFCC104C         /* USB FIFO Data */
+#define USB_DEV_CTL                0xFFCC1060         /* USB Device Control */
+#define USB_TXFIFOSZ               0xFFCC1062         /* USB Transmit FIFO Size */
+#define USB_RXFIFOSZ               0xFFCC1063         /* USB Receive FIFO Size */
+#define USB_TXFIFOADDR             0xFFCC1064         /* USB Transmit FIFO Address */
+#define USB_RXFIFOADDR             0xFFCC1066         /* USB Receive FIFO Address */
+#define USB_VENDSTAT               0xFFCC1068         /* USB Vendor Status */
+#define USB_HWVERS                 0xFFCC106C         /* USB Hardware Version */
+#define USB_EPINFO                 0xFFCC1078         /* USB Endpoint Info */
+#define USB_RAMINFO                0xFFCC1079         /* USB Ram Information */
+#define USB_LINKINFO               0xFFCC107A         /* USB Programmable Delay Values */
+#define USB_VPLEN                  0xFFCC107B         /* USB VBus Pulse Duration */
+#define USB_HS_EOF1                0xFFCC107C         /* USB High Speed End of Frame Remaining */
+#define USB_FS_EOF1                0xFFCC107D         /* USB Full Speed End of Frame Remaining */
+#define USB_LS_EOF1                0xFFCC107E         /* USB Low Speed End of Frame Remaining */
+#define USB_SOFT_RST               0xFFCC107F         /* USB Software Reset */
+#define USB_TXFUNCADDR0            0xFFCC1080         /* USB Transmit Function Address */
+#define USB_TXFUNCADDR1            0xFFCC1088         /* USB Transmit Function Address */
+#define USB_TXFUNCADDR2            0xFFCC1090         /* USB Transmit Function Address */
+#define USB_TXFUNCADDR3            0xFFCC1098         /* USB Transmit Function Address */
+#define USB_TXFUNCADDR4            0xFFCC10A0         /* USB Transmit Function Address */
+#define USB_TXFUNCADDR5            0xFFCC10A8         /* USB Transmit Function Address */
+#define USB_TXFUNCADDR6            0xFFCC10B0         /* USB Transmit Function Address */
+#define USB_TXFUNCADDR7            0xFFCC10B8         /* USB Transmit Function Address */
+#define USB_TXFUNCADDR8            0xFFCC10C0         /* USB Transmit Function Address */
+#define USB_TXFUNCADDR9            0xFFCC10C8         /* USB Transmit Function Address */
+#define USB_TXFUNCADDR10           0xFFCC10D0         /* USB Transmit Function Address */
+#define USB_TXFUNCADDR11           0xFFCC10D8         /* USB Transmit Function Address */
+#define USB_TXHUBADDR0             0xFFCC1082         /* USB Transmit Hub Address */
+#define USB_TXHUBADDR1             0xFFCC108A         /* USB Transmit Hub Address */
+#define USB_TXHUBADDR2             0xFFCC1092         /* USB Transmit Hub Address */
+#define USB_TXHUBADDR3             0xFFCC109A         /* USB Transmit Hub Address */
+#define USB_TXHUBADDR4             0xFFCC10A2         /* USB Transmit Hub Address */
+#define USB_TXHUBADDR5             0xFFCC10AA         /* USB Transmit Hub Address */
+#define USB_TXHUBADDR6             0xFFCC10B2         /* USB Transmit Hub Address */
+#define USB_TXHUBADDR7             0xFFCC10BA         /* USB Transmit Hub Address */
+#define USB_TXHUBADDR8             0xFFCC10C2         /* USB Transmit Hub Address */
+#define USB_TXHUBADDR9             0xFFCC10CA         /* USB Transmit Hub Address */
+#define USB_TXHUBADDR10            0xFFCC10D2         /* USB Transmit Hub Address */
+#define USB_TXHUBADDR11            0xFFCC10DA         /* USB Transmit Hub Address */
+#define USB_TXHUBPORT0             0xFFCC1083         /* USB Transmit Hub Port */
+#define USB_TXHUBPORT1             0xFFCC108B         /* USB Transmit Hub Port */
+#define USB_TXHUBPORT2             0xFFCC1093         /* USB Transmit Hub Port */
+#define USB_TXHUBPORT3             0xFFCC109B         /* USB Transmit Hub Port */
+#define USB_TXHUBPORT4             0xFFCC10A3         /* USB Transmit Hub Port */
+#define USB_TXHUBPORT5             0xFFCC10AB         /* USB Transmit Hub Port */
+#define USB_TXHUBPORT6             0xFFCC10B3         /* USB Transmit Hub Port */
+#define USB_TXHUBPORT7             0xFFCC10BB         /* USB Transmit Hub Port */
+#define USB_TXHUBPORT8             0xFFCC10C3         /* USB Transmit Hub Port */
+#define USB_TXHUBPORT9             0xFFCC10CB         /* USB Transmit Hub Port */
+#define USB_TXHUBPORT10            0xFFCC10D3         /* USB Transmit Hub Port */
+#define USB_TXHUBPORT11            0xFFCC10DB         /* USB Transmit Hub Port */
+#define USB_RXFUNCADDR0            0xFFCC1084         /* USB Receive Function Address */
+#define USB_RXFUNCADDR1            0xFFCC108C         /* USB Receive Function Address */
+#define USB_RXFUNCADDR2            0xFFCC1094         /* USB Receive Function Address */
+#define USB_RXFUNCADDR3            0xFFCC109C         /* USB Receive Function Address */
+#define USB_RXFUNCADDR4            0xFFCC10A4         /* USB Receive Function Address */
+#define USB_RXFUNCADDR5            0xFFCC10AC         /* USB Receive Function Address */
+#define USB_RXFUNCADDR6            0xFFCC10B4         /* USB Receive Function Address */
+#define USB_RXFUNCADDR7            0xFFCC10BC         /* USB Receive Function Address */
+#define USB_RXFUNCADDR8            0xFFCC10C4         /* USB Receive Function Address */
+#define USB_RXFUNCADDR9            0xFFCC10CC         /* USB Receive Function Address */
+#define USB_RXFUNCADDR10           0xFFCC10D4         /* USB Receive Function Address */
+#define USB_RXFUNCADDR11           0xFFCC10DC         /* USB Receive Function Address */
+#define USB_RXHUBADDR0             0xFFCC1086         /* USB Receive Hub Address */
+#define USB_RXHUBADDR1             0xFFCC108E         /* USB Receive Hub Address */
+#define USB_RXHUBADDR2             0xFFCC1096         /* USB Receive Hub Address */
+#define USB_RXHUBADDR3             0xFFCC109E         /* USB Receive Hub Address */
+#define USB_RXHUBADDR4             0xFFCC10A6         /* USB Receive Hub Address */
+#define USB_RXHUBADDR5             0xFFCC10AE         /* USB Receive Hub Address */
+#define USB_RXHUBADDR6             0xFFCC10B6         /* USB Receive Hub Address */
+#define USB_RXHUBADDR7             0xFFCC10BE         /* USB Receive Hub Address */
+#define USB_RXHUBADDR8             0xFFCC10C6         /* USB Receive Hub Address */
+#define USB_RXHUBADDR9             0xFFCC10CE         /* USB Receive Hub Address */
+#define USB_RXHUBADDR10            0xFFCC10D6         /* USB Receive Hub Address */
+#define USB_RXHUBADDR11            0xFFCC10DE         /* USB Receive Hub Address */
+#define USB_RXHUBPORT0             0xFFCC1087         /* USB Receive Hub Port */
+#define USB_RXHUBPORT1             0xFFCC108F         /* USB Receive Hub Port */
+#define USB_RXHUBPORT2             0xFFCC1097         /* USB Receive Hub Port */
+#define USB_RXHUBPORT3             0xFFCC109F         /* USB Receive Hub Port */
+#define USB_RXHUBPORT4             0xFFCC10A7         /* USB Receive Hub Port */
+#define USB_RXHUBPORT5             0xFFCC10AF         /* USB Receive Hub Port */
+#define USB_RXHUBPORT6             0xFFCC10B7         /* USB Receive Hub Port */
+#define USB_RXHUBPORT7             0xFFCC10BF         /* USB Receive Hub Port */
+#define USB_RXHUBPORT8             0xFFCC10C7         /* USB Receive Hub Port */
+#define USB_RXHUBPORT9             0xFFCC10CF         /* USB Receive Hub Port */
+#define USB_RXHUBPORT10            0xFFCC10D7         /* USB Receive Hub Port */
+#define USB_RXHUBPORT11            0xFFCC10DF         /* USB Receive Hub Port */
+#define USB_EP0_CSR0_H             0xFFCC1102         /* USB Config and Status EP0 */
+#define USB_EP0_CSR0_P             0xFFCC1102         /* USB Config and Status EP0 */
+#define USB_EP0_CNT0               0xFFCC1108         /* USB Number of Received Bytes for Endpoint 0 */
+#define USB_EP0_TYPE0              0xFFCC110A         /* USB Speed for Endpoint 0 */
+#define USB_EP0_NAKLIMIT0          0xFFCC110B         /* USB NAK Response Timeout for Endpoint 0 */
+#define USB_EP0_CFGDATA0           0xFFCC110F         /* USB Configuration Information */
+#define USB_EP_TXMAXP0             0xFFCC1110         /* USB Transmit Maximum Packet Length */
+#define USB_EP_TXMAXP1             0xFFCC1120         /* USB Transmit Maximum Packet Length */
+#define USB_EP_TXMAXP2             0xFFCC1130         /* USB Transmit Maximum Packet Length */
+#define USB_EP_TXMAXP3             0xFFCC1140         /* USB Transmit Maximum Packet Length */
+#define USB_EP_TXMAXP4             0xFFCC1150         /* USB Transmit Maximum Packet Length */
+#define USB_EP_TXMAXP5             0xFFCC1160         /* USB Transmit Maximum Packet Length */
+#define USB_EP_TXMAXP6             0xFFCC1170         /* USB Transmit Maximum Packet Length */
+#define USB_EP_TXMAXP7             0xFFCC1180         /* USB Transmit Maximum Packet Length */
+#define USB_EP_TXMAXP8             0xFFCC1190         /* USB Transmit Maximum Packet Length */
+#define USB_EP_TXMAXP9             0xFFCC11A0         /* USB Transmit Maximum Packet Length */
+#define USB_EP_TXMAXP10            0xFFCC11B0         /* USB Transmit Maximum Packet Length */
+#define USB_EP_TXCSR0_H            0xFFCC1112         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR1_H            0xFFCC1122         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR2_H            0xFFCC1132         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR3_H            0xFFCC1142         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR4_H            0xFFCC1152         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR5_H            0xFFCC1162         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR6_H            0xFFCC1172         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR7_H            0xFFCC1182         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR8_H            0xFFCC1192         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR9_H            0xFFCC11A2         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR10_H           0xFFCC11B2         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR0_P            0xFFCC1112         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR1_P            0xFFCC1122         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR2_P            0xFFCC1132         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR3_P            0xFFCC1142         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR4_P            0xFFCC1152         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR5_P            0xFFCC1162         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR6_P            0xFFCC1172         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR7_P            0xFFCC1182         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR8_P            0xFFCC1192         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR9_P            0xFFCC11A2         /* USB Transmit Configuration and Status */
+#define USB_EP_TXCSR10_P           0xFFCC11B2         /* USB Transmit Configuration and Status */
+#define USB_EP_RXMAXP0             0xFFCC1114         /* USB Receive Maximum Packet Length */
+#define USB_EP_RXMAXP1             0xFFCC1124         /* USB Receive Maximum Packet Length */
+#define USB_EP_RXMAXP2             0xFFCC1134         /* USB Receive Maximum Packet Length */
+#define USB_EP_RXMAXP3             0xFFCC1144         /* USB Receive Maximum Packet Length */
+#define USB_EP_RXMAXP4             0xFFCC1154         /* USB Receive Maximum Packet Length */
+#define USB_EP_RXMAXP5             0xFFCC1164         /* USB Receive Maximum Packet Length */
+#define USB_EP_RXMAXP6             0xFFCC1174         /* USB Receive Maximum Packet Length */
+#define USB_EP_RXMAXP7             0xFFCC1184         /* USB Receive Maximum Packet Length */
+#define USB_EP_RXMAXP8             0xFFCC1194         /* USB Receive Maximum Packet Length */
+#define USB_EP_RXMAXP9             0xFFCC11A4         /* USB Receive Maximum Packet Length */
+#define USB_EP_RXMAXP10            0xFFCC11B4         /* USB Receive Maximum Packet Length */
+#define USB_EP_RXCSR0_H            0xFFCC1116         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR1_H            0xFFCC1126         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR2_H            0xFFCC1136         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR3_H            0xFFCC1146         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR4_H            0xFFCC1156         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR5_H            0xFFCC1166         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR6_H            0xFFCC1176         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR7_H            0xFFCC1186         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR8_H            0xFFCC1196         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR9_H            0xFFCC11A6         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR10_H           0xFFCC11B6         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR0_P            0xFFCC1116         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR1_P            0xFFCC1126         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR2_P            0xFFCC1136         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR3_P            0xFFCC1146         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR4_P            0xFFCC1156         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR5_P            0xFFCC1166         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR6_P            0xFFCC1176         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR7_P            0xFFCC1186         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR8_P            0xFFCC1196         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR9_P            0xFFCC11A6         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCSR10_P           0xFFCC11B6         /* USB Receive Configuration and Status Register */
+#define USB_EP_RXCNT0              0xFFCC1118         /* USB Number of Byte Received */
+#define USB_EP_RXCNT1              0xFFCC1128         /* USB Number of Byte Received */
+#define USB_EP_RXCNT2              0xFFCC1138         /* USB Number of Byte Received */
+#define USB_EP_RXCNT3              0xFFCC1148         /* USB Number of Byte Received */
+#define USB_EP_RXCNT4              0xFFCC1158         /* USB Number of Byte Received */
+#define USB_EP_RXCNT5              0xFFCC1168         /* USB Number of Byte Received */
+#define USB_EP_RXCNT6              0xFFCC1178         /* USB Number of Byte Received */
+#define USB_EP_RXCNT7              0xFFCC1188         /* USB Number of Byte Received */
+#define USB_EP_RXCNT8              0xFFCC1198         /* USB Number of Byte Received */
+#define USB_EP_RXCNT9              0xFFCC11A8         /* USB Number of Byte Received */
+#define USB_EP_RXCNT10             0xFFCC11B8         /* USB Number of Byte Received */
+#define USB_EP_TXTYPE0             0xFFCC111A         /* USB Transmit Type */
+#define USB_EP_TXTYPE1             0xFFCC112A         /* USB Transmit Type */
+#define USB_EP_TXTYPE2             0xFFCC113A         /* USB Transmit Type */
+#define USB_EP_TXTYPE3             0xFFCC114A         /* USB Transmit Type */
+#define USB_EP_TXTYPE4             0xFFCC115A         /* USB Transmit Type */
+#define USB_EP_TXTYPE5             0xFFCC116A         /* USB Transmit Type */
+#define USB_EP_TXTYPE6             0xFFCC117A         /* USB Transmit Type */
+#define USB_EP_TXTYPE7             0xFFCC118A         /* USB Transmit Type */
+#define USB_EP_TXTYPE8             0xFFCC119A         /* USB Transmit Type */
+#define USB_EP_TXTYPE9             0xFFCC11AA         /* USB Transmit Type */
+#define USB_EP_TXTYPE10            0xFFCC11BA         /* USB Transmit Type */
+#define USB_EP_TXINTERVAL0         0xFFCC111B         /* USB Transmit Polling Interval */
+#define USB_EP_TXINTERVAL1         0xFFCC112B         /* USB Transmit Polling Interval */
+#define USB_EP_TXINTERVAL2         0xFFCC113B         /* USB Transmit Polling Interval */
+#define USB_EP_TXINTERVAL3         0xFFCC114B         /* USB Transmit Polling Interval */
+#define USB_EP_TXINTERVAL4         0xFFCC115B         /* USB Transmit Polling Interval */
+#define USB_EP_TXINTERVAL5         0xFFCC116B         /* USB Transmit Polling Interval */
+#define USB_EP_TXINTERVAL6         0xFFCC117B         /* USB Transmit Polling Interval */
+#define USB_EP_TXINTERVAL7         0xFFCC118B         /* USB Transmit Polling Interval */
+#define USB_EP_TXINTERVAL8         0xFFCC119B         /* USB Transmit Polling Interval */
+#define USB_EP_TXINTERVAL9         0xFFCC11AB         /* USB Transmit Polling Interval */
+#define USB_EP_TXINTERVAL10        0xFFCC11BB         /* USB Transmit Polling Interval */
+#define USB_EP_RXTYPE0             0xFFCC111C         /* USB Receive Type */
+#define USB_EP_RXTYPE1             0xFFCC112C         /* USB Receive Type */
+#define USB_EP_RXTYPE2             0xFFCC113C         /* USB Receive Type */
+#define USB_EP_RXTYPE3             0xFFCC114C         /* USB Receive Type */
+#define USB_EP_RXTYPE4             0xFFCC115C         /* USB Receive Type */
+#define USB_EP_RXTYPE5             0xFFCC116C         /* USB Receive Type */
+#define USB_EP_RXTYPE6             0xFFCC117C         /* USB Receive Type */
+#define USB_EP_RXTYPE7             0xFFCC118C         /* USB Receive Type */
+#define USB_EP_RXTYPE8             0xFFCC119C         /* USB Receive Type */
+#define USB_EP_RXTYPE9             0xFFCC11AC         /* USB Receive Type */
+#define USB_EP_RXTYPE10            0xFFCC11BC         /* USB Receive Type */
+#define USB_EP_RXINTERVAL0         0xFFCC111D         /* USB Receive Polling Interval */
+#define USB_EP_RXINTERVAL1         0xFFCC112D         /* USB Receive Polling Interval */
+#define USB_EP_RXINTERVAL2         0xFFCC113D         /* USB Receive Polling Interval */
+#define USB_EP_RXINTERVAL3         0xFFCC114D         /* USB Receive Polling Interval */
+#define USB_EP_RXINTERVAL4         0xFFCC115D         /* USB Receive Polling Interval */
+#define USB_EP_RXINTERVAL5         0xFFCC116D         /* USB Receive Polling Interval */
+#define USB_EP_RXINTERVAL6         0xFFCC117D         /* USB Receive Polling Interval */
+#define USB_EP_RXINTERVAL7         0xFFCC118D         /* USB Receive Polling Interval */
+#define USB_EP_RXINTERVAL8         0xFFCC119D         /* USB Receive Polling Interval */
+#define USB_EP_RXINTERVAL9         0xFFCC11AD         /* USB Receive Polling Interval */
+#define USB_EP_RXINTERVAL10        0xFFCC11BD         /* USB Receive Polling Interval */
+#define USB_DMA_IRQ                0xFFCC1200         /* USB Interrupt Register */
+#define USB_DMA_CTL0               0xFFCC1204         /* USB DMA Control */
+#define USB_DMA_CTL1               0xFFCC1214         /* USB DMA Control */
+#define USB_DMA_CTL2               0xFFCC1224         /* USB DMA Control */
+#define USB_DMA_CTL3               0xFFCC1234         /* USB DMA Control */
+#define USB_DMA_CTL4               0xFFCC1244         /* USB DMA Control */
+#define USB_DMA_CTL5               0xFFCC1254         /* USB DMA Control */
+#define USB_DMA_CTL6               0xFFCC1264         /* USB DMA Control */
+#define USB_DMA_CTL7               0xFFCC1274         /* USB DMA Control */
+#define USB_DMA_ADDR0              0xFFCC1208         /* USB DMA Address */
+#define USB_DMA_ADDR1              0xFFCC1218         /* USB DMA Address */
+#define USB_DMA_ADDR2              0xFFCC1228         /* USB DMA Address */
+#define USB_DMA_ADDR3              0xFFCC1238         /* USB DMA Address */
+#define USB_DMA_ADDR4              0xFFCC1248         /* USB DMA Address */
+#define USB_DMA_ADDR5              0xFFCC1258         /* USB DMA Address */
+#define USB_DMA_ADDR6              0xFFCC1268         /* USB DMA Address */
+#define USB_DMA_ADDR7              0xFFCC1278         /* USB DMA Address */
+#define USB_DMA_CNT0               0xFFCC120C         /* USB DMA Count */
+#define USB_DMA_CNT1               0xFFCC121C         /* USB DMA Count */
+#define USB_DMA_CNT2               0xFFCC122C         /* USB DMA Count */
+#define USB_DMA_CNT3               0xFFCC123C         /* USB DMA Count */
+#define USB_DMA_CNT4               0xFFCC124C         /* USB DMA Count */
+#define USB_DMA_CNT5               0xFFCC125C         /* USB DMA Count */
+#define USB_DMA_CNT6               0xFFCC126C         /* USB DMA Count */
+#define USB_DMA_CNT7               0xFFCC127C         /* USB DMA Count */
+#define USB_RQPKTCNT0              0xFFCC1300         /* USB Request Packet Count */
+#define USB_RQPKTCNT1              0xFFCC1304         /* USB Request Packet Count */
+#define USB_RQPKTCNT2              0xFFCC1308         /* USB Request Packet Count */
+#define USB_RQPKTCNT3              0xFFCC130C         /* USB Request Packet Count */
+#define USB_RQPKTCNT4              0xFFCC1310         /* USB Request Packet Count */
+#define USB_RQPKTCNT5              0xFFCC1314         /* USB Request Packet Count */
+#define USB_RQPKTCNT6              0xFFCC1318         /* USB Request Packet Count */
+#define USB_RQPKTCNT7              0xFFCC131C         /* USB Request Packet Count */
+#define USB_RQPKTCNT8              0xFFCC1320         /* USB Request Packet Count */
+#define USB_RQPKTCNT9              0xFFCC1324         /* USB Request Packet Count */
+#define USB_RQPKTCNT10             0xFFCC1328         /* USB Request Packet Count */
+#define USB_CT_UCH                 0xFFCC1344         /* USB Chirp Timeout */
+#define USB_CT_HHSRTN              0xFFCC1346         /* USB High Speed Resume Return to Normal */
+#define USB_CT_HSBT                0xFFCC1348         /* USB High Speed Timeout */
+#define USB_LPM_ATTR               0xFFCC1360         /* USB LPM Attribute */
+#define USB_LPM_CTL                0xFFCC1362         /* USB LPM Control */
+#define USB_LPM_IEN                0xFFCC1363         /* USB LPM Interrupt Enable */
+#define USB_LPM_IRQ                0xFFCC1364         /* USB LPM Interrupt */
+#define USB_LPM_FADDR              0xFFCC1365         /* USB LPM Function Address */
+#define USB_VBUS_CTL               0xFFCC1380         /* USB VBus Control */
+#define USB_BAT_CHG                0xFFCC1381         /* USB Battery Charging */
+#define USB_PHY_CTL                0xFFCC1394         /* USB PHY Control */
+#define USB_TESTCTL                0xFFCC1397         /* USB Test Control */
+#define USB_PLL_OSC                0xFFCC1398         /* USB PLL and Oscillator Control */
 
 #define L1_DATA_A_SRAM 0xFF800000 /* 0xFF800000 -> 0xFF803FFF Data Bank A SRAM */
 #define L1_DATA_A_SRAM_SIZE 0x8000

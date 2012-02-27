@@ -10,10 +10,10 @@
 #define __BLACKFIN_USB_H__
 
 #include <linux/types.h>
-
 /* Every register is 32bit aligned, but only 16bits in size */
 #define ureg(name) u16 name; u16 __pad_##name;
 
+#ifndef __ADSPBF60x__
 #define musb_regs musb_regs
 struct musb_regs {
 	/* common registers */
@@ -85,15 +85,25 @@ struct bfin_musb_dma_regs {
 	u32 reserved0[2];
 };
 
-#undef ureg
-
-/* EP5-EP7 are the only ones with 1024 byte FIFOs which BULK really needs */
-#define MUSB_BULK_EP 5
-
 /* Blackfin FIFO's are static */
 #define MUSB_NO_DYNAMIC_FIFO
 
 /* No HUB support :( */
 #define MUSB_NO_MULTIPOINT
+
+#else
+struct bfin_musb_dma_regs {
+	u8 interrupt;
+	u8 reserved0[3];
+	ureg(control);     /* 0x4 */
+	u32 addr;        /* 0x8 */
+	u32 count;       /* 0xc */
+} __attribute__((packed));
+#endif
+
+#undef ureg
+
+/* EP5-EP7 are the only ones with 1024 byte FIFOs which BULK really needs */
+#define MUSB_BULK_EP 5
 
 #endif

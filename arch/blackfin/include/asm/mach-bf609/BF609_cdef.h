@@ -75,6 +75,18 @@
 #define bfin_read_SMC_B3ETIM() bfin_read32(SMC_B3ETIM)
 #define bfin_write_SMC_B3ETIM(val) bfin_write32(SMC_B3ETIM, val)
 
+#define bfin_read_USB_PLLOSC_CTRL()    bfin_read16(USB_PLL_OSC)
+#define bfin_write_USB_PLLOSC_CTRL(val) bfin_write16(USB_PLL_OSC, val)
+#define bfin_write_USB_VBUS_CTL(val) bfin_write8(USB_VBUS_CTL, val)
+#define bfin_read_USB_DMA_INTERRUPT()  bfin_read8(USB_DMA_IRQ)
+#define bfin_write_USB_DMA_INTERRUPT(val) bfin_write8(USB_DMA_IRQ, val)
+
+#define bfin_write_USB_EP_NI0_TXMAXP(val) bfin_write16(USB_EP_TXMAXP0, val)
+#define bfin_write_USB_EP_NI0_RXMAXP(val) bfin_write16(USB_EP_RXMAXP0, val)
+
+#define bfin_write_USB_APHY_CNTRL(val) bfin_write8(USB_PHY_CTL, val)
+#define bfin_read_USB_APHY_CNTRL() bfin_read8(USB_PHY_CTL)
+
 #define bfin_read_DMA0_NEXT_DESC_PTR() bfin_readPTR(DMA0_DSCPTR_NXT)
 #define bfin_write_DMA0_NEXT_DESC_PTR(val) bfin_writePTR(DMA0_DSCPTR_NXT, val)
 #define bfin_read_DMA0_START_ADDR() bfin_readPTR(DMA0_ADDRSTART)

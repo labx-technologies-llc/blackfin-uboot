@@ -35,6 +35,7 @@ struct musb_config musb_cfg = {
  * fifo_data	- Pointer to data buffer to be read/write
  * is_write	- Flag for read or write
  */
+#ifndef __ADSPBF60x__
 void rw_fifo(u8 ep, u32 length, void *fifo_data, int is_write)
 {
 	struct bfin_musb_dma_regs *regs;
@@ -76,6 +77,41 @@ void rw_fifo(u8 ep, u32 length, void *fifo_data, int is_write)
 	bfin_write16(&regs->control, 0);
 	SSYNC();
 }
+#else
+void rw_fifo(u8 ep, u32 length, void *fifo_data, int is_write)
+{
+	struct bfin_musb_dma_regs *regs;
+	u32 val = (u32)fifo_data;
+
+	blackfin_dcache_flush_invalidate_range(fifo_data, fifo_data + length);
+
+	regs = (void *)USB_DMA_IRQ;
+	regs += ep;
+
+	/* Setup DMA address register */
+	bfin_write32(&regs->addr, val);
+	SSYNC();
+
+	/* Setup DMA count register */
+	bfin_write32(&regs->count, length);
+	SSYNC();
+
+	/* Enable the DMA */
+	val = (ep << 4) | DMA_ENA | INT_ENA;
+	if (is_write)
+		val |= DIRECTION;
+	bfin_write16(&regs->control, val);
+	SSYNC();
+
+	/* Wait for compelete */
+	while (!(bfin_read_USB_DMA_INTERRUPT() & (1 << ep)))
+		continue;
+
+	/* Reset DMA */
+	bfin_write16(&regs->control, 0);
+	SSYNC();
+}
+#endif
 
 void write_fifo(u8 ep, u32 length, void *fifo_data)
 {
@@ -97,6 +133,7 @@ static void __def_musb_init(void)
 }
 void board_musb_init(void) __attribute__((weak, alias("__def_musb_init")));
 
+#ifndef __ADSPBF60x__
 static void bfin_anomaly_init(void)
 {
 	u32 revid;
@@ -127,12 +164,14 @@ static void bfin_anomaly_init(void)
 		SSYNC();
 	}
 }
+#endif
 
 int musb_platform_init(void)
 {
 	/* board specific initialization */
 	board_musb_init();
 
+#ifndef __ADSPBF60x__
 	bfin_anomaly_init();
 
 	/* Configure PLL oscillator register */
@@ -159,7 +198,11 @@ int musb_platform_init(void)
 				EP2_RX_ENA | EP3_RX_ENA | EP4_RX_ENA |
 				EP5_RX_ENA | EP6_RX_ENA | EP7_RX_ENA);
 	SSYNC();
-
+#else
+	bfin_write_USB_VBUS_CTL(0x00);
+	bfin_write_USB_APHY_CNTRL(0x80);
+	SSYNC();
+#endif
 	return 0;
 }
 
