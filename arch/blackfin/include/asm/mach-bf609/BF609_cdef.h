@@ -80,10 +80,6 @@
 #define bfin_write_USB_VBUS_CTL(val) bfin_write8(USB_VBUS_CTL, val)
 #define bfin_read_USB_DMA_INTERRUPT()  bfin_read8(USB_DMA_IRQ)
 #define bfin_write_USB_DMA_INTERRUPT(val) bfin_write8(USB_DMA_IRQ, val)
-
-#define bfin_write_USB_EP_NI0_TXMAXP(val) bfin_write16(USB_EP_TXMAXP0, val)
-#define bfin_write_USB_EP_NI0_RXMAXP(val) bfin_write16(USB_EP_RXMAXP0, val)
-
 #define bfin_write_USB_APHY_CNTRL(val) bfin_write8(USB_PHY_CTL, val)
 #define bfin_read_USB_APHY_CNTRL() bfin_read8(USB_PHY_CTL)
 

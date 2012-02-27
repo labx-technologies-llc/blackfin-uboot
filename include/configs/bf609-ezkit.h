@@ -124,6 +124,7 @@
 #define CONFIG_USB_BLACKFIN
 #define CONFIG_USB_STORAGE
 #define CONFIG_MUSB_TIMEOUT 100000
+#define MUSB_HW_VERSION2
 
 /*
  * Env Storage Settings

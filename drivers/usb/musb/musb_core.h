@@ -361,8 +361,7 @@ extern void musb_configure_ep(const struct musb_epinfo *epinfo, u8 cnt);
 extern void write_fifo(u8 ep, u32 length, void *fifo_data);
 extern void read_fifo(u8 ep, u32 length, void *fifo_data);
 
-#if defined(CONFIG_USB_BLACKFIN)
-#ifndef __ADSPBF60x__
+#if defined(CONFIG_USB_BLACKFIN) && !defined(MUSB_HW_VERSION2)
 /* Every USB register is accessed as a 16-bit even if the value itself
  * is only 8-bits in size.  Fun stuff.
  */
@@ -370,7 +369,6 @@ extern void read_fifo(u8 ep, u32 length, void *fifo_data);
 # define readb(addr)     (u8)bfin_read16(addr)
 # undef  writeb
 # define writeb(b, addr) bfin_write16(addr, b)
-#endif
 # undef MUSB_TXCSR_MODE /* not supported */
 # define MUSB_TXCSR_MODE 0
 /*
