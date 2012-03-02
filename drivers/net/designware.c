@@ -287,7 +287,7 @@ static int eth_mdio_read(struct eth_device *dev, u8 addr, u8 reg, u16 *val)
 			*val = readl(&mac_p->miidata);
 			return 0;
 		}
-		udelay(1000);
+		udelay(5);
 	} while (timeout--);
 
 	return -1;
@@ -310,7 +310,7 @@ static int eth_mdio_write(struct eth_device *dev, u8 addr, u8 reg, u16 val)
 	do {
 		if (!(readl(&mac_p->miiaddr) & MII_BUSY))
 			ret = 0;
-		udelay(1000);
+		udelay(5);
 	} while (timeout--);
 
 	/* Needed as a fix for ST-Phy */
@@ -360,7 +360,7 @@ static int dw_reset_phy(struct eth_device *dev)
 		eth_mdio_read(dev, phy_addr, MII_BMCR, &ctrl);
 		if (!(ctrl & BMCR_RESET))
 			break;
-		udelay(1000);
+		udelay(5);
 	} while (timeout--);
 
 	if (timeout < 0)
@@ -420,7 +420,7 @@ static int configure_phy(struct eth_device *dev)
 		eth_mdio_read(dev, phy_addr, MII_BMSR, &bmsr);
 		if (bmsr & BMSR_ANEGCOMPLETE)
 			break;
-		udelay(1000);
+		udelay(5);
 	} while (timeout--);
 
 	eth_mdio_read(dev, phy_addr, MII_LPA, &anlpar);
