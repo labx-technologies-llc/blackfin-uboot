@@ -18,6 +18,9 @@
 #define CONFIG_BFIN_CPU             bf609-0.0
 #define CONFIG_BFIN_BOOT_MODE       BFIN_BOOT_PARA
 
+/* For board v1.2 else undef this */
+#define CONFIG_BFIN_BOARD_VERSION_1_2
+
 /*
  * Clock Settings
  *	CCLK = (CLKIN * VCO_MULT) / CCLK_DIV

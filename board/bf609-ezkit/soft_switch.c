@@ -12,7 +12,11 @@
 #include <i2c.h>
 #include "soft_switch.h"
 
+#ifdef CONFIG_BFIN_BOARD_VERSION_1_2
+#define SWITCH_ADDR	0x21
+#else
 #define SWITCH_ADDR	0x20
+#endif
 
 #define IODIRA		0x0
 #define OLATA		0x14
