@@ -153,6 +153,7 @@ void spi_set_speed(struct spi_slave *slave, uint hz)
 	else if (baud > (u16)-1)
 		baud = -1;
 	bss->baud = baud;
+	debug("%s: baud:%i\n", __func__, baud);
 }
 
 struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
@@ -195,8 +196,8 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 	bss->flg = mode & SPI_CS_HIGH ? 1 : 0;
 	spi_set_speed(&bss->slave, max_hz);
 
-	debug("%s: bus:%i cs:%i mmr:%x ctl:%x baud:%i flg:%i\n", __func__,
-		bus, cs, mmr_base, bss->ctl, baud, bss->flg);
+	debug("%s: bus:%i cs:%i mmr:%x ctl:%x flg:%i\n", __func__,
+		bus, cs, mmr_base, bss->ctl, bss->flg);
 
 	return &bss->slave;
 }
