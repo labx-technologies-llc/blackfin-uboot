@@ -21,6 +21,11 @@
 #define SW_SD_CD_EN		26
 #define SW_SD_WP_EN		27
 
+#define SW_OVERRIDE_EBIU_LP0_BOOT 16
+#define SW_EBIU_EPPI2_LP1	17
+#define SW_EBIU_LP0_EN		19
+#define SW_WAKE_PUSHBUTTON_EN	36
+
 
 int setup_soft_switch(int index, int level);
 #endif
