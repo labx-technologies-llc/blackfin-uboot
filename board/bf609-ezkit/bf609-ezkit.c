@@ -74,7 +74,7 @@ int misc_init_r(void)
 	setup_soft_switch(SW_CNT0ZM_EN, 0);
 
 	setup_soft_switch(SW_CAN_EN, 1);
-	setup_soft_switch(SW_CAN_STS, 0);
+	setup_soft_switch(SW_CAN_STB, 1);
 	setup_soft_switch(SW_CAN0_ERR_EN, 0);
 	setup_soft_switch(SW_CAN0RX_EN, 0);
 

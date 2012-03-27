@@ -10,7 +10,7 @@
 #define __SOFT_SWITCH_H__
 
 #define SW_CAN_EN		0
-#define SW_CAN_STS		1
+#define SW_CAN_STB		1
 #define SW_CAN0_ERR_EN		2
 #define SW_CAN0RX_EN		3
 #define SW_CNT0UD_EN		4
