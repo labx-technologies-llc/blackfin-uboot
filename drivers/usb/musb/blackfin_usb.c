@@ -199,6 +199,9 @@ int musb_platform_init(void)
 				EP5_RX_ENA | EP6_RX_ENA | EP7_RX_ENA);
 	SSYNC();
 #else
+	bfin_write_USB_PLLOSC_CTRL((480 / CONFIG_USB_BLACKFIN_CLKIN) << 1);
+	SSYNC();
+
 	bfin_write_USB_VBUS_CTL(0x00);
 	bfin_write_USB_APHY_CNTRL(0x80);
 	SSYNC();

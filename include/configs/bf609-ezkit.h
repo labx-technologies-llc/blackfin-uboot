@@ -21,6 +21,10 @@
 /* For ez-board version 1.0, else undef this */
 #define CONFIG_BFIN_BOARD_VERSION_1_0
 
+#ifdef CONFIG_BFIN_BOARD_VERSION_1_0
+#define CONFIG_USB_BLACKFIN_CLKIN 48
+#endif
+
 /*
  * Clock Settings
  *	CCLK = (CLKIN * VCO_MULT) / CCLK_DIV
