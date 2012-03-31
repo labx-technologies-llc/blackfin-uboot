@@ -69,6 +69,10 @@ int board_mmc_init(bd_t *bis)
 int misc_init_r(void)
 {
 	printf("other init\n");
+	setup_soft_switch(SW_UART0_RTS_EN, 0);
+	setup_soft_switch(SW_UART0_RX_EN, 0);
+	setup_soft_switch(SW_UART0_CTS_EN, 0);
+
 	setup_soft_switch(SW_CNT0UD_EN, 0);
 	setup_soft_switch(SW_CNT0DG_EN, 0);
 	setup_soft_switch(SW_CNT0ZM_EN, 0);

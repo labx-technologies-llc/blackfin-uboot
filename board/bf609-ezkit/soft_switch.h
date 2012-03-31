@@ -18,6 +18,10 @@
 #define SW_CNT0ZM_EN		6
 #define SW_RMII_CLK_EN		7
 
+#define SW_UART0_RTS_EN		8
+#define SW_UART0_RX_EN		9
+#define SW_UART0_CTS_EN		10
+
 #define SW_SD_CD_EN		26
 #define SW_SD_WP_EN		27
 
