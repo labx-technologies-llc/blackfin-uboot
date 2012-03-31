@@ -264,6 +264,10 @@ int usb_stor_scan(int mode)
 			int lun, max_lun, start = usb_max_devs;
 
 			max_lun = usb_get_max_lun(&usb_stor[usb_max_devs]);
+#ifdef CONFIG_BF60x
+			if (max_lun > 0)
+				max_lun = 0;
+#endif
 			for (lun = 0;
 			     lun <= max_lun && usb_max_devs < USB_MAX_STOR_DEV;
 			     lun++) {
