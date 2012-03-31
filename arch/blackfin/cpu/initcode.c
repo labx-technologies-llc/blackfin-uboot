@@ -493,6 +493,11 @@ maybe_self_refresh(ADI_BOOT_DATA *bs)
 		return false;
 
 #ifdef __ADSPBF60x__
+	/* resume from hibernate, return false let ddr initialize */
+	if ((bfin_read32(DPM0_STAT) & 0xF0) == 0x50) {
+		serial_putc('b');
+		return false;
+	}
 
 #else /* __ADSPBF60x__ */
 
@@ -515,6 +520,17 @@ maybe_self_refresh(ADI_BOOT_DATA *bs)
 	serial_putc('c');
 
 	return false;
+}
+
+__attribute__((always_inline)) static inline void
+early_clocks_init(void)
+{
+#ifdef __ADSPBF60x__
+	bfin_write_CGU_CTL(CONFIG_CGU_CTL_VAL);
+	bfin_write_CGU_DIV(CONFIG_CGU_DIV_VAL);
+	while (bfin_read_CGU_STAT() & CLKSALGN)
+		continue;
+#endif
 }
 
 __attribute__((always_inline)) static inline u16
@@ -784,6 +800,9 @@ program_memory_controller(ADI_BOOT_DATA *bs, bool put_into_srfs)
 	dll_ctl &= 0x0ff;
 	bfin_write_DDR0_DLLCTL(dll_ctl | (dlldatacycle << 8));
 
+	while (!(bfin_read_DDR0_STAT() & 0x2000))
+		continue;
+
 	serial_putc('!');
 #else /* __ADSPBF60x__ */
 
@@ -852,7 +871,46 @@ check_hibernation(ADI_BOOT_DATA *bs, u16 vr_ctl, bool put_into_srfs)
 		return;
 
 	serial_putc('b');
+#ifdef __ADSPBF60x__
+	if (bfin_read32(DPM0_RESTORE0) != 0) {
+		uint32_t reg = bfin_read_DDR0_CTL();
+		reg &= ~0x8;
+		bfin_write_DDR0_CTL(reg);
 
+		while ((bfin_read_DDR0_STAT() & 0x8))
+			continue;
+		while (!(bfin_read_DDR0_STAT() & 0x1))
+			continue;
+
+		serial_putc('z');
+		volatile uint32_t *hibernate_magic = 0x10;
+		__builtin_bfin_ssync(); /* make sure memory controller is done */
+		if (hibernate_magic[0] == 0xDEADBEEF) {
+			serial_putc('c');
+
+			__builtin_bfin_ssync();
+
+			bfin_write_EVT15(hibernate_magic[1]);
+			bfin_write_IMASK(EVT_IVG15);
+			__asm__ __volatile__ (
+				/* load reti early to avoid anomaly 281 */
+				"reti = %2;"
+				/* clear hibernate magic */
+				"[%0] = %1;"
+				/* load stack pointer */
+				"SP = [%0 + 8];"
+				/* lower ourselves from reset ivg to ivg15 */
+				"raise 15;"
+				"nop;nop;nop;"
+				"rti;"
+				:
+				: "p"(hibernate_magic), "d"(0x2000 /* jump.s 0 */), "d"(0xffa00000)
+			);
+		}
+
+
+	}
+#else
 	/* Are we coming out of hibernate (suspend to memory) ?
 	 * The memory layout is:
 	 * 0x0: hibernate magic for anomaly 307 (0xDEADBEEF)
@@ -884,6 +942,7 @@ check_hibernation(ADI_BOOT_DATA *bs, u16 vr_ctl, bool put_into_srfs)
 		}
 		serial_putc('d');
 	}
+#endif
 
 	serial_putc('e');
 }
@@ -895,6 +954,8 @@ void initcode(ADI_BOOT_DATA *bs)
 
 	/* Setup NMI handler before anything else */
 	program_nmi_handler();
+
+	early_clocks_init();
 
 	serial_init();
 
