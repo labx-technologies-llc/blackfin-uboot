@@ -522,17 +522,6 @@ maybe_self_refresh(ADI_BOOT_DATA *bs)
 	return false;
 }
 
-__attribute__((always_inline)) static inline void
-early_clocks_init(void)
-{
-#ifdef __ADSPBF60x__
-	bfin_write_CGU_CTL(CONFIG_CGU_CTL_VAL);
-	bfin_write_CGU_DIV(CONFIG_CGU_DIV_VAL);
-	while (bfin_read_CGU_STAT() & CLKSALGN)
-		continue;
-#endif
-}
-
 __attribute__((always_inline)) static inline u16
 program_clocks(ADI_BOOT_DATA *bs, bool put_into_srfs)
 {
@@ -954,8 +943,6 @@ void initcode(ADI_BOOT_DATA *bs)
 
 	/* Setup NMI handler before anything else */
 	program_nmi_handler();
-
-	early_clocks_init();
 
 	serial_init();
 
