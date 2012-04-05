@@ -187,6 +187,10 @@
 #define CONFIG_MISC_INIT_R
 #define CONFIG_BFIN_SOFT_SWITCH
 
+/* linkport switch, uncomment to enable, conflict with nor flash
+#define CONFIG_BFIN_LINKPORT
+*/
+
 #define CONFIG_SYS_MEMTEST_END (CONFIG_STACKBASE - 20*1024*1024 + 4)
 
 #if 0

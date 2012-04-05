@@ -82,9 +82,11 @@ int misc_init_r(void)
 	setup_soft_switch(SW_CAN0_ERR_EN, 0);
 	setup_soft_switch(SW_CAN0RX_EN, 0);
 
+#ifdef CONFIG_BFIN_LINKPORT
 	setup_soft_switch(SW_OVERRIDE_EBIU_LP0_BOOT, 1);
 	setup_soft_switch(SW_EBIU_LP0_EN, 0);
 	setup_soft_switch(SW_EBIU_EPPI2_LP1, 0);
+#endif
 	setup_soft_switch(SW_WAKE_PUSHBUTTON_EN, 0);
 	return 0;
 }
