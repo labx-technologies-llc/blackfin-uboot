@@ -872,7 +872,7 @@ check_hibernation(ADI_BOOT_DATA *bs, u16 vr_ctl, bool put_into_srfs)
 			continue;
 
 		serial_putc('z');
-		volatile uint32_t *hibernate_magic = 0x10;
+		volatile uint32_t *hibernate_magic = bfin_read32(DPM0_RESTORE4);
 		__builtin_bfin_ssync(); /* make sure memory controller is done */
 		if (hibernate_magic[0] == 0xDEADBEEF) {
 			serial_putc('c');
