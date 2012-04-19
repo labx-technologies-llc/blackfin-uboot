@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2009 Analog Devices Inc.
  *
- * Licensed under the 2-clause BSD.
+ * Licensed under the 3-clause BSD.
  */
 
 #include <common.h>
