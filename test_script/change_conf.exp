@@ -9,7 +9,7 @@ proc usage {} {
 }
 set PWD [exec pwd]
 send_user "!!!!!!!!!! $PWD \n"
-cd u-boot_test_script
+cd test_script
 source uboot-config.exp
 
 set argc [llength $argv]

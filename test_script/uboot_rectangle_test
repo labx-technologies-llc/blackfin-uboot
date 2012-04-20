@@ -27,9 +27,9 @@ cd $UBOOT_LOG
 rm -f *log test_results uboot.diff /tftpboot/u-boot.bin.* /tftpboot/u-boot.ldr.*
 mv summary lastrun-summary  > /dev/null 2>&1
 
-#cp $UBOOT_SRC/u-boot_test_script/*.exp $UBOOT_SCRIPTS
-#cp $UBOOT_SRC/u-boot_test_script/uboot-test $UBOOT_SCRIPTS
-#cp $UBOOT_SRC/u-boot_test_script/uboot_rectangle_test $UBOOT_SCRIPTS
+#cp $UBOOT_SRC/test_script/*.exp $UBOOT_SCRIPTS
+#cp $UBOOT_SRC/test_script/uboot-test $UBOOT_SCRIPTS
+#cp $UBOOT_SRC/test_script/uboot_rectangle_test $UBOOT_SCRIPTS
 
 cp /home/test/reset_board  $UBOOT_SCRIPTS
 # To restore the changes made in last release and sync to the repository.

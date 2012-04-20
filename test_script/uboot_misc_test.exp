@@ -55,7 +55,7 @@ if { $board_type == "BF533-STAMP" } {
     exit
 }
 set config_file        $make_board_type.h
-set test_script_path   /home/test/work/cruise/checkouts/u-boot/u-boot_test_script
+set test_script_path   /home/test/work/cruise/checkouts/u-boot/test_script
 
 
 proc make_uboot {} {

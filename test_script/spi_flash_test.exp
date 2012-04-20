@@ -4,7 +4,7 @@ send_user "Starting spi_flash_test.exp \n"
 
 set CHECKOUT   ~/checkouts
 set uboot_path ~/checkouts/u-boot/u-boot-2009.11
-set UBOOT_SCRIPTS  ~/checkouts/u-boot/u-boot_test_script
+set UBOOT_SCRIPTS  ~/checkouts/u-boot/test_script
 set ttydev /dev/ttyS0
 
 set board_type [lindex $argv 0]
