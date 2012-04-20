@@ -1,0 +1,481 @@
+#!/usr/bin/expect
+#
+# Copyright (C) 2004 Bruce Giese
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2, or (at your option) any
+# later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.
+#
+# Revision history
+# 10/25/2004    Bruce Giese      first checked into cvs
+#
+
+
+
+#
+#
+#
+#
+proc all_done {message} {
+   global summary_logfile
+
+   log_file
+
+# Make sure not to use -noappend here since we already
+# put stuff in the summary.
+   log_file $summary_logfile
+   send_log "$message\n"
+   exit
+}
+
+
+
+# Set VERBOSE to lower case "on" if you want lots of output.
+# Set VERBOSE to lower case "off" for less output.
+#    a future improvement might be "none" for no success path output.
+set VERBOSE on
+
+set LOAD_CMD                "loadb\r"
+set CONNECT                 "connect\r"
+# I had to do the kermit escape sequence as a hack, see below.
+set ERASE                   "erase all\r"
+set COPY                    "cp.b 0x1000000 0x20000000 0x20000\r"
+set SUCCESS                 "success"
+set FAILURE                 "failure"
+set NOVDSP_ARG              "--no-VDSP"
+set LOG_DIR                 "/home/bfarm/logs"
+set SCRIPT_DIR              "/home/bfarm/bin"
+# The capture logfile is used to capture some info and read it back.
+set CAPTURE_LOGFILE         "$LOG_DIR/temp-uboot-load-file"
+
+# initialize output pin to something nontoxic.
+set output_pin 10
+
+# Start out with default logfiles, the user may change these below.
+set logfile  "$LOG_DIR/$argv0-[exec date +%b-%d-%G-%H-%M]-detailed-log"
+set summary_logfile "$LOG_DIR/$argv0-[exec date +%b-%d-%G-%H-%M]-summary-log"
+
+puts "\nThis program is used to load u-boot onto a Blackfin based Stamp board."
+
+set argc [llength $argv]
+if { $argc < 2} {
+   puts "Usage: $argv0 tty-device ubootfilename.bin \[$NOVDSP_ARG output-pin \
+ \[logfile \[summary-logfile]]]"
+   puts "   where output-pin is the parallel port pin used to reset this board"
+   puts "   where tty-device is something like /dev/ttyUSB0, /dev/ttyS0"
+   puts "   if the board already has a version of uboot, use $NOVDSP_ARG"
+   puts "   otherwise, you'll need to use VisualDSP++"
+   puts " "
+   exit
+}
+
+
+# grab the user selections.
+set ttydev  [lindex $argv 0]
+set binfile [lindex $argv 1]
+if { [lindex $argv 2] == $NOVDSP_ARG} {
+   set VDSP "no"
+   puts "$NOVDSP_ARG selected"
+   if { $argc < 4 } {
+      puts "you need to provide an output-pin and tty-device"
+      puts "type $argv0 for more details"
+      exit
+   } else {
+      set output_pin [lindex $argv 3]
+      if { $argc >4 } {
+         set logfile [lindex $argv 4]
+         puts "user provided logfile $logfile"
+      }
+      if { $argc >5 } {
+         set summary_logfile [lindex $argv 5]
+         puts "user provided summary logfile $summary_logfile"
+      }
+   }
+} else {
+   set VDSP "yes"
+}
+
+log_file -noappend $summary_logfile
+send_log "\nload uboot onto board with output pin $output_pin\n"
+send_log "on [exec date]\n"
+send_log "from file $binfile\n"
+
+log_file
+log_file -noappend $logfile
+
+# Now set up the kermit parameters.
+#  I want these all contained in this file to make it easier for users.
+#  This just builds up a list of commands which are sent to kermit.
+#
+set kparams     [list "set line $ttydev\r"]
+lappend kparams "set speed 57600\r"
+lappend kparams "set carrier-watch off\r"
+lappend kparams "set handshake none\r"
+lappend kparams "set flow-control none\r"
+lappend kparams "robust\r"
+lappend kparams "set file type bin\r"
+lappend kparams "set file name lit\r"
+lappend kparams "set rec pack 1000\r"
+lappend kparams "set send pack 1000\r"
+lappend kparams "set window 5\r"
+set nkparams [llength $kparams]
+
+
+puts "\nStep 1 of 10: Checking for the file $binfile"
+
+if [catch {set binfile_id [open $binfile "r"]} errorstuff ] {
+   puts "\nERROR: $errorstuff\n"
+   all_done "error getting the uboot binary file, nothing loaded"
+}
+# No need to close the binfile since we opened it read-only.
+ 
+puts "   ...completed Step 1, found $binfile"
+puts "\nStep 2 of 10: Starting up kermit and setting up parameters"
+
+if { $VERBOSE == "on" } {
+   log_user 1
+} else {
+   log_user 0
+}
+
+spawn kermit
+set kermit_spawn_id $spawn_id
+
+while 1 {
+	expect {
+
+	        "Type ?" { }
+
+		"ermit>" { break }
+
+		"not found" {
+		     puts "\nERROR: There was a problem starting up kermit\n"
+		     all_done "Error starting up kermit, nothing loaded"
+                }
+
+		timeout {
+		     puts "\nERROR: No response when starting up kermit\n"
+		     all_done "No response from kermit, nothing loaded"
+                }
+	}
+}
+
+for {set i 0} {$i < $nkparams} {incr i} {
+    send [lindex $kparams $i]
+
+    while 1 {
+	  expect {
+		 "ermit>" { break }
+
+		 "\\?\[A-Z]" {
+		     puts "\nERROR: Problem in setting kermit params\n"
+		     all_done "problem setting up kermit \
+params, nothing loaded"
+                 }
+
+		 timeout {
+		     puts "\nERROR: Timeout in setting kermit params\n"
+		     all_done "timeout setting kermit params, \
+nothing loaded"
+                 }
+	  }
+    }
+}
+
+puts "   ...completed Step 2"
+puts "\nStep 3 of 10: Connecting to the serial port."
+
+send $CONNECT
+while 1 {
+	expect {
+
+		"ype the escape character*" {
+		     break
+                }
+
+		timeout {
+		     puts "\nERROR: Can't connect to serial port\n"
+		     all_done "can't connect to serial port, \
+nothing loaded"
+                }
+	}
+}
+
+set timeout 180
+
+puts "   ...completed Step 3"
+
+if { $VDSP == "yes" } {
+
+   puts "\nUSER ACTION NEEDED: You selected to load uboot from VDSP++"
+   puts "start up VDSP++, load the uboot .bin file, run the \
+setup_stamp.tcl script."
+   puts "\nStep 4 of 10: Waiting up to 3 minutes for the user \
+to do the above action."
+
+} else {
+   puts "\nStep 4 of 10: Resetting board automatically to \
+start up uboot."
+#  We are not using VDSP, so reset the board via the parallel port.
+   spawn ./reset_board_as_root $output_pin
+   while 1 {
+        expect {
+
+                timeout {
+                     puts "\nERROR: Failed to reset target board\n"
+		     all_done "failed to reset target board, \
+nothing loaded"
+                }
+
+                eof {
+		     set spawn_id $kermit_spawn_id
+                     break
+                }
+        }
+   }
+}
+
+
+while 1 {
+	expect {
+		"Hit any key to stop" {
+		     send "\r"
+		     break
+                }
+
+		timeout {
+		     puts "\nERROR: I waited and waited, but gave up."
+		     all_done "timeout waiting for the old \
+uboot, nothing loaded"
+                }
+	}
+}
+
+while 1 {
+	expect {
+		"BOOT>" {
+		     break
+                }
+
+		timeout {
+		     puts "\nERROR: I hit ENTER, but \
+didn't get uboot prompt."
+		     all_done "no uboot prompt, nothing loaded"
+                }
+	}
+}
+
+puts "   ...completed Step 4"
+puts "\nStep 5 of 10: Loading uboot across the serial link."
+
+send $LOAD_CMD
+
+while 1 {
+	expect {
+		"Ready for binary" {
+		     break
+                }
+
+		timeout {
+		     puts "\nERROR: Uboot wouldn't respond \
+to loadb command."
+		     all_done "no response to loadb command, \
+nothing loaded"
+                }
+	}
+}
+
+puts "   ...completed Step 5"
+puts "\nStep 6 of 10: Escaping out to kermit command mode."
+
+# For some reason, "\x1Cc" doesn't work so I had to break it up.
+send "\x1C"
+send "c"
+
+while 1 {
+	expect {
+		"ermit>" {
+                     break
+                }
+		timeout {
+		     puts "\nERROR: No response escaping to \
+kermit command mode.\n"
+		     all_done "can't escape to kermit comand \
+mode, nothing loaded"
+                }
+	}
+}
+
+puts "   ...completed Step 6"
+puts "\nStep 7 of 10: Sending file $binfile to target board."
+
+send "send $binfile\r"
+
+set timeout 120
+
+while 1 {
+	expect {
+
+		"\8" { }
+
+		"ermit>" {
+		     break
+                }
+
+		timeout {
+		     puts "\nERROR: Failed to download $binfile \
+to target board\n"
+		     all_done "failed to load uboot binary, \
+nothing loaded"
+                }
+	}
+}
+
+puts "   ...completed Step 7"
+puts "\nStep 8 of 10: Reconnecting into serial port data mode."
+
+# Yeah, I probably should have used a proc for this repeated code.
+send $CONNECT
+while 1 {
+   expect {
+      "ype the escape character*" {
+         break
+      }
+
+      timeout {
+         puts "\nERROR: Can't connect to serial port\n"
+         all_done "can't connect to serial port, nothing loaded"
+      }
+   }
+}
+
+set timeout 2
+set capture_flag 0
+set uboot_size "not determined"
+while 1 {
+   expect {
+
+      "Total Size" {
+         log_file
+         log_file $CAPTURE_LOGFILE
+         set capture_flag 1
+         break
+      }
+
+      timeout {
+         break
+      }
+   }
+}
+if { $capture_flag == 1} {
+   set timeout 1
+   expect "Bytes????"
+   log_file
+   log_file $logfile
+   set file [open $CAPTURE_LOGFILE]
+   set uboot_size [read $file 30]
+   puts "size of uboot is $uboot_size"
+   close $file
+   set x [exec rm $CAPTURE_LOGFILE]
+}
+
+while 1 {
+	expect {
+		"BOOT>" {
+		     break
+                }
+
+		timeout {
+		     puts "\nERROR: I hit ENTER, but didn't \
+get uboot prompt."
+		     all_done "no uboot prompt after loaded, \
+nothing loaded"
+                }
+	}
+}
+
+puts "   ...completed Step 8"
+puts "\nStep 9 of 10: Erasing flash memory on target board"
+
+set timeout 480
+
+# Assume failure until success string is seen.
+set STEP_STATUS $FAILURE
+
+send $ERASE
+while 1 {
+	expect {
+	        "Please Wait" {
+		     set STEP_STATUS $SUCCESS
+                }
+
+		"BOOT>" {
+		     break
+                }
+
+		timeout {
+		     puts "\nERROR: Uboot wouldn't respond \
+to loadb command."
+		     all_done "no response to loadb, \
+nothing loaded"
+                }
+	}
+}
+
+if { $STEP_STATUS != $SUCCESS } {
+     puts "\nERROR: For some reason, the $ERASE didn't work.\n"
+     all_done "flash not erased, nothing loaded"
+}
+
+puts "   ...completed Step 9"
+puts "\nStep 10 of 10: Writing uboot to flash memory"
+
+set timeout 600
+
+# Assume failure until success string is seen.
+set STEP_STATUS $FAILURE
+
+send $COPY
+while 1 {
+	expect {
+                #  something like Copy to Flash
+	        "done" {
+		      set STEP_STATUS $SUCCESS
+                }
+
+		"BOOT>" {
+		     break
+                }
+
+		timeout {
+		     puts "\nERROR: failed to copy uboot into flash."
+		     all_done "failed to copy uboot to \
+flash, nothing loaded"
+                }
+	}
+}
+
+if { $STEP_STATUS != $SUCCESS } {
+     puts "\nERROR: For some reason, the $COPY didn't work.\n"
+     all_done "$COPY didn't work, nothing loaded"
+}
+
+puts "   ...completed Step 10, all done"
+puts "\nSUCCESS: The board has been loaded with uboot!"
+if { $VDSP == "yes" } {
+   puts "     close out VDSP++ and reset board."
+   puts "     ---> make sure to close out VDSP++ first \
+to avoid sync issues.\n"
+}
+
+all_done "loading uboot: Success, uboot size is $uboot_size"

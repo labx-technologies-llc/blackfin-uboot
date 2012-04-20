@@ -1,0 +1,165 @@
+#!/bin/sh
+# This script automatically test the given tool with the tool's test cases,
+# reporting anything of interest.
+
+# exits with 0 if there is nothing of interest
+# exits with 1 if there is something interesting
+# exits with 2 if an error occurred
+
+# Give two .sum files to compare them
+
+
+if [ "$2" = "" ]; then
+	echo "Usage: $0 previous current" >&2
+	exit 2
+fi
+
+if [ ! -e $1 ] || [ ! -e $2 ] ; then
+        echo "$1 or $2 doesn't exist!"
+        exit 2
+fi
+
+before_count=`grep -nr "started" $1 -c`
+now_count=`grep -nr "started" $2 -c`
+if [ $before_count != $now_count ] ; then
+      echo " Test count does not equal."
+      exit 2
+fi
+
+exit_status=0
+
+before_time=`grep -nr "started" $1 -m 1 | sed 's/:/ /' | awk '{print $4}'`
+now_time=`grep -nr "started" $2 -m 1 | sed 's/:/ /' | awk '{print $4}'`
+echo "Here is the difference between $before_time  and $now_time ."
+echo
+diff_status=0
+
+WHOLE_LONG=`cat $1 | wc -l`
+EACH_LONG=`expr $WHOLE_LONG / $now_count`
+for i in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15  
+do
+
+board_status=0
+line_status=0
+
+tool=uboot
+before=/tmp/$tool-testing.$$before
+now=/tmp/$tool-testing.$$now
+tmp1=/tmp/$tool-testing.$$a
+tmp2=/tmp/$tool-testing.$$b
+
+trap "rm -f $tmp1 $tmp2 $now $before" 0 1 2 3 5 9 13 15
+
+tail +$((EACH_LONG * i)) $1 | head -$EACH_LONG > $before
+tail +$((EACH_LONG * i)) $2 | head -$EACH_LONG > $now
+
+#cat $before $now
+core_clk=`grep -nr "Core Clock" $now | sed 's/://g' | awk '{print $5}'`
+system_clk=`grep -nr "System Clock" $now | sed 's/://g' | awk '{print $5}'`
+icache_status=`grep -nr "icache_status" $now | sed 's/://g' | awk '{print $4}'`
+dcache_status=`grep -nr "dcache_status" $now | sed 's/://g' | awk '{print $4}'`
+
+if [ $core_clk == `grep -nr "Core Clock" $before | sed 's/://g' | awk '{print $5}'` ] &&
+   [ $system_clk == `grep -nr "System Clock" $before | sed 's/://g' | awk '{print $5}'` ] &&
+   [ $icache_status == `grep -nr "icache_status" $before | sed 's/://g' | awk '{print $4}'` ] &&
+   [ $dcache_status == `grep -nr "dcache_status" $before | sed 's/://g' | awk '{print $4}'` ] ; then
+         board_status=1
+else
+         echo "Compare is not corresponding.exit!"
+         exit 2
+fi
+
+NUM1=`grep -r "Fail" $now -m 1 |  sed 's/://g' | awk '{print $3}'`
+grep -r "^Fail" $now  -A $((NUM1 + 1)) | grep " - " |  sed 's/ - //g'| sort > $tmp1
+
+NUM2=`grep -r "Pass" $before -m 1 |  sed 's/://g' | awk '{print $3}'`
+grep -r "^Pass" $before  -A $((NUM2 + 1)) | grep " - " |  sed 's/ - //g'| sort | comm -12 $tmp1 - > $tmp2
+
+grep -s . $tmp2 >/dev/null
+if [ $? = 0 ]; then
+        if [ $board_status = 1 ] ; then
+         echo  "Board Status(Core clock:$core_clk , System clock:$system_clk , icache $icache_status , dcache $dcache_status):"
+         echo
+         board_status=0
+         line_status=1
+        fi
+	echo "Tests that now fail, but worked before:"
+	echo
+	cat $tmp2
+	exit_status=1
+fi
+
+NUM1=`grep -r "Pass" $now -m 1 |  sed 's/://g' | awk '{print $3}'`
+grep -r "^Pass" $now  -A $((NUM1 + 1)) | grep " - " |  sed 's/ - //g'| sort > $tmp1
+
+NUM2=`grep -r "Fail" $before -m 1 |  sed 's/://g' | awk '{print $3}'`
+grep -r "^Fail" $before  -A $((NUM2 + 1)) | grep " - " |  sed 's/ - //g'| sort | comm -12 $tmp1 - > $tmp2
+
+grep -s . $tmp2 >/dev/null
+if [ $? = 0 ]; then
+        if [ $board_status = 1 ] ; then
+         echo  "Board Status(Core clock:$core_clk , System clock:$system_clk , icache $icache_status , dcache $dcache_status):"
+         echo
+         board_status=0
+         line_status=1
+        fi
+	echo "Tests that now work, but didn't before:"
+	echo
+	cat $tmp2
+	echo
+fi
+
+
+NUM1=`grep -r "Tests Not Run" $now -m 1 |  sed 's/://g' | awk '{print $4}'`
+grep -r "^Tests Not Run" $now  -A $((NUM1 + 1)) | grep " - " |  sed 's/ - //g'| sort > $tmp1
+
+NUM2=`grep -r "Pass" $before -m 1 |  sed 's/://g' | awk '{print $3}'`
+grep -r "^Pass" $before  -A $((NUM2 + 1)) | grep " - " |  sed 's/ - //g'| sort | comm -12 $tmp1 - > $tmp2
+
+grep -s . $tmp2 >/dev/null
+if [ $? = 0 ]; then
+        if [ $board_status = 1 ] ; then
+         echo  "Board Status(Core clock:$core_clk , System clock:$system_clk , icache $icache_status , dcache $dcache_status):"
+         echo
+         board_status=0
+         line_status=1
+        fi
+        echo "Tests that now not run, but worked before:"
+        echo
+        cat $tmp2
+        echo
+        exit_status=1
+fi
+
+NUM1=`grep -r "Pass" $now -m 1 |  sed 's/://g' | awk '{print $3}'`
+grep -r "^Pass" $now  -A $((NUM1 + 1)) | grep " - " |  sed 's/ - //g'| sort > $tmp1
+
+NUM2=`grep -r "Tests Not Run" $before -m 1 |  sed 's/://g' | awk '{print $4}'`
+grep -r "^Tests Not Run" $before  -A $((NUM2 + 1)) | grep " - " |  sed 's/ - //g'| sort | comm -12 $tmp1 - > $tmp2
+
+grep -s . $tmp2 >/dev/null
+if [ $? = 0 ]; then
+        if [ $board_status = 1 ] ; then
+         echo  "Board Status(Core clock:$core_clk , System clock:$system_clk , icache $icache_status , dcache $dcache_status):"
+         echo
+         board_status=0
+         line_status=1
+        fi
+        echo "Tests that now work, but didn't run before:"
+        echo
+        cat $tmp2
+        echo
+fi
+
+if [ $line_status = 1 ] ; then
+echo  "================================================================================="
+diff_status=1
+fi
+
+done
+
+if [ $diff_status = 0 ] ; then
+echo "No difference in test results."
+fi
+
+exit $exit_status

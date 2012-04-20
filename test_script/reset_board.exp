@@ -1,0 +1,50 @@
+#!/usr/bin/expect
+send_user "Starting reset_board_test.exp\n"
+
+set send_slow {1 0.1}
+set password "blackfin"
+
+spawn su
+sleep .5
+while 1 {
+    expect {
+        "Password:" {
+            send "$password\r"
+            break
+        }
+        timeout {
+            send_user "Fail\n"
+            break
+        }
+    }
+}
+
+while 1 {
+    expect {
+        "#" {
+            send_user "su success\n"
+            break
+        }
+        timeout {
+            send_user "Fail su as root\n"
+            break
+        }
+    }
+}
+
+
+set su_id $spawn_id
+
+send -s "./reset_board 2\r"
+while 1 {
+    expect {
+        "#" {
+            break
+        }
+        timeout {
+            break
+        }
+    }
+}
+
+send_user "Ending reset_board_test.exp\n"

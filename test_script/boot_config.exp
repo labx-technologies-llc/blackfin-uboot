@@ -1,0 +1,79 @@
+#!/usr/bin/expect
+
+set board_type       [lindex $argv 0]
+
+set  num              1
+
+if { $board_type == "BF533-STAMP" } {
+    set config_file bf533-stamp.h
+} elseif { $board_type == "BF537-STAMP" } {
+    set config_file bf537-stamp.h
+} elseif { $board_type == "BF537-EZKIT" } {
+    set config_file bf537-ezkit.h
+} elseif { $board_type == "BF533-EZKIT" } {
+    set config_file bf533-ezkit.h
+} elseif { $board_type == "BF561-EZKIT" } {
+    set config_file bf561-ezkit.h
+} elseif { $board_type == "BF548-EZKIT" } {
+    set config_file bf548-ezkit.h
+        set num   2
+} elseif { $board_type == "BF527-EZKIT" } {
+    set config_file bf527-ezkit.h
+        set num   2
+} elseif { $board_type == "BF518F-EZBRD" } {
+    set config_file bf518f-ezbrd.h
+} elseif { $board_type == "BF526-EZBRD" } {
+    set config_file bf526-ezbrd.h
+} else {
+    send_user "\n Unknown target board type.\n"
+    exit 2
+}
+
+if { $argc > 1} {
+    set num              [lindex $argv 1]
+}
+
+set checkout_path /home/test/work/cruise/checkouts/
+if { $argc > 2} {
+    set checkout_path       [lindex $argv 2]
+}
+
+if { $num == "1" } {
+    set boot_config BFIN_BOOT_BYPASS
+} elseif { $num == "2" } {
+    set boot_config BFIN_BOOT_PARA
+} elseif { $num == "3" } {
+    set boot_config BFIN_BOOT_SPI_MASTER
+} elseif { $num == "4" } {
+    set boot_config BFIN_BOOT_SPI_SLAVE
+}
+
+cd $checkout_path/u-boot/
+sleep 3
+set timeout 2
+spawn ex include/configs/$config_file
+expect {
+    "Entering Ex mode*Normal mode." { }
+
+    "already exists!" {
+        send "e\r"
+        sleep 1
+    }
+}
+sleep 1
+send "/#define *CONFIG_BFIN_BOOT_MODE\r"
+expect "#define *CONFIG_BFIN_BOOT_MODE"
+send "d\r"
+expect ":"
+send "i\r"
+sleep .5
+send "#define CONFIG_BFIN_BOOT_MODE       $boot_config\r"
+sleep .5
+send ".\r"
+expect ":"
+
+send "wq\r"
+expect eof
+
+send_user "Finished editing in include/configs/$config_file."
+exit 0
