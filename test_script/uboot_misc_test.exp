@@ -695,6 +695,7 @@ if { $where_are_we == "uboot" } {
     expect $UBOOT_PROMPT
     send_user "sending reset\n"
     send -s "reset\r"
+    sleep 3
 } else {
     if { $where_are_we == "kernel" } {
 	set timeout 16
@@ -702,6 +703,7 @@ if { $where_are_we == "uboot" } {
 	sleep 10
 	send_user "sending reboot\n"
 	send -s "reboot\r"
+        sleep 3
     } else {
 	# If we don't know where we are, hit control-C and enter
 	set timeout 1
