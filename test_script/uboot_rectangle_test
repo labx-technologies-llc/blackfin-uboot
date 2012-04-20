@@ -33,6 +33,7 @@ mv summary lastrun-summary  > /dev/null 2>&1
 
 cp /home/test/reset_board  $UBOOT_SCRIPTS
 # To restore the changes made in last release and sync to the repository.
+cd $UBOOT_SRC
 git checkout .
 
 cd $UBOOT_SCRIPTS
