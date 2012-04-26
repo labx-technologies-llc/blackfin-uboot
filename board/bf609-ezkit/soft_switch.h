@@ -9,27 +9,63 @@
 #ifndef __SOFT_SWITCH_H__
 #define __SOFT_SWITCH_H__
 
-#define SW_CAN_EN		0
-#define SW_CAN_STB		1
-#define SW_CAN0_ERR_EN		2
-#define SW_CAN0RX_EN		3
-#define SW_CNT0UD_EN		4
-#define SW_CNT0DG_EN		5
-#define SW_CNT0ZM_EN		6
-#define SW_RMII_CLK_EN		7
+/* switch 0 port A */
+#define CAN_EN                 0x1
+#define CAN_STB                0x2
+#define CAN0_ERR_EN            0x4
+#define CAN0RX_EN              0x8
+#define CNT0UD_EN              0x10
+#define CNT0DG_EN              0x20
+#define CNT0ZM_EN              0x40
+#define RMII_CLK_EN            0x80
 
-#define SW_UART0_RTS_EN		8
-#define SW_UART0_RX_EN		9
-#define SW_UART0_CTS_EN		10
+/* switch 0 port B */
+#define UART0RTS_EN            0x1
+#define UART0RX_EN             0x2
+#define UART0CTS_EN            0x4
+#define UART0CTS_RTS_LPBK      0x8
+#define UART0CTS_RST_EN        0x10
+#define UART0CTS_146_EN        0x20
+#define TEMP_IRQ_EN            0x40
+#define TEMP_THERM_EN          0x80
 
-#define SW_SD_CD_EN		26
-#define SW_SD_WP_EN		27
+/* switch 1 port A */
+#define OVERRIDE_SMC0_LP0_BOOT 0x1
+#define SMC0_EPPI2_LP1_SWITCH  0x2
+#define SMC0_LP0_EN            0x8
+#define LED1_GPIO_EN           0x10
+#define LED2_GPIO_EN           0x20
+#define LED3_GPIO_EN           0x40
+#define LED4_GPIO_EN           0x80
 
-#define SW_OVERRIDE_EBIU_LP0_BOOT 16
-#define SW_EBIU_EPPI2_LP1	17
-#define SW_EBIU_LP0_EN		19
-#define SW_WAKE_PUSHBUTTON_EN	36
+/* switch 1 port B */
+#define PUSHBUTTON1_EN         0x1
+#define PUSHBUTTON2_EN         0x2
+#define SD_CD_EN               0x4
+#define SD_WP_EN               0x8
+#define SPIFLASH_CS_EN         0x10
+#define SPI0D2_EN              0x20
+#define SPI0D3_EN              0x40
 
+/* switch 2 port A */
+#define PHYINT_EN              0x1
+#define PHY_PWR_DWN_INT        0x2
+#define PHYAD0                 0x4
+#define ETHERNET_EN            0x8
+#define WAKE_PUSHBUTTON_EN     0x10
+#define PD0_SPI0D2_EN          0x20
+#define PD1_SPI0D3_EN          0x40
+#define PD2_SPI0MISO_EN        0x80
 
-int setup_soft_switch(int index, int level);
+/* switch 2 port B */
+#define PD3_SPI0MOSI_EN        0x1
+#define PD4_SPI0CK_EN          0x2
+
+#define IO_PORT_A              0
+#define IO_PORT_B              1
+#define IO_PORT_INPUT          0
+#define IO_PORT_OUTPUT         1
+
+int config_switch_bit(int num, int port, int bit, int dir, uchar value);
+int setup_board_switches(void);
 #endif

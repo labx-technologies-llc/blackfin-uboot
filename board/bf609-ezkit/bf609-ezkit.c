@@ -40,11 +40,7 @@ int board_eth_init(bd_t *bis)
 	if (CONFIG_DW_PORTS & 1) {
 		static const unsigned short pins[] = P_RMII0;
 		if (!peripheral_request_list(pins, "emac0")) {
-			/* enable phy clk */
-			ret = setup_soft_switch(SW_RMII_CLK_EN, 1);
-			if (!ret)
-				ret += designware_initialize(0, EMAC0_MACCFG, 1);
-
+			ret += designware_initialize(0, EMAC0_MACCFG, 1);
 		}
 	}
 
@@ -69,24 +65,5 @@ int board_mmc_init(bd_t *bis)
 int misc_init_r(void)
 {
 	printf("other init\n");
-	setup_soft_switch(SW_UART0_RTS_EN, 0);
-	setup_soft_switch(SW_UART0_RX_EN, 0);
-	setup_soft_switch(SW_UART0_CTS_EN, 0);
-
-	setup_soft_switch(SW_CNT0UD_EN, 0);
-	setup_soft_switch(SW_CNT0DG_EN, 0);
-	setup_soft_switch(SW_CNT0ZM_EN, 0);
-
-	setup_soft_switch(SW_CAN_EN, 1);
-	setup_soft_switch(SW_CAN_STB, 1);
-	setup_soft_switch(SW_CAN0_ERR_EN, 0);
-	setup_soft_switch(SW_CAN0RX_EN, 0);
-
-#ifdef CONFIG_BFIN_LINKPORT
-	setup_soft_switch(SW_OVERRIDE_EBIU_LP0_BOOT, 1);
-	setup_soft_switch(SW_EBIU_LP0_EN, 0);
-	setup_soft_switch(SW_EBIU_EPPI2_LP1, 0);
-#endif
-	setup_soft_switch(SW_WAKE_PUSHBUTTON_EN, 0);
-	return 0;
+	return setup_board_switches();
 }
