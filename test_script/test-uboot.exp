@@ -302,6 +302,9 @@ proc ethtool_tftp { speed status } {
             }
         }
     }
+    
+    send "\r"
+    expect "#"
 
     spawn su
     set timeout 15
