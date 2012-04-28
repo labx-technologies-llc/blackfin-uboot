@@ -290,36 +290,50 @@ proc ethtool_tftp { speed status } {
     send -s "ethtool -s eth1 speed $speed duplex $status\r"
     while 1 {
         expect {
-            -re "(\[fF]ail|\[eE]rror|No such).*#" {
-                break
+            -re "(\[fF]ail|\[eE]rror|No such|Cannot).*#" {
+                return $TEST_FAIL
             }
             "#" {
                 break
             }
             timeout {
                 send_user "Failed to start ethtool\n"
+                return $TEST_FAIL
+            }
+        }
+    }
+
+    spawn su
+    set timeout 15
+    sleep 1.5
+    while 1 {
+        expect {
+            "assword" {
+                send "$password\r"
+                break
+            }
+            timeout {
+                send_user "Fail su command\n"
                 break
             }
         }
     }
 
-    spawn sudo ping -f $target_ipaddr
-    sleep .5
-    set timeout 5
     while 1 {
         expect {
-            -re  "\[Pp]assword" {
-                send "$password\r"
+            "#" {
                 break
             }
             timeout {
-                send_user "no password input\n"
+                send_user "Fail su as root\n"
                 break
             }
         }
     }
 
     set timeout 3600
+    send -s "ping -f $target_ipaddr \n"
+    sleep .5
     while 1 {
         expect {
             "......" {
@@ -328,7 +342,7 @@ proc ethtool_tftp { speed status } {
             }
             timeout {
                 send_user "Fail su ping flood as root. "
-                break
+                return $TEST_FAIL
             }
         }
     }
