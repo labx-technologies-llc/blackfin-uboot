@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2010 Analog Devices Inc.
  *
- * Licensed under the 3-clause BSD.
+ * Licensed under the Clear BSD.
  */
 
 /* This version uses one 32bit storage and combines the magic/count */
