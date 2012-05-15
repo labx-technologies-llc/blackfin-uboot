@@ -235,14 +235,14 @@ int do_reginfo (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 
 	puts("\nSMC DDR Registers\n");
 	printf("\tDDR_CFG:   0x%08x   DDR_TR0:      0x%08x\n",
-		bfin_read_DDR0_CFG(), bfin_read_DDR0_TR0());
+		bfin_read_SMC0_CFG(), bfin_read_SMC0_TR0());
 	printf("\tDDR_TR1:   0x%08x   DDR_TR2:      0x%08x\n",
-		bfin_read_DDR0_TR1(), bfin_read_DDR0_TR2());
+		bfin_read_SMC0_TR1(), bfin_read_SMC0_TR2());
 	printf("\tDDR_MR:    0x%08x   DDR_EMR1:     0x%08x\n",
-		bfin_read_DDR0_MR(), bfin_read_DDR0_EMR1());
+		bfin_read_SMC0_MR(), bfin_read_SMC0_EMR1());
 	printf("\tDDR_CTL:   0x%08x   DDR_STAT:     0x%08x\n",
-		bfin_read_DDR0_CTL(), bfin_read_DDR0_STAT());
-	printf("\tDDR_DLLCTL:0x%08x\n", bfin_read_DDR0_DLLCTL());
+		bfin_read_SMC0_CTL(), bfin_read_SMC0_STAT());
+	printf("\tDDR_DLLCTL:0x%08x\n", bfin_read_SMC0_DLLCTL());
 #endif
 #endif /* CONFIG_BLACKFIN */
 
