@@ -39,30 +39,6 @@ int post_flag;
 
 DECLARE_GLOBAL_DATA_PTR;
 
-#if defined(__ADSPBF60x__)
-static void __flash_write16(u16 value, void *addr)
-{
-	int temp;
-	temp = bfin_read_SMC_B0CTL();
-#ifdef CONFIG_BFIN_BOARD_VERSION_1_0
-	bfin_write_SMC_B0CTL(temp & ~0x2000);
-#else
-	bfin_write_SMC_B0CTL(temp | 0x2000);
-#endif
-	sync();
-
-	__raw_writew(value, addr);
-
-	temp = bfin_read_SMC_B0CTL();
-#ifdef CONFIG_BFIN_BOARD_VERSION_1_0
-	bfin_write_SMC_B0CTL(temp | 0x2000);
-#else
-	bfin_write_SMC_B0CTL(temp & ~0x2000);
-#endif
-	sync();
-}
-#endif
-
 __attribute__((always_inline))
 static inline void serial_early_puts(const char *s)
 {
