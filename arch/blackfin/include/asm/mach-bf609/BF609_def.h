@@ -2749,23 +2749,23 @@
 #define ACM0_EVORD15                0xFFC450DC         /* ACM0 ACM Eventn Order Register */
 #define ACM0_TMR0                   0xFFC450E8         /* ACM0 ACM Timer 0 Register */
 #define ACM0_TMR1                   0xFFC450EC         /* ACM0 ACM Timer 1 Register */
-#define DDR0_ID                     0xFFC80000         /* DDR0 Identification Register */
-#define DDR0_CTL                    0xFFC80004         /* DDR0 Control Register */
-#define DDR0_STAT                   0xFFC80008         /* DDR0 Status Register */
-#define DDR0_EFFCTL                 0xFFC8000C         /* DDR0 Efficiency Controller */
-#define DDR0_PRIO                   0xFFC80010         /* DDR0 Priority ID Register */
-#define DDR0_PRIOMSK                0xFFC80014         /* DDR0 Priority ID Mask */
-#define DDR0_CFG                    0xFFC80040         /* DDR0 SDRAM Configuration */
-#define DDR0_TR0                    0xFFC80044         /* DDR0 Timing Register 0 */
-#define DDR0_TR1                    0xFFC80048         /* DDR0 Timing Register 1 */
-#define DDR0_TR2                    0xFFC8004C         /* DDR0 Timing Register 2 */
-#define DDR0_MSK                    0xFFC8005C         /* DDR0 Mode Register Mask */
-#define DDR0_MR                     0xFFC80060         /* DDR0 Mode Shadow register */
-#define DDR0_EMR1                   0xFFC80064         /* DDR0 EMR1 Shadow Register */
-#define DDR0_EMR2                   0xFFC80068         /* DDR0 EMR2 Shadow Register */
-#define DDR0_EMR3                   0xFFC8006C         /* DDR0 EMR3 Shadow Register */
-#define DDR0_DLLCTL                 0xFFC80080         /* DDR0 DLL Control Register */
-#define DDR0_PADCTL                 0xFFC800C0         /* DDR0 PAD Control Register 0 */
+#define DMC0_ID                     0xFFC80000         /* DMC0 Identification Register */
+#define DMC0_CTL                    0xFFC80004         /* DMC0 Control Register */
+#define DMC0_STAT                   0xFFC80008         /* DMC0 Status Register */
+#define DMC0_EFFCTL                 0xFFC8000C         /* DMC0 Efficiency Controller */
+#define DMC0_PRIO                   0xFFC80010         /* DMC0 Priority ID Register */
+#define DMC0_PRIOMSK                0xFFC80014         /* DMC0 Priority ID Mask */
+#define DMC0_CFG                    0xFFC80040         /* DMC0 SDRAM Configuration */
+#define DMC0_TR0                    0xFFC80044         /* DMC0 Timing Register 0 */
+#define DMC0_TR1                    0xFFC80048         /* DMC0 Timing Register 1 */
+#define DMC0_TR2                    0xFFC8004C         /* DMC0 Timing Register 2 */
+#define DMC0_MSK                    0xFFC8005C         /* DMC0 Mode Register Mask */
+#define DMC0_MR                     0xFFC80060         /* DMC0 Mode Shadow register */
+#define DMC0_EMR1                   0xFFC80064         /* DMC0 EMR1 Shadow Register */
+#define DMC0_EMR2                   0xFFC80068         /* DMC0 EMR2 Shadow Register */
+#define DMC0_EMR3                   0xFFC8006C         /* DMC0 EMR3 Shadow Register */
+#define DMC0_DLLCTL                 0xFFC80080         /* DMC0 DLL Control Register */
+#define DMC0_PADCTL                 0xFFC800C0         /* DMC0 PAD Control Register 0 */
 #define SCB0_ARBR0                  0xFFCA2408         /* SCB0 Read-channel Arbitration Register for MIn */
 #define SCB0_ARBR1                  0xFFCA2428         /* SCB0 Read-channel Arbitration Register for MIn */
 #define SCB0_ARBR2                  0xFFCA2448         /* SCB0 Read-channel Arbitration Register for MIn */
