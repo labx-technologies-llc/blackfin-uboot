@@ -746,50 +746,50 @@ program_memory_controller(ADI_BOOT_DATA *bs, bool put_into_srfs)
 #endif
 
 #ifndef CONFIG_DMC_DDRCFG
-	bfin_write_SMC0_CFG(ddr_config_table[i].dmc_ddrcfg);
+	bfin_write_DMC0_CFG(ddr_config_table[i].dmc_ddrcfg);
 #else
-	bfin_write_SMC0_CFG(CONFIG_DMC_DDRCFG);
+	bfin_write_DMC0_CFG(CONFIG_DMC_DDRCFG);
 #endif
 #ifndef CONFIG_DMC_DDRTR0
-	bfin_write_SMC0_TR0(ddr_config_table[i].dmc_ddrtr0);
+	bfin_write_DMC0_TR0(ddr_config_table[i].dmc_ddrtr0);
 #else
-	bfin_write_SMC0_TR0(CONFIG_DMC_DDRTR0);
+	bfin_write_DMC0_TR0(CONFIG_DMC_DDRTR0);
 #endif
 #ifndef CONFIG_DMC_DDRTR1
-	bfin_write_SMC0_TR1(ddr_config_table[i].dmc_ddrtr1);
+	bfin_write_DMC0_TR1(ddr_config_table[i].dmc_ddrtr1);
 #else
-	bfin_write_SMC0_TR1(CONFIG_DMC_DDRTR1);
+	bfin_write_DMC0_TR1(CONFIG_DMC_DDRTR1);
 #endif
 #ifndef CONFIG_DMC_DDRTR2
-	bfin_write_SMC0_TR2(ddr_config_table[i].dmc_ddrtr2);
+	bfin_write_DMC0_TR2(ddr_config_table[i].dmc_ddrtr2);
 #else
-	bfin_write_SMC0_TR2(CONFIG_DMC_DDRTR2);
+	bfin_write_DMC0_TR2(CONFIG_DMC_DDRTR2);
 #endif
 #ifndef CONFIG_DMC_DDRMR
-	bfin_write_SMC0_MR(ddr_config_table[i].dmc_ddrmr);
+	bfin_write_DMC0_MR(ddr_config_table[i].dmc_ddrmr);
 #else
-	bfin_write_SMC0_MR(CONFIG_DMC_DDRMR);
+	bfin_write_DMC0_MR(CONFIG_DMC_DDRMR);
 #endif
 #ifndef CONFIG_DMC_DDREMR1
-	bfin_write_SMC0_EMR1(ddr_config_table[i].dmc_ddrmr1);
+	bfin_write_DMC0_EMR1(ddr_config_table[i].dmc_ddrmr1);
 #else
-	bfin_write_SMC0_EMR1(CONFIG_DMC_DDREMR1);
+	bfin_write_DMC0_EMR1(CONFIG_DMC_DDREMR1);
 #endif
 #ifndef CONFIG_DMC_DDRCTL
-	bfin_write_SMC0_CTL(ddr_config_table[i].dmc_ddrctl);
+	bfin_write_DMC0_CTL(ddr_config_table[i].dmc_ddrctl);
 #else
-	bfin_write_SMC0_CTL(CONFIG_DMC_DDRCTL);
+	bfin_write_DMC0_CTL(CONFIG_DMC_DDRCTL);
 #endif
 
-	while (!(bfin_read_SMC0_STAT() & 0x4))
+	while (!(bfin_read_DMC0_STAT() & 0x4))
 		continue;
 
-	dlldatacycle = (bfin_read_SMC0_STAT() & 0x00f00000) >> 20;
-	dll_ctl = bfin_read_SMC0_DLLCTL();
+	dlldatacycle = (bfin_read_DMC0_STAT() & 0x00f00000) >> 20;
+	dll_ctl = bfin_read_DMC0_DLLCTL();
 	dll_ctl &= 0x0ff;
-	bfin_write_SMC0_DLLCTL(dll_ctl | (dlldatacycle << 8));
+	bfin_write_DMC0_DLLCTL(dll_ctl | (dlldatacycle << 8));
 
-	while (!(bfin_read_SMC0_STAT() & 0x2000))
+	while (!(bfin_read_DMC0_STAT() & 0x2000))
 		continue;
 
 	serial_putc('!');
@@ -862,13 +862,13 @@ check_hibernation(ADI_BOOT_DATA *bs, u16 vr_ctl, bool put_into_srfs)
 	serial_putc('b');
 #ifdef __ADSPBF60x__
 	if (bfin_read32(DPM0_RESTORE0) != 0) {
-		uint32_t reg = bfin_read_SMC0_CTL();
+		uint32_t reg = bfin_read_DMC0_CTL();
 		reg &= ~0x8;
-		bfin_write_SMC0_CTL(reg);
+		bfin_write_DMC0_CTL(reg);
 
-		while ((bfin_read_SMC0_STAT() & 0x8))
+		while ((bfin_read_DMC0_STAT() & 0x8))
 			continue;
-		while (!(bfin_read_SMC0_STAT() & 0x1))
+		while (!(bfin_read_DMC0_STAT() & 0x1))
 			continue;
 
 		serial_putc('z');
