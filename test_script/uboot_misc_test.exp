@@ -13,6 +13,7 @@ set TEST_BUILD_SPLASH                    0
 set TEST_CF_IDE                          0
 set TEST_HDD_IDE                         0
 set TEST_JTAG_CONSOLE                    0
+set TEST_EARLY_PRINTK                    0
 if { $board_type == "BF533-STAMP" } {
     set make_board_type    bf533-stamp
     set TEST_BUILD_UART              0
@@ -50,12 +51,13 @@ if { $board_type == "BF533-STAMP" } {
     set make_board_type    bf609-ezkit
     set uboot_test_image    u-boot.ldr
     set TEST_BUILD_NAND              0        
+    set TEST_EARLY_PRINTK            1
 } else {
     send_user "\n Unknown target board type.\n"
     exit
 }
 set config_file        $make_board_type.h
-set test_script_path   /home/test/work/cruise/checkouts/u-boot/test_script
+set test_script_path   $uboot_test_loc/test_script
 
 
 proc make_uboot {} {
@@ -537,6 +539,7 @@ set build_splash_loc                    3
 set cf_ide_loc                          4
 set hdd_ide_loc                         5
 set jtag_console_loc                    6
+set early_printk_loc                    7
 
 set result_matrix { {{build spi uboot}                    notrun} \
                     {{build uart uboot}                   notrun} \
@@ -544,7 +547,8 @@ set result_matrix { {{build spi uboot}                    notrun} \
                     {{build splash uboot}                 notrun} \
                     {{cf ide}                             notrun} \
                     {{hdd ide}                            notrun} \
-                    {{jtag console}                       notrun}}
+                    {{jtag console}                       notrun} \
+                    {{early printk}                       notrun}}
 
 set CFG_LOAD_ADDR           0x1000000
 set BAUD_RATE               57600
@@ -738,6 +742,102 @@ while 1 {
 send "\r"
 wait_for_uboot
 
+
+###############################################################################################################################
+
+if { $TEST_EARLY_PRINTK } {
+
+    send " \r"
+    wait_for_uboot
+
+    step "Test early printk"
+
+    set early_printk_result $TEST_FAIL
+    set change_str "#define CONFIG_DEBUG_EARLY_SERIAL"
+
+#flash new u-boot image
+    exec rm -f /tftpboot/$uboot_test_image.early_printk /tftpboot/$uboot_test_image
+
+    cd $uboot_test_loc
+    sleep 3
+    set timeout 2
+    if [ catch {exec rm include/configs/$config_file} ] {
+        send_user "\nfail delete include/configs/$config_file\n"
+        set early_printk_result $TEST_FAIL
+    } else {
+        set early_printk_result $TEST_PASS
+    }
+
+    if [ catch {exec git checkout include/configs/$config_file} ] {
+        send_user "\nfail to update include/configs/$config_file\n"
+        set early_printk_result $TEST_FAIL
+    } else {
+        set early_printk_result $TEST_PASS
+    }
+
+    if { [catch {exec sed -i  "/bfin_adi_common.h/ a $change_str" include/configs/$config_file } ] } {
+        send_user "\nfail to add early printk define for $make_board_type \n"
+        set early_printk_result $TEST_FAIL
+    } else {
+        set early_printk_result $TEST_PASS
+    }
+
+    if { $early_printk_result == $TEST_PASS } {
+        if { [make_uboot] == 2 } {
+            set early_printk_result $TEST_PASS
+        } else {
+            set early_printk_result $TEST_FAIL
+        }
+    }
+
+    if { $early_printk_result == $TEST_PASS } {
+        if { [catch {exec cp $uboot_test_loc/$uboot_test_image /tftpboot/$uboot_test_image.early_printk } ] } {
+            send_user "\nfail to copy $uboot_test_image.early_printk\n"
+            set early_printk_result $TEST_FAIL
+        } else {
+            set early_printk_result $TEST_PASS
+        }
+    }
+
+    set spawn_id $kermit_spawn_id
+
+    if { $early_printk_result == $TEST_PASS } {
+        exec cp /tftpboot/$uboot_test_image.early_printk /tftpboot/$uboot_test_image
+
+        send " \r"
+        expect $UBOOT_PROMPT
+
+        if { [update_uboot] == 2 } {
+            set early_printk_result $TEST_PASS
+        } else {
+            set early_printk_result $TEST_FAIL
+        }
+    }
+ 
+    cd $test_script_path
+
+    source ./reset_board.exp
+
+    set spawn_id $kermit_spawn_id
+    while 1 {
+        expect {
+            -re "\[a-zA-Z]*>\r\nEarly.*Hit any key to stop autoboot" {
+                send "\r"
+                expect -re $UBOOT_PROMPT
+                set early_printk_result $TEST_PASS
+                break
+            }
+            timeout {
+                send_user "FAIL: reset uboot!\n"
+                set early_printk_result $TEST_FAIL
+                break
+            }
+        }
+    }
+
+    record_test_result $early_printk_loc $early_printk_result
+
+}
 ###############################################################################################################################
 
 if { $TEST_JTAG_CONSOLE } {
