@@ -97,8 +97,8 @@ static struct switch_config switch_config_array[NUM_SWITCH] = {
 */
 		.dir0 = 0x6, /* bits 1 and 2 input, all others output */
 		.dir1 = 0x0, /* all output */
-		.value0 = PD2_SPI0MISO_EN | PD1_SPI0D3_EN | PD0_SPI0D2_EN,
-		.value1 = PD4_SPI0CK_EN | PD3_SPI0MOSI_EN,
+		.value0 = PD1_SPI0D3_EN | PD0_SPI0D2_EN,
+		.value1 = 0,
 	},
 };
 
