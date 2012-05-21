@@ -821,7 +821,7 @@ if { $TEST_EARLY_PRINTK } {
     set spawn_id $kermit_spawn_id
     while 1 {
         expect {
-            -re "\[a-zA-Z]*>\r\nEarly.*Hit any key to stop autoboot" {
+            -re "eGabeHadI>\r\nEarly.*Hit any key to stop autoboot" {
                 send "\r"
                 expect -re $UBOOT_PROMPT
                 set early_printk_result $TEST_PASS
