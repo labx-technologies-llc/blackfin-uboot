@@ -24,9 +24,9 @@ fi
 echo "TIMESTAMP is $TIMESTAMP\n"
 
 if [ $BOARD_TYPE = "BF609-EZKIT" ] ; then
-testrounds=3
-else
 testrounds=5
+else
+testrounds=3
 fi
 
 cd $UBOOT_LOG
