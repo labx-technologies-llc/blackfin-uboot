@@ -84,6 +84,8 @@ proc usage {} {
     send_user "\n 2   500         125         20          1         5      4  \n"
     send_user "\n 3   400         200         16          1         4      2  \n"
     send_user "\n 1   400         133         16          1         4      3  \n"
+    send_user "\n 4   500   (125) 250         20          1         4      2  \n"
+    send_user "\n 5   500   (80)  250         20          1         6      2  \n"
     send_user "\n********************************************************************\n"
     exit
 }
@@ -299,6 +301,16 @@ if { $board_type == "BF533-STAMP" } {
             set cclk_div  1
             set sclk_div  4
             set dclk_div  3
+        } elseif { $num == "4" } {
+            set vco_mult  20
+            set cclk_div  1
+            set sclk_div  4
+            set dclk_div  2
+        } elseif { $num == "5" } {
+            set vco_mult  20
+            set cclk_div  1
+            set sclk_div  6
+            set dclk_div  2
         }
 } else {
     send_user "\n Unknown target board type.\n"

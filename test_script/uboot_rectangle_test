@@ -23,6 +23,12 @@ TIMESTAMP=`date +%Y_%m_%d_%H_%M`
 fi
 echo "TIMESTAMP is $TIMESTAMP\n"
 
+if [ $BOARD_TYPE = "BF609-EZKIT" ] ; then
+testrounds=3
+else
+testrounds=5
+fi
+
 cd $UBOOT_LOG
 rm -f *log test_results uboot.diff /tftpboot/u-boot.bin.* /tftpboot/u-boot.ldr.*
 mv summary lastrun-summary  > /dev/null 2>&1
@@ -39,17 +45,11 @@ git checkout .
 cd $UBOOT_SCRIPTS
 $UBOOT_SCRIPTS/uboot_misc_test.exp $BOARD_TYPE > /dev/null 2>&1
 
-cd $UBOOT_SCRIPTS/../
-$UBOOT_SCRIPTS/change_conf.exp $BOARD_TYPE "CONFIG_BFIN_BOOT_MODE" "#define CONFIG_BFIN_BOOT_MODE  BFIN_BOOT_SPI_MASTER"
-if [ $? = 0 ]; then
-echo "BOOT_MODE is changed to BFIN_BOOT_SPI_MASTER !\n"
-fi
-
 #Add this line to disable kgdb for watchdog test running.
 sed -i  "/bfin_adi_common.h/ a #undef CONFIG_CMD_KGDB" $UBOOT_SRC/include/configs/bf609-ezkit.h
 
 cd $UBOOT_SCRIPTS
-for TEST_ROUND in `seq 0 3` ;
+for TEST_ROUND in `seq 0 $testrounds` ;
 do
      $UBOOT_SCRIPTS/uboot-test $BOARD_TYPE $TEST_ROUND
     if [ $? != 2 ] ; then
