@@ -15,6 +15,8 @@
 #define MSEL_P			8
 #define WIDLE_P			30
 #define LOCK_P			31
+#define MSEL_MASK               0x7F00
+#define DF_MASK                 0x1
 
 /* CGU_STAT Masks */
 #define PLLEN			(1 << 0)

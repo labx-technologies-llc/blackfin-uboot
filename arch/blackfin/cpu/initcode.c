@@ -44,6 +44,21 @@
 #endif
 #endif
 
+/* DMC status bits */
+#define IDLE                    0x1
+#define MEMINITDONE             0x4
+#define SRACK                   0x8
+#define PDACK                   0x10
+#define DPDACK                  0x20
+#define DLLCALDONE              0x2000
+#define PENDREF                 0xF0000
+#define PHYRDPHASE              0xF00000
+#define PHYRDPHASE_OFFSET       20
+
+/* DMC DLL control bits */
+#define DLLCALRDCNT             0xFF
+#define DATACYC_OFFSET          8
+
 struct ddr_config {
 	u32 ddr_clk;
 	u32 dmc_ddrctl;
@@ -274,7 +289,6 @@ program_nmi_handler(void)
 
 #ifndef CONFIG_CGU_DIV_VAL
 # define CONFIG_CGU_DIV_VAL \
-	(1 << UPDT_P) | \
 	((CONFIG_CCLK_DIV   << CSEL_P)   | \
 	 (CONFIG_SCLK0_DIV  << S0SEL_P)  | \
 	 (CONFIG_SCLK_DIV << SYSSEL_P) | \
@@ -530,11 +544,33 @@ program_clocks(ADI_BOOT_DATA *bs, bool put_into_srfs)
 	serial_putc('a');
 
 #ifdef __ADSPBF60x__
+	if (bfin_read_DMC0_STAT() & MEMINITDONE) {
+		bfin_write_DMC0_CTL(bfin_read_DMC0_CTL() | SRREQ);
+		__builtin_bfin_ssync();
+		while (!(bfin_read_DMC0_STAT() & SRACK))
+			continue;
+	}
 
-	bfin_write_CGU_CTL(CONFIG_CGU_CTL_VAL);
-	bfin_write_CGU_DIV(CONFIG_CGU_DIV_VAL);
+	/* Don't set the same value of MSEL and DF to CGU_CTL */
+	if ((bfin_read_CGU_CTL() & (MSEL_MASK | DF_MASK))
+			!= CONFIG_CGU_CTL_VAL) {
+		bfin_write_CGU_DIV(CONFIG_CGU_DIV_VAL);
+		bfin_write_CGU_CTL(CONFIG_CGU_CTL_VAL);
+		while ((bfin_read_CGU_STAT() & (CLKSALGN | PLLBP)) ||
+				!(bfin_read_CGU_STAT() & PLLLK))
+			continue;
+	}
+
+	bfin_write_CGU_DIV(bfin_read_CGU_DIV() | UPDT);
 	while (bfin_read_CGU_STAT() & CLKSALGN)
 		continue;
+
+	if (bfin_read_DMC0_STAT() & MEMINITDONE) {
+		bfin_write_DMC0_CTL(bfin_read_DMC0_CTL() & ~SRREQ);
+		__builtin_bfin_ssync();
+		while (bfin_read_DMC0_STAT() & SRACK)
+			continue;
+	}
 
 #else /* __ADSPBF60x__ */
 
@@ -780,18 +816,18 @@ program_memory_controller(ADI_BOOT_DATA *bs, bool put_into_srfs)
 #else
 	bfin_write_DMC0_CTL(CONFIG_DMC_DDRCTL);
 #endif
-
-	while (!(bfin_read_DMC0_STAT() & 0x4))
+	__builtin_bfin_ssync();
+	while (!(bfin_read_DMC0_STAT() & MEMINITDONE))
 		continue;
 
-	dlldatacycle = (bfin_read_DMC0_STAT() & 0x00f00000) >> 20;
+	dlldatacycle = (bfin_read_DMC0_STAT() & PHYRDPHASE) >> PHYRDPHASE_OFFSET;
 	dll_ctl = bfin_read_DMC0_DLLCTL();
 	dll_ctl &= 0x0ff;
-	bfin_write_DMC0_DLLCTL(dll_ctl | (dlldatacycle << 8));
+	bfin_write_DMC0_DLLCTL(dll_ctl | (dlldatacycle << DATACYC_OFFSET));
 
-	while (!(bfin_read_DMC0_STAT() & 0x2000))
+	__builtin_bfin_ssync();
+	while (!(bfin_read_DMC0_STAT() & DLLCALDONE))
 		continue;
-
 	serial_putc('!');
 #else /* __ADSPBF60x__ */
 
