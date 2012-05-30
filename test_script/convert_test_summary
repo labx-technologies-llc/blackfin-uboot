@@ -97,9 +97,9 @@ do
    # cd $this_log/logs/
     #log_file=`grep -rl "icache $icache_status" "$timestamp" -m 1 | xargs grep -rl "dcache $dcache_status"  -m 1 | xargs  grep -l "Core" -m 1  `
     folder="$this_log/$timestamp"
-    log_file=`grep -rl "icache $icache_status" "$this_log/$timestamp" -m 1 | xargs grep -rl "dcache $dcache_status"  -m 1 | xargs grep -rl "Core: $core_clock MHz" | xargs grep -rl "Dclk: $ddr_clock.* MHz"`
+    log_file=`grep -rl "icache $icache_status" "$this_log/$timestamp" -m 1 | xargs grep -rl "dcache $dcache_status"  -m 1 | xargs grep -rl "Core: $core_clock MHz" | xargs grep -rl "System0: $system_clock[.0-9]* MHz" | xargs grep -rl "Dclk: $ddr_clock.* MHz"`
 
-    #echo "#### $log_file \n"
+    #echo "###### $log_file ###\n"
     if [ -z $log_file  ] ; then
     echo "Not find its log file!!!"
     exit
