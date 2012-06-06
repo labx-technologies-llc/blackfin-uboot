@@ -561,7 +561,7 @@ program_clocks(ADI_BOOT_DATA *bs, bool put_into_srfs)
 			continue;
 	}
 
-	bfin_write_CGU_DIV(bfin_read_CGU_DIV() | UPDT);
+	bfin_write_CGU_DIV(CONFIG_CGU_DIV_VAL | UPDT);
 	while (bfin_read_CGU_STAT() & CLKSALGN)
 		continue;
 
