@@ -3738,6 +3738,12 @@
 #define USB_TESTCTL                0xFFCC1397         /* USB Test Control */
 #define USB_PLL_OSC                0xFFCC1398         /* USB PLL and Oscillator Control */
 
+#define                           CHIPID  0xffc00014
+/* CHIPID Masks */
+#define                   CHIPID_VERSION  0xF0000000
+#define                    CHIPID_FAMILY  0x0FFFF000
+#define               CHIPID_MANUFACTURE  0x00000FFE
+
 #define L1_DATA_A_SRAM 0xFF800000 /* 0xFF800000 -> 0xFF803FFF Data Bank A SRAM */
 #define L1_DATA_A_SRAM_SIZE 0x8000
 #define L1_DATA_A_SRAM_END (L1_DATA_A_SRAM + L1_DATA_A_SRAM_SIZE)

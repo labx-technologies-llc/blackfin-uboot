@@ -18,7 +18,8 @@
 #define bfin_read_RCU0_CTL() bfin_read32(RCU0_CTL)
 #define bfin_write_RCU0_CTL(val) bfin_write32(RCU0_CTL, val)
 
-#define bfin_read_CHIPID()	0x0
+#define bfin_read_CHIPID()         	bfin_read32(CHIPID)
+#define bfin_write_CHIPID(val)          bfin_write32(CHIPID, val)
 
 #define bfin_read_DMC0_CFG() bfin_read32(DMC0_CFG)
 #define bfin_write_DMC0_CFG(val) bfin_write32(DMC0_CFG, val)
