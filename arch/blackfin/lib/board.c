@@ -55,7 +55,7 @@ static int display_banner(void)
 		"(Detected Rev: 0.%d) "
 		"(%s boot)\n",
 		gd->bd->bi_cpu,
-		/*bfin_revid()*/0,
+		bfin_revid(),
 		get_bfin_boot_mode(CONFIG_BFIN_BOOT_MODE));
 	return 0;
 }
