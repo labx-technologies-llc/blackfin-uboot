@@ -268,6 +268,9 @@ static void dw_eth_halt(struct eth_device *dev)
 
 	mac_reset(dev);
 	priv->tx_currdescnum = priv->rx_currdescnum = 0;
+#ifdef CONFIG_BLACKFIN
+	dw_write_hwaddr(dev);
+#endif
 }
 
 static int eth_mdio_read(struct eth_device *dev, u8 addr, u8 reg, u16 *val)
