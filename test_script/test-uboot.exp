@@ -822,7 +822,12 @@ proc all_done { } {
     cd $starting_dir
     log_file -noappend $summary_logfile
     send_user "\ntest started $test_started\n\n"
+    if { $board_type == "BF609-EZKIT" } {
     send_user "Test Results (cclk:$core_clk Mhz,sclk:$system_clk Mhz,dclk:$ddr_clk Mhz,icache:$icache_status,dcache:$dcache_status)\n"
+    } else {
+    send_user "Test Results (cclk:$core_clk Mhz,sclk:$system_clk Mhz,icache:$icache_status,dcache:$dcache_status)\n"
+    }
+
     send_user "=====================================\n"
 
     send_user "  Total Tests   :   $total_tests\n"
@@ -887,7 +892,9 @@ proc all_done { } {
     send_user "  VCO Clock     = $vco_clk Mhz\n"
     send_user "  Core Clock    = $core_clk Mhz\n"
     send_user "  System Clock  = $system_clk Mhz\n"
+    if { $board_type == "BF609-EZKIT" } {
     send_user "  DDR Clock     = $ddr_clk Mhz\n"
+    }
     send_user "  icache_status = $icache_status\n"
     send_user "  dcache_status = $dcache_status\n"
     send_user "\n"
@@ -1707,7 +1714,7 @@ log_file $logfile
 send_user "Running u-boot testing on $test_started\n"
 send_user "logfile=$logfile\n"
 
-cd $user
+cd $uboot_test_dirname
 spawn /bin/sh 
 send "git status \r"
   while 1 {
@@ -1864,6 +1871,14 @@ if { $where_are_we == "uboot" } {
 for {set i 0} {$i < $RESET_RETRIES} {incr i} {
     set timeout 25
     expect {
+
+        -re "Clock.*VCO: (\[0-9]+)\[.]*\[0-9]* MHz, Core: (\[0-9]+)\[.]*\[0-9]* MHz, System: (\[0-9]+)\[.]*\[0-9]* MHz" {
+                set vco_clk $expect_out(1,string)
+                set core_clk $expect_out(2,string)
+                set system_clk $expect_out(3,string)
+                expect $AUTOBOOT_PROMPT
+                break
+        }
 
         -re "Clock.*VCO: (\[0-9]+)\[.]*\[0-9]* MHz, Core: (\[0-9]+)\[.]*\[0-9]* MHz, System0: (\[0-9]+)\[.]*\[0-9]* MHz, .*Dclk: (\[0-9]+)\[.]*\[0-9]* MHz" {
                 set vco_clk $expect_out(1,string)

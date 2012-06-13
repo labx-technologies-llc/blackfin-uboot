@@ -1,18 +1,33 @@
 #!/bin/bash
 
+if [ ! -d "/home/test/work/cruise" ] ; then
+
 UBOOT_SCRIPTS=`pwd`
 UBOOT_SRC="$UBOOT_SCRIPTS/.."
 UBOOT_LOG="$UBOOT_SRC/logs"
+
+if [ -e "/home/test/host_config.sh" ] ; then
+. /home/test/host_config.sh
+else
+BOARD_TYPE=BF609-EZKIT
+fi
+
+else 
+USER=/home/test/work/cruise
+CHECKOUT=$USER/checkouts
+UBOOT_SCRIPTS=$USER/test_scripts/u-boot
+UBOOT_SRC_ROOT=$CHECKOUT/u-boot
+UBOOT_SRC=$CHECKOUT/u-boot/
+UBOOT_LOG="$UBOOT_SCRIPTS/logs"
+
+source $UBOOT_SCRIPTS/host_config.sh
+
+fi
+
 export UBOOT_SCRIPTS UBOOT_SRC UBOOT_LOG
 
 if [ ! -d $UBOOT_LOG ] ; then
   mkdir -p $UBOOT_LOG
-fi
-
-if [ -e /home/test/host_config.sh ] ; then
-. /home/test/host_config.sh
-else
-BOARD_TYPE=BF609-EZKIT
 fi
 
 TIMESTAMP=`date +%Y_%m_%d_%H_%M`
@@ -25,6 +40,8 @@ echo "TIMESTAMP is $TIMESTAMP\n"
 
 if [ $BOARD_TYPE = "BF609-EZKIT" ] ; then
 testrounds=5
+elif [ $BOARD_TYPE = "BF527-EZKIT" ] ; then
+testrounds=2
 else
 testrounds=3
 fi
@@ -33,9 +50,13 @@ cd $UBOOT_LOG
 rm -f *log test_results uboot.diff /tftpboot/u-boot.bin.* /tftpboot/u-boot.ldr.*
 mv summary lastrun-summary  > /dev/null 2>&1
 
-#cp $UBOOT_SRC/test_script/*.exp $UBOOT_SCRIPTS
-#cp $UBOOT_SRC/test_script/uboot-test $UBOOT_SCRIPTS
-#cp $UBOOT_SRC/test_script/uboot_rectangle_test $UBOOT_SCRIPTS
+if [ ! -d "/home/test/work/cruise" ] ; then
+    echo
+    echo "Copy the updated scripts!"
+cp $UBOOT_SRC/test_script/*.exp $UBOOT_SCRIPTS
+cp $UBOOT_SRC/test_script/uboot-test $UBOOT_SCRIPTS
+cp $UBOOT_SRC/test_script/uboot_rectangle_test $UBOOT_SCRIPTS
+fi
 
 cp /home/test/reset_board  $UBOOT_SCRIPTS
 # To restore the changes made in last release and sync to the repository.
@@ -46,7 +67,9 @@ cd $UBOOT_SCRIPTS
 $UBOOT_SCRIPTS/uboot_misc_test.exp $BOARD_TYPE > /dev/null 2>&1
 
 #Add this line to disable kgdb for watchdog test running.
+if [ $BOARD_TYPE = "BF609-EZKIT" ] ; then
 sed -i  "/bfin_adi_common.h/ a #undef CONFIG_CMD_KGDB" $UBOOT_SRC/include/configs/bf609-ezkit.h
+fi
 
 cd $UBOOT_SCRIPTS
 for TEST_ROUND in `seq 0 $testrounds` ;

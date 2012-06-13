@@ -31,19 +31,30 @@ set password                "blackfin"
 set logcore  [exec date +%Y_%m_%d_%H_%M]
 
 # directories and file locations
+if ![file exists /home/test/work/cruise] {
 set uboot_scripts_dir       [pwd]
 set user		    "$uboot_scripts_dir/../"
 set log_dir                 "$uboot_scripts_dir/../logs"
 set default_test_dir        "/home/$user"
-set tftpboot_dir            "/tftpboot"
 set uclinux_dirname         "/home/$user/"
+#set ethtool_path            "$uboot_scripts_dir/test_scripts/ethtool-3"
+} else {
+set user                    test/work/cruise
+set uboot_scripts_dir       "/home/$user/test_scripts/u-boot"
+set log_dir                 "/home/$user/test_scripts/u-boot/logs"
+set default_test_dir        "/home/$user/test_scripts/u-boot/under_test"
+set tftpboot_dir            "/tftpboot"
+set uclinux_dirname         "/home/$user/test_scripts/u-boot/under_test"
+#set ethtool_path            /home/$user/ethtool-3
+}
+
 set uclinux_basename        "uClinux-dist"
 set uclinux_path            "$uclinux_dirname/$uclinux_basename"
 set dxe_dir                 "linux-2.6.x"
 set dxe_dirname             "$uclinux_path/$dxe_dir"
 set dxe_filename            "linux"
 set KERMIT_LOCK_DIR         "/var/lock"
-set ethtool_path            "$uboot_scripts_dir/test_scripts/ethtool-3"
+set tftpboot_dir            "/tftpboot"
 
 # If using a hacked up printer cable to reset the board,
 # then we need to know which port it's attached to
@@ -63,7 +74,11 @@ set step_sequence_number    1
 # directory and file locations
 set config_loc  "include/config.h"
 set configs_loc  "include/configs"
+if ![file exists /home/test/work/cruise] {
 set uboot_test_dirname  "$user"
+} else {
+set uboot_test_dirname  "/home/$user/checkouts/u-boot"
+}
 set uboot_test_loc  "$uboot_test_dirname/"
 set uboot_bin_loc   "$uboot_test_loc/u-boot.bin"
 set uboot_dir  $uboot_test_loc

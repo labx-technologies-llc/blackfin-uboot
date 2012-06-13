@@ -32,7 +32,6 @@ else
     echo "Unknown target board type $BOARD_TYPE."
     exit 2
 fi
-#cp $CHECKOUT/u-boot/test_script/*.exp $UBOOT_SCRIPTS
 
 if [ $# -gt 1 ] ; then
     $UBOOT_SCRIPTS/change_clk.exp $1 $2 $UBOOT_SRC >$UBOOT_SCRIPTS/uboot_make_log  2>&1

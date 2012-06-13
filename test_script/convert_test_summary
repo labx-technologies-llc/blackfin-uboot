@@ -78,7 +78,11 @@ do
     core_clock=`grep  "Core Clock" part_file | awk '{print$4}'`
     system_clock=`grep "System Clock" part_file | awk '{print$4}'`
     ddr_clock=`grep "DDR Clock" part_file | awk '{print$4}'`
+    if [ -n $ddr_clock ] ; then
     class_name="$testsuite_name"."[cclk($core_clock)-sclk($system_clock)-dclk($ddr_clock)-icache($icache_status)-dcache($dcache_status)]"
+    else
+    class_name="$testsuite_name"."[cclk($core_clock)-sclk($system_clock)-icache($icache_status)-dcache($dcache_status)]"
+    fi
     #echo "#### $class_name \n"
     line_head=`sed -n '/^Test Results/='  part_file |head -1`
     line_end=`sed -n "$line_head,$ {/^$/= }" part_file |head -1`
@@ -97,8 +101,11 @@ do
    # cd $this_log/logs/
     #log_file=`grep -rl "icache $icache_status" "$timestamp" -m 1 | xargs grep -rl "dcache $dcache_status"  -m 1 | xargs  grep -l "Core" -m 1  `
     folder="$this_log/$timestamp"
+    if [ -n $ddr_clock ] ; then
     log_file=`grep -rl "icache $icache_status" "$this_log/$timestamp" -m 1 | xargs grep -rl "dcache $dcache_status"  -m 1 | xargs grep -rl "Core: $core_clock MHz" | xargs grep -rl "System0: $system_clock[.0-9]* MHz" | xargs grep -rl "Dclk: $ddr_clock.* MHz"`
-
+    else
+    log_file=`grep -rl "icache $icache_status" "$this_log/$timestamp" -m 1 | xargs grep -rl "dcache $dcache_status"  -m 1 | xargs grep -rl "Core: $core_clock MHz" | xargs grep -rl "System: $system_clock[.0-9]* MHz"`
+    fi
     #echo "###### $log_file ###\n"
     if [ -z $log_file  ] ; then
     echo "Not find its log file!!!"

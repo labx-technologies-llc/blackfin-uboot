@@ -57,7 +57,7 @@ if { $board_type == "BF533-STAMP" } {
     exit
 }
 set config_file        $make_board_type.h
-set test_script_path   $uboot_test_loc/test_script
+set test_script_path   $uboot_test_dirname/test_script
 
 
 proc make_uboot {} {
@@ -557,7 +557,7 @@ set BDINFO_BAUDRATE         $BAUD_RATE
 # Various prompts
 set UBOOT_PROMPT            "bfin>"
 set KERNEL_PROMPT           "root:\[^>].*>"
-set HOST_KERNEL_PROMPT      ":.*$"
+set HOST_KERNEL_PROMPT      ":.*\[$>]"
 set AUTOBOOT_PROMPT         "Hit any key to stop"
 
 # Set up defaults
@@ -572,7 +572,7 @@ log_file $logfile
 
 send_user "Running uboot_misc_test.exp\n\n"
 send_user "logfile=$logfile\nsummary_logfile=$summary_logfile\n\n"
-cd $user
+cd $uboot_test_dirname
 exec git log -1 >> $logfile
 
 
