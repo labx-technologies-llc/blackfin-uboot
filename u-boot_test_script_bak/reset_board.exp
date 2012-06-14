@@ -1,5 +1,6 @@
 #!/usr/bin/expect
-send_user "Starting reset_board_test.exp\n"
+send_user "!!Starting reset_board_test.exp\n"
+
 
 cd $uboot_scripts_dir
 
