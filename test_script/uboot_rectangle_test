@@ -50,12 +50,10 @@ cd $UBOOT_LOG
 rm -f *log test_results uboot.diff /tftpboot/u-boot.bin.* /tftpboot/u-boot.ldr.*
 mv summary lastrun-summary  > /dev/null 2>&1
 
-if [ ! -d "/home/test/work/cruise" ] ; then
+if [ -d "/home/test/work/cruise" ] ; then
     echo
     echo "Copy the updated scripts!"
-cp $UBOOT_SRC/test_script/*.exp $UBOOT_SCRIPTS
-cp $UBOOT_SRC/test_script/uboot-test $UBOOT_SCRIPTS
-cp $UBOOT_SRC/test_script/uboot_rectangle_test $UBOOT_SCRIPTS
+cp $UBOOT_SRC/test_script/* $UBOOT_SCRIPTS > /dev/null 2>&1
 fi
 
 cp /home/test/reset_board  $UBOOT_SCRIPTS
