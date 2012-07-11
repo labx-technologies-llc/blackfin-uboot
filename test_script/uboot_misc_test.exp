@@ -10,10 +10,12 @@ set TEST_BUILD_SPI                       1
 set TEST_BUILD_UART                      1
 set TEST_BUILD_NAND                      1
 set TEST_BUILD_SPLASH                    0
+set TEST_BUILD_MMC                       0
 set TEST_CF_IDE                          0
 set TEST_HDD_IDE                         0
 set TEST_JTAG_CONSOLE                    0
 set TEST_EARLY_PRINTK                    0
+
 if { $board_type == "BF533-STAMP" } {
     set make_board_type    bf533-stamp
     set TEST_BUILD_UART              0
@@ -52,6 +54,7 @@ if { $board_type == "BF533-STAMP" } {
     set uboot_test_image    u-boot.ldr
     set TEST_BUILD_NAND              0        
     set TEST_EARLY_PRINTK            1
+    set TEST_BUILD_MMC               1
 } else {
     send_user "\n Unknown target board type.\n"
     exit
@@ -536,15 +539,17 @@ set build_spi_loc                       0
 set build_uart_loc                      1
 set build_nand_loc                      2
 set build_splash_loc                    3
-set cf_ide_loc                          4
-set hdd_ide_loc                         5
-set jtag_console_loc                    6
-set early_printk_loc                    7
+set build_mmc_loc                       4
+set cf_ide_loc                          5
+set hdd_ide_loc                         6
+set jtag_console_loc                    7
+set early_printk_loc                    8
 
 set result_matrix { {{build spi uboot}                    notrun} \
                     {{build uart uboot}                   notrun} \
                     {{build nand uboot}                   notrun} \
                     {{build splash uboot}                 notrun} \
+                    {{build mmc uboot}                 notrun} \
                     {{cf ide}                             notrun} \
                     {{hdd ide}                            notrun} \
                     {{jtag console}                       notrun} \
@@ -1472,6 +1477,69 @@ if { $TEST_BUILD_SPLASH } {
     }
 
     record_test_result $build_splash_loc $build_splash_result
+
+}
+
+###############################################################################################################################
+
+if { $TEST_BUILD_MMC } {
+
+    step "Test build mmc uboot"
+
+    set build_mmc_result $TEST_FAIL
+    set search_str "CONFIG_BFIN_BOOT_MODE"
+    set change_str "#define CONFIG_BFIN_BOOT_MODE  BFIN_BOOT_RSI_MASTER"
+
+    exec rm -f /tftpboot/u-boot.bin.mmc /tftpboot/u-boot.ldr.mmc
+
+    #clean modified config file
+    cd $uboot_test_loc
+    sleep 3
+    set timeout 2
+    if [ catch {exec rm include/configs/$config_file} ] {
+        send_user "\nfail delete include/configs/$config_file\n"
+        set build_mmc_result $TEST_FAIL
+    }
+
+    if [ catch {exec git checkout include/configs/$config_file} ] {
+        send_user "\nfail to update include/configs/$config_file\n"
+        set build_mmc_result $TEST_FAIL
+    }
+
+    if { [catch {exec $uboot_scripts_dir/change_conf.exp $board_type "$search_str" "$change_str"} ] } {
+        send_user "\nfail to change $search_str for $make_board_type \n"
+        set build_mmc_result $TEST_FAIL
+    } else {
+        set build_mmc_result $TEST_PASS
+    }
+
+    if { $build_mmc_result == $TEST_PASS } {
+        if { [make_uboot] == 2 } {
+            set build_mmc_result $TEST_PASS
+        } else {
+            set build_mmc_result $TEST_FAIL
+        }
+    }
+
+    if { $build_mmc_result == $TEST_PASS } {
+        if { [catch {exec cp $uboot_test_loc/u-boot.bin /tftpboot/u-boot.bin.mmc} ] } {
+            send_user "\nfail to copy u-boot.bin.mmc\n"
+            set build_mmc_result $TEST_FAIL
+        } else {
+            set build_mmc_result $TEST_PASS
+        }
+
+        if { [catch {exec cp $uboot_test_loc/u-boot.ldr /tftpboot/u-boot.ldr.mmc} ] } {
+            send_user "\nfail to copy u-boot.ldr.mmc\n"
+            set build_mmc_result $TEST_FAIL
+        } else {
+            set build_mmc_result $TEST_PASS
+        }
+    }
+
+    set spawn_id $kermit_spawn_id
+
+    record_test_result $build_mmc_loc $build_mmc_result
 
 }
 
