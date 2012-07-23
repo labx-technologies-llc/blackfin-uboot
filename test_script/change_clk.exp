@@ -80,11 +80,11 @@ proc usage {} {
     send_user "\n********************************************************************\n"
     send_user "\nFor BF609-EZKIT (ExtCLK=25Mhz, CPU_MaxCLK=500Mhz, Max_SCLK=200MHz) :\n"
     send_user "\n NUM CCLK(Mhz)  DCLK (Mhz)   VCO_MULT  CCLK_DIV  SCLK_DIV DCLK_DIV \n"
-    send_user "\n 0   500         250         20          1         5      2  \n"
-    send_user "\n 2   500         125         20          1         5      4  \n"
-    send_user "\n 3   400         200         16          1         4      2  \n"
-    send_user "\n 1   400         133         16          1         4      3  \n"
-    send_user "\n 4   500   (125) 250         20          1         4      2  \n"
+    send_user "\n 0   500(250,125)250         20          1         2(2,2) 2  \n"
+    send_user "\n 1   500         125         20          1         5      4  \n"
+    send_user "\n 2   400         200         16          1         4      2  \n"
+    send_user "\n 3   400         133         16          1         4      3  \n"
+    send_user "\n 4   500   (125) 250         20          1         4(1,1) 2  \n"
     send_user "\n 5   500   (80)  250         20          1         6      2  \n"
     send_user "\n********************************************************************\n"
     exit
@@ -284,7 +284,7 @@ if { $board_type == "BF533-STAMP" } {
         if { $num == "0" } {
             set vco_mult  20 
             set cclk_div  1
-            set sclk_div  5
+            set sclk_div  2
             set dclk_div  2
         } elseif { $num == "1" } {
             set vco_mult  20
@@ -387,6 +387,31 @@ send "#define CONFIG_DCLK_DIV                   $dclk_div\r"
 sleep .5
 send ".\r"
 expect ":"
+}
+
+if { $board_type == "BF609-EZKIT" && $num != "0" } {
+send "/#define *CONFIG_SCLK0_DIV\r"
+expect "#define *CONFIG_SCLK0_DIV"
+send "d\r"
+expect ":"
+send "i\r"
+sleep .5
+send "#define CONFIG_SCLK0_DIV                   1\r"
+sleep .5
+send ".\r"
+expect ":"
+
+send "/#define *CONFIG_SCLK1_DIV\r"
+expect "#define *CONFIG_SCLK1_DIV"
+send "d\r"
+expect ":"
+send "i\r"
+sleep .5
+send "#define CONFIG_SCLK1_DIV                   1\r"
+sleep .5
+send ".\r"
+expect ":"
+
 }
 
 send "wq\r"
