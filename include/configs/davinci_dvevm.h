@@ -51,7 +51,6 @@
 #define DV_EVM
 #define CONFIG_SYS_NAND_SMALLPAGE
 #define CONFIG_SYS_USE_NAND
-#define CONFIG_DISPLAY_CPUINFO
 /*===================*/
 /* SoC Configuration */
 /*===================*/
@@ -60,9 +59,6 @@
 #define CONFIG_SYS_HZ_CLOCK		27000000	/* Timer Input clock freq */
 #define CONFIG_SYS_HZ			1000
 #define CONFIG_SOC_DM644X
-#define CONFIG_SYS_ICACHE_OFF
-#define CONFIG_SYS_DCACHE_OFF
-#define CONFIG_SYS_L2CACHE_OFF
 /*====================================================*/
 /* EEPROM definitions for Atmel 24C256BN SEEPROM chip */
 /* on Sonata/DV_EVM board. No EEPROM on schmoogie.    */
@@ -93,7 +89,6 @@
 #define CONFIG_SYS_NS16550_CLK	CONFIG_SYS_HZ_CLOCK	/* Input clock to NS16550 */
 #define CONFIG_CONS_INDEX	1		/* use UART0 for console */
 #define CONFIG_BAUDRATE		115200		/* Default baud rate */
-#define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 /*===================*/
 /* I2C Configuration */
 /*===================*/
@@ -105,14 +100,12 @@
 /* Network & Ethernet Configuration */
 /*==================================*/
 #define CONFIG_DRIVER_TI_EMAC
-#define CONFIG_EMAC_MDIO_PHY_NUM	1
 #define CONFIG_MII
 #define CONFIG_BOOTP_DEFAULT
 #define CONFIG_BOOTP_DNS
 #define CONFIG_BOOTP_DNS2
 #define CONFIG_BOOTP_SEND_HOSTNAME
 #define CONFIG_NET_RETRY_COUNT	10
-#define CONFIG_NET_MULTI
 /*=====================*/
 /* Flash & Environment */
 /*=====================*/
@@ -177,7 +170,6 @@
 #define CONFIG_VERSION_VARIABLE
 #define CONFIG_AUTO_COMPLETE		/* Won't work with hush so far, may be later */
 #define CONFIG_SYS_HUSH_PARSER
-#define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
 #define CONFIG_CMDLINE_EDITING
 #define CONFIG_SYS_LONGHELP
 #define CONFIG_CRC32_VERIFY
@@ -205,6 +197,11 @@
 #define CONFIG_CMD_SAVES
 #define CONFIG_CMD_EEPROM
 #undef CONFIG_CMD_BDI
+
+#ifdef CONFIG_CMD_BDI
+#define CONFIG_CLOCKS
+#endif
+
 #undef CONFIG_CMD_FPGA
 #undef CONFIG_CMD_SETGETDCR
 #ifdef CONFIG_SYS_USE_NAND

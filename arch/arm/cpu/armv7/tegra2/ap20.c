@@ -21,22 +21,66 @@
 * MA 02111-1307 USA
 */
 
-#include "ap20.h"
 #include <asm/io.h>
 #include <asm/arch/tegra2.h>
+#include <asm/arch/ap20.h>
 #include <asm/arch/clk_rst.h>
 #include <asm/arch/clock.h>
+#include <asm/arch/fuse.h>
+#include <asm/arch/gp_padctrl.h>
 #include <asm/arch/pmc.h>
 #include <asm/arch/pinmux.h>
 #include <asm/arch/scu.h>
+#include <asm/arch/warmboot.h>
 #include <common.h>
 
-u32 s_first_boot = 1;
+int tegra_get_chip_type(void)
+{
+	struct apb_misc_gp_ctlr *gp;
+	struct fuse_regs *fuse = (struct fuse_regs *)TEGRA2_FUSE_BASE;
+	uint tegra_sku_id, rev;
+
+	/*
+	 * This is undocumented, Chip ID is bits 15:8 of the register
+	 * APB_MISC + 0x804, and has value 0x20 for Tegra20, 0x30 for
+	 * Tegra30
+	 */
+	gp = (struct apb_misc_gp_ctlr *)TEGRA2_APB_MISC_GP_BASE;
+	rev = (readl(&gp->hidrev) & HIDREV_CHIPID_MASK) >> HIDREV_CHIPID_SHIFT;
+
+	tegra_sku_id = readl(&fuse->sku_info) & 0xff;
+
+	switch (rev) {
+	case CHIPID_TEGRA2:
+		switch (tegra_sku_id) {
+		case SKU_ID_T20:
+			return TEGRA_SOC_T20;
+		case SKU_ID_T25SE:
+		case SKU_ID_AP25:
+		case SKU_ID_T25:
+		case SKU_ID_AP25E:
+		case SKU_ID_T25E:
+			return TEGRA_SOC_T25;
+		}
+		break;
+	}
+	/* unknown sku id */
+	return TEGRA_SOC_UNKNOWN;
+}
+
+/* Returns 1 if the current CPU executing is a Cortex-A9, else 0 */
+static int ap20_cpu_is_cortexa9(void)
+{
+	u32 id = readb(NV_PA_PG_UP_BASE + PG_UP_TAG_0);
+	return id == (PG_UP_TAG_0_PID_CPU & 0xff);
+}
 
 void init_pllx(void)
 {
-	struct clk_rst_ctlr *clkrst = (struct clk_rst_ctlr *)NV_PA_CLK_RST_BASE;
-	struct clk_pll *pll = &clkrst->crc_pll[CLOCK_PLL_ID_XCPU];
+	struct clk_rst_ctlr *clkrst =
+			(struct clk_rst_ctlr *)NV_PA_CLK_RST_BASE;
+	struct clk_pll_simple *pll =
+		&clkrst->crc_pll_simple[CLOCK_ID_XCPU - CLOCK_ID_FIRST_SIMPLE];
 	u32 reg;
 
 	/* If PLLX is already enabled, just return */
@@ -100,14 +144,14 @@ static void enable_cpu_clock(int enable)
 
 static int is_cpu_powered(void)
 {
-	struct pmc_ctlr *pmc = (struct pmc_ctlr *)NV_PA_PMC_BASE;
+	struct pmc_ctlr *pmc = (struct pmc_ctlr *)TEGRA2_PMC_BASE;
 
 	return (readl(&pmc->pmc_pwrgate_status) & CPU_PWRED) ? 1 : 0;
 }
 
 static void remove_cpu_io_clamps(void)
 {
-	struct pmc_ctlr *pmc = (struct pmc_ctlr *)NV_PA_PMC_BASE;
+	struct pmc_ctlr *pmc = (struct pmc_ctlr *)TEGRA2_PMC_BASE;
 	u32 reg;
 
 	/* Remove the clamps on the CPU I/O signals */
@@ -121,7 +165,7 @@ static void remove_cpu_io_clamps(void)
 
 static void powerup_cpu(void)
 {
-	struct pmc_ctlr *pmc = (struct pmc_ctlr *)NV_PA_PMC_BASE;
+	struct pmc_ctlr *pmc = (struct pmc_ctlr *)TEGRA2_PMC_BASE;
 	u32 reg;
 	int timeout = IO_STABILIZATION_DELAY;
 
@@ -152,7 +196,7 @@ static void powerup_cpu(void)
 
 static void enable_cpu_power_rail(void)
 {
-	struct pmc_ctlr *pmc = (struct pmc_ctlr *)NV_PA_PMC_BASE;
+	struct pmc_ctlr *pmc = (struct pmc_ctlr *)TEGRA2_PMC_BASE;
 	u32 reg;
 
 	reg = readl(&pmc->pmc_cntrl);
@@ -189,7 +233,6 @@ static void reset_A9_cpu(int reset)
 
 static void clock_enable_coresight(int enable)
 {
-	struct clk_rst_ctlr *clkrst = (struct clk_rst_ctlr *)NV_PA_CLK_RST_BASE;
 	u32 rst, src;
 
 	clock_set_enable(PERIPH_ID_CORESIGHT, enable);
@@ -203,7 +246,7 @@ static void clock_enable_coresight(int enable)
 		 *  (bits 7:0), so 00000001b == 1.5 (n+1 + .5)
 		 */
 		src = CLK_DIVIDER(NVBL_PLLP_KHZ, 144000);
-		writel(src, &clkrst->crc_clk_src_csite);
+		clock_ll_set_source_divisor(PERIPH_ID_CSI, 0, src);
 
 		/* Unlock the CPU CoreSight interfaces */
 		rst = 0xC5ACCE55;
@@ -271,9 +314,28 @@ void enable_scu(void)
 	writel(reg, &scu->scu_ctrl);
 }
 
+static u32 get_odmdata(void)
+{
+	/*
+	 * ODMDATA is stored in the BCT in IRAM by the BootROM.
+	 * The BCT start and size are stored in the BIT in IRAM.
+	 * Read the data @ bct_start + (bct_size - 12). This works
+	 * on T20 and T30 BCTs, which are locked down. If this changes
+	 * in new chips (T114, etc.), we can revisit this algorithm.
+	 */
+
+	u32 bct_start, odmdata;
+
+	bct_start = readl(AP20_BASE_PA_SRAM + NVBOOTINFOTABLE_BCTPTR);
+	odmdata = readl(bct_start + BCT_ODMDATA_OFFSET);
+
+	return odmdata;
+}
+
 void init_pmc_scratch(void)
 {
-	struct pmc_ctlr *const pmc = (struct pmc_ctlr *)NV_PA_PMC_BASE;
+	struct pmc_ctlr *const pmc = (struct pmc_ctlr *)TEGRA2_PMC_BASE;
+	u32 odmdata;
 	int i;
 
 	/* SCRATCH0 is initialized by the boot ROM and shouldn't be cleared */
@@ -281,41 +343,46 @@ void init_pmc_scratch(void)
 		writel(0, &pmc->pmc_scratch1+i);
 
 	/* ODMDATA is for kernel use to determine RAM size, LP config, etc. */
-	writel(CONFIG_SYS_BOARD_ODMDATA, &pmc->pmc_scratch20);
+	odmdata = get_odmdata();
+	writel(odmdata, &pmc->pmc_scratch20);
+
+#ifdef CONFIG_TEGRA2_LP0
+	/* save Sdram params to PMC 2, 4, and 24 for WB0 */
+	warmboot_save_sdram_params();
+#endif
 }
 
-void cpu_start(void)
+void tegra2_start(void)
 {
 	struct pmux_tri_ctlr *pmt = (struct pmux_tri_ctlr *)NV_PA_APB_MISC_BASE;
 
-	/* enable JTAG */
-	writel(0xC0, &pmt->pmt_cfg_ctl);
+	/* If we are the AVP, start up the first Cortex-A9 */
+	if (!ap20_cpu_is_cortexa9()) {
+		/* enable JTAG */
+		writel(0xC0, &pmt->pmt_cfg_ctl);
 
-	if (s_first_boot) {
 		/*
-		 * Need to set this before cold-booting,
-		 *  otherwise we'll end up in an infinite loop.
+		 * If we are ARM7 - give it a different stack. We are about to
+		 * start up the A9 which will want to use this one.
 		 */
-		s_first_boot = 0;
-		cold_boot();
-	}
-}
+		asm volatile("mov	sp, %0\n"
+			: : "r"(AVP_EARLY_BOOT_STACK_LIMIT));
 
-void tegra2_start()
-{
-	if (s_first_boot) {
-		/* Init Debug UART Port (115200 8n1) */
-		uart_init();
-
-		/* Init PMC scratch memory */
-		init_pmc_scratch();
+		start_cpu((u32)_start);
+		halt_avp();
+		/* not reached */
 	}
 
-#ifdef CONFIG_ENABLE_CORTEXA9
-	/* take the mpcore out of reset */
-	cpu_start();
+	/* Init PMC scratch memory */
+	init_pmc_scratch();
 
-	/* configure cache */
-	cache_configure();
-#endif
+	enable_scu();
+
+	/* enable SMP mode and FW for CPU0, by writing to Auxiliary Ctl reg */
+	asm volatile(
+		"mrc	p15, 0, r0, c1, c0, 1\n"
+		"orr	r0, r0, #0x41\n"
+		"mcr	p15, 0, r0, c1, c0, 1\n");
+
+	/* FIXME: should have ap20's L2 disabled too? */
 }

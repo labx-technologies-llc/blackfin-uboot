@@ -318,6 +318,18 @@ struct post_test post_list[] =
 	CONFIG_SYS_POST_FLASH
     },
 #endif
+#if CONFIG_POST & CONFIG_SYS_POST_MEM_REGIONS
+    {
+	"Memory regions test",
+	"mem_regions",
+	"This test checks regularly placed regions of the RAM.",
+	POST_ROM | POST_SLOWTEST | POST_PREREL,
+	&memory_regions_post_test,
+	NULL,
+	NULL,
+	CONFIG_SYS_POST_MEM_REGIONS
+    },
+#endif
 };
 
 unsigned int post_list_size = ARRAY_SIZE(post_list);

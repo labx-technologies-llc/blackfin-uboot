@@ -25,6 +25,12 @@
 #include <asm/arch/a320.h>
 
 /*
+ * mach-type definition
+ */
+#define MACH_TYPE_FARADAY	758
+#define CONFIG_MACH_TYPE	MACH_TYPE_FARADAY
+
+/*
  * Linux kernel tagged list
  */
 #define CONFIG_CMDLINE_TAG
@@ -65,13 +71,9 @@
 #define CONFIG_SYS_NS16550_REG_SIZE	-4
 #define CONFIG_SYS_NS16550_CLK		18432000
 
-/* valid baudrates */
-#define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
-
 /*
  * Ethernet
  */
-#define CONFIG_NET_MULTI
 #define CONFIG_FTMAC100
 
 #define CONFIG_BOOTDELAY	3

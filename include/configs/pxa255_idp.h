@@ -55,7 +55,7 @@
  * High Level Configuration Options
  * (easy to change)
  */
-#define CONFIG_PXA250		1	/* This is an PXA250 CPU    */
+#define CONFIG_CPU_PXA25X		1	/* This is an PXA250 CPU    */
 
 #undef CONFIG_LCD
 #ifdef CONFIG_LCD
@@ -64,7 +64,7 @@
 
 #define CONFIG_MMC		1
 #define CONFIG_DOS_PARTITION	1
-#define BOARD_LATE_INIT		1
+#define CONFIG_BOARD_LATE_INIT
 
 #undef CONFIG_USE_IRQ			/* we don't need IRQ/FIQ stuff */
 
@@ -86,7 +86,6 @@
 /*
  * Hardware drivers
  */
-#define CONFIG_NET_MULTI
 #define CONFIG_SMC91111
 #define CONFIG_SMC91111_BASE	(PXA_CS5_PHYS + IDP_CS5_ETH_OFFSET + 0x300)
 #define CONFIG_SMC_USE_32_BIT	1
@@ -223,7 +222,6 @@
  * Miscellaneous configurable options
  */
 #define CONFIG_SYS_HUSH_PARSER		1
-#define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
 
 #define CONFIG_SYS_LONGHELP				/* undef to save memory		*/
 #ifdef CONFIG_SYS_HUSH_PARSER
@@ -246,9 +244,6 @@
 #define CONFIG_SYS_CPUSPEED		0x161		/* set core clock to 400/200/100 MHz */
 
 #define RTC	1				/* enable 32KHz osc */
-
-						/* valid baudrates */
-#define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 
 #ifdef CONFIG_MMC
 #define CONFIG_PXA_MMC
@@ -292,7 +287,7 @@
 #define CONFIG_SYS_FLASH_BASE		PHYS_FLASH_1
 
 #define CONFIG_SYS_SDRAM_BASE		PHYS_SDRAM_1
-#define	CONFIG_SYS_INIT_SP_ADDR		(GENERATED_GBL_DATA_SIZE + PHYS_SDRAM_1)
+#define	CONFIG_SYS_INIT_SP_ADDR		0xfffff800
 
 /*
  * GPIO settings

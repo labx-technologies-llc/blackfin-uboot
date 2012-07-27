@@ -52,7 +52,9 @@ int cleanup_before_linux(void)
 	 *
 	 * we turn off caches etc ...
 	 */
+#ifndef CONFIG_SPL_BUILD
 	disable_interrupts();
+#endif
 
 	/*
 	 * Turn off I-cache and invalidate it
@@ -65,6 +67,7 @@ int cleanup_before_linux(void)
 	 * dcache_disable() in turn flushes the d-cache and disables MMU
 	 */
 	dcache_disable();
+	v7_outer_cache_disable();
 
 	/*
 	 * After D-cache is flushed and before it is disabled there may

@@ -38,7 +38,6 @@
 #define CONFIG_INITRD_TAG	 1
 
 #define CONFIG_DRIVER_KS8695ETH		/* use KS8695 ethernet driver	*/
-#define CONFIG_NET_MULTI
 
 /*
  * Size of malloc() pool
@@ -57,8 +56,6 @@
 #define	CONFIG_SERIAL1
 #define CONFIG_CONS_INDEX	1
 #define CONFIG_BAUDRATE		115200
-#define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
-
 
 /*
  * BOOTP options

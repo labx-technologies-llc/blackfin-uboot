@@ -136,7 +136,7 @@ struct eth_dma_regs {
 #define UNDEF                   (1 << 0)
 
 /* Descriptior related definitions */
-#define MAC_MAX_FRAME_SZ	(2048)
+#define MAC_MAX_FRAME_SZ	(1600)
 
 struct dmamacdescr {
 	u32 txrx_status;
@@ -249,10 +249,13 @@ struct dmamacdescr {
 
 struct dw_eth_dev {
 	u32 address;
+	u32 interface;
 	u32 speed;
 	u32 duplex;
 	u32 tx_currdescnum;
 	u32 rx_currdescnum;
+	u32 phy_configured;
+	int link_printed;
 	u32 padding;
 #ifndef CONFIG_BLACKFIN
 	struct dmamacdescr tx_mac_descrtable[CONFIG_TX_DESCR_NUM];

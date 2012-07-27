@@ -1,6 +1,6 @@
 /*
  * (C) Copyright 2007-2008
- * Stelian Pop <stelian.pop@leadtechdesign.com>
+ * Stelian Pop <stelian@popies.net>
  * Lead Tech Design <www.leadtechdesign.com>
  *
  * See file CREDITS for list of people who contributed to this
@@ -196,7 +196,7 @@ void at91_macb_hw_init(void)
 }
 #endif
 
-#if defined(CONFIG_ATMEL_MCI) || defined(CONFIG_GENERIC_ATMEL_MCI)
+#if defined(CONFIG_GENERIC_ATMEL_MCI)
 void at91_mci_hw_init(void)
 {
 	at91_set_a_periph(AT91_PIO_PORTA, 8, 1);	/* MCCK */

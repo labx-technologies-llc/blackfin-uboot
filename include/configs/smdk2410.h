@@ -54,7 +54,6 @@
 /*
  * Hardware drivers
  */
-#define CONFIG_NET_MULTI
 #define CONFIG_CS8900		/* we have a CS8900 on-board */
 #define CONFIG_CS8900_BASE	0x19000300
 #define CONFIG_CS8900_BUS16	/* the Linux driver does accesses as shorts */
@@ -105,7 +104,6 @@
 #define CONFIG_CMD_USB
 
 #define CONFIG_SYS_HUSH_PARSER
-#define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
 #define CONFIG_CMDLINE_EDITING
 
 /* autoboot */
@@ -136,8 +134,7 @@
 #define CONFIG_SYS_MAXARGS	16
 #define CONFIG_SYS_BARGSIZE	CONFIG_SYS_CBSIZE
 
-/* may be activated as soon as s3c24x0 has print_cpuinfo support */
-/*#define CONFIG_DISPLAY_CPUINFO*/		/* Display cpu info */
+#define CONFIG_DISPLAY_CPUINFO				/* Display cpu info */
 
 #define CONFIG_SYS_MEMTEST_START	0x30000000	/* memtest works on */
 #define CONFIG_SYS_MEMTEST_END		0x33F00000	/* 63 MB in DRAM */
@@ -145,9 +142,6 @@
 #define CONFIG_SYS_LOAD_ADDR		0x30800000
 
 #define CONFIG_SYS_HZ			1000
-
-/* valid baudrates */
-#define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 
 /* support additional compression methods */
 #define CONFIG_BZIP2
@@ -212,7 +206,6 @@
 #define CONFIG_NAND_S3C2410
 #define CONFIG_SYS_S3C2410_NAND_HWECC
 #define CONFIG_SYS_MAX_NAND_DEVICE	1
-#define NAND_MAX_CHIPS			1
 #define CONFIG_SYS_NAND_BASE		0x4E000000
 #endif
 

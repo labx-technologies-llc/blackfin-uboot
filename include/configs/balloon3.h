@@ -25,7 +25,7 @@
 /*
  * High Level Board Configuration Options
  */
-#define	CONFIG_PXA27X		1	/* Marvell PXA270 CPU */
+#define	CONFIG_CPU_PXA27X		1	/* Marvell PXA270 CPU */
 #define	CONFIG_BALLOON3		1	/* Balloon3 board */
 
 /*
@@ -54,7 +54,6 @@
 #define	CONFIG_PXA_SERIAL
 #define	CONFIG_STUART			1
 #define	CONFIG_BAUDRATE			115200
-#define	CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 
 /*
  * Bootloader Components Configuration
@@ -81,7 +80,6 @@
  * HUSH Shell Configuration
  */
 #define	CONFIG_SYS_HUSH_PARSER		1
-#define	CONFIG_SYS_PROMPT_HUSH_PS2	"> "
 
 #define	CONFIG_SYS_LONGHELP
 #ifdef	CONFIG_SYS_HUSH_PARSER

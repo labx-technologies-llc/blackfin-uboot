@@ -82,7 +82,6 @@
 /*
  * SMC91c96 Etherent
  */
-#define CONFIG_NET_MULTI
 #define CONFIG_LAN91C96
 #define CONFIG_LAN91C96_BASE     (H4_CS1_BASE+0x300)
 #define CONFIG_LAN91C96_EXT_PHY
@@ -119,8 +118,6 @@
 #define CONFIG_ENV_OVERWRITE
 #define CONFIG_CONS_INDEX        1
 #define CONFIG_BAUDRATE          115200
-#define CONFIG_SYS_BAUDRATE_TABLE       {9600, 19200, 38400, 57600, 115200}
-
 
 /*
  * Command line configuration.

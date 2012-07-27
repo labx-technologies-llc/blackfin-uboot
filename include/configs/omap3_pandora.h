@@ -28,7 +28,6 @@
  */
 #define CONFIG_OMAP		1	/* in a TI OMAP core */
 #define CONFIG_OMAP34XX		1	/* which is a 34XX */
-#define CONFIG_OMAP3430		1	/* which is in a 3430 */
 #define CONFIG_OMAP3_PANDORA	1	/* working with pandora */
 
 #define CONFIG_SDRC	/* The chip has SDRC controller */
@@ -105,9 +104,6 @@
 #define CONFIG_OMAP_HSMMC		1
 #define CONFIG_DOS_PARTITION		1
 
-/* DDR - I use Micron DDR */
-#define CONFIG_OMAP3_MICRON_DDR		1
-
 /* commands to include */
 #include <config_cmd_default.h>
 
@@ -178,8 +174,7 @@
 	"usbtty=cdc_acm\0" \
 	"loadaddr=0x82000000\0" \
 	"bootargs=ubi.mtd=4 ubi.mtd=3 root=ubi0:rootfs rootfstype=ubifs " \
-	"rw rootflags=bulk_read console=ttyS0,115200n8 " \
-	"vram=6272K omapfb.vram=0:3000K\0" \
+		"rw rootflags=bulk_read vram=6272K omapfb.vram=0:3000K\0" \
 	"mtdparts=" MTDPARTS_DEFAULT "\0" \
 
 #define CONFIG_BOOTCOMMAND \
@@ -195,7 +190,6 @@
  */
 #define CONFIG_SYS_LONGHELP		/* undef to save memory */
 #define CONFIG_SYS_HUSH_PARSER		/* use "hush" command parser */
-#define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
 #define CONFIG_SYS_PROMPT		"Pandora # "
 #define CONFIG_SYS_CBSIZE		512	/* Console I/O Buffer Size */
 /* Print Buffer Size */
@@ -228,10 +222,6 @@
  * The stack sizes are set up in start.S using the settings below
  */
 #define CONFIG_STACKSIZE	(128 << 10)	/* regular stack 128 KiB */
-#ifdef CONFIG_USE_IRQ
-#define CONFIG_STACKSIZE_IRQ	(4 << 10)	/* IRQ stack 4 KiB */
-#define CONFIG_STACKSIZE_FIQ	(4 << 10)	/* FIQ stack 4 KiB */
-#endif
 
 /*-----------------------------------------------------------------------
  * Physical Memory Map
@@ -240,9 +230,6 @@
 #define PHYS_SDRAM_1		OMAP34XX_SDRC_CS0
 #define PHYS_SDRAM_1_SIZE	(32 << 20)	/* at least 32 MiB */
 #define PHYS_SDRAM_2		OMAP34XX_SDRC_CS1
-
-/* SDRAM Bank Allocation method */
-#define SDRC_R_B_C		1
 
 #define CONFIG_SYS_TEXT_BASE		0x80008000
 #define CONFIG_SYS_SDRAM_BASE		PHYS_SDRAM_1
@@ -277,5 +264,7 @@
 #define CONFIG_SYS_ENV_SECT_SIZE	(128 << 10)	/* 128 KiB */
 #define CONFIG_ENV_OFFSET		SMNAND_ENV_OFFSET
 #define CONFIG_ENV_ADDR			SMNAND_ENV_OFFSET
+
+#define CONFIG_SYS_CACHELINE_SIZE	64
 
 #endif				/* __CONFIG_H */

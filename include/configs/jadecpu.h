@@ -37,6 +37,10 @@
 #define CONFIG_USE_ARCH_MEMCPY
 #define CONFIG_USE_ARCH_MEMSET
 
+#define MACH_TYPE_JADECPU	2636
+
+#define CONFIG_MACH_TYPE MACH_TYPE_JADECPU
+
 /*
  * Environment settings
  */
@@ -51,7 +55,7 @@
 #define CONFIG_CMDLINE_TAG	1	/* enable passing of ATAGs	*/
 #define CONFIG_SETUP_MEMORY_TAGS 1
 #define CONFIG_INITRD_TAG	1
-#define BOARD_LATE_INIT		1
+#define CONFIG_BOARD_LATE_INIT
 
 /*
  * Compressions
@@ -80,7 +84,6 @@
 /*
  * Ethernet
  */
-#define CONFIG_NET_MULTI
 #define CONFIG_SMC911X
 #define CONFIG_SMC911X_BASE	0x02000000
 #define CONFIG_SMC911X_16_BIT
@@ -127,7 +130,6 @@
 #undef CONFIG_CMD_XIMG
 
 #define CONFIG_CMD_BMP
-#define CONFIG_CMD_CAN
 #define CONFIG_CMD_DHCP
 #define CONFIG_CMD_ELF
 #define CONFIG_CMD_FAT
@@ -136,7 +138,6 @@
 #define CONFIG_CMD_CACHE
 
 #define CONFIG_SYS_HUSH_PARSER
-#define CONFIG_SYS_PROMPT_HUSH_PS2 "> "
 
 /* USB */
 #define CONFIG_USB_OHCI_NEW
@@ -180,7 +181,6 @@
 #define CONFIG_SYS_MEMTEST_END		(PHYS_SDRAM + PHYS_SDRAM_SIZE)
 
 #define CONFIG_BAUDRATE		115200
-#define CONFIG_SYS_BAUDRATE_TABLE	{115200, 19200, 38400, 57600, 9600 }
 
 #define CONFIG_SYS_PROMPT	"jade> "
 #define CONFIG_SYS_CBSIZE	256

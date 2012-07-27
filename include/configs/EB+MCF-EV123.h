@@ -40,7 +40,6 @@
 #define CONFIG_MCFUART
 #define CONFIG_SYS_UART_PORT		(0)
 #define CONFIG_BAUDRATE 9600
-#define CONFIG_SYS_BAUDRATE_TABLE { 9600 , 19200 , 38400 , 57600, 115200 }
 
 #undef	CONFIG_MONITOR_IS_IN_RAM		/* starts uboot direct */
 
@@ -90,7 +89,7 @@
 
 
 #define CONFIG_BOOTDELAY	5
-#define CONFIG_HUSH_PARSER
+#define CONFIG_SYS_HUSH_PARSER
 #define CONFIG_SYS_PROMPT	"\nEV123 U-Boot> "
 #define	CONFIG_SYS_LONGHELP	1
 
@@ -126,7 +125,6 @@
  *----------------------------------------------------------------------*/
 
 #define CONFIG_MCFFEC
-#define CONFIG_NET_MULTI		1
 #define CONFIG_MII			1
 #define CONFIG_MII_INIT			1
 #define CONFIG_SYS_DISCOVER_PHY

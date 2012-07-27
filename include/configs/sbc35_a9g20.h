@@ -36,6 +36,9 @@
 #define CONFIG_ENV_IS_IN_EEPROM
 #endif
 
+#define MACH_TYPE_SBC35_A9G20		1848
+#define CONFIG_MACH_TYPE		MACH_TYPE_SBC35_A9G20
+
 /* ARM asynchronous clock */
 #define CONFIG_SYS_AT91_SLOW_CLOCK	32768		/* slow clock xtal */
 #define CONFIG_SYS_AT91_MAIN_CLOCK	12000000	/* 12.000 MHz crystal */
@@ -58,7 +61,6 @@
 #define CONFIG_USART_BASE               ATMEL_BASE_DBGU
 #define CONFIG_USART_ID                 ATMEL_ID_SYS
 #define CONFIG_BAUDRATE			115200
-#define CONFIG_SYS_BAUDRATE_TABLE	{115200 , 19200, 38400, 57600, 9600 }
 
 #define CONFIG_BOOTDELAY	3
 
@@ -128,7 +130,6 @@
 /* Ethernet */
 #define CONFIG_MACB
 #define CONFIG_RMII
-#define CONFIG_NET_MULTI
 #define CONFIG_NET_RETRY_COUNT		20
 #define CONFIG_RESET_PHY_R
 #define CONFIG_MACB_SEARCH_PHY

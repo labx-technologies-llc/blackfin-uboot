@@ -87,7 +87,6 @@
 #define CONFIG_SYS_HZ			3686400	     /* incrementer freq: 3.6864 MHz */
 #define CONFIG_SYS_CPUSPEED		0x141	     /* core clock - register value  */
 
-#define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 #define CONFIG_BAUDRATE 115200
 /*
  * Definitions related to passing arguments to kernel.
@@ -243,7 +242,6 @@
 #define CONFIG_SYS_CS5U_VAL 0x00008400
 #define CONFIG_SYS_CS5L_VAL 0x00000D03
 
-#define CONFIG_NET_MULTI		1
 #define CONFIG_DRIVER_DM9000		1
 #define CONFIG_DM9000_BASE		0x16000000
 #define DM9000_IO			CONFIG_DM9000_BASE

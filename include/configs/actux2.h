@@ -29,6 +29,8 @@
 #define CONFIG_IXP425			1
 #define CONFIG_ACTUX2			1
 
+#define	CONFIG_MACH_TYPE		1480
+
 #define CONFIG_DISPLAY_CPUINFO		1
 #define CONFIG_DISPLAY_BOARDINFO	1
 
@@ -143,7 +145,6 @@
 
 /* include IXP4xx NPE support */
 #define CONFIG_IXP4XX_NPE		1
-#define CONFIG_NET_MULTI		1
 /* NPE0 PHY address */
 #define	CONFIG_PHY_ADDR			0x00
 /* MII PHY management */

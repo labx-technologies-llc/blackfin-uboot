@@ -1,6 +1,6 @@
 /*
  * (C) Copyright 2007-2008
- * Stelian Pop <stelian.pop@leadtechdesign.com>
+ * Stelian Pop <stelian@popies.net>
  * Lead Tech Design <www.leadtechdesign.com>
  *
  * Copyright (C) 2009
@@ -45,8 +45,12 @@
 /* Define actual evaluation board type from used processor type */
 #ifdef CONFIG_AT91SAM9G20
 # define CONFIG_TNY_A9G20
+# define MACH_TYPE_TNY_A9G20		2059
+# define CONFIG_MACH_TYPE		MACH_TYPE_TNY_A9G20
 #else
 # define CONFIG_TNY_A9260
+# define MACH_TYPE_TNY_A9260		2058
+# define CONFIG_MACH_TYPE		MACH_TYPE_TNY_A9260
 #endif
 
 /* ARM asynchronous clock */
@@ -71,7 +75,6 @@
 #define CONFIG_USART_BASE		ATMEL_BASE_DBGU
 #define	CONFIG_USART_ID			ATMEL_ID_SYS
 #define CONFIG_BAUDRATE			115200
-#define CONFIG_SYS_BAUDRATE_TABLE	{115200 , 19200, 38400, 57600, 9600 }
 
 #define CONFIG_BOOTDELAY	3
 

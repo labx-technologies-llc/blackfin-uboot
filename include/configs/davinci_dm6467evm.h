@@ -22,7 +22,6 @@
 
 /* Spectrum Digital TMS320DM6467 EVM board */
 #define DAVINCI_DM6467EVM
-#define CONFIG_DISPLAY_CPUINFO
 #define CONFIG_SYS_USE_NAND
 #define CONFIG_SYS_NAND_SMALLPAGE
 
@@ -36,7 +35,6 @@
 extern unsigned int davinci_arm_clk_get(void);
 #endif
 
-#define CFG_REFCLK_FREQ		27000000
 /* Arm Clock frequency    */
 #define CONFIG_SYS_CLK_FREQ	davinci_arm_clk_get()
 /* Timer Input clock freq */
@@ -65,6 +63,7 @@ extern unsigned int davinci_arm_clk_get(void);
 #define CONFIG_SETUP_MEMORY_TAGS
 #define CONFIG_SYS_BARGSIZE		1024		/* Bootarg Size */
 #define CONFIG_SYS_LOAD_ADDR		0x80700000	/* kernel address */
+#define CONFIG_REVISION_TAG
 
 /* Serial Driver info */
 #define CONFIG_SYS_NS16550
@@ -74,7 +73,6 @@ extern unsigned int davinci_arm_clk_get(void);
 #define CONFIG_SYS_NS16550_CLK		24000000
 #define CONFIG_CONS_INDEX		1
 #define CONFIG_BAUDRATE			115200
-#define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 
 /* I2C Configuration */
 #define CONFIG_HARD_I2C
@@ -84,14 +82,12 @@ extern unsigned int davinci_arm_clk_get(void);
 
 /* Network & Ethernet Configuration */
 #define CONFIG_DRIVER_TI_EMAC
-#define CONFIG_EMAC_MDIO_PHY_NUM	1
 #define CONFIG_MII
 #define CONFIG_BOOTP_DEFAULT
 #define CONFIG_BOOTP_DNS
 #define CONFIG_BOOTP_DNS2
 #define CONFIG_BOOTP_SEND_HOSTNAME
 #define CONFIG_NET_RETRY_COUNT	10
-#define CONFIG_NET_MULTI
 #define CONFIG_CMD_NET
 
 /* Flash & Environment */
@@ -123,7 +119,6 @@ extern unsigned int davinci_arm_clk_get(void);
 #define CONFIG_VERSION_VARIABLE
 #define CONFIG_AUTO_COMPLETE
 #define CONFIG_SYS_HUSH_PARSER
-#define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
 #define CONFIG_CMDLINE_EDITING
 #define CONFIG_SYS_LONGHELP
 #define CONFIG_CRC32_VERIFY
@@ -150,6 +145,10 @@ extern unsigned int davinci_arm_clk_get(void);
 #undef CONFIG_CMD_FLASH
 #undef CONFIG_CMD_IMLS
 #define CONFIG_CMD_NAND
+#endif
+
+#ifdef CONFIG_CMD_BDI
+#define CONFIG_CLOCKS
 #endif
 
 #define CONFIG_MAX_RAM_BANK_SIZE	(256 << 20)	/* 256 MB */

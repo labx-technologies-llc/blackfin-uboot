@@ -1,6 +1,6 @@
 /*
  * (C) Copyright 2007-2008
- * Stelian Pop <stelian.pop@leadtechdesign.com>
+ * Stelian Pop <stelian@popies.net>
  * Lead Tech Design <www.leadtechdesign.com>
  *
  * (C) Copyright 2009-2011
@@ -45,6 +45,14 @@
  */
 #define CONFIG_SYS_TEXT_BASE		0x20002000
 
+/*
+ * since a number of boards are not being listed in linux
+ * arch/arm/tools/mach-types any more, the mach-types have to be
+ * defined here
+ */
+#define MACH_TYPE_MEESC			2165
+#define MACH_TYPE_ETHERCAN2		2407
+
 /* ARM asynchronous clock */
 #define CONFIG_SYS_AT91_SLOW_CLOCK	32768	/* 32.768 kHz crystal */
 #define CONFIG_SYS_AT91_MAIN_CLOCK	16000000/* 16.0 MHz crystal */
@@ -81,7 +89,6 @@
 #define CONFIG_USART_BASE		ATMEL_BASE_DBGU
 #define CONFIG_USART_ID			ATMEL_ID_SYS
 #define CONFIG_BAUDRATE			115200
-#define CONFIG_SYS_BAUDRATE_TABLE	{115200, 19200, 38400, 57600, 9600}
 
 #define CONFIG_BOOTDELAY		3
 #define CONFIG_ZERO_BOOTDELAY_CHECK
@@ -156,13 +163,11 @@
 # define CONFIG_SYS_NAND_MASK_CLE		(1 << 22)
 # define CONFIG_SYS_NAND_ENABLE_PIN		AT91_PIO_PORTD, 15
 # define CONFIG_SYS_NAND_READY_PIN		AT91_PIO_PORTA, 22
-# define CONFIG_SYS_64BIT_VSPRINTF		/* needed for nand_util.c */
 #endif
 
 /* Ethernet */
 #define CONFIG_MACB
 #define CONFIG_RMII
-#define CONFIG_NET_MULTI
 #define CONFIG_FIT
 #define CONFIG_NET_RETRY_COUNT			20
 #undef CONFIG_RESET_PHY_R

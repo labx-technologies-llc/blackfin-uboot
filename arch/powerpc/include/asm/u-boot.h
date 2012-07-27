@@ -63,7 +63,6 @@ typedef struct bd_info {
 	unsigned long   bi_vcofreq;     /* VCO Freq, in MHz */
 #endif
 	unsigned long	bi_bootflags;	/* boot / reboot flag (Unused) */
-	unsigned long	bi_ip_addr;	/* IP Address */
 	unsigned char	bi_enetaddr[6];	/* OLD: see README.enetaddr */
 	unsigned short	bi_ethspeed;	/* Ethernet speed in Mbps */
 	unsigned long	bi_intfreq;	/* Internal Freq, in MHz */
@@ -143,4 +142,8 @@ typedef struct bd_info {
 } bd_t;
 
 #endif /* __ASSEMBLY__ */
+
+/* For image.h:image_check_target_arch() */
+#define IH_ARCH_DEFAULT IH_ARCH_PPC
+
 #endif	/* __U_BOOT_H__ */

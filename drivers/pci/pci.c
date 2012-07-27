@@ -516,7 +516,6 @@ void pci_cfgfunc_do_nothing(struct pci_controller *hose,
  * to get the correct result when scanning bridges
  */
 extern int pciauto_config_device(struct pci_controller *hose, pci_dev_t dev);
-extern void pciauto_config_init(struct pci_controller *hose);
 
 #if defined(CONFIG_CMD_PCI) || defined(CONFIG_PCI_SCAN_SHOW)
 const char * pci_class_str(u8 class)
@@ -695,6 +694,23 @@ int pci_hose_scan_bus(struct pci_controller *hose, int bus)
 
 int pci_hose_scan(struct pci_controller *hose)
 {
+#if defined(CONFIG_PCI_BOOTDELAY)
+	static int pcidelay_done;
+	char *s;
+	int i;
+
+	if (!pcidelay_done) {
+		/* wait "pcidelay" ms (if defined)... */
+		s = getenv("pcidelay");
+		if (s) {
+			int val = simple_strtoul(s, NULL, 10);
+			for (i = 0; i < val; i++)
+				udelay(1000);
+		}
+		pcidelay_done = 1;
+	}
+#endif /* CONFIG_PCI_BOOTDELAY */
+
 	/* Start scan at current_busno.
 	 * PCIe will start scan at first_busno+1.
 	 */
@@ -709,19 +725,6 @@ int pci_hose_scan(struct pci_controller *hose)
 
 void pci_init(void)
 {
-#if defined(CONFIG_PCI_BOOTDELAY)
-	char *s;
-	int i;
-
-	/* wait "pcidelay" ms (if defined)... */
-	s = getenv ("pcidelay");
-	if (s) {
-		int val = simple_strtoul (s, NULL, 10);
-		for (i=0; i<val; i++)
-			udelay (1000);
-	}
-#endif /* CONFIG_PCI_BOOTDELAY */
-
 	hose_head = NULL;
 
 	/* now call board specific pci_init()... */

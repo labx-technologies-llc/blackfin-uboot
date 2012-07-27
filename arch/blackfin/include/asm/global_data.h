@@ -45,11 +45,15 @@ typedef struct global_data {
 	unsigned long board_type;
 	unsigned long baudrate;
 	unsigned long have_console;	/* serial_init() was called */
+#ifdef CONFIG_PRE_CONSOLE_BUFFER
+	unsigned long	precon_buf_idx;	/* Pre-Console buffer index */
+#endif
 	phys_size_t ram_size;		/* RAM size */
 	unsigned long env_addr;	/* Address  of Environment struct */
 	unsigned long env_valid;	/* Checksum of Environment valid? */
 #if defined(CONFIG_POST) || defined(CONFIG_LOGBUFFER)
 	unsigned long post_log_word;	/* Record POST activities */
+	unsigned long post_log_res; 	/* success of POST test */
 	unsigned long post_init_f_time;	/* When post_init_f started */
 #endif
 
@@ -69,6 +73,6 @@ typedef struct global_data {
 #define GD_FLG_DISABLE_CONSOLE	0x00040	/* Disable console (in & out)		*/
 #define GD_FLG_ENV_READY	0x00080	/* Environment imported into hash table	*/
 
-#define DECLARE_GLOBAL_DATA_PTR     register gd_t * volatile gd asm ("P3")
+#define DECLARE_GLOBAL_DATA_PTR     register volatile gd_t *gd asm ("P3")
 
 #endif

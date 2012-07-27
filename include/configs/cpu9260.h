@@ -1,6 +1,6 @@
 /*
  * (C) Copyright 2007-2008
- * Stelian Pop <stelian.pop@leadtechdesign.com>
+ * Stelian Pop <stelian@popies.net>
  * Lead Tech Design <www.leadtechdesign.com>
  * Ilko Iliev <www.ronetix.at>
  *
@@ -295,7 +295,6 @@
 
 /* NAND flash */
 #define CONFIG_NAND_ATMEL
-#define NAND_MAX_CHIPS				1
 #define CONFIG_SYS_MAX_NAND_DEVICE		1
 #define CONFIG_SYS_NAND_BASE			0x40000000
 #define CONFIG_SYS_NAND_DBW_8			1
@@ -327,7 +326,6 @@
 /* Ethernet */
 #define CONFIG_MACB
 #define CONFIG_RMII
-#define CONFIG_NET_MULTI
 #define CONFIG_NET_RETRY_COUNT			20
 #define CONFIG_MACB_SEARCH_PHY
 
@@ -489,7 +487,6 @@
 #endif
 
 #define CONFIG_BAUDRATE			115200
-#define CONFIG_SYS_BAUDRATE_TABLE	{115200 , 19200, 38400, 57600, 9600 }
 
 #if defined(CONFIG_CPU9G20)
 #define CONFIG_SYS_PROMPT		"CPU9G20=> "
