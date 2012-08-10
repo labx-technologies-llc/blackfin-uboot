@@ -1401,7 +1401,7 @@ for {set i 0 } {$i< 50} {incr i } {
                     send_user "\n#### sf compare fails at $sf_addr \n"
                     set sf_comp_flag $TEST_FAIL
                 }
-                "Total of 16384 bytes were the same" {
+                "Total of 16384 byte* were the same" {
                     set sf_comp_flag $TEST_PASS
                 }
                 $UBOOT_PROMPT {
@@ -3677,7 +3677,7 @@ if { $random_flash_start == "undefined" || \
 	while 1 {
 	    expect {
 
-		"Total of [expr 0x$random_flash_bytes] bytes were the same" {
+		"Total of [expr 0x$random_flash_bytes] byte* were the same" {
 		    set protect_off_result $TEST_PASS
 		}
 
@@ -3761,7 +3761,7 @@ if { $temp_status_flag == $FAILURE } {
 	expect {
 
 	    # This will be printed out in decimal
-	    "Total of [expr 0x$random_sdram_len] bytes were the same" {
+	    "Total of [expr 0x$random_sdram_len] byte* were the same" {
 		send_user "\ncorrect response\n"
 		set temp_status_flag $TEST_PASS
 	    }
@@ -3845,16 +3845,16 @@ the cp and cmp test\n"
 		expect {
 
 		    # should be one byte less than before
-		    "Total of [expr 0x$random_sdram_len - 1] bytes were the same" {
+		    "Total of [expr 0x$random_sdram_len - 1] byte* were the same" {
 			send_user "\ncorrect response\n"
 			set temp_status_flag $TEST_PASS
 		    }
 
-		    "Total of [expr 0x$random_sdram_len] bytes were the same" {
+		    "Total of [expr 0x$random_sdram_len] byte* were the same" {
 			send_user "\ncmp.b isn't detecting a modified byte\n"
 		    }
 
-		    "Total of [expr 0x$random_sdram_len - 2] bytes were the same" {
+		    "Total of [expr 0x$random_sdram_len - 2] byte* were the same" {
 			send_user "\ncmp.b is checking one too many bytes\n"
 		    }
 
