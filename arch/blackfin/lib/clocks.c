@@ -22,7 +22,6 @@
 /* Get the voltage input multiplier */
 u_long get_vco(void)
 {
-#ifndef CONFIG_BFIN_GET_VCO
 	static u_long cached_vco_pll_ctl, cached_vco;
 
 	u_long msel, pll_ctl;
@@ -41,15 +40,11 @@ u_long get_vco(void)
 	cached_vco >>= (pll_ctl & DF);
 	cached_vco *= msel;
 	return cached_vco;
-#else
-	return CONFIG_BFIN_GET_VCO;
-#endif
 }
 
 /* Get the Core clock */
 u_long get_cclk(void)
 {
-#ifndef CONFIG_BFIN_GET_CCLK
 	static u_long cached_cclk_pll_div, cached_cclk;
 	u_long div, csel, ssel;
 
@@ -68,12 +63,11 @@ u_long get_cclk(void)
 	if (ssel && ssel < (1 << csel))	/* SCLK > CCLK */
 		cached_cclk = get_vco() / ssel;
 	else
-#endif
 		cached_cclk = get_vco() >> csel;
-	return cached_cclk;
 #else
-	return CONFIG_BFIN_GET_CCLK;
+	cached_cclk = get_vco() / csel;
 #endif
+	return cached_cclk;
 }
 
 /* Get the System clock */
@@ -102,49 +96,35 @@ static u_long _get_sclk(u_long *cache)
 	ssel = (div & S1SEL) >> S1SEL_P;
 	cached_sclk1 = cached_sclk / ssel;
 
+	ssel = (div & DSEL) >> DSEL_P;
+	cached_dclk = cached_sclk / ssel;
+
 	return *cache;
 }
 
 u_long get_sclk(void)
 {
-#ifndef CONFIG_BFIN_GET_SCLK
 	return _get_sclk(&cached_sclk);
-#else
-	return CONFIG_BFIN_GET_SCLK;
-#endif
 }
 
 u_long get_sclk0(void)
 {
-#ifndef CONFIG_BFIN_GET_SCLK0
 	return _get_sclk(&cached_sclk0);
-#else
-	return CONFIG_BFIN_GET_SCLK0;
-#endif
 }
 
 u_long get_sclk1(void)
 {
-#ifndef CONFIG_BFIN_GET_SCLK1
 	return _get_sclk(&cached_sclk1);
-#else
-	return CONFIG_BFIN_GET_SCLK1;
-#endif
 }
 
 u_long get_dclk(void)
 {
-#ifndef CONFIG_BFIN_GET_DCLK
 	return _get_sclk(&cached_dclk);
-#else
-	return CONFIG_BFIN_GET_DCLK;
-#endif
 }
 #else
 
 u_long get_sclk(void)
 {
-#ifndef CONFIG_BFIN_GET_SCLK
 	static u_long cached_sclk_pll_div, cached_sclk;
 	u_long div, ssel;
 
@@ -161,9 +141,6 @@ u_long get_sclk(void)
 	cached_sclk = get_vco() / ssel;
 
 	return cached_sclk;
-#else
-	return CONFIG_BFIN_GET_SCLK;
-#endif
 }
 
 #endif
