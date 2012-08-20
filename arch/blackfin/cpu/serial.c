@@ -263,16 +263,16 @@ struct serial_device bfin_serial##n##_device = { \
 	LOOP(.loop = uart##n##_loop) \
 };
 
-#ifdef UART0_DLL
+#ifdef UART0_RBR
 DECL_BFIN_UART(0)
 #endif
-#ifdef UART1_DLL
+#ifdef UART1_RBR
 DECL_BFIN_UART(1)
 #endif
-#ifdef UART2_DLL
+#ifdef UART2_RBR
 DECL_BFIN_UART(2)
 #endif
-#ifdef UART3_DLL
+#ifdef UART3_RBR
 DECL_BFIN_UART(3)
 #endif
 
@@ -291,16 +291,16 @@ __weak struct serial_device *default_serial_console(void)
 
 void serial_register_bfin_uart(void)
 {
-#ifdef UART0_DLL
+#ifdef UART0_RBR
 	serial_register(&bfin_serial0_device);
 #endif
-#ifdef UART1_DLL
+#ifdef UART1_RBR
 	serial_register(&bfin_serial1_device);
 #endif
-#ifdef UART2_DLL
+#ifdef UART2_RBR
 	serial_register(&bfin_serial2_device);
 #endif
-#ifdef UART3_DLL
+#ifdef UART3_RBR
 	serial_register(&bfin_serial3_device);
 #endif
 }
