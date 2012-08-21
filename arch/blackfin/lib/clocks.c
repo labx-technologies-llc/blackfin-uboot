@@ -97,7 +97,7 @@ static u_long _get_sclk(u_long *cache)
 	cached_sclk1 = cached_sclk / ssel;
 
 	ssel = (div & DSEL) >> DSEL_P;
-	cached_dclk = cached_sclk / ssel;
+	cached_dclk = get_vco() / ssel;
 
 	return *cache;
 }

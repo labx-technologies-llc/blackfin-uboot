@@ -63,6 +63,7 @@ extern u_long get_cclk(void);
 extern u_long get_sclk(void);
 extern u_long get_sclk0(void);
 extern u_long get_sclk1(void);
+extern u_long get_dclk(void);
 
 # define bfin_revid() (bfin_read_CHIPID() >> 28)
 
