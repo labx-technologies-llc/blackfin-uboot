@@ -964,6 +964,8 @@ proc copy_test {from_loc from_type to_loc to_type size flash_from_erase_start \
     global SUCCESS
     global FAILURE
     global CFG_LOAD_ADDR
+    
+    wait_for_uboot
 
     send_user "preparing to copy from $from_loc to $to_loc\n"
 
