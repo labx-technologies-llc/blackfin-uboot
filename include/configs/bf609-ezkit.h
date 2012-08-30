@@ -81,7 +81,7 @@
 #define CONFIG_SYS_MONITOR_LEN	(512 * 1024)
 #define CONFIG_SYS_MALLOC_LEN	(256 * 1024)
 
-#define CONFIG_HW_WATCHDOG
+/*#define CONFIG_HW_WATCHDOG */
 
 /*
  * Network Settings
@@ -194,6 +194,11 @@
 #undef CONFIG_JTAG_CONSOLE
 #undef CONFIG_UART_CONSOLE_IS_JTAG
 #endif
+
+/*
+ * Run core 1 from L1 SRAM start address when init uboot on core 0
+ */
+/* #define CONFIG_CORE1_RUN	1 */
 
 /*
  * Pull in common ADI header for remaining command/environment setup
