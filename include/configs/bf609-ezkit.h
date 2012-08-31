@@ -58,12 +58,6 @@
 /* Values can range from 0-127 (where 0 means 128)			*/
 #define CONFIG_OCLK_DIV			(16)
 
-#define CONFIG_BFIN_GET_VCO 		(CONFIG_CLKIN_HZ)
-#define CONFIG_PLL_CLK  		(get_vco()*CONFIG_VCO_MULT)
-
-#define CONFIG_BFIN_GET_CCLK 		(CONFIG_PLL_CLK/CONFIG_CCLK_DIV)
-#define CONFIG_CCLK_HZ 			(CONFIG_BFIN_GET_CCLK)
-
 /*
  * Memory Settings
  */
