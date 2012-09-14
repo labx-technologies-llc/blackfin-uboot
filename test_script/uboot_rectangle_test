@@ -15,7 +15,7 @@ fi
 else 
 USER=/home/test/work/cruise
 CHECKOUT=$USER/checkouts
-UBOOT_SCRIPTS=$USER/u-boot/test_script
+UBOOT_SCRIPTS=$USER/test_scripts/u-boot
 UBOOT_SRC_ROOT=$CHECKOUT/u-boot
 UBOOT_SRC=$CHECKOUT/u-boot/
 UBOOT_LOG="$UBOOT_SCRIPTS/logs"
@@ -56,7 +56,7 @@ if [ -d "/home/test/work/cruise" ] ; then
 cp $UBOOT_SRC/test_script/* $UBOOT_SCRIPTS > /dev/null 2>&1
 fi
 
-cp /home/test/reset_board  $UBOOT_SCRIPTS
+cp /home/test/reset_board  $UBOOT_SRC_ROOT/test_script
 # To restore the changes made in last release and sync to the repository.
 cd $UBOOT_SRC
 git checkout .
