@@ -780,7 +780,7 @@ if { $TEST_EARLY_PRINTK } {
         set early_printk_result $TEST_PASS
     }
 
-    if { [catch {exec sed -i  "/bfin_adi_common.h/ a $change_str" include/configs/$config_file } ] } {
+    if { [catch {exec sed -i  "/bfin_adi_common.h/ i $change_str" include/configs/$config_file } ] } {
         send_user "\nfail to add early printk define for $make_board_type \n"
         set early_printk_result $TEST_FAIL
     } else {

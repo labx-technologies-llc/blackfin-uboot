@@ -66,8 +66,8 @@ $UBOOT_SCRIPTS/uboot_misc_test.exp $BOARD_TYPE > /dev/null 2>&1
 
 #Add this line to disable kgdb for watchdog test running.
 if [ $BOARD_TYPE = "BF609-EZKIT" ] ; then
-sed -i  "/bfin_adi_common.h/ a #define CONFIG_HW_WATCHDOG" $UBOOT_SRC/include/configs/bf609-ezkit.h
-sed -i  "/bfin_adi_common.h/ a #undef CONFIG_CMD_KGDB" $UBOOT_SRC/include/configs/bf609-ezkit.h
+sed -i  "/bfin_adi_common.h/ i #define CONFIG_HW_WATCHDOG" $UBOOT_SRC/include/configs/bf609-ezkit.h
+sed -i  "/bfin_adi_common.h/ i #undef CONFIG_CMD_KGDB" $UBOOT_SRC/include/configs/bf609-ezkit.h
 fi
 
 cd $UBOOT_SCRIPTS
