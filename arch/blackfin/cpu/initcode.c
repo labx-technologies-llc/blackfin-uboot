@@ -198,14 +198,8 @@ static inline void serial_init(void)
 #endif
 
 	if (BFIN_DEBUG_EARLY_SERIAL) {
-		int enabled = serial_early_enabled(uart_base);
 		serial_early_init(uart_base);
-
-		/* If the UART is off, that means we need to program
-		 * the baud rate ourselves initially.
-		 */
-		if (!enabled)
-			serial_early_set_baud(uart_base, CONFIG_BAUDRATE);
+		serial_early_set_baud(uart_base, CONFIG_BAUDRATE);
 	}
 }
 
@@ -728,27 +722,22 @@ update_serial_clocks(ADI_BOOT_DATA *bs, uint sdivB, uint divB, uint vcoB)
 	 * Do the division by hand as there are no native instructions
 	 * for dividing which means we'd generate a libgcc reference.
 	 */
-	if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_UART) {
-		serial_putc('b');
-		unsigned int sdivR, vcoR;
+	unsigned int sdivR, vcoR;
 #ifdef __ADSPBF60x__
-		sdivR = bfin_read_CGU_DIV();
-		sdivR = ((sdivR >> 8) & 0x1f) * ((sdivR >> 5) & 0x7);
-		vcoR = (bfin_read_CGU_CTL() >> 8) & 0x7f;
+	sdivR = bfin_read_CGU_DIV();
+	sdivR = ((sdivR >> 8) & 0x1f) * ((sdivR >> 5) & 0x7);
+	vcoR = (bfin_read_CGU_CTL() >> 8) & 0x7f;
 #else
-		sdivR = bfin_read_PLL_DIV() & 0xf;
-		vcoR = (bfin_read_PLL_CTL() >> 9) & 0x3f;
+	sdivR = bfin_read_PLL_DIV() & 0xf;
+	vcoR = (bfin_read_PLL_CTL() >> 9) & 0x3f;
 #endif
-		int dividend = sdivB * divB * vcoR;
-		int divisor = vcoB * sdivR;
-		unsigned int quotient;
-		for (quotient = 0; dividend > 0; ++quotient)
-			dividend -= divisor;
-		serial_early_put_div(quotient - ANOMALY_05000230);
-		serial_putc('c');
-	}
-
-	serial_putc('d');
+	int dividend = sdivB * divB * vcoR;
+	int divisor = vcoB * sdivR;
+	unsigned int quotient;
+	for (quotient = 0; dividend > 0; ++quotient)
+		dividend -= divisor;
+	serial_early_put_div(quotient - ANOMALY_05000230);
+	serial_putc('c');
 }
 
 __attribute__((always_inline)) static inline void
