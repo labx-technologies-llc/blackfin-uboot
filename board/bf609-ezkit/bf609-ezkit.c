@@ -11,7 +11,7 @@
 #include <asm/blackfin.h>
 #include <asm/io.h>
 #include <asm/portmux.h>
-#include "soft_switch.h"
+#include <asm/mach-bf609/soft_switch.h>
 
 int checkboard(void)
 {

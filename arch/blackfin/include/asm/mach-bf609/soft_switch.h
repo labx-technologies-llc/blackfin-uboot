@@ -66,6 +66,12 @@
 #define IO_PORT_INPUT          0
 #define IO_PORT_OUTPUT         1
 
+#ifdef CONFIG_BFIN_BOARD_VERSION_1_0
+#define SWITCH_ADDR     0x21
+#else
+#define SWITCH_ADDR     0x20
+#endif
+
 int config_switch_bit(int num, int port, int bit, int dir, uchar value);
 int setup_board_switches(void);
 #endif

@@ -10,13 +10,8 @@
 #include <asm/blackfin.h>
 #include <asm/io.h>
 #include <i2c.h>
-#include "soft_switch.h"
+#include <asm/mach-bf609/soft_switch.h>
 
-#ifdef CONFIG_BFIN_BOARD_VERSION_1_0
-#define SWITCH_ADDR     0x21
-#else
-#define SWITCH_ADDR     0x20
-#endif
 
 #define NUM_SWITCH      3
 #define IODIRA          0x0
