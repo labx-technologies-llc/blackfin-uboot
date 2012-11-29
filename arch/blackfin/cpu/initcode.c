@@ -15,7 +15,9 @@
 #include <asm/blackfin.h>
 #include <asm/mach-common/bits/bootrom.h>
 #include <asm/mach-common/bits/core.h>
+#ifndef __ADSPBF60x__
 #include <asm/mach-common/bits/ebiu.h>
+#endif
 
 #define BUG() while (1) { asm volatile("emuexcpt;"); }
 
@@ -43,6 +45,9 @@
 #error "DDR2 CLK must be in (125, 133, 150, 166, 200, 225, 250)MHz"
 #endif
 #endif
+
+/* DMC control bits */
+#define SRREQ			0x8
 
 /* DMC status bits */
 #define IDLE                    0x1
