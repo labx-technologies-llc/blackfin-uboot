@@ -114,9 +114,8 @@ static int setup_soft_switch(int addr, struct switch_config *config)
 	return i2c_write(addr, IODIRB, 1, &config->dir1, 1);
 }
 
-int config_switch_bit(int num, int port, int bit, int dir, uchar value)
+int config_switch_bit(int addr, int port, int bit, int dir, uchar value)
 {
-	int addr = SWITCH_ADDR + num;
 	int ret, data_reg, dir_reg;
 	uchar tmp;
 

@@ -30,7 +30,7 @@ int do_softswitch(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	pin = simple_strtoul(argv[3], NULL, 16);
 	value = simple_strtoul(argv[4], NULL, 16);
 
-	config_switch_bit(switchaddr - SWITCH_ADDR, port, (1 << pin), IO_PORT_OUTPUT, value);
+	config_switch_bit(switchaddr, port, (1 << pin), IO_PORT_OUTPUT, value);
 
 	return 0;
 }
