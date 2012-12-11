@@ -223,11 +223,9 @@ set TEST_IMINFO                          1
 set TEST_BOOT_BIG_KERNEL_IMG             1
 set TEST_BOOTM                           1
 set TEST_CMP                             1
-set TEST_GO                              0
 set TEST_MEMORY_COPY_OF_ALL_TYPES        1
 set TEST_USB                             1
 set TEST_WATCHDOG                        1
-set TEST_DMA                             0
 set TEST_MMC                             1
 set TEST_SPI_FLASH                       1
 
