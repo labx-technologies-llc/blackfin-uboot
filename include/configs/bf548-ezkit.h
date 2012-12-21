@@ -121,6 +121,17 @@
 #endif
 
 /*
+ * NAND Settings
+ */
+#if (CONFIG_BFIN_BOOT_MODE == BFIN_BOOT_NAND)
+#define CONFIG_BFIN_NFC_CTL_VAL        0x0033
+#define CONFIG_BFIN_NFC_BOOTROM_ECC
+#define CONFIG_DRIVER_NAND_BFIN
+#define CONFIG_SYS_NAND_BASE           0 /* not actually used */
+#define CONFIG_SYS_MAX_NAND_DEVICE     1
+#endif
+
+/*
  * I2C Settings
  */
 #define CONFIG_BFIN_TWI_I2C	1
