@@ -3653,6 +3653,7 @@ if { $random_flash_start == "undefined" || \
     set timeout 120
     set random_flash_sector_size [format "%08x" [expr 0x$random_flash_end - 0x$random_flash_start]]
     send -s "cp.b $CFG_LOAD_ADDR 0x$random_flash_start 0x$random_flash_bytes\r"
+    sleep 3
     while 1 {
 	expect {
 
@@ -3673,7 +3674,7 @@ if { $random_flash_start == "undefined" || \
     }
     if {$protect_off_result == $TEST_PASS} {
 	send -s "cmp.b $CFG_LOAD_ADDR 0x$random_flash_start 0x$random_flash_bytes\r"
-        sleep 1
+        sleep 3
 	set protect_off_result $TEST_FAIL
 	while 1 {
 	    expect {
@@ -3758,7 +3759,7 @@ if { $temp_status_flag == $FAILURE } {
     set timeout 60
     set temp_status_flag $TEST_FAIL
     send -s "cmp.b $CFG_LOAD_ADDR $random_sdram_loc $random_sdram_len\r"
-    sleep 1
+    sleep 3
     while 1 {
 	expect {
 
