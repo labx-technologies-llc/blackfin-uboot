@@ -4449,7 +4449,7 @@ if {  $TEST_PASS_PARAM } {
 
     set run_kernel_fail 0
     send -s "bootm\r"
-    set timeout 60
+    set timeout 120
     while 1 {
         expect {
             -re "Kernel panic" {
