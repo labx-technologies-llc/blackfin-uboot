@@ -3543,7 +3543,7 @@ send -s "tftpboot $BIG_IMG_LOAD_ADDRESS $BIG_KERNEL_GZ_FILE\r"
 	}
 
 if {$big_kernel_temp_result == $TEST_PASS} {
-	set timeout 500
+	set timeout 800
 	send -s "bootm\r"
 	while 1 {
      	    expect {
@@ -4667,7 +4667,7 @@ if { $TEST_MMC } {
 
     set timeout 5
     if { $board_type == "BF537-STAMP" } {
-        send "mmc_spi 4\r"
+        send -s "mmc_spi 4\r"
         while 1 {
             expect {
                 -re "MMC_SPI.*$UBOOT_PROMPT" {
@@ -4681,7 +4681,7 @@ if { $TEST_MMC } {
             }
         }
     } else {
-        send "mmc rescan 0\r"
+        send -s "mmc rescan 0\r"
         while 1 {
             expect {
                 -re $UBOOT_PROMPT {
@@ -4699,7 +4699,7 @@ if { $TEST_MMC } {
 
     if {$mmc_result == $TEST_PASS} {
         set timeout 5
-        send "mmcinfo\r"
+        send -s "mmcinfo\r"
         while 1 {
             expect {
                 -re "Capacity.*$UBOOT_PROMPT" {
@@ -4717,7 +4717,7 @@ if { $TEST_MMC } {
 
     if {$mmc_result == $TEST_PASS} {
         set timeout 5
-        send "fatls $mmc_interface $mmc_dev\r"
+        send -s "fatls $mmc_interface $mmc_dev\r"
         while 1 {
             expect {
                 -re "\[0-9]+.*$mmc_test_image.*$UBOOT_PROMPT" {
@@ -4736,7 +4736,7 @@ if { $TEST_MMC } {
 
     if {$mmc_result == $TEST_PASS} {
         set timeout 300
-        send "fatload $mmc_interface $mmc_dev $mmc_imgload_addr $mmc_test_image \r"
+        send -s "fatload $mmc_interface $mmc_dev $mmc_imgload_addr $mmc_test_image \r"
         while 1 {
             expect {
                 -re "\[uU]nable|\[iI]nvalid|\[fF]ail|\[eE]rror" {
@@ -4762,7 +4762,7 @@ if { $TEST_MMC } {
 
     if {$mmc_result == $TEST_PASS} {
         set timeout 150
-        send "bootm $mmc_imgload_addr\r"
+        send -s "bootm $mmc_imgload_addr\r"
         while 1 {
             expect {
                 -re $KERNEL_PROMPT {
@@ -4823,7 +4823,7 @@ if { $TEST_ATAPI } {
     set atapi_dev 0
 
     set timeout 5
-    send "sata init\r"
+    send -s "sata init\r"
     while 1 {
         expect {
             -re "PATA devic.*is found.*>" {
@@ -4840,7 +4840,7 @@ if { $TEST_ATAPI } {
 
     if {$atapi_result == $TEST_PASS} {
         set timeout 5
-        send "fatls $atapi_interface $atapi_dev\r"
+        send -s "fatls $atapi_interface $atapi_dev\r"
         while 1 {
             expect {
                 -re "\[0-9]+.*$atapi_test_image.*$UBOOT_PROMPT" {
@@ -4859,7 +4859,7 @@ if { $TEST_ATAPI } {
 
     if {$atapi_result == $TEST_PASS} {
         set timeout 300
-        send "fatload $atapi_interface $atapi_dev $atapi_imgload_addr $atapi_test_image \r"
+        send -s "fatload $atapi_interface $atapi_dev $atapi_imgload_addr $atapi_test_image \r"
         while 1 {
             expect {
                 -re "\[uU]nable|\[iI]nvalid|\[fF]ail|\[eE]rror" {
@@ -4885,7 +4885,7 @@ if { $TEST_ATAPI } {
 
     if {$atapi_result == $TEST_PASS} {
         set timeout 150
-        send "bootm $atapi_imgload_addr\r"
+        send -s "bootm $atapi_imgload_addr\r"
         while 1 {
             expect {
                 -re $KERNEL_PROMPT {
@@ -4979,8 +4979,8 @@ if { $TEST_USB } {
     set usb_interface usb
     set usb_dev 0
 
-    set timeout 5
-    send "usb start\r"
+    set timeout 15
+    send -s "usb start\r"
     while 1 {
         expect {
             -re "Storage Device\\\(s\\\) found.*>" {
@@ -4997,7 +4997,7 @@ if { $TEST_USB } {
 
     if {$usb_result== $TEST_PASS} {
         set timeout 5
-        send "fatls $usb_interface $usb_dev\r"
+        send -s "fatls $usb_interface $usb_dev\r"
         while 1 {
             expect {
                 -re "\[0-9]+.*$usb_test_image.*$UBOOT_PROMPT" {
@@ -5016,7 +5016,7 @@ if { $TEST_USB } {
 
     if {$usb_result == $TEST_PASS} {
         set timeout 300
-        send "fatload $usb_interface $usb_dev $usb_imgload_addr $usb_test_image\r"
+        send -s "fatload $usb_interface $usb_dev $usb_imgload_addr $usb_test_image\r"
         while 1 {
             expect {
                 -re "\[uU]nable|\[iI]nvalid|\[fF]ail|\[eE]rror|usage:" {
@@ -5042,7 +5042,7 @@ if { $TEST_USB } {
 
     if {$usb_result == $TEST_PASS} {
         set timeout 150
-        send "bootm $usb_imgload_addr\r"
+        send -s "bootm $usb_imgload_addr\r"
         while 1 {
             expect {
                 -re "ERROR.*$UBOOT_PROMPT" {
@@ -5066,7 +5066,7 @@ if { $TEST_USB } {
 
     #Reboot out of the kernel and back to u-boot.
     if { $usb_result == $TEST_PASS } {
-        send "reboot\r"
+        send -s "reboot\r"
     } else {
         recover
     }
