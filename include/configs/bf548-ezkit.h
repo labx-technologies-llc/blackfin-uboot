@@ -182,6 +182,12 @@
 #define CONFIG_UART_CONSOLE	1
 #define CONFIG_BFIN_SPI_IMG_SIZE 0x50000
 
+#undef CONFIG_VIDEO
+#ifdef CONFIG_VIDEO
+#define EASYLOGO_HEADER <asm/bfin_logo_230x230_gzip.h>
+#define CONFIG_DEB_DMA_URGENT
+#endif
+
 /* Define if want to do post memory test */
 #undef CONFIG_POST
 #ifdef CONFIG_POST
