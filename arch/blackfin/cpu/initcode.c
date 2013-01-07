@@ -733,11 +733,10 @@ update_serial_clocks(ADI_BOOT_DATA *bs, uint sdivB, uint divB, uint vcoB)
 	sdivR = bfin_read_PLL_DIV() & 0xf;
 	vcoR = (bfin_read_PLL_CTL() >> 9) & 0x3f;
 #endif
-	int dividend = sdivB * divB * vcoR;
-	int divisor = vcoB * sdivR;
+	unsigned int dividend = sdivB * divB * vcoR;
+	unsigned int divisor = vcoB * sdivR;
 	unsigned int quotient;
-	for (quotient = 0; dividend > 0; ++quotient)
-		dividend -= divisor;
+	quotient = early_division(dividend, divisor);
 	serial_early_put_div(quotient - ANOMALY_05000230);
 	serial_putc('c');
 }

@@ -24,20 +24,17 @@ __attribute__((always_inline))
 static inline uint32_t early_division(uint32_t dividend, uint32_t divisor)
 {
 	uint32_t quotient;
-	uint32_t i;
+	uint32_t i, j;
 
-	for (i = 0; i < 5; i++) {
-		if (divisor == (1 << i)) {
-			quotient = dividend >> i;
-			return quotient;
+	for (quotient = 1, i = 1; dividend > divisor; ++i) {
+		j = divisor << i;
+		if (j > dividend || (j & 0x80000000)) {
+			--i;
+			quotient += (1 << i);
+			dividend -= (divisor << i);
+			i = 0;
 		}
 	}
-
-	if (divisor) {
-		for (quotient = 0; dividend >= divisor; ++quotient)
-			dividend -= divisor;
-	} else
-		quotient = dividend;
 
 	return quotient;
 }
